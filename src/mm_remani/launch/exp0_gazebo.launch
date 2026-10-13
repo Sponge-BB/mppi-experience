@@ -1,0 +1,52 @@
+<launch>
+  <!-- Load planner parameter file purely by reference -->
+  <arg name="exp_param_file" value="$(find remani_planner)/config/exp0_param.yaml"/>
+
+  <!-- Load robot description for RViz so it's available even if Gazebo boots late -->
+  <param name="robot_description" textfile="$(find my_description)/robot/mm.urdf" />
+
+  <!-- Boot the Gazebo mapped planner bridge -->
+  <include file="$(find mm_remani)/launch/run_planner_gazebo.launch">
+    <arg name="exp_param_file" value="$(arg exp_param_file)"/>
+  </include>
+
+  <!-- =========================================================
+       预建三维地图: 全局规划
+       ========================================================= -->
+  <param name="remani_planner_node/fsm/global_plan" value="true" />
+  <param name="remani_planner_node/grid_map/use_load_map" value="true" />
+  <param name="remani_planner_node/fsm/thresh_replan_time" value="2.5" type="double"/>
+
+  <!-- =========================================================
+       预建 PCD 地图加载: roslaunch mm_remani exp0_gazebo.launch robot_map_x:=0 robot_map_y:=0
+       ========================================================= -->
+  <arg name="robot_map_x" default="0"/>
+  <arg name="robot_map_y" default="0"/>
+  <arg name="robot_map_z" default="-0."/>
+  <arg name="map_roll"  default="0"/>
+  <arg name="map_pitch" default="3"/>
+  <arg name="map_yaw"   default="0"/>
+
+  <node pkg="mm_remani" type="publish_shifted_pcd.py" name="global_map_publisher" output="log">
+    <param name="pcd_file" value="$(find fast_lio)/PCD/scans.pcd" />
+    <param name="robot_map_x" value="$(arg robot_map_x)" />
+    <param name="robot_map_y" value="$(arg robot_map_y)" />
+    <param name="robot_map_z" value="$(arg robot_map_z)" />
+    <param name="map_roll"  value="$(arg map_roll)" />
+    <param name="map_pitch" value="$(arg map_pitch)" />
+    <param name="map_yaw"   value="$(arg map_yaw)" />
+    <param name="publish_rate" value="5.0" />
+  </node>
+
+  <!-- =========================================================
+       单独发布 world 坐标系的变换，将规划器的 world 链接到 Gazebo 的 map
+       (The planner expects 'world', while the physical Gazebo TF tree uses 'map')
+       ========================================================= -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_map_broadcaster"
+        args="0 0 0 0 0 0 world map" />
+
+  <!-- Boot RViz (Using the exact same RViz setting file as planner for seamless visual debugging without duplicate files) -->
+  <!-- Note: Make sure the target Rviz fixed frame is set to Map or Odom -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mm_remani)/rviz/exp0_gazebo.rviz"/>
+
+</launch>

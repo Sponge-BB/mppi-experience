@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Load mm.urdf from my_description into the parameter server -->
+  <param name="robot_description" textfile="$(find my_description)/robot/mm.urdf" />
+
+  <!-- Start Gazebo with the requested world_2 file -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="true"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+    <arg name="world_name" value="$(find mm_gazebo)/world/world_2.world"/>
+  </include>
+
+  <!-- Spawn the model from the robot_description param -->
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_mm_robot" output="screen"
+        args="-param robot_description -urdf -model mm_robot -x 0.0 -y 0.0 -z 0.115 -Y 0.0 -unpause -J joint1 0.0 -J joint2 0.520979 -J joint3 -1.048914 -J joint4 0.0 -J joint5 0.947297 -J joint6 0.0 -J joint7 0.0 -J joint8 0.0"/>
+
+  <!-- Optional: publish TF from URDF (will work if joint_states are available) -->
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <!-- Remap to Gazebo joint states so RSP publishes transforms for all joints -->
+    <remap from="joint_states" to="/gazebo/joint_states" />
+  </node>
+
+  <!-- Load controller configs (Piper tuned controllers) into parameter server under default namespace -->
+  <rosparam file="$(find mm_gazebo)/config/piper_gazebo_control.yaml" command="load" ns="/gazebo" />
+
+  <!-- Spawn controllers under /gazebo namespace so they attach to gazebo's controller_manager -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="/gazebo" args="joint_state_controller
+                                        fr_wheel_velocity_controller
+                                        fl_wheel_velocity_controller
+                                        bl_wheel_velocity_controller
+                                        br_wheel_velocity_controller
+                                        joint1_position_controller
+                                        joint2_position_controller
+                                        joint3_position_controller
+                                        joint4_position_controller
+                                        joint5_position_controller
+                                        joint6_position_controller
+                                        joint7_position_controller
+                                        joint8_position_controller"/>
+
+  <!-- Static TFs to attach robot frames to map for RViz visualization -->
+  <!-- map -> odom (identity) -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_map_to_odom"
+    output="screen" args="0 0 0 0 0 0 map odom"/>
+
+  <!-- odom -> base_link (identity) -->
+  <!-- odom -> base_link: replaced static identity with broadcaster node that
+       listens to /odom and publishes odom->base_link as a dynamic TF so RViz
+       follows the robot movement in Gazebo. If you have another odom->base_link
+       publisher, remove this node to avoid TF conflicts. -->
+  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="static_odom_to_base"
+    output="screen" args="0 0 0 0 0 0 odom base_link"/> -->
+
+  <node pkg="mm_gazebo" type="odom_to_tf.py" name="odom_to_tf" output="screen">
+    <param name="odom_topic" value="/odom"/>
+    <param name="child_frame" value="base_link"/>
+    <param name="frame_id" value="odom"/>
+  </node>
+  <node pkg="mm_gazebo" type="mm_controller.py" name="mm_controller" output="screen">
+    <param name="cmd_vel_topic" value="/cmd_vel"/>
+    <param name="arm_command_topic" value="/mm_controller_node/joint_cmd"/>
+    <param name="arm_joint_state_topic" value="/joint_states_cmd"/>
+  </node>
+
+  <!-- base_link -> dome (identity) - added to ensure RViz shows dome attached to base_link -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_base_to_dome"
+    output="screen" args="0 0 0 0 0 0 base_link dome"/>
+
+  <!-- Base trajectory tracker (bridges car_cmd to cmd_vel) -->
+  <node pkg="mm_gazebo" type="gazebo_base_tracker.py" name="gazebo_base_tracker" output="screen" />
+
+  <!-- Robust Ground Truth Odometry directly from Gazebo Model States -->
+
+  <node pkg="mm_gazebo" type="odom_groundtruth.py" name="odom_groundtruth" output="screen">
+    <param name="model_name" value="mm_robot"/>
+  </node>
+  
+ (bridges car_cmd to cmd_vel) -->
+
+  <!-- Static transforms for wheels (fallback for visualization if joint states missing) -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_fr_wheel"
+    output="screen" args="0.19000075 -0.2029993 0.01799925 0 0 0 base_link fr_wheel"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_fl_wheel"
+    output="screen" args="0.18999925 0.2030007 0.01800075 0 0 0 base_link fl_wheel"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_br_wheel"
+    output="screen" args="-0.19199925 -0.20300071 0.01799925 0 0 0 base_link br_wheel"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_bl_wheel"
+    output="screen" args="-0.19200075 0.20299929 0.01800075 0 0 0 base_link bl_wheel"/>
+
+  <!-- Combine RViz within Gazebo launch to avoid TF node collisions (Commented out to use the one in exp0_gazebo.launch) -->
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find my_description)/launch/rviz.rviz" output="screen" /> -->
+
+</launch>

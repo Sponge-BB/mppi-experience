@@ -1,0 +1,32 @@
+map:
+  map_type: 0 # 0: Cuboids (exp3 should be cuboids only)
+  seed: 10  # fixed seed -> deterministic cuboids map
+  obs_num: 15        # reduced static cuboids (vs exp0 default 20)
+  float_obs_num: 10  # reduced floating obstacles
+
+moving_obstacles:
+  count: 2
+  box_size: [0.4, 0.4, 0.6]
+  speed: 0.5   # m/s base speed for motion
+
+# redirect the planner/grid_map to read merged cloud when running exp3
+map_generator_global_cloud_topic: "/map_generator/global_cloud_merged"
+
+# ensure grid_map subscribes to the global (merged) cloud in this experiment
+grid_map:
+  use_global_map: true
+  dynamic_global_map: true
+
+fsm:
+  waypoint_num : 2
+  # [x, y, theta1, theta2, theta3, theta4, theta5, theta6]
+  # ###################################### map type 2 combined ######################################
+  init_state             : [-3.0, 0.0, 0.0, 29.85, -60.098, -0.002, 54.276, 0.003]
+  init_yaw               : 0.0
+  init_gripper_close     : false
+  waypoint0              : [3.0, 1.5, 0.0, -70.0, 110.0, 0.0, -110.0, 0.0]
+  waypoint0_yaw          : -45.0
+  waypoint0_gripper_close: true
+  waypoint1              : [-0.5, -3.0, 0.0, -70.0, 110.0, 0.0, -110.0, 0.0]
+  waypoint1_yaw          : -90.0
+  waypoint1_gripper_close: false

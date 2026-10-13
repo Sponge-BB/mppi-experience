@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="robot">
+  <!-- Added robot_root so we can raise the whole robot by adjusting the root->base_link joint -->
+  <link name="robot_root"/>
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/base_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/base_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="fr_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/fr_wheel.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/fr_wheel.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="fl_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/fl_wheel.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/fl_wheel.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="br_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/br_wheel.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/br_wheel.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="bl_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/bl_wheel.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/bl_wheel.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="link_armsupport">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/link_armsupport.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://my_description/meshes/link_armsupport.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- root -> base_link joint: raises the entire robot by 0.005 m -->
+  <joint name="robot_root_to_base_link" type="fixed">
+    <parent link="robot_root"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.005" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="fr_wheel" type="continuous">
+    <parent link="base_link"/>
+    <child link="fr_wheel"/>
+    <origin xyz="0.19000075 -0.2029993 0.1" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="fl_wheel" type="continuous">
+    <parent link="base_link"/>
+    <child link="fl_wheel"/>
+    <origin xyz="0.18999925 0.2030007 0.1" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="br_wheel" type="continuous">
+    <parent link="base_link"/>
+    <child link="br_wheel"/>
+    <origin xyz="-0.19199925 -0.20300071 0.1" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="bl_wheel" type="continuous">
+    <parent link="base_link"/>
+    <child link="bl_wheel"/>
+    <origin xyz="-0.19200075 0.20299929 0.1" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="arm_support" type="fixed">
+    <parent link="base_link"/>
+    <child link="link_armsupport"/>
+    <origin xyz="0 -3.3e-7 0.09" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+</robot>

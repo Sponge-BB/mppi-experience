@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Optional: start joint_state_publisher to generate joint_states (disabled by default) -->
+  <arg name="publish_joint_states" default="false" />
+
+  <!-- Optional RViz config for the piper model (change path if you have a saved config) -->
+  <arg name="rviz_config" default="$(find piper_description)/rviz/piper.rviz" />
+
+  <!-- Load Piper URDF into the parameter server -->
+  <param name="robot_description" textfile="$(find piper_description)/urdf/my_piper.urdf" />
+
+  <!-- Robot state publisher -->
+  <!-- Use a distinct node name to avoid colliding with any other robot_state_publisher instances -->
+  <node name="robot_state_publisher_piper" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
+    <param name="publish_frequency" value="50.0" />
+  </node>
+
+  <!-- Publish a static transform from map to the Piper root (world) so RViz can compose frames -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_map_to_piper_root" args="0 0 0 0 0 0 map world" />
+
+  <!-- Optional joint_states publisher (disabled by default). Set publish_joint_states:=true when needed. -->
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" output="screen" if="$(arg publish_joint_states)"/>
+
+  <!-- Start RViz loading piper rviz config by default -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)" output="screen"/>
+
+</launch>

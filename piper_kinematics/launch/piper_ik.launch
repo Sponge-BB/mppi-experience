@@ -1,0 +1,25 @@
+<launch>
+    <arg name="max_iterations" default="50"/>
+    <arg name="damping_factor" default="0.1"/>
+    <arg name="publish_rate" default="30"/>  <!-- 'c' for CPU or 'g' for GPU post-processing -->
+    <arg name="use_analytic_ik" default="false"/>
+    <arg name="joint_state_topic" default="/joint_states"/> <!-- 默认给独立机械臂仿真使用，如果在MM系统中使用，可传入 /mm_controller_node/joint_cmd -->
+
+    <node pkg="piper_kinematics" type="piper_ik_node" name="piper_ik_node" output="screen">
+        <param name="max_iterations" value="$(arg max_iterations)"/>
+        <param name="damping_factor" value="$(arg damping_factor)"/>
+        <param name="publish_rate" value="$(arg publish_rate)"/>
+        <param name="use_analytic_ik" value="$(arg use_analytic_ik)"/>
+        <param name="publish_on_target_pose_only" value="true"/>
+        <param name="joint_state_topic" value="$(arg joint_state_topic)"/>
+        <param name="sub_real_joint_position_topic" value="/joint_states_single"/>
+    </node>
+    <!-- <node pkg="piper_kinematics" type="interactive_pose_marker.py" name="interactive_pose_marker_node" output="screen">
+    </node> -->
+        <!-- <node pkg="piper_kinematics" type="GUI_ik_ctrl.py" name="GUI_ik_ctrl" output="screen">
+    </node> -->
+    <!-- <node pkg="piper_kinematics" type="arm_ctrl_gui.py" name="arm_ctrl_gui" output="screen">
+    </node>   -->
+    <!-- <node pkg="piper_kinematics" type="Gui_ctrl_1.py" name="Gui_ctrl_1" output="screen"> -->
+    <!-- </node>   -->
+</launch>

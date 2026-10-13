@@ -1,0 +1,25 @@
+<launch>
+  <arg name="can_port" default="can1" />
+  <arg name="auto_enable" default="true" />
+  <arg name="auto_enable_timeout" default="10.0" />
+  <arg name="exit_on_enable_timeout" default="false" />
+  <arg name="auto_reenable_on_drop" default="true" />
+  <arg name="auto_reenable_interval" default="1.0" />
+  <arg name="gripper_val_mutiple" default="1" />
+  <arg name="fixed_vel" default="15" />
+  <!-- <include file="$(find piper_description)/launch/display_xacro.launch"/> -->
+  <!-- 启动机械臂节点 -->
+  <node name="piper_ctrl_single_node" pkg="piper" type="piper_ctrl_single_node.py" output="screen">
+    <param name="can_port" value="$(arg can_port)" />
+    <param name="auto_enable" value="$(arg auto_enable)" />
+    <param name="auto_enable_timeout" value="$(arg auto_enable_timeout)" />
+    <param name="exit_on_enable_timeout" value="$(arg exit_on_enable_timeout)" />
+    <param name="auto_reenable_on_drop" value="$(arg auto_reenable_on_drop)" />
+    <param name="auto_reenable_interval" value="$(arg auto_reenable_interval)" />
+    <param name="gripper_val_mutiple" value="$(arg gripper_val_mutiple)" />
+    <param name="fixed_vel" value="$(arg fixed_vel)" />
+    <!-- <param name="rviz_ctrl_flag" value="true" /> -->
+    <param name="girpper_exist" value="true" />
+    <remap from="joint_ctrl_single" to="/joint_ctrl_single" />
+  </node>
+</launch>

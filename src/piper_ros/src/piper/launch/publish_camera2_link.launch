@@ -1,0 +1,27 @@
+<launch>
+  <!-- 
+    发布 link6 -> camera_base 变换
+    对应 URDF:
+      xyz="0.0 0.075 0.03"
+      rpy="-1.5708 -1.5708 0" → roll=-1.5708, pitch=-1.5708, yaw=0
+  -->
+  <node name="link6_to_camera_base" pkg="tf2_ros" type="static_transform_publisher"
+        args="0.0 0.075 0.03 0.0 -1.5708 -1.5708 link6 camera_base"
+        output="screen">
+    <!-- 参数顺序: x y z yaw pitch roll parent child -->
+    <!-- 注意！ROS 中 static_transform_publisher 使用 ZYX 欧拉角，即 yaw/pitch/roll -->
+    <!-- 所以 rpy(roll,pitch,yaw) → 要写成 args(yaw, pitch, roll) -->
+    <!-- 因此这里传入的是: yaw=0, pitch=-1.5708, roll=-1.5708 -->
+  </node>
+
+  <!-- 
+    发布 camera_base -> camera_link 变换
+    xyz="0.0 0.03 0.0"
+    rpy="0.0 0.45 0.0" → roll=0, pitch=0.45, yaw=0
+  -->
+  <node name="camera_base_to_camera_link" pkg="tf2_ros" type="static_transform_publisher"
+        args="0.0 0.03 0.0 0.0 0.45 0.0 camera_base camera_link"
+        output="screen">
+    <!-- yaw=0.0, pitch=0.45, roll=0.0 -->
+  </node>
+</launch>

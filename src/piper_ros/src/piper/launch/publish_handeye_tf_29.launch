@@ -1,0 +1,17 @@
+
+  <launch>
+  <arg name="parent_frame" default="link6" />
+  <arg name="child_frame" default="camera_color_optical_frame" />
+ 
+  <arg name="x" default="0.04426690327100061" />
+  <arg name="y" default="0.06687286080499734" />
+  <arg name="z" default="0.04410312230963015" />
+  <arg name="qx" default="0.00030366185223584395" />
+  <arg name="qy" default="0.19127477979308816" />
+  <arg name="qz" default="-0.9813765423034224" />
+  <arg name="qw" default="0.01771859534964779" />
+ 
+  <node pkg="tf" type="static_transform_publisher" name="camera_handeye_tf_publisher"
+    args="$(arg x) $(arg y) $(arg z) $(arg qx) $(arg qy) $(arg qz) $(arg qw) $(arg parent_frame) $(arg child_frame) 100" />
+</launch>
+

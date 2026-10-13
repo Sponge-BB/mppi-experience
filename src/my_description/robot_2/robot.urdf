@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="robot">
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/base_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/base_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="fr_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/fr_wheel.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/fr_wheel.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="fl_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/fl_wheel.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/fl_wheel.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="br_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/br_wheel.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/br_wheel.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="bl_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/bl_wheel.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/bl_wheel.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="arm_support">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/arm_support.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/arm_support.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="arm_base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/arm_base_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="meshes/arm_base_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="fr_wheel_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="fr_wheel"/>
+    <origin xyz="0.19000076 -0.20556509 -0.03000076" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="fl_wheel_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="fl_wheel"/>
+    <origin xyz="0.18999924 0.20556671 -0.02999924" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="br_wheel_Joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="br_wheel"/>
+    <origin xyz="-0.18999924 -0.20556649 -0.03000076" rpy="0 0 0.00000367"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="bl_wheel_Joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="bl_wheel"/>
+    <origin xyz="-0.19000076 0.20556531 -0.02999924" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="arm_support_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_support"/>
+    <origin xyz="0 -1.5e-7 0.04" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <joint name="arm_base_joint" type="fixed">
+    <parent link="arm_support"/>
+    <child link="arm_base_link"/>
+    <origin xyz="0 0 0.528" rpy="0 0 0"/>
+    <axis xyz="0 0 0"/>
+  </joint>
+</robot>

@@ -1,0 +1,35 @@
+<!-- <launch>
+  <arg name="parent_frame" default="camera_base" />
+  <arg name="child_frame" default="camera_link" />
+ 
+  <arg name="x" default="-0.07168843901674705" />
+  <arg name="y" default="0.041141807726148456" />
+  <arg name="z" default="0.045399940134815055" />
+  <arg name="qx" default="-0.14034723490341083" />
+  <arg name="qy" default="0.12995196108048424" />
+  <arg name="qz" default="-0.6744474944155343" />
+  <arg name="qw" default="0.7131169039806244" />
+ 
+  <node pkg="tf" type="static_transform_publisher" name="camera_handeye_tf_publisher"
+    args="$(arg x) $(arg y) $(arg z) $(arg qx) $(arg qy) $(arg qz) $(arg qw) $(arg parent_frame) $(arg child_frame) 100" />
+</launch> -->
+
+<launch>
+  <arg name="parent_frame" default="link6" />
+  <arg name="child_frame" default="camera_color_optical_frame" />
+
+  <!-- 原有平移参数不变（仅调整旋转） -->
+  <arg name="x" default="-0.07168843901674705" />
+  <arg name="y" default="0.041141807726148456" />
+  <arg name="z" default="0.045399940134815055" />
+  
+  <!-- 绕自身z轴逆时针旋转90°后的新四元数（精确计算结果） -->
+  <arg name="qx" default="-0.007352" />
+  <arg name="qy" default="0.191123" />
+  <arg name="qz" default="0.027348" />
+  <arg name="qw" default="0.981089" />
+
+  <!-- 发布静态TF（参数顺序：x y z qx qy qz qw 父帧 子帧 频率） -->
+  <node pkg="tf" type="static_transform_publisher" name="camera_handeye_tf_publisher"
+    args="$(arg x) $(arg y) $(arg z) $(arg qx) $(arg qy) $(arg qz) $(arg qw) $(arg parent_frame) $(arg child_frame) 100" />
+</launch>

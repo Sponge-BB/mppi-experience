@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Launch file to start cmd_vel_to_wheel_vels and wheel_vels_to_controller together -->
+
+  <!-- Optional args / parameters -->
+  <arg name="wheel_radius" default="0.075"/>
+  <arg name="wheel_base_length" default="0.19"/>
+  <arg name="wheel_base_width" default="0.20"/>
+  <arg name="use_feedback" default="false"/>
+  <arg name="use_pid_feedback" default="false"/>
+
+  <node pkg="mm_gazebo" type="cmd_vel_to_wheel_vels.py" name="cmd_vel_to_wheel_vels" output="screen">
+    <param name="wheel_radius" value="$(arg wheel_radius)"/>
+    <param name="wheel_base_length" value="$(arg wheel_base_length)"/>
+    <param name="wheel_base_width" value="$(arg wheel_base_width)"/>
+    <param name="use_feedback" value="$(arg use_feedback)"/>
+    <param name="use_pid_feedback" value="$(arg use_pid_feedback)"/>
+  </node>
+
+  <node pkg="mm_gazebo" type="wheel_vels_to_controller.py" name="wheel_vels_to_controller" output="screen"/>
+
+  <!-- Optionally you can include the odom_to_tf node here as well -->
+  <!-- odom/TF nodes: odom_to_tf republishes /odom -> tf; optionally enable an open-loop odom publisher if no controller provides /odom -->
+  <arg name="enable_openloop_odom" default="true" />
+  <arg name="odom_topic" default="/odom" />
+  <node pkg="mm_gazebo" type="odom_to_tf.py" name="odom_to_tf" output="screen">
+    <param name="odom_topic" value="$(arg odom_topic)"/>
+    <param name="frame_id" value="odom"/>
+    <param name="child_frame" value="base_link"/>
+    <param name="pub_rate" value="10.0"/>
+  </node>
+
+  <!-- optional open-loop odom publisher: integrates /cmd_vel to produce /odom when enabled -->
+  <group if="$(arg enable_openloop_odom)">
+    <node pkg="mm_gazebo" type="odom_openloop_publisher.py" name="odom_openloop_publisher" output="screen">
+      <param name="odom_topic" value="$(arg odom_topic)"/>
+      <param name="frame_id" value="odom"/>
+      <param name="child_frame" value="base_link"/>
+      <param name="publish_rate" value="50.0"/>
+    </node>
+  </group>
+  <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop_twist_keyboard" output="screen">
+    <param name="speed" value="0.5"/>
+    <param name="turn" value="1.0"/>
+  </node>
+</launch>

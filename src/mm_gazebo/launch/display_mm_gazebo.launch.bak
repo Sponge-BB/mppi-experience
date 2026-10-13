@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Load mm.urdf from my_description into the parameter server -->
+  <param name="robot_description" textfile="$(find my_description)/robot/mm.urdf" />
+
+  <!-- Start an empty Gazebo world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch" />
+
+  <!-- Spawn the model from the robot_description param -->
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_mm_robot" output="screen"
+        args="-param robot_description -urdf -model mm_robot -x 0 -y 0 -z 0.05"/>
+
+  <!-- Optional: publish TF from URDF (will work if joint_states are available) -->
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <!-- Remap to Gazebo joint states so RSP publishes transforms for all joints -->
+    <remap from="joint_states" to="/gazebo/joint_states" />
+  </node>
+
+  <!-- Load controller configs (Piper tuned controllers) into parameter server under default namespace -->
+  <rosparam file="$(find mm_gazebo)/config/piper_gazebo_control.yaml" command="load"/>
+
+  <!-- Spawn controllers under /gazebo namespace so they attach to gazebo's controller_manager -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="/gazebo" args="joint_state_controller
+                                        joint1_position_controller
+                                        joint2_position_controller
+                                        joint3_position_controller
+                                        joint4_position_controller
+                                        joint5_position_controller
+                                        joint6_position_controller
+                                        joint7_position_controller
+                                        joint8_position_controller"/>
+
+  <!-- Static TFs to attach robot frames to map for RViz visualization -->
+  <!-- map -> odom (identity) -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_map_to_odom"
+    output="screen" args="0 0 0 0 0 0 map odom"/>
+
+  <!-- odom -> base_link (identity) -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_odom_to_base"
+    output="screen" args="0 0 0 0 0 0 odom base_link"/>
+
+  <!-- Static transforms for wheels (fallback for visualization if joint states missing) -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_fr_wheel"
+    output="screen" args="0.19000075 -0.2029993 0.01799925 0 0 0 base_link fr_wheel"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_fl_wheel"
+    output="screen" args="0.18999925 0.2030007 0.01800075 0 0 0 base_link fl_wheel"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_br_wheel"
+    output="screen" args="-0.19199925 -0.20300071 0.01799925 0 0 0 base_link br_wheel"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_bl_wheel"
+    output="screen" args="-0.19200075 0.20299929 0.01800075 0 0 0 base_link bl_wheel"/>
+</launch>

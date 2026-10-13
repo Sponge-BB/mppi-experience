@@ -1,0 +1,14 @@
+<launch>
+
+
+  <!-- Load robot description for RViz so it's available even if Gazebo boots late -->
+  <param name="robot_description" textfile="$(find my_description)/robot/mm.urdf" />
+
+ 
+
+  <!-- Boot RViz (Using the exact same RViz setting file as planner for seamless visual debugging without duplicate files) -->
+  <!-- Note: Make sure the target Rviz fixed frame is set to Map or Odom -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mm_remani)/rviz/exp0_gazebo.rviz"/>
+
+  
+</launch>

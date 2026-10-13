@@ -1,0 +1,18 @@
+<launch>
+  <arg name="parent_frame" default="link6" />
+  <arg name="child_frame" default="camera_color_optical_frame" />
+ 
+  <!-- 平移量保持手眼标定结果不变 -->
+  <arg name="x" default="-0.07032891123040244" />
+  <arg name="y" default="0.03875541689329283" />
+  <arg name="z" default="0.032587308337815125" />
+  
+  <!-- 叠加「从上往下看绕Z轴逆时针90度」后的新四元数（精确计算结果） -->
+  <arg name="qx" default="-0.008621" />
+  <arg name="qy" default="0.184632" />
+  <arg name="qz" default="0.021150" />
+  <arg name="qw" default="0.982539" />
+ 
+  <node pkg="tf" type="static_transform_publisher" name="camera_handeye_tf_publisher"
+    args="$(arg x) $(arg y) $(arg z) $(arg qx) $(arg qy) $(arg qz) $(arg qw) $(arg parent_frame) $(arg child_frame) 100" />
+</launch>

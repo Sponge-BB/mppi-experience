@@ -1,0 +1,77 @@
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 200
+# --- wheel velocity controllers ---
+fr_wheel_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: fr_wheel_joint
+  pid: {p: 100.0, i: 0.0, d: 0.0}
+
+fl_wheel_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: fl_wheel_joint
+  pid: {p: 100.0, i: 0.0, d: 0.0}
+
+br_wheel_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: br_wheel_joint
+  pid: {p: 100.0, i: 0.0, d: 0.0}
+
+bl_wheel_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: bl_wheel_joint
+  pid: {p: 100.0, i: 0.0, d: 0.0}
+
+# --- existing arm position controllers (keep them) ---
+joint1_position_controller:
+  type: position_controllers/JointPositionController
+  joint: joint1
+  pid: {p: 100.0, i: 0.01, d: 5.0}
+joint2_position_controller:
+  type: position_controllers/JointPositionController
+  joint: joint2
+  pid: {p: 100.0, i: 0.01, d: 5.0}
+joint3_position_controller:
+  type: position_controllers/JointPositionController
+  joint: joint3
+  pid: {p: 100.0, i: 0.01, d: 5.0}
+joint4_position_controller:
+  type: position_controllers/JointPositionController
+  joint: joint4
+  pid: {p: 100.0, i: 0.01, d: 5.0}
+joint5_position_controller:
+  type: position_controllers/JointPositionController
+  joint: joint5
+  pid: {p: 100.0, i: 0.01, d: 5.0}
+joint6_position_controller:
+  type: position_controllers/JointPositionController
+  joint: joint6
+  pid: {p: 100.0, i: 0.01, d: 5.0}
+joint7_position_controller:
+  type: position_controllers/JointPositionController
+  joint: joint7
+  pid: {p: 100, i: 0.001, d: 10.0}
+joint8_position_controller:
+  type: position_controllers/JointPositionController
+  joint: joint8
+  pid: {p: 100, i: 0.001, d: 10.0}
+
+# Optionally supply gazebo_ros_control pid_gains if the plugin reports missing gains
+# gazebo_ros_control:
+#   pid_gains:
+#     joint1:
+#       p: 100.0
+#       i: 0.01
+#       d: 1.0
+#     joint2:
+#       p: 100.0
+#       i: 0.01
+#       d: 1.0
+#     joint3:
+#       p: 100.0
+#       i: 0.01
+#       d: 1.0
+#     joint5:
+#       p: 100.0
+#       i: 0.01
+#       d: 1.0

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Optional: set to true to start a joint_states publisher (useful to generate /tf dynamic messages) -->
+  <arg name="publish_joint_states" default="false" />
+
+  <!-- Load the default robot URDF for this package (legacy mm.urdf requested by user) -->
+  <!-- Load robot URDF so robot_state_publisher can publish joint transforms from /joint_states -->
+  <param name="robot_description" textfile="$(find my_description)/robot/mm.urdf" />
+
+  <!-- Robot state publisher: will publish /tf_static for fixed joints and /tf for dynamic joints if /joint_states are published -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
+    <param name="publish_frequency" value="50.0" />
+  </node>
+
+  <!-- Provide a static map->odom transform so RViz's fixed frame 'map' can resolve to odom-based TFs -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_map_to_odom" args="0 0 0 0 0 0 map odom"/>
+  <!-- Ensure there is a map -> robot_root frame for visualization (quaternion valid: 0 0 0 1 implied by Euler 0 0 0).
+    Using robot_root aligns the external map frame with the URDF's robot_root we added to raise the robot. -->
+  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="static_map_to_base" args="0 0 0 0 0 0 map dummy_base" /> -->
+
+  <!-- Optional joint_states publisher (disabled by default). Set publish_joint_states:=true when needed. -->
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" output="screen" if="$(arg publish_joint_states)"/>
+
+  <!-- RViz: load the package's rviz config to visualize robot. -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find my_description)/launch/rviz.rviz" output="screen"/>
+<include file="$(find piper_kinematics)/launch/piper_ik.launch" />
+</launch>

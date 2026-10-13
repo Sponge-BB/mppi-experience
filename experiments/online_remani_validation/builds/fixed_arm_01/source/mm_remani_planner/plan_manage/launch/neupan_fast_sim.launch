@@ -1,0 +1,128 @@
+<launch>
+  <!--
+    Isolated velocity-aware dynamic-avoidance experiment.
+
+    active_mode:=false is an interface ablation: the same map and robot run
+    without point-flow decisions or the swept planning overlay. Because the
+    synthetic obstacle is not rendered into the depth camera, this control is
+    intentionally blind to that obstacle and is not a claim about the native
+    baseline's dynamic-perception quality.
+    exp0.launch and exp0_real.launch are intentionally untouched.
+  -->
+  <arg name="active_mode" default="true"/>
+  <arg name="start_rviz" default="true"/>
+  <arg name="dynamic_points_topic" default="/dynamic_points"/>
+  <arg name="map_obs_num" default="0"/>
+  <arg name="map_float_obs_num" default="0"/>
+  <arg name="use_piper_profile" default="true"/>
+  <arg name="exp_param_file"
+       default="$(find remani_planner)/config/exp0_param.yaml"/>
+
+  <include file="$(find remani_planner)/launch/run_in_sim.launch">
+    <arg name="exp_param_file" value="$(arg exp_param_file)"/>
+    <arg name="map_obs_num" value="$(arg map_obs_num)"/>
+    <arg name="map_float_obs_num" value="$(arg map_float_obs_num)"/>
+    <!-- pose_type=1 consumes rendered depth+pose; this cloud arg is unused by
+         that sensor path and is deliberately not the old merged cloud. -->
+    <arg name="cloud_topic" value="pcl_render_node/cloud"/>
+  </include>
+
+  <!-- The current mm_param.yaml selects the customized Piper kinematics but
+       still contains the old FastArmer mounting transform (z=0).  That makes
+       link 0 collide with the ground before either A/B planner can run.  Load
+       the repository's dedicated Piper profile only inside this isolated test;
+       the shared exp0/mm_param files remain untouched. -->
+  <group if="$(arg use_piper_profile)">
+    <rosparam command="load" file="$(find remani_planner)/config/piper_param.yaml"
+              ns="/remani_planner_node"/>
+    <rosparam command="load" file="$(find remani_planner)/config/piper_param.yaml"
+              ns="/mm_controller_node"/>
+    <rosparam command="load" file="$(find remani_planner)/config/piper_param.yaml"
+              ns="/fake_mm"/>
+    <rosparam command="load" file="$(find remani_planner)/config/piper_param.yaml"
+              ns="/model_vis"/>
+    <rosparam command="load" file="$(find remani_planner)/config/piper_param.yaml"
+              ns="/map_generator"/>
+  </group>
+
+  <!-- Override parameters after the include so these test-only values win
+       over remani_planner_param.yaml inside advanced_param_sim.xml. -->
+  <param name="/remani_planner_node/grid_map/use_load_map" value="true"/>
+  <param name="/remani_planner_node/grid_map/use_global_map" value="true"/>
+  <param name="/remani_planner_node/grid_map/fuse_global_map" value="true"/>
+  <param name="/remani_planner_node/fsm/target_type" value="1"/>
+  <param name="/remani_planner_node/fsm/global_plan_dynamic_lookahead_time" value="1.5"/>
+  <param name="/remani_planner_node/fsm/global_plan_dynamic_check_interval" value="0.05"/>
+  <param name="/remani_planner_node/fsm/global_plan_dynamic_check_time_step" value="0.05"/>
+  <param name="/remani_planner_node/fsm/dynamic_local_replan_enable" value="true"/>
+  <param name="/remani_planner_node/fsm/dynamic_replan_hold_arm" value="true"/>
+  <param name="/remani_planner_node/fsm/dynamic_replan_horizon" value="2.0"/>
+  <param name="/remani_planner_node/fsm/dynamic_replan_handoff_time" value="0.30"/>
+  <param name="/remani_planner_node/fsm/dynamic_astar_search_time" value="0.45"/>
+  <param name="/remani_planner_node/fsm/dynamic_astar_replan_wall_time" value="0.60"/>
+  <param name="/remani_planner_node/fsm/global_plan_dynamic_replan_hold_time" value="0.35"/>
+  <param name="/remani_planner_node/fsm/global_plan_dynamic_clear_hold_time" value="0.30"/>
+  <param name="/remani_planner_node/fsm/global_plan_dynamic_emergency_max_distance" value="0.35"/>
+
+  <param name="/remani_planner_node/dynamic_point_flow/enable" value="true"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_mode" value="$(arg active_mode)"/>
+  <param name="/remani_planner_node/dynamic_point_flow/shadow_mode" value="false"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_replan" value="true"/>
+  <param name="/remani_planner_node/dynamic_point_flow/fail_safe_on_unavailable" value="true"/>
+  <param name="/remani_planner_node/dynamic_point_flow/topic" value="$(arg dynamic_points_topic)"/>
+  <param name="/remani_planner_node/dynamic_point_flow/shadow_check_interval" value="0.05"/>
+  <param name="/remani_planner_node/dynamic_point_flow/max_age" value="0.30"/>
+  <param name="/remani_planner_node/dynamic_point_flow/future_stamp_tolerance" value="0.05"/>
+  <param name="/remani_planner_node/dynamic_point_flow/max_prediction_time" value="2.0"/>
+  <param name="/remani_planner_node/dynamic_point_flow/max_point_speed" value="2.0"/>
+  <param name="/remani_planner_node/dynamic_point_flow/min_confidence" value="0.5"/>
+  <param name="/remani_planner_node/dynamic_point_flow/position_uncertainty" value="0.03"/>
+  <param name="/remani_planner_node/dynamic_point_flow/velocity_uncertainty" value="0.05"/>
+  <param name="/remani_planner_node/dynamic_point_flow/acceleration_bound" value="0.05"/>
+  <param name="/remani_planner_node/dynamic_point_flow/max_points" value="160"/>
+  <param name="/remani_planner_node/dynamic_point_flow/empty_clear_frames" value="3"/>
+  <param name="/remani_planner_node/dynamic_point_flow/require_world_frame" value="true"/>
+
+  <param name="/remani_planner_node/dynamic_point_flow/active_confirm_frames" value="2"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_emergency_ttc" value="0.45"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_immediate_ttc" value="0.65"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_slowdown_ttc" value="1.50"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_clear_hold_time" value="0.30"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_resume_scale" value="1.0"/>
+
+  <!-- Spatial union of the valid two-second velocity-prediction window. This is
+       the bridge that lets REMANI's existing A*/LBFGS planner move a candidate
+       away from the predicted obstacle instead of merely replanning the same
+       path. It remains disabled everywhere except this launch. -->
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_enable"
+         value="$(arg active_mode)"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_update_interval" value="0.10"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_horizon" value="2.0"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_time_step" value="0.15"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_extra_inflation" value="0.03"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_max_inflation" value="0.45"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_influence_distance" value="0.75"/>
+
+  <node pkg="remani_planner" type="moving_obstacles_node.py"
+        name="moving_obstacles_node" output="screen">
+    <param name="moving_count" value="1"/>
+    <rosparam param="moving_box_size">[0.4, 0.4, 0.6]</rosparam>
+    <param name="box_resolution" value="0.10"/>
+    <param name="pub_rate" value="10.0"/>
+    <param name="publish_merged" value="false"/>
+    <param name="dynamic_points_topic" value="$(arg dynamic_points_topic)"/>
+    <!-- Hold at y=-3.5 until the first executable trajectory, then cross the
+         nominal x-axis route once at a constant 0.75 m/s.  This makes the
+         point-flow velocity exact during the safety-critical encounter. -->
+    <param name="motion_mode" value="linear_crossing"/>
+    <param name="crossing_start_y" value="-3.5"/>
+    <param name="crossing_end_y" value="3.5"/>
+    <param name="crossing_speed" value="0.75"/>
+    <param name="crossing_x" value="2.0"/>
+    <param name="center_z" value="0.35"/>
+    <param name="sync_to_first_trajectory" value="true"/>
+  </node>
+
+  <node if="$(arg start_rviz)" name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find remani_planner)/launch/exp1.rviz"/>
+</launch>

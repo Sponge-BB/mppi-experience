@@ -1,0 +1,470 @@
+<launch>
+  <!-- 实车不使用模拟时间 -->
+  <param name="/use_sim_time" value="false" />
+
+  <!-- Load planner parameter file purely by reference -->
+  <arg name="exp_param_file" value="$(find remani_planner)/config/exp0_param.yaml"/>
+
+  <!-- Real-robot production profile. Diagnostics can be re-enabled one by one
+       from the command line without changing the control configuration. -->
+  <arg name="enable_rviz" default="false"/>
+  <arg name="enable_world_points" default="false"/>
+  <arg name="enable_model_vis" default="false"/>
+  <arg name="enable_transform_fusion" default="false"/>
+  <arg name="enable_fastlio_body_cloud" default="false"/>
+  <arg name="enable_heavy_visualization" default="false"/>
+  <arg name="enable_auto_icp_adjust" default="false"/>
+  <!-- The producer can remain in shadow for A/B tests. Active avoidance is a
+       separate rollback switch and defaults on for this fast-avoidance build. -->
+  <arg name="enable_dynamic_tracker_shadow" default="true"/>
+  <arg name="enable_dynamic_avoidance" default="true"/>
+  <arg name="dynamic_points_topic" default="/dynamic_points"/>
+  <arg name="planner_pcd_file" default="$(find mm_remani)/maps/exp0_planner.pcd"/>
+  <arg name="planner_pcd_preprocessed" default="true"/>
+  <arg name="real_lidar_topic" default="/livox/lidar"/>
+  <arg name="real_lidar_frame" default="livox_frame"/>
+  <arg name="lidar_offset_x" default="0.28"/>
+  <arg name="lidar_offset_y" default="0.0"/>
+  <arg name="lidar_offset_z" default="0.002"/>
+
+  <!-- Load robot description for RViz so it's available even if Gazebo boots late -->
+  <param name="robot_description" textfile="$(find my_description)/robot/mm.urdf" />
+
+  <!-- Boot the Gazebo mapped planner bridge -->
+  <include file="$(find mm_remani)/launch/run_planner_gazebo.launch">
+    <arg name="exp_param_file" value="$(arg exp_param_file)"/>
+    <arg name="enable_world_points" value="$(arg enable_world_points)"/>
+    <arg name="enable_model_vis" value="$(arg enable_model_vis)"/>
+    <arg name="enable_heavy_visualization" value="$(arg enable_heavy_visualization)"/>
+    <arg name="lidar_offset_x" value="$(arg lidar_offset_x)"/>
+    <arg name="lidar_offset_y" value="$(arg lidar_offset_y)"/>
+    <arg name="lidar_offset_z" value="$(arg lidar_offset_z)"/>
+  </include>
+
+  <!-- Override the shared planner defaults for this real-robot experiment.
+       Qualified moving tracks drive a short-horizon swept planning overlay.
+       Prediction loss falls back to the independent live occupancy/ESDF
+       safety chain instead of becoming another unconditional stop owner. -->
+  <param name="/remani_planner_node/dynamic_point_flow/enable"
+         value="$(eval arg('enable_dynamic_tracker_shadow') or arg('enable_dynamic_avoidance'))" type="bool"/>
+  <param name="/remani_planner_node/dynamic_point_flow/isolated_worker_enable"
+         value="true" type="bool"/>
+  <param name="/remani_planner_node/dynamic_point_flow/shadow_mode"
+         value="$(eval arg('enable_dynamic_tracker_shadow') and not arg('enable_dynamic_avoidance'))" type="bool"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_mode"
+         value="$(arg enable_dynamic_avoidance)" type="bool"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_replan"
+         value="$(arg enable_dynamic_avoidance)" type="bool"/>
+  <param name="/remani_planner_node/dynamic_point_flow/fail_safe_on_unavailable"
+         value="false" type="bool"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_confirm_frames"
+         value="2" type="int"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_immediate_ttc"
+         value="0.65" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_emergency_ttc"
+         value="0.45" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_slowdown_ttc"
+         value="1.50" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/active_clear_hold_time"
+         value="0.30" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/topic"
+         value="$(arg dynamic_points_topic)"/>
+  <param name="/remani_planner_node/dynamic_point_flow/shadow_check_interval"
+         value="0.05" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/max_age"
+         value="0.35" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/future_stamp_tolerance"
+         value="0.05" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/max_prediction_time"
+         value="2.0" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/max_point_speed"
+         value="2.0" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/min_confidence"
+         value="0.50" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/position_uncertainty"
+         value="0.08" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/velocity_uncertainty"
+         value="0.25" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/acceleration_bound"
+         value="0.75" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/max_points"
+         value="240" type="int"/>
+  <param name="/remani_planner_node/dynamic_point_flow/empty_clear_frames"
+         value="3" type="int"/>
+  <param name="/remani_planner_node/dynamic_point_flow/require_world_frame"
+         value="true" type="bool"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_enable"
+         value="$(arg enable_dynamic_avoidance)" type="bool"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_update_interval"
+         value="0.05" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_horizon"
+         value="1.20" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_time_step"
+         value="0.10" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_extra_inflation"
+         value="0.03" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_max_inflation"
+         value="0.30" type="double"/>
+  <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_influence_distance"
+         value="0.75" type="double"/>
+  <!-- =========================================================
+       实车三维雷达适配 (将你的 SLAM_WS 下的真实点云重定向给规划器)
+       ========================================================= -->
+  <!-- 1. 雷达数据由下方 nodelet 过滤管线处理后输出到 /velodyne_points，不再需要 raw relay -->
+  
+  <!-- 2. 雷达 TF 在文件末尾只发布一次 base_link -> real_lidar_frame。 -->
+
+  <!-- =========================================================
+       单独发布 world 坐标系的变换，将规划器的 world 链接到实车的 map
+       ========================================================= -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_map_broadcaster"
+        args="0 0 0 0 0 0 world map" />
+
+  <!-- =========================================================
+       补充底座的 TF 定位。
+       FAST-LIO2 通过 fastlio_to_odom.py 发布 odom→base_link，
+       此处 map→odom 用静态 identity（ICP 修正准备好后再替换）
+       ========================================================= -->
+  <!-- map→odom 不再用静态 identity，改为 ICP 动态修正: map→camera_init→odom -->
+
+  <!-- =========================================================
+       如果实车机械臂还没发数据，开启虚拟关节数据发送。
+       如果接了实物控制器的真实关节数据并上报，请在启动时加上 use_real_arm:=true
+       ========================================================= -->
+  <arg name="use_real_arm" default="true"/>
+  <arg name="use_gui" default="false"/> <!-- 改为true，即可弹出滑块界面调节机械 臂初始姿态 -->
+  
+  <!-- 使用带界面的联合状态发布器（或者普通发布器+默认初始值） -->
+  <group unless="$(arg use_real_arm)">
+    <!-- 当使用GUI界面时 -->
+    <node if="$(arg use_gui)" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="fake_joint_states">
+      <remap from="joint_states" to="/gazebo/joint_states" />
+    </node>
+    
+    <!-- 当不使用GUI时，使用写死的默认初始值 -->
+    <node unless="$(arg use_gui)" pkg="joint_state_publisher" type="joint_state_publisher" name="fake_joint_states">
+      <remap from="joint_states" to="/gazebo/joint_states" />
+      <rosparam param="zeros">
+        joint1: 0.0
+        joint2: 0.520979
+        joint3: -1.048914
+        joint4: 0.0
+        joint5: 0.947297
+        joint6: 0.0
+      </rosparam>
+    </node>
+  </group>
+
+  <!-- 如果使用真实机械臂，则将 Piper 底层的 joint_states_single 转化为整个系统需要的 /gazebo/joint_states -->
+  <node if="$(arg use_real_arm)" pkg="mm_remani" type="real_arm_joint_bridge.py" name="real_arm_joint_bridge" output="screen" />
+
+
+  <!-- =========================================================
+       统一全车限速配置 (覆盖原生环境中的死速度)
+       ========================================================= -->
+  <rosparam file="$(find mm_remani)/config/real_speed.yaml" command="load" />
+
+  <!-- =========================================================
+       预建三维地图: 全局规划
+       注意：piper_advanced_param.xml 中已设 global_plan=true、
+       use_global_map=true、fuse_global_map=true、use_load_map=true，这些在 node 私有命名空间内，
+       会覆盖 launch 文件顶层的同名参数。
+       如需在仿真中禁用，请到 piper_advanced_param.xml 改为 false。
+       ========================================================= -->
+  <!-- =========================================================
+       预建 PCD 地图加载 — 拍摄视频时禁用，纯用实时点云
+       ========================================================= -->
+  <arg name="robot_map_x" default="0"/>
+  <arg name="robot_map_y" default="0"/>
+  <arg name="robot_map_z" default="-0.075"/>
+  <arg name="map_roll"  default="0"/>
+  <arg name="map_pitch" default="0"/>
+  <arg name="map_yaw"   default="0"/>
+
+  <node pkg="mm_remani" type="publish_shifted_pcd.py" name="global_map_publisher" output="log">
+    <param name="pcd_file" value="$(arg planner_pcd_file)" />
+    <param name="input_is_preprocessed" value="$(arg planner_pcd_preprocessed)" type="bool" />
+    <param name="robot_map_x" value="$(arg robot_map_x)" />
+    <param name="robot_map_y" value="$(arg robot_map_y)" />
+    <param name="robot_map_z" value="$(arg robot_map_z)" />
+    <param name="map_roll"  value="$(arg map_roll)" />
+    <param name="map_pitch" value="$(arg map_pitch)" />
+    <param name="map_yaw"   value="$(arg map_yaw)" />
+    <!-- 28k points is already lightweight; keep the global-map display dense. -->
+    <param name="viz_stride" value="1" />
+    <param name="ground_min" value="0.13" />
+    <param name="height_max" value="1.70" />
+    <param name="voxel_res" value="0.08" />
+    <param name="min_voxel_points" value="4" />
+    <param name="outlier_filter_enable" value="true" />
+    <param name="outlier_filter_radius" value="0.08" />
+    <param name="outlier_filter_min_neighbors" value="20" />
+    <param name="odom_topic" value="/odom" />
+    <param name="adjust_pose_topic" value="/initialpose" />
+    <param name="manual_adjust_yaw" value="true" />
+    <param name="auto_icp_adjust" value="$(arg enable_auto_icp_adjust)" type="bool" />
+    <param name="icp_correction_topic" value="/map_to_odom" />
+    <param name="applied_correction_topic" value="/map_correction_applied" />
+    <param name="auto_icp_adjust_mode" value="absolute" />
+    <param name="auto_icp_adjust_gain" value="0.30" />
+    <param name="auto_icp_adjust_min_interval" value="2.0" />
+    <param name="auto_icp_adjust_min_samples" value="5" />
+    <param name="auto_icp_adjust_min_fitness" value="0.80" />
+    <param name="auto_icp_adjust_min_translation" value="0.003" />
+    <param name="auto_icp_adjust_min_yaw" value="0.002" />
+    <param name="auto_icp_adjust_max_residual_translation" value="0.60" />
+    <param name="auto_icp_adjust_max_residual_yaw" value="0.12" />
+    <param name="auto_icp_adjust_max_translation_std" value="0.025" />
+    <param name="auto_icp_adjust_max_yaw_std" value="0.008" />
+    <param name="auto_icp_adjust_max_translation_step" value="0.012" />
+    <param name="auto_icp_adjust_max_yaw_step" value="0.006" />
+    <param name="auto_icp_adjust_converged_translation" value="0.010" />
+    <param name="auto_icp_adjust_converged_yaw" value="0.0025" />
+    <param name="auto_icp_capture_reference_on_first_match" value="false" />
+    <param name="auto_icp_adjust_worse_tolerance" value="0.010" />
+    <param name="auto_icp_adjust_overshoot_hold_sec" value="5.0" />
+    <param name="auto_icp_adjust_yaw_error_weight" value="1.0" />
+    <param name="auto_icp_adjust_max_linear_speed" value="0.03" />
+    <param name="auto_icp_adjust_max_angular_speed" value="0.05" />
+    <param name="auto_icp_adjust_validate" value="true" />
+    <param name="auto_icp_adjust_min_improvement" value="0.001" />
+    <param name="auto_icp_adjust_max_fitness_drop" value="0.02" />
+  </node>
+
+  <!-- =========================================================
+       启动刚才咱们写的实车轨迹追踪节点 (Planner指令 => Cmd_vel)
+       并赋予速度和参数覆盖
+       ========================================================= -->
+  <node pkg="mm_remani" type="real_base_tracker.py" name="real_base_tracker" output="screen" />
+
+  <!-- =========================================================
+       补充四个轮子的静态 TF（因为真实底盘通常
+       不发送轮子转动的角度给RViz）
+       有了这四行，即使没有轮子的角度反馈，RViz里的车轮也能正常渲染出来
+       ========================================================= -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_fr_wheel" args="0.19000075 -0.2029993 -0.03000076 0 0 0 base_link fr_wheel"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_fl_wheel" args="0.18999925 0.2030007 -0.02999924 0 0 0 base_link fl_wheel"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_br_wheel" args="-0.19199925 -0.20300071 -0.03000076 0 0 0 base_link br_wheel"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_bl_wheel" args="-0.19200075 0.20299929 -0.02999924 0 0 0 base_link bl_wheel"/>
+
+  <!-- Run robot_state_publisher to convert joint states to TF for RViz -->
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <!-- 让机器人的状态发布器去听未经阉割的最全原始角度数据（包含了夹爪） -->
+    <remap from="joint_states" to="/gazebo/joint_states" />
+  </node>
+
+  <!-- Boot RViz (Using the exact same RViz setting file as planner for seamless visual debugging without duplicate files) -->
+  <!-- Note: Make sure the target Rviz fixed frame is set to Map or Odom -->
+  <node if="$(arg enable_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find mm_remani)/rviz/exp0_gazebo.rviz"/>
+  <node pkg="mm_controller" type="base_control.py" name="real_base_controller" output="screen">
+    <param name="read_timeout" value="0.02" />
+    <param name="write_timeout" value="0.05" />
+    <param name="send_rate" value="50.0" />
+    <param name="feedback_publish_rate" value="50.0" />
+    <param name="command_timeout" value="0.30" />
+  </node>
+  <!-- 轮式里程计 real_odom_publisher.py 已由 FAST-LIO-LOCALIZATION + fastlio_to_odom.py 替代 -->
+  <!-- =========================================================
+       零漂移 ICP 定位: 实时 LiDAR ↔ 预建 PCD 地图匹配
+       ========================================================= -->
+  <include file="$(find mm_remani)/launch/fastlio_localize_remani.launch">
+    <arg name="localization_frequency" value="1.5" />
+    <arg name="localization_threshold" value="0.80" />
+    <arg name="max_scan_odom_dt" value="0.0" />
+    <arg name="max_data_age" value="0.0" />
+    <arg name="max_correction_translation_step" value="0.15" />
+    <arg name="max_correction_yaw_step" value="0.15" />
+    <arg name="planar_localization" value="true" />
+    <arg name="map_to_odom_z" value="0.0" />
+    <arg name="publish_icp_tf" value="false" />
+    <arg name="enable_transform_fusion" value="$(arg enable_transform_fusion)" />
+    <arg name="publish_body_cloud" value="$(arg enable_fastlio_body_cloud)" />
+    <arg name="lidar_offset_x" value="$(arg lidar_offset_x)" />
+    <arg name="lidar_offset_y" value="$(arg lidar_offset_y)" />
+    <arg name="lidar_offset_z" value="$(arg lidar_offset_z)" />
+  </include>
+  
+  <!-- =========================================================
+       对接实车 Piper 机械臂的指令桥梁（REMANI 规划器 -> Piper 真实驱动）
+       此节点会将规划器的 joint_cmd 包装为您源码中 piper 期待的 joint_ctrl_single
+       ========================================================= -->
+  <node pkg="mm_controller" type="joint_cmd_bridge.py" name="joint_cmd_bridge" output="screen">
+    <param name="clamp_joint6" value="true" />
+    <param name="joint6_min" value="-0.35" />
+    <param name="joint6_max" value="0.35" />
+  </node>
+  <!-- =========================================================
+       启动真实 Piper 机械臂底层 CAN 驱动 (需先手动 sudo bash src/piper_ros/can_activate.sh can1)
+       ========================================================= -->
+  <include file="$(find piper)/launch/start_single_piper.launch">
+    <arg name="can_port" value="can1" />
+    <arg name="fixed_vel" value="15" />
+    <arg name="auto_reenable_on_drop" value="true" />
+    <arg name="auto_reenable_interval" value="1.0" />
+  </include>
+
+  <!-- =========================================================
+       启动 Livox MID360 激光雷达驱动 (livox_ros_driver2)
+       ========================================================= -->
+  <!-- <arg name="livox_bd_list" default="100000000000000"/>
+  <param name="xfer_format" value="0"/>
+  <param name="multi_topic" value="0"/>
+  <param name="data_src" value="0"/>
+  <param name="publish_freq" type="double" value="10.0"/>
+  <param name="output_data_type" value="0"/>
+  <param name="cmdline_str" type="string" value="$(arg livox_bd_list)"/>
+  <param name="user_config_path" type="string" value="/home/l/ws_livox/src/livox_ros_driver2/config/MID360_config.json"/>
+  <param name="frame_id" type="string" value="livox_frame"/>
+  <param name="enable_lidar_bag" type="bool" value="true"/>
+  <param name="enable_imu_bag" type="bool" value="true"/>
+
+  <node name="livox_lidar_publisher2" pkg="mm_remani" type="run_livox_mid360.sh"
+        required="true" output="log" args="$(arg livox_bd_list)"/> -->
+
+  <!-- =========================================================
+       对接真实 Livox MID360 激光雷达数据 — 话题转化与点云滤波
+       ========================================================= -->
+
+  <!-- 0x. C++ bridge: retain the scan stamp and keep only the newest frame. -->
+  <node pkg="mm_remani" type="livox_custom_to_pcl" name="custom_to_pcl" output="log">
+    <param name="input_topic" value="$(arg real_lidar_topic)" />
+    <param name="output_topic" value="/livox/lidar_pcl2" />
+    <param name="subscriber_queue_size" value="1" />
+    <param name="publisher_queue_size" value="1" />
+    <!-- MID360 uses tag bits 0..5 for adhesion, particles and other confidence flags.
+         Filter these marked points in the bridge so downstream PCL/GridMap work is reduced. -->
+    <param name="filter_low_confidence_tags" value="true" />
+    <param name="low_confidence_tag_mask" type="int" value="63" />
+  </node>
+
+  <!-- 0. nodelet 管理器 -->
+  <node pkg="nodelet" type="nodelet" name="pcl_manager_filter" args="manager" output="log" />
+
+  <!-- A) 基于高度的 PassThrough 滤波器：滤除地面点 -->
+  <!-- 考虑到雷达原点离地高度可能在 0.15~0.2 米左右，通过限制 z 轴将其下方的点（地面）剔除 -->
+  <!-- 注意：这里的 filter_limit_min 取决于你雷达到地面的距离，一般在 -0.1 到 -0.15 左右属于地面 -->
+  <node pkg="nodelet" type="nodelet" name="passthrough_z" args="load pcl/PassThrough pcl_manager_filter" output="log">
+    <remap from="~input" to="/livox/lidar_pcl2" />
+    <remap from="~output" to="/livox/lidar_no_ground" />
+    <param name="max_queue_size" value="1" />
+    <param name="filter_field_name" value="z" />
+    <param name="filter_limit_min" value="0.01" /> <!-- 设置最低高度阈值，低于此值认为是地面，此值根据实际偏置调节 -->
+    <param name="filter_limit_max" value="1.55" />   <!-- 设置最高有效高度 -->
+    <param name="filter_limit_negative" value="false" /> <!-- false表示保留在[min, max]范围内的点 -->
+  </node>
+
+  <!-- B) CropBox 滤波器：剔除包围自身车体的"矩形盲区"内的点云 -->
+  <node pkg="nodelet" type="nodelet" name="crop_box_filter" args="load pcl/CropBox pcl_manager_filter" output="log">
+    <remap from="~input" to="/livox/lidar_no_ground" />
+    <remap from="~output" to="/velodyne_points" />
+    <param name="max_queue_size" value="1" />
+
+    <!-- 这里的过滤框尺寸表示机器人本体（以及可能造成干扰的近处连杆）在雷达视野内的位置。请根据实车尺寸调整 -->
+    <param name="min_x" value="-0.8" />  <!-- 雷达后方 -->
+    <param name="max_x" value="0.05" />   <!-- 雷达前方 -->
+    <param name="min_y" value="-0.90" />  <!-- 雷达右侧/机械臂自车点 -->
+    <param name="max_y" value="0.40" />   <!-- 雷达左侧 -->
+    <param name="min_z" value="-0.01" />  <!-- 机器人的最下方 -->
+    <param name="max_z" value="0.7" />   <!-- 机器人的最上方 -->
+
+    <!-- negative 为 true 代表只剔除设定"框内"的点，保留框外所有点云 -->
+    <param name="negative" value="true" />
+  </node>
+
+  <!-- Separate process and queue from the planner. It removes static PCD
+       returns, clusters the live residual, estimates CV velocity, and emits
+       the point-flow schema x/y/z/vx/vy/vz/confidence/track_id. -->
+  <node if="$(eval arg('enable_dynamic_tracker_shadow') or arg('enable_dynamic_avoidance'))"
+        pkg="mm_remani" type="dynamic_obstacle_tracker_node"
+        name="dynamic_obstacle_tracker" output="log">
+    <param name="input_topic" value="/velodyne_points"/>
+    <param name="static_map_topic" value="/map_generator/global_cloud"/>
+    <param name="output_topic" value="$(arg dynamic_points_topic)"/>
+    <param name="world_frame" value="world"/>
+    <param name="require_static_map" value="true" type="bool"/>
+    <param name="tf_timeout" value="0.03" type="double"/>
+    <param name="max_cloud_age" value="0.30" type="double"/>
+    <param name="future_stamp_tolerance" value="0.05" type="double"/>
+    <param name="voxel_leaf_size" value="0.10" type="double"/>
+    <param name="static_map_leaf_size" value="0.08" type="double"/>
+    <param name="static_match_radius" value="0.12" type="double"/>
+    <param name="minimum_range" value="0.30" type="double"/>
+    <param name="maximum_range" value="6.0" type="double"/>
+    <param name="minimum_world_z" value="0.15" type="double"/>
+    <param name="maximum_world_z" value="1.70" type="double"/>
+    <param name="cluster_tolerance" value="0.32" type="double"/>
+    <param name="minimum_cluster_points" value="8" type="int"/>
+    <param name="maximum_cluster_points" value="1200" type="int"/>
+    <param name="maximum_cluster_extent" value="2.20" type="double"/>
+    <!-- Registration failure can make most of the scene look dynamic. In
+         shadow mode reject such a frame instead of publishing false tracks. -->
+    <param name="maximum_residual_points" value="800" type="int"/>
+    <param name="maximum_output_points" value="160" type="int"/>
+    <!-- Motion is estimated from a robust target-level centre, while the
+         complete cluster surface remains in /dynamic_points for collision.
+         Tall articulated targets use their middle/upper stable core so
+         alternating leg returns do not synthesize lateral velocity. -->
+    <param name="motion_center_trim_fraction" value="0.15" type="double"/>
+    <param name="motion_center_tall_target_min_height" value="0.65" type="double"/>
+    <param name="motion_center_stable_core_lower_height_ratio" value="0.35" type="double"/>
+    <param name="motion_center_stable_core_upper_height_ratio" value="0.90" type="double"/>
+    <param name="motion_center_minimum_stable_core_points" value="8" type="int"/>
+    <param name="association_gate" value="0.35" type="double"/>
+    <param name="association_position_allowance" value="0.12" type="double"/>
+    <param name="association_shape_weight" value="0.20" type="double"/>
+    <param name="maximum_extent_change" value="0.45" type="double"/>
+    <param name="maximum_point_count_ratio" value="4.0" type="double"/>
+    <param name="position_alpha" value="0.65" type="double"/>
+    <param name="velocity_alpha" value="0.30" type="double"/>
+    <!-- Continuous bounded-history regression suppresses scan-to-scan
+         centroid/gait oscillation after a track has coherent motion. -->
+    <param name="regression_velocity_weight" value="0.75" type="double"/>
+    <param name="motion_direction_alpha" value="0.30" type="double"/>
+    <param name="velocity_deadband" value="0.10" type="double"/>
+    <param name="maximum_track_speed" value="2.0" type="double"/>
+    <!-- A mature association is not necessarily a moving obstacle. Require
+         coherent planar motion before publishing it to the planner. -->
+    <param name="dynamic_enter_speed" value="0.22" type="double"/>
+    <param name="dynamic_exit_speed" value="0.10" type="double"/>
+    <param name="minimum_dynamic_displacement" value="0.10" type="double"/>
+    <param name="direction_consistency_cosine" value="0.60" type="double"/>
+    <param name="minimum_motion_duration" value="0.25" type="double"/>
+    <param name="motion_history_duration" value="0.60" type="double"/>
+    <param name="minimum_motion_efficiency" value="0.70" type="double"/>
+    <param name="minimum_direction_consistency_fraction" value="0.75" type="double"/>
+    <param name="maximum_motion_step_speed_ratio" value="1.25" type="double"/>
+    <param name="minimum_track_dt" value="0.03" type="double"/>
+    <param name="maximum_track_dt" value="0.35" type="double"/>
+    <param name="minimum_confirmed_hits" value="4" type="int"/>
+    <param name="minimum_dynamic_hits" value="3" type="int"/>
+    <!-- Eight-point clusters are retained by live occupancy, but predictive
+         velocity requires a denser return to avoid split/merge artefacts. -->
+    <param name="minimum_motion_cluster_points" value="15" type="int"/>
+    <param name="minimum_stationary_hits" value="3" type="int"/>
+    <!-- Learn recurring, stationary PCD residuals in world coordinates.  The
+         live ESDF still contains them; only false velocity prediction is
+         suppressed.  A point leaving the 0.25m anchor can qualify as moving. -->
+    <param name="minimum_stationary_background_hits" value="5" type="int"/>
+    <param name="stationary_background_minimum_duration" value="0.50" type="double"/>
+    <param name="stationary_background_maximum_speed" value="0.10" type="double"/>
+    <param name="stationary_background_maximum_displacement" value="0.06" type="double"/>
+    <param name="stationary_background_merge_radius" value="0.20" type="double"/>
+    <param name="stationary_background_release_radius" value="0.25" type="double"/>
+    <param name="stationary_background_dwell_duration" value="2.0" type="double"/>
+    <param name="stationary_background_dwell_radius" value="0.30" type="double"/>
+    <param name="maximum_stationary_background_anchors" value="128" type="int"/>
+    <param name="maximum_missed_frames" value="3" type="int"/>
+    <!-- Start closed and open only after a stable scene.  A broad PCD/TF
+         mismatch produces many simultaneous moving residual clusters; in
+         that case suppress point-flow and retain the independent live-map
+         occupancy/ESDF safety path. -->
+    <param name="health_maximum_motion_tracks" value="3" type="int"/>
+    <param name="health_recovery_frames" value="15" type="int"/>
+    <param name="health_degradation_frames" value="3" type="int"/>
+  </node>
+
+  <!-- Real LiDAR has one parent only. Do not attach it through the URDF's
+       legacy VLP16 frames: doing so made velodyne alternate between two TFs. -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_real_lidar_tf"
+        args="$(arg lidar_offset_x) $(arg lidar_offset_y) $(arg lidar_offset_z) 0 0 0 base_link $(arg real_lidar_frame)" />
+</launch>

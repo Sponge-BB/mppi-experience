@@ -1,0 +1,93 @@
+<launch>
+  <!-- FAST-LIO2 + ICP scan-to-map localization for REMANI planner -->
+  <arg name="localization_frequency" default="1.5" />
+  <arg name="localization_threshold" default="0.80" />
+  <arg name="max_scan_odom_dt" default="0.0" />
+  <arg name="max_data_age" default="0.0" />
+  <arg name="max_correction_translation_step" default="0.15" />
+  <arg name="max_correction_yaw_step" default="0.15" />
+  <arg name="planar_localization" default="true" />
+  <arg name="map_to_odom_z" default="0.0" />
+  <arg name="publish_icp_tf" default="false" />
+  <arg name="enable_transform_fusion" default="true" />
+  <arg name="publish_body_cloud" default="true" />
+  <arg name="lidar_offset_x" default="0.28" />
+  <arg name="lidar_offset_y" default="0.0" />
+  <arg name="lidar_offset_z" default="0.002" />
+  <arg name="initial_x" default="0" />
+  <arg name="initial_y" default="0" />
+  <arg name="initial_z" default="0" />
+  <arg name="initial_yaw" default="0" />
+  <arg name="initial_pose_topic" default="/fast_lio_initialpose" />
+
+  <rosparam command="load" file="$(find fast_lio_localization)/config/mid360.yaml" />
+  <param name="feature_extract_enable" type="bool" value="0"/>
+  <param name="point_filter_num" type="int" value="3"/>
+  <param name="max_iteration" type="int" value="3" />
+  <param name="filter_size_surf" type="double" value="0.5" />
+  <param name="filter_size_map" type="double" value="0.5" />
+  <param name="cube_side_length" type="double" value="1000" />
+  <param name="runtime_pos_log_enable" type="bool" value="0" />
+  <param name="pcd_save_en" type="bool" value="false"/>
+  <!-- This topic is not needed by REMANI. The real-robot entry point turns it
+       off so FAST-LIO does not serialize an unconsumed body-frame cloud. -->
+  <param name="publish/scan_bodyframe_pub_en" type="bool" value="$(arg publish_body_cloud)"/>
+
+  <!-- 1. FAST-LIO2 odometry -->
+  <node pkg="fast_lio" type="fastlio_mapping" name="laserMapping" output="screen" />
+
+  <!-- 2. Bridge: /Odometry → /odom -->
+  <node pkg="mm_remani" type="fastlio_to_odom.py" name="fastlio_to_odom" output="screen">
+    <param name="planar_base_link" value="true" />
+    <param name="base_z" value="0.115" />
+    <param name="lidar_offset_x" value="$(arg lidar_offset_x)" />
+    <param name="lidar_offset_y" value="$(arg lidar_offset_y)" />
+    <param name="lidar_offset_z" value="$(arg lidar_offset_z)" />
+    <param name="twist_filter_alpha" value="0.35" />
+    <param name="max_derived_linear_speed" value="1.0" />
+    <param name="max_derived_angular_speed" value="3.0" />
+  </node>
+
+  <!-- 3. ICP localization (corrects odometry drift) -->
+  <node pkg="fast_lio_localization" type="global_localization.py" name="global_localization" output="screen">
+    <param name="localization_frequency" value="$(arg localization_frequency)" />
+    <param name="localization_threshold" value="$(arg localization_threshold)" />
+    <param name="max_scan_odom_dt" value="$(arg max_scan_odom_dt)" />
+    <param name="max_data_age" value="$(arg max_data_age)" />
+    <param name="max_correction_translation_step" value="$(arg max_correction_translation_step)" />
+    <param name="max_correction_yaw_step" value="$(arg max_correction_yaw_step)" />
+    <param name="planar_localization" value="$(arg planar_localization)" />
+    <param name="map_to_odom_z" value="$(arg map_to_odom_z)" />
+    <param name="map_voxel_size" value="0.4" />
+    <param name="scan_voxel_size" value="0.1" />
+    <param name="icp_max_iteration" value="20" />
+    <param name="min_submap_points" value="100" />
+    <param name="icp_log_throttle_sec" value="10.0" />
+    <param name="initial_pose_topic" value="$(arg initial_pose_topic)" />
+    <param name="map_correction_applied_topic" value="/map_correction_applied" />
+  </node>
+  <node if="$(arg enable_transform_fusion)" pkg="fast_lio_localization" type="transform_fusion.py" name="transform_fusion" output="screen">
+    <param name="publish_frequency" value="50.0" />
+    <param name="map_frame" value="map" />
+    <param name="odom_frame" value="camera_init" />
+    <param name="base_frame" value="body" />
+    <param name="max_correction_age" value="1.5" />
+    <param name="publish_tf" value="$(arg publish_icp_tf)" />
+  </node>
+
+  <!-- 4. Auto-publish initial pose 5s after launch (gives ICP nodes time to init) -->
+  <node pkg="fast_lio_localization" type="publish_initial_pose.py" name="pub_initial_pose"
+        args="$(arg initial_x) $(arg initial_y) $(arg initial_z) $(arg initial_yaw) 0 0"
+        launch-prefix="bash -c 'sleep 5; exec $0 $@'">
+    <param name="topic" value="$(arg initial_pose_topic)" />
+  </node>
+
+  <!-- 5. TF bridges -->
+  <!-- Keep TF and planner/collision model in the same odom/world frame.
+       ICP correction is kept as diagnostics by default, not injected into TF. -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_camera_init"
+        args="0 0 0 0 0 0 map camera_init" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="camera_init_to_odom"
+        args="0 0 0 0 0 0 camera_init odom" />
+
+</launch>
