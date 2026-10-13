@@ -1,0 +1,35 @@
+{
+  "shared_parameter_count": 534,
+  "parameter_differences": {},
+  "sources_sha256": {
+    "/home/l/remani_ws/src/mm_remani/launch/exp0_real.launch": "7ab310d833c08464e18565665f7cb0ffb8006548d825ac21f5f4e106d5f65e81",
+    "/home/l/remani_ws/src/mm_remani/config/real_speed.yaml": "f636b271c2278e6fc0404bf9204a2862d1707caf8df43666577e009eee948df0",
+    "/home/l/remani_ws/src/my_description/robot/mm.urdf": "a60563d176db315181fd2aa11d5e61a9aa3f4722ff5d96d75bdfdf3325941069",
+    "/home/l/remani_ws/src/mm_gazebo/world/world_2.world": "67e7a714609588e3220f88a661c6194d20b5b0f3940e88edf3841ba6791251e8"
+  },
+  "nodes": [
+    "gazebo",
+    "spawn_mm_robot",
+    "controller_spawner",
+    "robot_state_publisher",
+    "filter_joint_states",
+    "remani_planner_node",
+    "mm_controller_node",
+    "real_base_tracker",
+    "pcl_manager_filter",
+    "passthrough_z",
+    "crop_box_filter",
+    "dynamic_obstacle_tracker",
+    "validation_world_to_map",
+    "validation_map_to_odom",
+    "validation_io"
+  ],
+  "differences": [
+    "Gazebo ground-truth localization, not FAST-LIO/ICP",
+    "approximate 720x16 ray sensor, 10 Hz, not a MID360 simulator",
+    "physical URDF wheel radius 0.08 / track 0.411 retained; planner uses original real profile",
+    "static map sampled from Gazebo collision geometry, not the real-room PCD",
+    "simulated arm position control with real-profile command slew; not CAN motor identification"
+  ],
+  "safety": "isolated localhost ROS master required; no hardware drivers; /sim/cmd_vel only"
+}

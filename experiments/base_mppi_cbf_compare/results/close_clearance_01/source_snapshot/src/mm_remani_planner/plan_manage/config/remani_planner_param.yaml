@@ -1,0 +1,169 @@
+search:
+  oneshot_check_len: 0.02  # Interval for checking whether the RS/Debain curve obtained by oneshot collides
+  oneshot_range    : 1.5  # oneshot range
+
+  traj_forward_penalty     : 1.0 # Forward penalty coefficient
+  traj_back_penalty        : 3.0 # Backward penalty coefficient
+  traj_gear_switch_penalty : 10.0  # Penalty for switching between forward and reverse gears
+  traj_steer_penalty       : 4.0  # Steering penalty
+  traj_steer_change_penalty: 1.5  # Penalty for steering change
+
+  try_astar_times: 10 # Use whole-body RRT after try_astar_times consecutive planning failures
+
+  yaw_resolution    : 3.15   # yaw sampling interval
+  max_arc           : 0.5    # Maximum forward search displacement
+  min_turning_radius: 0.2    # Minimum turning radius
+  lambda_heu        : 5      # Coefficient for greedy search, multiplied by h
+  max_seach_time    : 0.9    # Maximum time for Hybrid A* search
+  check_num         : 16     # Used to check collision when Hybrid A* expands the state
+  dist_resolution   : 0.6    # Expected distance between path points given to the backend
+  sample_time       : 0.1    # Sampling time when given to the backend
+  curvatureDisCoe   : 0.4    # Angle coefficient for time allocation
+  allocate_num      : 100000 # Number of allocated nodes (maximum number of nodes visited)
+  visualize_search  : true   # Debug markers add avoidable overhead during live planning
+  search_vis_stride : 1      # Publish one marker point every N expanded nodes
+  search_vis_max_points: 3000 # Cap RViz search markers to avoid heavy debug load
+  search_vis_publish_interval: 50 # Refresh RViz after this many recorded nodes
+  # manipulator sample
+  goal_rate: 0.4             # Probability for RRT to sample the end point
+  max_loop_num: 5000         # Maximum number of RRT sampling times
+  max_sample_time: 0.2       # Maximum time for whole-body RRT
+  max_mani_search_time: 0.12 # Maximum time for manipulator search
+  manipulator_velocity_utilization: 0.60
+  manipulator_acceleration_utilization: 0.60
+  manipulator_time_safety_factor: 1.15
+
+controller:
+  yaw_hold_speed: 0.04
+  curvature_ff_start_speed: 0.04
+  curvature_ff_full_speed: 0.10
+  max_feedforward_omega: 0.60
+  odom_timeout: 0.25
+  virtual_time_min_reference_speed: 0.05
+  virtual_time_scale_rise_rate: 0.80
+  virtual_time_scale_fall_rate: 2.00
+  terminal_yaw_sample_window: 1.0
+  terminal_yaw_min_speed: 0.01
+
+optimization:
+  weight_obstacle          : 50000.0  # Weight for obstacle
+  weight_manipulator_hold  : 2.0      # Prefer the current pose without blocking necessary clearance motion
+  manipulator_hold_disable_path_deviation: 0.35 # Disable hold when the front end found a real clearance maneuver
+  max_iterations          : 300       # Bound optimizer work so callbacks remain responsive
+  max_wall_time           : 1.5       # Per optimization wall-time budget (s)
+  weight_manipulator_self       : 1000.0   # Weight for self collision
+  weight_base_feasibility       : 100.0    # Weight for base feasibility
+  weight_manipulator_feasibility: 100.0    # Weight for manipulator feasibility
+  weight_time                   : 1.0     # Weight for time
+  
+  ground_safe_dis        : 0.03           # Safe distance from the ground
+  safe_margin            : 0.10           # General safe margin
+  safe_margin_mani       : 0.10           # Safe margin for the manipulator
+  self_safe_margin       : 0.10           # Safe margin for self
+  ground_safe_margin     : 0.03           # Safe margin from the ground
+
+  mobile_base_opt_gear: true              # Whether to optimize the gear
+  constrain_points_perPiece: 16           # Constraint points per piece
+  dense_sample_resolution: 16             # Resolution for dense sampling
+  
+fsm:
+  target_type  : 1            # 1: manual set 2D goal; 2: preset targets, pass through waypoint in order
+  capture_startup_standby: false
+  manual_use_work_arm_waypoint: false
+  manual_work_arm_waypoint_id: 0
+  manual_target_end_arm_standby: true
+  manual_restore_standby_after_goal: true
+  manual_restore_tolerance: 0.05
+  time_for_gripper: 0.05      # Time for the gripper to grip things between path points
+
+  thresh_replan_time: 2.5     # Threshold for replanning time
+  replan_trajectory_time: 0.4 # the expected max time of replanning trajectory, greater than max replan time
+  replan_feedback_position_threshold: 0.08 # Feedback handoff threshold for the real base (m)
+  replan_feedback_yaw_threshold: 0.15      # Feedback handoff threshold for the real base (rad)
+  replan_feedback_arm_threshold: 0.10      # Use measured arm state when a rolling handoff drifts (rad)
+  goal_position_tolerance: 0.10
+  goal_yaw_tolerance: 0.15
+  goal_arm_tolerance: 0.12
+  goal_yaw_alignment_timeout: 8.0
+  actual_state_collision_check_interval: 0.05
+  actual_base_emergency_margin: 0.01
+  esdf_freshness_wait_timeout: 0.75  # monotonic watchdog; timeout requests sync fallback but never releases stale planning
+  # Dynamic topology repair is deliberately shorter than the global route.
+  # Disable this switch for an immediate rollback to the legacy full-route A*.
+  dynamic_local_replan_enable: true
+  dynamic_replan_hold_arm: true
+  dynamic_replan_horizon: 2.0
+  dynamic_replan_handoff_time: 0.30
+  dynamic_astar_search_time: 0.45
+  dynamic_astar_replan_wall_time: 0.60
+  global_plan_dynamic_lookahead_distance: 2.0
+  global_plan_dynamic_far_sample_distance: 0.10
+  global_plan_dynamic_immediate_confirm_distance: 1.0
+  global_plan_dynamic_confirm_frames: 2
+  global_plan_dynamic_confirm_timeout: 0.60
+  global_plan_dynamic_clear_hold_time: 0.80
+  # Debounce only repeated checks from the same live-map generation. A newer
+  # observation that invalidates the published candidate bypasses this hold.
+  global_plan_dynamic_replan_hold_time: 0.35
+  global_plan_dynamic_same_obstacle_radius: 0.45
+  # First deform the old trajectory briefly, then enter A* without a long blind wait.
+  global_plan_dynamic_slowdown_distance: 2.0
+  global_plan_dynamic_slowdown_min_speed: 0.08
+  global_plan_dynamic_slowdown_max_speed: 0.20
+  global_plan_dynamic_emergency_deceleration: 0.35
+  global_plan_dynamic_emergency_reaction_time: 0.15
+  global_plan_dynamic_emergency_margin: 0.05
+  global_plan_dynamic_emergency_min_distance: 0.15
+  global_plan_dynamic_emergency_max_distance: 0.22
+  controller_progress_timeout: 0.50
+  global_plan_trial_times: 5  # Attempts per global planning cycle before yielding callbacks
+  global_plan_max_failures: 5 # Give up an unreachable manual goal after this many failed cycles
+  global_plan_max_wall_time: 3.0
+  rear_goal_plan_trial_times: 3
+  rear_goal_plan_max_failures: 3
+  rear_goal_plan_distance: 0.50
+  rear_goal_plan_cos: -0.20
+  planning_horizon: 5.0       # Planning horizon (恢复为5.0，依靠前端A*作长距离导航)
+  global_plan: true           # Whether to use global plan
+  emergency_time: 1.5         # greater than max replan time
+
+grid_map:
+  use_load_map: false     # Whether to use simulation map
+  use_global_map: true # Whether to use global map
+  dynamic_static_match_radius: 0.075
+  # A Livox scan may not send a later free ray through the exact voxel where a
+  # moving person was observed. Expire only non-static endpoint voxels after
+  # this many successfully fused scans without re-observation. Sensor loss
+  # does not advance the counter, and persistent PCD occupancy is untouched.
+  live_obstacle_expiry_enable: true
+  live_obstacle_max_missed_fusions: 4
+  visualization_interval: 0.10
+  esdf_visualization_stride: 1
+  # Bound map-internal data parallelism so the planner shortens each blocking
+  # map update without consuming every CPU core needed by control/perception.
+  parallel_threads: 3
+  parallel_voxel_threshold: 50000
+  enable_performance_diagnostics: true
+  occupancy_warn_ms: 50.0
+  esdf_warn_ms: 50.0
+  performance_log_interval: 5.0
+  # Live/local ESDF is computed from an immutable occupancy snapshot outside
+  # the default ROS callback queue. Set false for an immediate baseline rollback.
+  async_esdf_enable: true
+  async_esdf_max_result_age: 0.75
+  # A static PCD supplies global geometry, but it is not evidence that the
+  # live LiDAR/occupancy chain is healthy. A scan older than these deadlines is
+  # never fused. Loss of fresh, finite, transformable live input trips the
+  # existing planner perception-stop input after the startup grace period;
+  # ground/self-filtered frames refresh health without clearing occupancy.
+  live_lidar_health_monitor_enable: true
+  live_lidar_pending_max_age: 0.35
+  live_lidar_message_max_age: 0.50
+  live_lidar_future_tolerance: 0.05
+  live_lidar_timeout: 0.75
+  live_lidar_startup_grace: 5.0
+
+dynamic_point_flow:
+  # Runtime rollback switch: false returns prediction callbacks to the legacy
+  # single ROS queue without reverting or rebuilding code.
+  isolated_worker_enable: true

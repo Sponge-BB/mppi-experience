@@ -1,0 +1,46 @@
+{
+  "started": "2026-09-28T20:33:03+0800",
+  "platform": "Linux-5.10.216-tegra-aarch64-with-glibc2.29",
+  "python": "3.8.10 (default, Mar 18 2025, 20:04:55) \n[GCC 9.4.0]",
+  "numpy": "1.24.4",
+  "matplotlib": "3.1.2",
+  "command": [
+    "/home/l/remani_ws/experiments/mppi_cbf_validation/results/full_01/benchmark",
+    "/home/l/remani_ws/experiments/mppi_cbf_validation/results/full_01",
+    "/home/l/remani_ws/experiments/mppi_cbf_validation/results/full_01/geometry.csv",
+    "3",
+    "256",
+    "empty,near_miss,new_static,crossing,delayed_crossing,blocked,workspace_uncertainty,late_intrusion"
+  ],
+  "build": [
+    "g++",
+    "-std=c++17",
+    "-O3",
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic",
+    "/home/l/remani_ws/experiments/mppi_cbf_validation/benchmark.cpp",
+    "-o",
+    "/home/l/remani_ws/experiments/mppi_cbf_validation/results/full_01/benchmark"
+  ],
+  "seeds": 3,
+  "samples": 256,
+  "sources_sha256": {
+    "experiments/mppi_cbf_validation/benchmark.cpp": "d0d361359282e67433f1c9db58f662600d26d81e7ac064e45cbe01772c14d797",
+    "experiments/mppi_cbf_validation/run.py": "574921e31190449fd6c86fe58693de962bd86aee504b836e7a1204abc7e132aa",
+    "src/mm_remani_planner/plan_manage/config/piper_param.yaml": "0a80105ed6adc5aec2c54b6c49b77b54a0f81fb9137248732b33a47413a862a3",
+    "src/mm_remani_planner/plan_manage/config/exp0_param.yaml": "c55b18e65cc862e6f33e650814ad9682e79e1917b34b7ccc0dd628535f208188",
+    "src/mm_remani/config/real_speed.yaml": "f636b271c2278e6fc0404bf9204a2862d1707caf8df43666577e009eee948df0"
+  },
+  "limits": {
+    "vmax": 0.3,
+    "wmax": 0.8,
+    "acceleration": 0.35,
+    "angular_acceleration": 1.0
+  },
+  "control_dt": 0.05,
+  "rollout_dt": 0.1,
+  "horizon_steps": 18,
+  "assumed_actuator_tau": 0.12,
+  "scope": "synthetic closed-loop screen; no native REMANI A/B; no ROS or hardware writes"
+}
