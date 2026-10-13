@@ -1,0 +1,60 @@
+{
+  "checks": "PASS",
+  "production_source_files_unchanged": 98,
+  "same_native_parameters_all_modes": true,
+  "trials": [
+    {
+      "trial": "static_mppi",
+      "max_wheel_speed": 0.2295999919745993,
+      "max_wheel_accel": 0.2975000000000044,
+      "plant_loop_max_dt": 0.0362782279989915,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "static_mppi_cbf",
+      "max_wheel_speed": 0.22959278579158207,
+      "max_wheel_accel": 0.2975000000000043,
+      "plant_loop_max_dt": 0.0390152539985138,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0,
+      "qp_replay": [
+        {
+          "file": "first_qp_failure.npz",
+          "t": 15.97833634999995,
+          "state": [
+            0.9969416137957828,
+            0.1506139956112716,
+            1.0341802886175384,
+            0.17032169108119904,
+            0.07096769263387734
+          ],
+          "minimum_barrier_h": 0.06326298164148966,
+          "minimum_margin_clearance_m": 0.06326298164148966,
+          "nominal_min_residual": -0.0005727565483150464,
+          "zero_min_residual": -0.0002565121835721228,
+          "feasible_samples_of_1681": 0.0,
+          "best_sample_residual": -0.0002477504111481964,
+          "best_sample_v": -0.2162637362637363,
+          "best_sample_w": 0.0720879120879121,
+          "interpretation": "Finite command-grid check is diagnostic, not proof of continuous infeasibility. Negative margin clearance means conservative safety-envelope overlap, not necessarily geometric collision."
+        }
+      ]
+    },
+    {
+      "trial": "static_remani",
+      "max_wheel_speed": 0.2295999903364836,
+      "max_wheel_accel": 0.29750000000000143,
+      "plant_loop_max_dt": 0.025767899001948535,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    }
+  ],
+  "limitations": [
+    "Only single runs per combination; no statistical success-rate claim",
+    "Synthetic sensor has perfect pose, no occlusion/noise; plant is numerical, not Gazebo",
+    "CBF finite-difference sequential QP has no continuous-time global safety guarantee",
+    "Post-filter native speed limit can change the checked action; stop_unverified is not a proof about the final applied command",
+    "MPPI uses a conservative 2D measured-cloud distance field, not the native 3D ESDF collision representation"
+  ]
+}
