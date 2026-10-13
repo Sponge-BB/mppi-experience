@@ -16,7 +16,7 @@
 - [上传范围与使用注意](PUBLICATION_SCOPE.md)
 - [文件完整性清单（SHA-256）](UPLOAD_MANIFEST.json)
 
-`experiments/` 保留各版本实验脚本、参数、状态/障碍物/参考记录、检查报告、搜索快照、PNG/GIF，
+`experiments/` 保留各版本实验脚本、参数、状态/障碍物/参考记录、检查报告、搜索快照、PNG/GIF 和实验规划器输出日志，
 包括中途失败和被否决的开发版本。请从各版本 README 进入，不要只看成功动画。
 
 ## 目录
