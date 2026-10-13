@@ -1,0 +1,74 @@
+{
+  "checks": "PASS",
+  "production_source_files_unchanged": 98,
+  "same_native_parameters_all_modes": true,
+  "trials": [
+    {
+      "trial": "crossing_mppi",
+      "max_wheel_speed": 0.2294995017625873,
+      "max_wheel_accel": 0.29750000000000415,
+      "plant_loop_max_dt": 0.04095609499927377,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0,
+      "shadow_samples": 222,
+      "shadow_nonzero_applied": 0
+    },
+    {
+      "trial": "crossing_remani",
+      "max_wheel_speed": 0.2295996634321196,
+      "max_wheel_accel": 0.2975000000000028,
+      "plant_loop_max_dt": 0.03156899299938232,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0,
+      "shadow_samples": 0,
+      "shadow_nonzero_applied": 0
+    },
+    {
+      "trial": "empty_mppi",
+      "max_wheel_speed": 0.22943578690333807,
+      "max_wheel_accel": 0.29750000000000404,
+      "plant_loop_max_dt": 0.03878033500222955,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0,
+      "shadow_samples": 0,
+      "shadow_nonzero_applied": 0
+    },
+    {
+      "trial": "empty_remani",
+      "max_wheel_speed": 0.22959732579015624,
+      "max_wheel_accel": 0.2975000000000006,
+      "plant_loop_max_dt": 0.03435389100013708,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0,
+      "shadow_samples": 0,
+      "shadow_nonzero_applied": 0
+    },
+    {
+      "trial": "static_mppi",
+      "max_wheel_speed": 0.22959819238172152,
+      "max_wheel_accel": 0.2975000000000043,
+      "plant_loop_max_dt": 0.044085746001655934,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0,
+      "shadow_samples": 19,
+      "shadow_nonzero_applied": 0
+    },
+    {
+      "trial": "static_remani",
+      "max_wheel_speed": 0.22959999999689706,
+      "max_wheel_accel": 0.29750000000000076,
+      "plant_loop_max_dt": 0.03727543500099273,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0,
+      "shadow_samples": 0,
+      "shadow_nonzero_applied": 0
+    }
+  ],
+  "limitations": [
+    "Only single runs per combination; no statistical success-rate claim",
+    "Synthetic sensor has perfect pose, no occlusion/noise; plant is numerical, not Gazebo",
+    "CBF finite-difference sequential QP has no continuous-time global safety guarantee",
+    "Post-filter native speed limit can change the checked action; stop_unverified is not a proof about the final applied command",
+    "MPPI uses a conservative 2D measured-cloud distance field, not the native 3D ESDF collision representation"
+  ]
+}

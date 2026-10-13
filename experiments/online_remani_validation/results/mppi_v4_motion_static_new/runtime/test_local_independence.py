@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""Held original reference: no native replanning, ideal synthetic measurements.
+This isolates local ability; it is NOT a full REMANI or safety-chain test.
+"""
+import argparse
+import ctypes as ct
+import json
+from pathlib import Path
+import numpy as np
+from test_mppi_v2 import Controller,DP,ptr
+
+def trial(build,fixture,scene):
+    ctrl=Controller(build,fixture)
+    x=np.linspace(0,3,301);v=np.minimum(.18,.8*(3-x))
+    reference=np.ascontiguousarray(np.column_stack((x,x*0,x*0,v)))
+    state=np.zeros(5);trace=[];routes=[];anchor=None
+    body=np.atleast_2d(np.loadtxt(fixture/'geometry.csv',delimiter=','))
+    xx,yy=np.meshgrid(-7.5+.05*np.arange(300),-5.+.05*np.arange(200))
+    if hasattr(ctrl.lib,'online_local_route'):
+        ctrl.lib.online_local_route.argtypes=[ct.c_void_p,DP,ct.c_int]
+        ctrl.lib.online_local_route.restype=ct.c_int
+    reached=False
+    for k in range(900):
+        t=k*.05
+        if anchor is None and state[0]>=.1:anchor=t
+        obstacle=None
+        if scene=='static' and t>=3.:obstacle=[1.8,0.,0.,0.,.23,0.]
+        if scene=='crossing' and anchor is not None and 1.<=t-anchor<=14.:
+            obstacle=[1.65,-1.6+.26*(t-anchor-1.),0.,.26,.23,1.]
+        field=np.minimum(2.-yy,yy+2.)
+        if obstacle is not None:field=np.minimum(field,np.hypot(xx-obstacle[0],yy-obstacle[1])-obstacle[4])
+        ctrl.field=np.ascontiguousarray(np.maximum(0.,field-np.sqrt(2)*.05))
+        obs=np.array([obstacle]) if obstacle is not None and scene=='crossing' else np.empty((0,6))
+        if len(obs):obs[:,:2]-=.04*obs[:,2:4] # Controller helper declares a 40 ms observation age.
+        command=ctrl.step(state,reference,obs);ctrl.plant(state,command)
+        clearance=1e3
+        for bx,by,r in body:
+            px=state[0]+np.cos(state[2])*bx-np.sin(state[2])*by
+            py=state[1]+np.sin(state[2])*bx+np.cos(state[2])*by
+            clearance=min(clearance,2.-abs(py)-r)
+            if obstacle is not None:
+                # Evaluate obstacle at the next plant time as well.
+                ox=obstacle[0]+.05*obstacle[2];oy=obstacle[1]+.05*obstacle[3]
+                clearance=min(clearance,np.hypot(px-ox,py-oy)-r-obstacle[4])
+        trace.append([t,*state,*command,clearance,*(obstacle[:2] if obstacle else [None,None])])
+        if k%10==0 and hasattr(ctrl.lib,'online_local_route'):
+            points=np.zeros((1000,2));n=ctrl.lib.online_local_route(ctrl.handle,ptr(points),len(points))
+            routes.append({'t':t,'points':points[:n].tolist()})
+        if np.linalg.norm(state[:2]-reference[-1,:2])<.05 and abs(state[2])<.1 and abs(state[3])<.05:
+            reached=True;break
+    ctrl.close();a=np.array([r[:9] for r in trace],dtype=float)
+    return {'scene':scene,'build':str(build),'reached':reached,'duration_s':len(trace)*.05,
+            'min_clearance_m':float(a[:,8].min()),'reverse_distance_m':float(np.maximum(0,-a[:,4]).sum()*.05),
+            'low_speed_s':float(np.sum(np.abs(a[:,4])<.02)*.05),'kernel_p95_ms':float(np.percentile(ctrl.ms,95)),
+            'reference_replacements':0,'trace':trace,'routes':routes}
+
+def render(out,results):
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Circle
+    fig,axes=plt.subplots(1,2,figsize=(10,4))
+    for ax,scene in zip(axes,('static','crossing')):
+        ax.plot([0,3],[0,0],'--',c='.7',label='Unchanged reference')
+        for r in results:
+            if r['scene']!=scene:continue
+            a=np.array([z[:9] for z in r['trace']]);label=Path(r['build']).name
+            ax.plot(a[:,1],a[:,2],label=label+(' (goal)' if r['reached'] else ' (timeout)'))
+        ax.add_patch(Circle((1.8,0) if scene=='static' else (1.65,0),.23,color='.8',alpha=.6))
+        ax.set(title=scene,xlim=(-.4,3.4),ylim=(-1.3,1.3),xlabel='x / m',ylabel='y / m',aspect='equal');ax.legend(fontsize=8)
+    fig.suptitle('Local-only test: fixed reference, ideal measurements, no native replanner')
+    fig.tight_layout();fig.savefig(out/'local_paths.png',dpi=140);plt.close(fig)
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--builds',nargs='+',type=Path,required=True);p.add_argument('--fixture',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    a.out.mkdir(parents=True,exist_ok=False);results=[]
+    for scene in ('static','crossing'):
+        for build in a.builds:
+            r=trial(build,a.fixture,scene);results.append(r)
+            print({k:v for k,v in r.items() if k not in ('trace','routes')},flush=True)
+            (a.out/(scene+'_'+build.name+'.json')).write_text(json.dumps(r,indent=2)+'\n')
+    render(a.out,results)

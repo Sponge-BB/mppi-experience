@@ -1,0 +1,62 @@
+{
+  "checks": "PASS",
+  "production_source_files_unchanged": 98,
+  "same_native_parameters_all_modes": true,
+  "trials": [
+    {
+      "trial": "crossing_mppi",
+      "max_wheel_speed": 0.2286048965863095,
+      "max_wheel_accel": 0.29750000000000393,
+      "plant_loop_max_dt": 0.03153739600384142,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "crossing_remani",
+      "max_wheel_speed": 0.22959934489016295,
+      "max_wheel_accel": 0.2975000000000008,
+      "plant_loop_max_dt": 0.027575043997785542,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "empty_mppi",
+      "max_wheel_speed": 0.22927674513545643,
+      "max_wheel_accel": 0.29750000000000376,
+      "plant_loop_max_dt": 0.030404971999814734,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "empty_remani",
+      "max_wheel_speed": 0.22959996611082803,
+      "max_wheel_accel": 0.2975000000000005,
+      "plant_loop_max_dt": 0.030669748994114343,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "static_mppi",
+      "max_wheel_speed": 0.22956221532533172,
+      "max_wheel_accel": 0.29750000000000376,
+      "plant_loop_max_dt": 0.03285744399909163,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "static_remani",
+      "max_wheel_speed": 0.22960000000000005,
+      "max_wheel_accel": 0.29750000000000315,
+      "plant_loop_max_dt": 0.04044040600274457,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    }
+  ],
+  "limitations": [
+    "Only single runs per combination; no statistical success-rate claim",
+    "Synthetic sensor has perfect pose, no occlusion/noise; plant is numerical, not Gazebo",
+    "CBF finite-difference sequential QP has no continuous-time global safety guarantee",
+    "Post-filter native speed limit can change the checked action; stop_unverified is not a proof about the final applied command",
+    "MPPI uses a conservative 2D measured-cloud distance field, not the native 3D ESDF collision representation"
+  ]
+}

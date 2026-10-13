@@ -1,0 +1,124 @@
+{
+  "mode": "mppi",
+  "scene": "static",
+  "duration": 45.0,
+  "scenario_start": "goal",
+  "port": 11441,
+  "parameter_overrides": {
+    "/remani_planner_node/mm/manipulator_min_pos": [
+      0.0,
+      0.5209807817203074,
+      -1.048907973863552,
+      -3.490658503988659e-05,
+      0.9472949048124424,
+      5.235987755982989e-05
+    ],
+    "/remani_planner_node/mm/manipulator_max_pos": [
+      0.0,
+      0.5209807817203074,
+      -1.048907973863552,
+      -3.490658503988659e-05,
+      0.9472949048124424,
+      5.235987755982989e-05
+    ],
+    "/remani_planner_node/fsm/manual_target_end_arm_standby": false,
+    "/remani_planner_node/fsm/manual_restore_standby_after_goal": false,
+    "/remani_planner_node/fsm/manual_use_work_arm_waypoint": false
+  },
+  "nodes": [
+    {
+      "name": "filter_joint_states",
+      "type": "filter_joint_states.py",
+      "package": "mm_remani"
+    },
+    {
+      "name": "remani_planner_node",
+      "type": "remani_planner_node",
+      "package": "online_remani_experiment"
+    },
+    {
+      "name": "mm_controller_node",
+      "type": "mm_controller_node",
+      "package": "online_remani_experiment"
+    },
+    {
+      "name": "pcl_manager_filter",
+      "type": "nodelet",
+      "package": "nodelet"
+    },
+    {
+      "name": "passthrough_z",
+      "type": "nodelet",
+      "package": "nodelet"
+    },
+    {
+      "name": "crop_box_filter",
+      "type": "nodelet",
+      "package": "nodelet"
+    },
+    {
+      "name": "dynamic_obstacle_tracker",
+      "type": "dynamic_obstacle_tracker_node",
+      "package": "online_remani_experiment"
+    },
+    {
+      "name": "sim_world_to_map",
+      "type": "static_transform_publisher",
+      "package": "tf2_ros"
+    },
+    {
+      "name": "sim_map_to_odom",
+      "type": "static_transform_publisher",
+      "package": "tf2_ros"
+    },
+    {
+      "name": "sim_lidar_tf",
+      "type": "static_transform_publisher",
+      "package": "tf2_ros"
+    },
+    {
+      "name": "algorithm_simulator",
+      "type": "simulator.py",
+      "package": "online_remani_experiment"
+    },
+    {
+      "name": "base_mppi",
+      "type": "mppi_node.py",
+      "package": "online_remani_experiment"
+    }
+  ],
+  "native_binaries_sha256": {
+    "remani_planner_node": "5b89d87c0b1e9ab95c50ac9aca2749c63bc7bae2f9535e34c40b7e212bf5ade2",
+    "mm_controller_node": "b50611a3f0017d57402d2fbbce47e8fc82dd6c5e27d64f2abc3f7a600c701d20",
+    "dynamic_obstacle_tracker_node": "a79ad7ba05f75a96f6eccfe80d254f475f924326f9c43efe20f82b035591b758"
+  },
+  "mppi_library_sha256": "931b12b36e6cffc7aad01fa6dcb5456840502f8f724213f0638afdfff8da375b",
+  "scope": "native REMANI ROS planning/replanning/controller/detector; synthetic sensor+lagged differential plant; NOT Gazebo or physical robot",
+  "native_safety_chain": "unchanged and shared; MPPI must obey safety_speed_limit and abort trajectories",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/mppi_v2_03",
+  "planner_variant": "current",
+  "progress_contract": "measured_path_projection",
+  "experiment_sources_sha256": {
+    "build.py": "6e44242b6b2f28b8deaeb8a592701e60255f41ccf3a02bdfded074e4d93c7db4",
+    "MPPI接入REMANI框架_研究生阶段汇报_2026-09-29.txt": "2dcca1208cd5d4f4717626e00cb2bb60927657cf1824cf90ddb70ba42d22c2a5",
+    "prepare.py": "60a579083bf1473ae3bf1d49d6fb7724c3d4f27f293df18608d06c27adcd398e",
+    "online_api.cpp": "210a49b403af5792553c3035aab197da6b65517b900745be0230b7d4a62b9520",
+    "run.py": "fa8580dae211ee003420327617a974a83c20f3077e29c9bfa5b67a81b0e25945",
+    "test_contracts.py": "483094283c601a4a7e167eedf2d36c4b0d9200572f5e426a524530775add9249",
+    "batch.py": "ca41bd78b7eb0fd47e0de50498cf5361423c0f78901900cf75d41e78ab9b4c9f",
+    "progress.py": "acf5d3a4a97c6f438e3c1584f1a653da5a9f7b1b22dcd41fa23cad11f14d6cf2",
+    "ablation.py": "2a22447ec82deb98541dc0caad81afd68ea1fa3676caacb445234949ba6bee24",
+    "build_mppi_v2.py": "7caf19d2b987e63bcb01770cea23331da1e259bb4a2bb2c283f41740f43885a7",
+    "test_mppi_v2.py": "cb5c61886d964a06be4d4f2f555eea923c387c1bf63ffaa4ce7a53c18c638f9e",
+    "simulator.py": "c038c12279a7a1861b7ff8aa860003de4743e50a6b9fbeeb7f3ff25125915fab",
+    "CMakeLists.txt": "a99688dca0dc97ac84229282d37677cb020de62bda5d1a76ef20a17f9840a07b",
+    "animate_simple.py": "ef8f616f26b9aec334b93f0b041b549011d3139481ec83db00a96a8e9ff421a0",
+    "report.py": "45a015d78391a824cc0bba27a5810d9bc890f0a31de52e71ad4a77d46fdf8deb",
+    "finalize.py": "12ef36811d86ded160626dd87c1de476eef0d4e4382c311ea3b2160553511173",
+    "audit.py": "d7c7c2dd6a054c687989e425a6a617f01a95209b82519d8358d56c684373556c",
+    "kernel.py": "57f9b1212983eec6d659cc231348d1793e5c0fec5c5af34a6cfd992d7cfe9a3a",
+    "animate.py": "6726f21e237dadeda687fde234764d98955289256c02aae81816bac16129afd6",
+    "mppi_node.py": "e297ed3dc32dc1c9c2d30a60764fd4ff6cd9c93c1a22206fbfcf8f1e8d232580",
+    "report_pair.py": "f66c3f109f7691b44a319d5a92785924f3ecebad0ef00a5c259778501bfa6fc0"
+  }
+}

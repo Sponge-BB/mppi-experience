@@ -1,0 +1,128 @@
+{
+  "checks": "PASS",
+  "production_source_files_unchanged": 98,
+  "same_native_parameters_all_modes": true,
+  "trials": [
+    {
+      "trial": "crossing_mppi",
+      "max_wheel_speed": 0.2296,
+      "max_wheel_accel": 0.2975000000000038,
+      "plant_loop_max_dt": 0.03130214599877945,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "crossing_mppi_cbf",
+      "max_wheel_speed": 0.2295790774347927,
+      "max_wheel_accel": 0.29750000000000265,
+      "plant_loop_max_dt": 0.027670879997458542,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "crossing_remani",
+      "max_wheel_speed": 0.22951380526732132,
+      "max_wheel_accel": 0.29750000000000143,
+      "plant_loop_max_dt": 0.029287545999977738,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "empty_mppi",
+      "max_wheel_speed": 0.2296,
+      "max_wheel_accel": 0.2975000000000027,
+      "plant_loop_max_dt": 0.033522833000461105,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "empty_mppi_cbf",
+      "max_wheel_speed": 0.22960000000000003,
+      "max_wheel_accel": 0.2975000000000035,
+      "plant_loop_max_dt": 0.032036284002970206,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "empty_remani",
+      "max_wheel_speed": 0.22959475452627523,
+      "max_wheel_accel": 0.2974999999999995,
+      "plant_loop_max_dt": 0.025936960999388248,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "static_mppi",
+      "max_wheel_speed": 0.22959999561378353,
+      "max_wheel_accel": 0.2975000000000047,
+      "plant_loop_max_dt": 0.04206061099830549,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    },
+    {
+      "trial": "static_mppi_cbf",
+      "max_wheel_speed": 0.2293372770024194,
+      "max_wheel_accel": 0.2975000000000048,
+      "plant_loop_max_dt": 0.030789038999500917,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0,
+      "qp_replay": [
+        {
+          "file": "first_qp_failure.npz",
+          "t": 17.15245148300005,
+          "state": [
+            0.9893261070284853,
+            0.16866818495901428,
+            0.9851882502520452,
+            0.1649838839732259,
+            0.19987201917149686
+          ],
+          "minimum_barrier_h": 0.07143405562301444,
+          "minimum_margin_clearance_m": 0.07143405562301444,
+          "nominal_min_residual": -0.00022487112893984277,
+          "zero_min_residual": -6.436090743385993e-05,
+          "feasible_samples_of_1681": 0.0,
+          "best_sample_residual": -3.8795913858104794e-05,
+          "best_sample_v": -0.19264139216904907,
+          "best_sample_w": 0.19977625854568057,
+          "interpretation": "Finite command-grid check is diagnostic, not proof of continuous infeasibility. Negative margin clearance means conservative safety-envelope overlap, not necessarily geometric collision."
+        },
+        {
+          "file": "persistent_qp_failure.npz",
+          "t": 24.718545587000108,
+          "state": [
+            1.250414260294093,
+            0.510587751367529,
+            0.6667974402401804,
+            0.00012440509223338164,
+            -0.0002157562870812848
+          ],
+          "minimum_barrier_h": -0.0003738311654244153,
+          "minimum_margin_clearance_m": -0.0003738311654244153,
+          "nominal_min_residual": 3.076521321381686e-05,
+          "zero_min_residual": -2.215983159948432e-05,
+          "feasible_samples_of_1681": 0.0,
+          "best_sample_residual": 3.5429347382314065e-05,
+          "best_sample_v": -0.0868235294117647,
+          "best_sample_w": -0.771764705882353,
+          "interpretation": "Finite command-grid check is diagnostic, not proof of continuous infeasibility. Negative margin clearance means conservative safety-envelope overlap, not necessarily geometric collision."
+        }
+      ]
+    },
+    {
+      "trial": "static_remani",
+      "max_wheel_speed": 0.22960000000000008,
+      "max_wheel_accel": 0.2975000000000031,
+      "plant_loop_max_dt": 0.0358258919986838,
+      "arm_error": 0.0,
+      "perception_healthy_fraction": 1.0
+    }
+  ],
+  "limitations": [
+    "Only single runs per combination; no statistical success-rate claim",
+    "Synthetic sensor has perfect pose, no occlusion/noise; plant is numerical, not Gazebo",
+    "CBF finite-difference sequential QP has no continuous-time global safety guarantee",
+    "Post-filter native speed limit can change the checked action; stop_unverified is not a proof about the final applied command",
+    "MPPI uses a conservative 2D measured-cloud distance field, not the native 3D ESDF collision representation"
+  ]
+}
