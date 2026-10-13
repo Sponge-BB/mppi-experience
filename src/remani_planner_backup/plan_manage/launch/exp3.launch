@@ -1,0 +1,33 @@
+<launch>
+  <!-- exp3: based on exp0 but with slightly reduced static obstacle density
+       and 3 moving obstacle boxes (launched only for this experiment). -->
+
+  <arg name="exp_param_file" value="$(find remani_planner)/config/exp3_param.yaml"/>
+
+  <!-- start simulator and map generator using exp3 params -->
+  <!-- pass reduced obstacle counts to the included run_in_sim.launch args -->
+  <include file="$(find remani_planner)/launch/run_in_sim.launch">
+    <arg name="exp_param_file" value="$(arg exp_param_file)"/>
+    <arg name="map_obs_num" value="15"/>
+    <arg name="map_float_obs_num" value="10"/>
+    <!-- make planner/grid_map's cloud topic point to merged cloud for this experiment -->
+    <arg name="cloud_topic" value="/map_generator/global_cloud_merged"/>
+    <!-- we keep seed in exp3_param.yaml but could also pass map_seed here -->
+  </include>
+
+  <!-- moving obstacles republisher node (merges static cloud + moving boxes)
+       This node is part of plan_manage package scripts. It must be executable. -->
+  <node pkg="remani_planner" type="moving_obstacles_node.py" name="moving_obstacles_node" output="screen">
+    <!-- number of moving boxes -->
+  <param name="moving_count" value="2"/>
+    <!-- size of moving boxes [x,y,z] in metres -->
+    <param name="moving_box_size" value="[0.4, 0.4, 0.6]"/>
+    <!-- publication rate (Hz) for merged cloud -->
+    <param name="pub_rate" value="5.0"/>
+    <!-- sampling resolution for boxes (m) -->
+    <param name="box_resolution" value="0.05"/>
+  </node>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find remani_planner)/launch/exp1.rviz"/>
+
+</launch>
