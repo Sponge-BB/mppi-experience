@@ -1,0 +1,183 @@
+{
+  "mode": "mppi",
+  "scene": "crossing",
+  "duration": 52.0,
+  "scenario_start": "motion",
+  "debug_native": false,
+  "port": 11441,
+  "parameter_overrides": {
+    "/remani_planner_node/mm/manipulator_min_pos": [
+      0.0,
+      0.5209807817203074,
+      -1.048907973863552,
+      -3.490658503988659e-05,
+      0.9472949048124424,
+      5.235987755982989e-05
+    ],
+    "/remani_planner_node/mm/manipulator_max_pos": [
+      0.0,
+      0.5209807817203074,
+      -1.048907973863552,
+      -3.490658503988659e-05,
+      0.9472949048124424,
+      5.235987755982989e-05
+    ],
+    "/remani_planner_node/fsm/manual_target_end_arm_standby": false,
+    "/remani_planner_node/fsm/manual_restore_standby_after_goal": false,
+    "/remani_planner_node/fsm/manual_use_work_arm_waypoint": false,
+    "/remani_planner_node/fsm/local_execution_owner": true,
+    "/remani_planner_node/fsm/goal_position_tolerance": 0.05,
+    "/remani_planner_node/fsm/goal_yaw_tolerance": 0.1,
+    "/remani_planner_node/dynamic_point_flow/position_uncertainty": 0.0,
+    "/remani_planner_node/dynamic_point_flow/velocity_uncertainty": 0.0,
+    "/remani_planner_node/dynamic_point_flow/acceleration_bound": 0.0
+  },
+  "experiment_profile": "no_uncertainty",
+  "reference_source": "actual native /planning/trajectory PolynomialTraj; no synthetic fallback",
+  "mppi_revision": "native_mppi_v11_execution_candidates",
+  "perception_mode": "classified_atomic",
+  "nodes": [
+    {
+      "name": "filter_joint_states",
+      "type": "filter_joint_states.py",
+      "package": "mm_remani"
+    },
+    {
+      "name": "remani_planner_node",
+      "type": "remani_planner_node",
+      "package": "online_remani_experiment"
+    },
+    {
+      "name": "mm_controller_node",
+      "type": "mm_controller_node",
+      "package": "online_remani_experiment"
+    },
+    {
+      "name": "pcl_manager_filter",
+      "type": "nodelet",
+      "package": "nodelet"
+    },
+    {
+      "name": "passthrough_z",
+      "type": "nodelet",
+      "package": "nodelet"
+    },
+    {
+      "name": "crop_box_filter",
+      "type": "nodelet",
+      "package": "nodelet"
+    },
+    {
+      "name": "dynamic_obstacle_tracker",
+      "type": "dynamic_obstacle_tracker_node",
+      "package": "online_remani_experiment"
+    },
+    {
+      "name": "sim_world_to_map",
+      "type": "static_transform_publisher",
+      "package": "tf2_ros"
+    },
+    {
+      "name": "sim_map_to_odom",
+      "type": "static_transform_publisher",
+      "package": "tf2_ros"
+    },
+    {
+      "name": "sim_lidar_tf",
+      "type": "static_transform_publisher",
+      "package": "tf2_ros"
+    },
+    {
+      "name": "algorithm_simulator",
+      "type": "simulator.py",
+      "package": "online_remani_experiment"
+    },
+    {
+      "name": "base_mppi",
+      "type": "mppi_node.py",
+      "package": "online_remani_experiment"
+    }
+  ],
+  "native_binaries_sha256": {
+    "remani_planner_node": "f0f0cf336c85a586e7b4b881a6a3fd2d67c2a76fed086a8f1f3960eeff09b964",
+    "mm_controller_node": "b50611a3f0017d57402d2fbbce47e8fc82dd6c5e27d64f2abc3f7a600c701d20",
+    "dynamic_obstacle_tracker_node": "c3881920e724585f2679ecb99f035252c54cc2b43181652559f1c48c36726039"
+  },
+  "mppi_library_sha256": "e3c7d5bf951f4c560023783cd4eb0ff0d9a42293489783692e68504bef238c9f",
+  "scope": "native REMANI ROS planning/replanning/controller/detector; synthetic sensor+lagged differential plant; NOT Gazebo or physical robot",
+  "native_safety_chain": "local selected-rollout + braking validator owns base execution; native guide collision requests refresh",
+  "local_execution_owner": true,
+  "reference_delay_s": 0.0,
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/native_v11_07",
+  "planner_variant": "current",
+  "progress_contract": "measured_path_projection",
+  "experiment_sources_sha256": {
+    "suite_v8.py": "805e985b71ebee89ea71802cbafadffd45b22566ceb2d6b3920db6df87a1ceb5",
+    "audit_native_reference.py": "ed76adc7cafe223034ee966505bf3cbbce23a2378c18eccad6c329d36b18aba3",
+    "plot_execution_comparison.py": "f956d1dee2115ec75be9060636effcff6713e5d2dbd8e0d8c3e84cce6aed11aa",
+    "visualize_reference_mppi.py": "9834a6ce12c0f381b6b69ce9900ffc99a76234a814d6218d0ad0137c553d0714",
+    "build.py": "6e44242b6b2f28b8deaeb8a592701e60255f41ccf3a02bdfded074e4d93c7db4",
+    "test_native_seed.py": "76cec9c7ada67efa2321ce9075346d6aacd43df80f0a8e6bd5c47ef019db719e",
+    "MPPI接入REMANI框架_研究生阶段汇报_2026-09-29.txt": "2dcca1208cd5d4f4717626e00cb2bb60927657cf1824cf90ddb70ba42d22c2a5",
+    "prepare.py": "2959dcdd3a138c841433d66560b6f7ad4ba655bff5b4e2e5ebedc11df229ab3d",
+    "online_api.cpp": "210a49b403af5792553c3035aab197da6b65517b900745be0230b7d4a62b9520",
+    "run.py": "a5a24fabbd977fe690b51c6115098451e3539f63588a945cafd1f822d4ac7188",
+    "test_contracts.py": "2b9907ecf8800e9e1268c60a53dfffdebbf9e6c886f38762c4c42c80e53005ae",
+    "suite_v7.py": "12a32d47351c3ae3bae98432b5858a285e6af04f1a42706d98465a006fc24ca6",
+    "local_execution.py": "d216f8ec90f810aea1d67da1864e9803ef9b92a8a71602e57236448a2ccdb8bc",
+    "build_native_v9.py": "8ee8231fc03b81e3ae4785627ffed6bb9f7fccafb51bce6a8de3b2095a4d4360",
+    "suite_speed_horizon.py": "8d7f5fe595dad7959211ac3e882ff77a5b454c6c4a63fde6b02b7600eb5c012e",
+    "batch.py": "ca41bd78b7eb0fd47e0de50498cf5361423c0f78901900cf75d41e78ab9b4c9f",
+    "suite_multi_dynamic.py": "0f40b575a701bf1a7c1c26ad5135cb20d5aba799a703144174e51ee57f1eebd0",
+    "test_mppi_v6.py": "f699a97c91d01813df03cc9a36a7deecdb2639880792e432ee8d18fa8d9f7787",
+    "progress.py": "acf5d3a4a97c6f438e3c1584f1a653da5a9f7b1b22dcd41fa23cad11f14d6cf2",
+    "compare_native_v9.py": "1c5bb7966413d40e93f993c036be424c8ae75ae3675d0087e59c1f462a700aec",
+    "ablation.py": "2a22447ec82deb98541dc0caad81afd68ea1fa3676caacb445234949ba6bee24",
+    "build_mppi_v2.py": "b4207dd5f99d39cbfc26cffe8623692a2f991ca51c3a57808674c02723e2c385",
+    "test_native_v9.py": "112c831289f0bdcdfd2252b5fff63ab8cee81ae8fcfc2e57e081216a4148561b",
+    "test_voxel_membership.cpp": "99acac5d4087a3ee568070c39a030dd4e93b0bb0d6884a8bf195ad0a66d50220",
+    "run_native_v11.py": "39cd809d801ae8557c3f9645e32adfb20d2a6a79dc562f4ff827815451a93212",
+    "run_native_mppi.py": "c6b80e00a37fc9734f32441175e537865488f936d48357fa8d2c2c00e8d120b1",
+    "probe_multi_escape.py": "28a59f7cd52ce4b4125bc818d636adda3e1b1c30936caead6823c3267c195b04",
+    "test_mppi_v2.py": "3ef92fdb26b76bbf97d7beb471b79d8bee5ff4ade43c97682944f5f7e16468bc",
+    "simulator.py": "51f5a99daa31055eceda0e2b5f83af684046b2a446111238bc16a939ff8c749c",
+    "audit_execution.py": "af6ea54fad224314214769eefcc376f9f11619fc4919aef547a18ec98c20e48b",
+    "summarize_native_v11.py": "9130c1076ea0c2cedb6a89e5fae6c201a03ee76c7b9a048f5ec9b461e3455f80",
+    "CMakeLists.txt": "a99688dca0dc97ac84229282d37677cb020de62bda5d1a76ef20a17f9840a07b",
+    "animate_simple.py": "d22fb66bc1191b77af62f6384c95fa5c37bdef29f603faa2edeba540902155e0",
+    "report_multi_dynamic.py": "8fb8ea18761eaff9d72ca3b8541a13d712771741eae9eb563bdb156c62076282",
+    "test_mppi_v8.py": "c085595ac26a6c5375f9b92a721819059e1bd0dc151c52acacd9316a4003da40",
+    "test_mppi_v7.py": "9390530362aa5aa6bdeda997d3a796dd65e0c69ca744b9b9cca0f1e1773ae1e2",
+    "finalize_v8.py": "ab909c39697ade31fdcde713f531b5669bab51fddd12ac9e7b0320e83ba56883",
+    "suite_v6.py": "3af5793d3adf519aa6980ace83d576260ba3540dc8d08c1c226c2c7c0e557c07",
+    "build_native_v11.py": "0b5fc641a8f3b64ad1fe4353fcfae58c3adfb74a57d79fd8bc580595bed1d878",
+    "report_speed_horizon.py": "fb75dcbcfe2270e5720828a87f7099e860c4cd9f59322b0a8e061fe3c121c2b9",
+    "classified_frame.py": "f07b385457c35b7b7f98b1f97be04ebf1a0474395b761838bac18b5b66cadaad",
+    "test_local_execution.py": "4ac244342e1935e975831af24db751fe5aab8170f94024bb92cd97128b0b60d7",
+    "test_native_seed.cpp": "7db1453399a929b75ad743dc4e469636644b8635ca83169f4bb084e7d7024609",
+    "build_v8_horizon.py": "a889c63547dc3f58bfcd477e13f13a8f165fe0539b09dea25059786dd760e384",
+    "audit_v8.py": "e250511238912abc829f275aca02b6ee793c57d00e169611d2761c9278b34e83",
+    "test_mppi_v5.py": "701b08092259c10cff488eea2a040cd964e9fb0cb1c6d6ed516de86e7c0f7621",
+    "test_mppi_v3.py": "192305f30460c5f69d211dec3e5b363492b4b62bcfb77d8683d15240c580a8d8",
+    "native_reference.py": "7fb084e691734b4a33f460c6c9a285c71cf62b7448237c2569d211d148df86fc",
+    "build_native_v10.py": "89fb2bf11fda03e0898857a8dfb31a7a045235e9dc0da7dcbdf3b6e0ef8fcae8",
+    "animate_local.py": "93cd3a08631c5e3217a6959f82e25a074d2a8b3331b3752685ed9bfa282c7d3e",
+    "check_v8.py": "5eb0b116cffd3b74e18517456ceccc5ce82880db060e545e5373e9d458bb129d",
+    "catalog_experiments.py": "e98e13f56658ce8fa0a5066f4ce69a0cd472caf7c57f092eddeee3a57e944992",
+    "report.py": "45a015d78391a824cc0bba27a5810d9bc890f0a31de52e71ad4a77d46fdf8deb",
+    "finalize.py": "12ef36811d86ded160626dd87c1de476eef0d4e4382c311ea3b2160553511173",
+    "finalize_pair.py": "79cbc5b070cff23370e944622ba98ce93b54d0477c550e17b184bab4a48e8f16",
+    "audit.py": "00b0f2dfcad57a9f325e16637a6f0643114fd4033ec6e6d26d008c1e5de451da",
+    "test_native_v11.py": "4384ef7c50221d09911f164491a2e598f9f06fd76a8c96ae83af8771ec3e0100",
+    "audit_v6.py": "ae215ee2966ef78f91bd1a6ebf82dbe2770176f521fd43b13b9f8f56e8458250",
+    "kernel.py": "57f9b1212983eec6d659cc231348d1793e5c0fec5c5af34a6cfd992d7cfe9a3a",
+    "animate.py": "6726f21e237dadeda687fde234764d98955289256c02aae81816bac16129afd6",
+    "test_mppi_search.py": "8017e010bf13330c36eeccd4038e14e829f97355bcc56d5e10c6edd369a9aeb8",
+    "regress_local_v8.py": "a6b60eb5c90d559302763c5b8aca20c1e454eb3cfb0c69d8b4265931f5cf5ccb",
+    "mppi_node.py": "ae924734bfc638230364ed180f78bcbc9c86d0cba104bd0598e07d26fb4b2247",
+    "report_v6.py": "4dd3be7ddd1748b8b61b859a54bfb0f812e7ae2d2d42f81f1aa45190ab5b3874",
+    "report_pair.py": "d2b52d7e3b9972aba2b9bf420278a24402cedb7c37b4d35a2f44df68aa669af2",
+    "test_static_reference_handoff.py": "9177bef8d2b4fcb520b5533d5900b0bbf5e13deefe67f554546e1d0e9e8f30cb",
+    "test_local_independence.py": "0f6c9bb2946b0be712240e3959eb28b206f8c28d0ad351893a8f9aa7aba51cfe"
+  }
+}
