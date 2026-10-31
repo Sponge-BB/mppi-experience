@@ -1,0 +1,60 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": false,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 1,
+  "consumed_versions": 1,
+  "live_kernel_calls": 233,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 6,
+    "native3d_unhealthy": 32,
+    "native_hard_stop": 100,
+    "waiting_native_trajectory": 17,
+    "ok": 218,
+    "local_validation_failed": 5,
+    "deadline_miss": 3,
+    "no_feasible_candidate": 7
+  },
+  "trial_result": {
+    "reason": "native3d_sample_collision",
+    "goal_sent": 7.013250479998533,
+    "motion_anchor": 8.786660497000412,
+    "scenario_start": "motion",
+    "trajectory_bundles": 1,
+    "min_clearance": -0.12461562838731316,
+    "collision_conservative_projection": true,
+    "arm_max_error": 0.0,
+    "final_state": [
+      1.669214722958393,
+      -0.08507923875953759,
+      0.49251431355668507,
+      -0.00037836913205940647,
+      0.0007968160702772194
+    ],
+    "elapsed": 22.823887307000405,
+    "scene": "dynamic_head_on_center",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": true,
+      "min_physical_sample_gap": -0.0007896398508227404,
+      "checks": 5428,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 10.80660855500173,
+      "first_observed_moving_t": 12.29634584400003,
+      "deadline_zero_window_start": null,
+      "deadline_zero_window_end": null,
+      "deadline_zero_cycles": 0,
+      "deadline_zero_deadlock": false,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter"
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}
