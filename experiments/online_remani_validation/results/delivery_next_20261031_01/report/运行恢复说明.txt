@@ -1,0 +1,11 @@
+本轮运行恢复说明
+
+静态A、B两组完成后，横穿B在启动ROS之前被来源哈希检查拦住。
+变化文件是无关的离线报告脚本 early_delivery_report_native.py，不是控制、碰撞或规划算法代码。
+这次拦截没有实际运行横穿场景，不计为规划失败，也没有重跑已经完成的静态两组。
+
+恢复前核实了实际控制及采集源码，其中包括 native_collision_runtime.py 和 delivery_next_capture.py。
+随后完成原计划的横穿B、A两组。原计划、原停止记录和未启动目录都保留，没有替换失败结果。
+核实证据在上一级目录 resume_evidence.json，最终四次真实运行见 complete.json。
+
+两个GIF均为64帧，直接回放四次实际记录；未重新运行控制器生成展示轨迹。

@@ -1,0 +1,47 @@
+{
+  "created": "2026-10-30T01:43:18.778382+00:00",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/delivery_optimization_20261030_01",
+  "build_manifest_sha256": "c42e1e39cb1496e3f6230c9608242b17da78245d881c09db8dae9c555ef581e9",
+  "trials": [
+    {
+      "directory": "midcross_b67_seed11_eligible1",
+      "seed": 11,
+      "ordinal": 1
+    }
+  ],
+  "scene": "sphere_timing_midcross",
+  "goal": [
+    6.0,
+    0.0
+  ],
+  "collision_spheres": 67,
+  "capture_predicate": "first normal 0.6s optimizer entry after reference exists, ordinary request (not dynamic_repair), valid nonempty native dynamic snapshot; ineligible entries do not consume refresh ordinal; no outcome selection",
+  "diagnostic_phases": [
+    "delivery_baseline_060",
+    "delivery_optimized_060"
+  ],
+  "budgets_s": [
+    0.6,
+    0.6
+  ],
+  "treatment_by_phase": {
+    "delivery_baseline_060": {
+      "fast_query": 0,
+      "accept_candidate": 0
+    },
+    "delivery_optimized_060": {
+      "fast_query": 1,
+      "accept_candidate": 1
+    }
+  },
+  "no_outcome_selected_rerun": true,
+  "navigation_metrics_valid": false,
+  "diagnostic_candidates_published": false,
+  "limitations": [
+    "one freshly captured input, not a historical failed request replay",
+    "two arms in fixed order; not a multi-seed success-rate estimate",
+    "both distance query and timeout recovery change; no independent per-change causal attribution",
+    "native candidate acceptance is not live FSM publication or MPPI consumption",
+    "posterior diagnostic audits are outside solver/decision timers; whole RESOURCE wall includes them"
+  ]
+}

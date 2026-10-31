@@ -1,0 +1,55 @@
+{
+  "created": "2026-10-30T03:22:17.594942+00:00",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/candidate_audit_20261030_01",
+  "build_manifest_sha256": "e4008f7af3e832ab2da824fce0c7116fa16be27ad519d77dbde0f6a14e212c40",
+  "trials": [
+    {
+      "directory": "midcross_collision_seed11",
+      "target": "collision",
+      "seed": 11
+    },
+    {
+      "directory": "midcross_wheel_seed11",
+      "target": "wheel",
+      "seed": 11
+    }
+  ],
+  "scene": "sphere_timing_midcross",
+  "duration_s": 55.0,
+  "goal": [
+    6.0,
+    0.0
+  ],
+  "bounds": [
+    -1.5,
+    7.5,
+    -2.0,
+    2.0
+  ],
+  "actor": [
+    3.0,
+    -1.6,
+    0.0,
+    0.18,
+    0.23
+  ],
+  "actor_appearance_after_motion_s": 2.0,
+  "collision_spheres": 67,
+  "deadline_ms": 200.0,
+  "lease_ms": 250.0,
+  "refresh_budget_s": 0.6,
+  "delivery_fast_query": 1,
+  "delivery_accept_candidate": 1,
+  "capture_predicate": "first normal 0.6s refresh solve whose unchanged native acceptance rejects the selected failure class; collision or either wheel speed/acceleration; one fresh run per predeclared target",
+  "storage_reserve_mib": 400,
+  "no_outcome_selected_reruns": true,
+  "diagnostic_candidates_published": false,
+  "navigation_metrics_valid": false,
+  "limitations": [
+    "one fresh seed11 run per failure target; target may not occur",
+    "accepted-iterate recording adds some work before capture; no performance comparison",
+    "after capture simulator and MPPI pause; whole resource wall is not normal solve time",
+    "frozen maps are checked for stability; latest live publication checks are not exercised",
+    "numerical ROS SIL; not Gazebo or hardware"
+  ]
+}

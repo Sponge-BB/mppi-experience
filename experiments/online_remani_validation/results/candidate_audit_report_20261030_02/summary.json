@@ -1,0 +1,288 @@
+{
+  "schema": "candidate_audit_report_v1",
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_audit_20261030_02",
+  "cases": [
+    {
+      "target": "collision",
+      "captured": true,
+      "request_id": 2,
+      "initial_native_pass": false,
+      "final_native_pass": false,
+      "native_reason": "planning_collision",
+      "coverage": {
+        "earlier_native_pass_iterations": [],
+        "native_max_wheel_ratio": 0.9359573278429343,
+        "cost_grid_max_wheel_ratio": 0.9357506641981829,
+        "coarse_cost_grid_max_wheel_ratio": 0.9357506641981829,
+        "dense_cost_grid_max_wheel_ratio": 0.9357506641981829,
+        "native_min_base_gap_m": -0.029652672277565573,
+        "cost_grid_min_base_gap_m": -0.029511051978449998,
+        "native_min_arm_gap_m": 0.2849781578035403,
+        "cost_grid_min_arm_gap_m": 0.28526790246391986,
+        "cost_grid_note": "collision summary uses coarse K grid; wheel summary combines coarse and actual dense feasibility times",
+        "obstacle_weight": {
+          "value": 50000.0,
+          "parameter_key": "/remani_planner_node/optimization/weight_obstacle",
+          "source": "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_audit_20261030_02/midcross_collision_seed11/parameters.yaml",
+          "source_sha256": "94acb024c791486ea4fe1d48401bee19e3027ff29ce176287a725727a427beed"
+        },
+        "obstacle_cost_consistency": [
+          {
+            "iteration": 0,
+            "final_map_single_sphere_lower_bound": 402.8245394628468,
+            "recorded_online_all_sphere_cost": 20.98020584189854,
+            "lower_bound_exceeds_recorded": true
+          },
+          {
+            "iteration": 8,
+            "final_map_single_sphere_lower_bound": 536.1065664216692,
+            "recorded_online_all_sphere_cost": 247.5152341360022,
+            "lower_bound_exceeds_recorded": true
+          },
+          {
+            "iteration": 15,
+            "final_map_single_sphere_lower_bound": 64.61900195892137,
+            "recorded_online_all_sphere_cost": 1.5152779950492927,
+            "lower_bound_exceeds_recorded": true
+          }
+        ]
+      },
+      "frozen_checks": {
+        "sim_frozen": true,
+        "raw_esdf_stable": true,
+        "solver_map_generations_stable": true,
+        "overlay_key_stable": true,
+        "audit_overlay_begin": {
+          "sequence": 172,
+          "refresh_nsec": 1019201018698,
+          "size": 1352,
+          "radii_size": 1352,
+          "cloud_address": "281472359481200",
+          "enabled": true,
+          "ready": true,
+          "frozen": true
+        },
+        "audit_overlay_end": {
+          "sequence": 172,
+          "refresh_nsec": 1019201018698,
+          "size": 1352,
+          "radii_size": 1352,
+          "cloud_address": "281472359481200",
+          "enabled": true,
+          "ready": true,
+          "frozen": true
+        },
+        "final_matches_saved_and_actual_verdict": true
+      },
+      "source_sha256": {
+        "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_audit_20261030_02/midcross_collision_seed11/candidate_audit/case.json": "8d26fbf8ca8b5cbf4915edd4c9ea40bf208d32d6a71ad9922bbe685d4cc9e109"
+      },
+      "map_metadata": {
+        "schema": "candidate_native_map_v1",
+        "esdf_path": "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_audit_20261030_02/midcross_collision_seed11/candidate_audit/map.esdf.f64.gz",
+        "esdf_dtype": "native_endian_float64",
+        "esdf_linear_order": "(x*ny+y)*nz+z",
+        "esdf_count": 3600000,
+        "esdf_fnv1a64": "6510052491925526772",
+        "map_origin": [
+          -7.5,
+          -5,
+          0
+        ],
+        "map_size": [
+          15,
+          10,
+          3
+        ],
+        "map_voxel_num": [
+          300,
+          200,
+          60
+        ],
+        "map_min_boundary": [
+          -7.5,
+          -5,
+          0
+        ],
+        "map_max_boundary": [
+          7.5,
+          5,
+          3
+        ],
+        "resolution": 0.05,
+        "raw_seq": 92,
+        "esdf_seq": 91,
+        "sim": 1019.201018698,
+        "overlay_path": "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_audit_20261030_02/midcross_collision_seed11/candidate_audit/map.overlay.xyzw.f32.gz",
+        "overlay_dtype": "native_endian_float32_xyzw_radius",
+        "overlay_count": 1352,
+        "overlay_fnv1a64": "9127322525248612385",
+        "overlay_enabled": true,
+        "overlay_ready": true,
+        "overlay_frozen": true,
+        "overlay_sequence": 172,
+        "overlay_frozen_sequence": 172,
+        "overlay_refresh_nsec": 1019201018698,
+        "overlay_inflation": 0.039000000357627865,
+        "overlay_influence_distance": 0.75,
+        "overlay_horizon": 1.2,
+        "overlay_time_step": 0.1,
+        "overlay_extra_inflation": 0.03,
+        "overlay_max_inflation": 0.3,
+        "overlay_min": [
+          2.7711560704284826,
+          -0.26532759046477883,
+          0.15000000596046448
+        ],
+        "overlay_max": [
+          3.180067062305088,
+          0.40821100795345694,
+          1.350000023841858
+        ],
+        "scope": "actual native signed ESDF buffer and complete swept KD input cloud/radii; captured only after online solve in blocked owner callback"
+      }
+    },
+    {
+      "target": "wheel",
+      "captured": true,
+      "request_id": 3,
+      "initial_native_pass": false,
+      "final_native_pass": false,
+      "native_reason": "right_wheel_acceleration",
+      "coverage": {
+        "earlier_native_pass_iterations": [],
+        "native_max_wheel_ratio": 1.8453149249839778,
+        "cost_grid_max_wheel_ratio": 1.8453227986553697,
+        "coarse_cost_grid_max_wheel_ratio": 1.8391275312653996,
+        "dense_cost_grid_max_wheel_ratio": 1.8453227986553697,
+        "native_min_base_gap_m": -0.0926177940001719,
+        "cost_grid_min_base_gap_m": -0.09171871099039516,
+        "native_min_arm_gap_m": 0.21385941569219255,
+        "cost_grid_min_arm_gap_m": 0.2138632207017395,
+        "cost_grid_note": "collision summary uses coarse K grid; wheel summary combines coarse and actual dense feasibility times",
+        "obstacle_weight": {
+          "value": 50000.0,
+          "parameter_key": "/remani_planner_node/optimization/weight_obstacle",
+          "source": "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_audit_20261030_02/midcross_wheel_seed11/parameters.yaml",
+          "source_sha256": "94acb024c791486ea4fe1d48401bee19e3027ff29ce176287a725727a427beed"
+        },
+        "obstacle_cost_consistency": [
+          {
+            "iteration": 0,
+            "final_map_single_sphere_lower_bound": 318.00629245557616,
+            "recorded_online_all_sphere_cost": 2.6719077450188222,
+            "lower_bound_exceeds_recorded": true
+          },
+          {
+            "iteration": 7,
+            "final_map_single_sphere_lower_bound": 319.59306896835267,
+            "recorded_online_all_sphere_cost": 279.74888549037735,
+            "lower_bound_exceeds_recorded": true
+          },
+          {
+            "iteration": 13,
+            "final_map_single_sphere_lower_bound": 328.99438380428955,
+            "recorded_online_all_sphere_cost": 522.0741030387958,
+            "lower_bound_exceeds_recorded": false
+          }
+        ]
+      },
+      "frozen_checks": {
+        "sim_frozen": true,
+        "raw_esdf_stable": true,
+        "solver_map_generations_stable": true,
+        "overlay_key_stable": true,
+        "audit_overlay_begin": {
+          "sequence": 180,
+          "refresh_nsec": 1020089572195,
+          "size": 1443,
+          "radii_size": 1443,
+          "cloud_address": "281472292374528",
+          "enabled": true,
+          "ready": true,
+          "frozen": true
+        },
+        "audit_overlay_end": {
+          "sequence": 180,
+          "refresh_nsec": 1020089572195,
+          "size": 1443,
+          "radii_size": 1443,
+          "cloud_address": "281472292374528",
+          "enabled": true,
+          "ready": true,
+          "frozen": true
+        },
+        "final_matches_saved_and_actual_verdict": true
+      },
+      "source_sha256": {
+        "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_audit_20261030_02/midcross_wheel_seed11/candidate_audit/case.json": "57cdffd1aa0cdde092434010c38e8e69704b6786095d32fe05988d71590c332a"
+      },
+      "map_metadata": {
+        "schema": "candidate_native_map_v1",
+        "esdf_path": "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_audit_20261030_02/midcross_wheel_seed11/candidate_audit/map.esdf.f64.gz",
+        "esdf_dtype": "native_endian_float64",
+        "esdf_linear_order": "(x*ny+y)*nz+z",
+        "esdf_count": 3600000,
+        "esdf_fnv1a64": "7387487106901436713",
+        "map_origin": [
+          -7.5,
+          -5,
+          0
+        ],
+        "map_size": [
+          15,
+          10,
+          3
+        ],
+        "map_voxel_num": [
+          300,
+          200,
+          60
+        ],
+        "map_min_boundary": [
+          -7.5,
+          -5,
+          0
+        ],
+        "map_max_boundary": [
+          7.5,
+          5,
+          3
+        ],
+        "resolution": 0.05,
+        "raw_seq": 81,
+        "esdf_seq": 81,
+        "sim": 1020.089572195,
+        "overlay_path": "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_audit_20261030_02/midcross_wheel_seed11/candidate_audit/map.overlay.xyzw.f32.gz",
+        "overlay_dtype": "native_endian_float32_xyzw_radius",
+        "overlay_count": 1443,
+        "overlay_fnv1a64": "14141866742681307151",
+        "overlay_enabled": true,
+        "overlay_ready": true,
+        "overlay_frozen": true,
+        "overlay_sequence": 180,
+        "overlay_frozen_sequence": 180,
+        "overlay_refresh_nsec": 1020089572195,
+        "overlay_inflation": 0.03899999961256981,
+        "overlay_influence_distance": 0.75,
+        "overlay_horizon": 1.2,
+        "overlay_time_step": 0.1,
+        "overlay_extra_inflation": 0.03,
+        "overlay_max_inflation": 0.3,
+        "overlay_min": [
+          2.7711560717724675,
+          -0.09666915830360509,
+          0.15000000596046448
+        ],
+        "overlay_max": [
+          3.2268922328545364,
+          0.5709720492721929,
+          1.350000023841858
+        ],
+        "scope": "actual native signed ESDF buffer and complete swept KD input cloud/radii; captured only after online solve in blocked owner callback"
+      }
+    }
+  ],
+  "navigation_metrics_valid": false,
+  "diagnostic_candidates_published": false
+}

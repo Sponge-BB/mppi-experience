@@ -1,0 +1,59 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": true,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 2,
+  "consumed_versions": 2,
+  "live_kernel_calls": 594,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 7,
+    "native3d_unhealthy": 30,
+    "native_hard_stop": 102,
+    "waiting_native_trajectory": 7,
+    "ok": 593,
+    "local_validation_failed": 1,
+    "no_active_task": 2
+  },
+  "trial_result": {
+    "reason": "goal",
+    "goal_sent": 7.019456547997834,
+    "motion_anchor": 8.234322287004034,
+    "scenario_start": "motion",
+    "trajectory_bundles": 2,
+    "min_clearance": 0.2907327363238038,
+    "collision_conservative_projection": false,
+    "arm_max_error": 0.0,
+    "final_state": [
+      5.999736024275539,
+      0.0008628015665547473,
+      0.003569743947541124,
+      0.00176548971030877,
+      0.01598992214845355
+    ],
+    "elapsed": 42.52901172300335,
+    "scene": "sphere_timing_midcross",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": false,
+      "min_physical_sample_gap": 0.29261912669271245,
+      "checks": 10336,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 10.24438786799874,
+      "first_observed_moving_t": 10.808043086999987,
+      "deadline_zero_window_start": null,
+      "deadline_zero_window_end": null,
+      "deadline_zero_cycles": 0,
+      "deadline_zero_deadlock": false,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter"
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}

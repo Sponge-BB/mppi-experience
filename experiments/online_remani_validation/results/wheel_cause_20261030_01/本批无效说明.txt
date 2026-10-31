@@ -1,0 +1,8 @@
+本批是测量程序失败记录，不能用于算法性能或改进结论。
+隔离诊断重放完成记录后，规划节点因MinSnapOpt浅拷贝导致的缓存所有权错误终止，required_process_failed=true，diagnostic_complete=false。
+问题在新增及继承的诊断缓存保存/恢复代码中，不据此判断REMANI算法或实车程序故障。
+case.json和wheel_cause_replay.jsonl已无损gzip保存，解压后的SHA256分别为：
+case.json: 90f14d07534986fa3f5d5e72c46df9b76f9303c2d23eb85f26afb95868684867
+wheel_cause_replay.jsonl: 1a81c078a13fae3290e55f10165b6f6858c1cc738fc925284747f7ae0d23481c
+两份未压缩副本在核对解压哈希一致后移除，需要时用gzip -dk恢复。
+修复测量程序后，使用新构建和新结果目录重试；本批保留，不挑选其中某组作为有效结果。

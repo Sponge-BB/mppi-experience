@@ -1,0 +1,58 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": true,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 2,
+  "consumed_versions": 2,
+  "live_kernel_calls": 547,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 9,
+    "native3d_unhealthy": 30,
+    "native_hard_stop": 103,
+    "waiting_native_trajectory": 13,
+    "ok": 545,
+    "local_validation_failed": 2
+  },
+  "trial_result": {
+    "reason": "goal",
+    "goal_sent": 7.0104955560000235,
+    "motion_anchor": 8.617232779000005,
+    "scenario_start": "motion",
+    "trajectory_bundles": 2,
+    "min_clearance": 0.12624896763078794,
+    "collision_conservative_projection": false,
+    "arm_max_error": 0.0,
+    "final_state": [
+      5.99551557191215,
+      -0.0006412375436502628,
+      0.0010091867772499012,
+      1.2323043700484184e-05,
+      -0.009669829920175508
+    ],
+    "elapsed": 41.177146168000036,
+    "scene": "sphere_timing_midcross",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": false,
+      "min_physical_sample_gap": 0.16016408940991922,
+      "checks": 9989,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 10.627065198999844,
+      "first_observed_moving_t": 11.210303723000038,
+      "deadline_zero_window_start": null,
+      "deadline_zero_window_end": null,
+      "deadline_zero_cycles": 0,
+      "deadline_zero_deadlock": false,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter"
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}

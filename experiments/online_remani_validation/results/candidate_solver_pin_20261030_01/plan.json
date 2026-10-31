@@ -1,0 +1,68 @@
+{
+  "created": "2026-10-30T03:42:02.095367+00:00",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/candidate_audit_20261030_03",
+  "build_manifest_sha256": "a6d015819034ef205a9f1eb627d0f3f3c3ccd8bfd6f1d12918e0cfc67a9703d2",
+  "trials": [
+    {
+      "scene": "midcross",
+      "group": "pin0",
+      "seed": 11,
+      "directory": "midcross_pin0_seed11"
+    },
+    {
+      "scene": "midcross",
+      "group": "pin1",
+      "seed": 11,
+      "directory": "midcross_pin1_seed11"
+    }
+  ],
+  "duration_s": 55.0,
+  "groups": [
+    "pin0",
+    "pin1"
+  ],
+  "seed": 11,
+  "goal": [
+    6.0,
+    0.0
+  ],
+  "bounds": [
+    -1.5,
+    7.5,
+    -2.0,
+    2.0
+  ],
+  "actor": [
+    3.0,
+    -1.6,
+    0.0,
+    0.18,
+    0.23
+  ],
+  "actor_appearance_after_motion_s": 2.0,
+  "collision_spheres": 67,
+  "wheel_omega": 4.1,
+  "deadline_ms": 200.0,
+  "lease_ms": 250.0,
+  "initial_budget_s": 1.5,
+  "refresh_budget_s": 0.6,
+  "sole_algorithm_switch": "CANDIDATE_AUDIT_FREEZE_SOLVER",
+  "delivery_fast_query": 1,
+  "delivery_accept_candidate": 1,
+  "recorder_target": "observe",
+  "recorder_enabled_in_both": true,
+  "runtime_pin_counter_available": true,
+  "diagnostic_pause": false,
+  "genuine_online_closed_loop": true,
+  "navigation_metrics_valid": true,
+  "storage_reserve_mib": 400,
+  "no_outcome_selected_reruns": true,
+  "scope": "fixed-arm full REMANI+MPPI numerical ROS SIL; not Gazebo or hardware",
+  "limitations": [
+    "one seed and fixed OFF/ON order; not a statistical success-rate comparison",
+    "same recorder memory and instrumentation in both arms; recorder overhead remains",
+    "pin holds the present overlay during eligible solve/native gate; live FSM keeps its current-map acceptance",
+    "per-request pin/overlay counters are recorded; post-run analysis must verify actual ownership and changes",
+    "online states and later optimizer inputs can differ between arms"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "group": "engineering",
+  "engineering": true,
+  "execution_weight": 0.0,
+  "handover_weight": 0.0,
+  "seed": 11,
+  "legacy_rolling": false,
+  "legacy_prefix": false,
+  "diagnostic_pause": true,
+  "genuine_online_closed_loop": false,
+  "engineering_scope": "additional projected qualification/soft cost only; retain native 3D, self-collision, wheel and long-horizon dynamic guards; not full dynamic feasibility equivalence and not an endpoint-stagnation fix",
+  "scope": "two paused same-input endpoint-time treatments; not online performance or delivery evidence",
+  "state_contract_capture": true,
+  "signed_low_speed": true,
+  "domain_recovery": true,
+  "boundary_admission": false,
+  "clearance_recovery": false,
+  "seed_parameterization_fix": true,
+  "navigation_metrics_valid": false,
+  "refresh_ordinal": null,
+  "capture_predicate": "first normal 0.6s refresh solve rejected by unchanged native wheel speed/acceleration acceptance; one fresh midcross seed11 run, solver overlay pinned; both 0.6s replays use that paused fixed input",
+  "diagnostic_phases": [
+    "original_060",
+    "endpoint150_060"
+  ],
+  "diagnostic_budgets_s": [
+    0.6,
+    0.6
+  ],
+  "constraints_unchanged": true,
+  "objective_unchanged": true,
+  "initialization_unchanged": false,
+  "constraints_relaxed": false,
+  "supplemental_projected_final_gate": false,
+  "original_stop_policy": false,
+  "feasibility_stop_veto": false,
+  "detailed_profiling_only_inside_paused_solver": false,
+  "candidate_audit_target": "wheel",
+  "diagnostic_candidates_published": false,
+  "timeout_candidate_recovery_enabled": true,
+  "fast_dynamic_query_enabled": true,
+  "endpoint_time_experiment": true,
+  "endpoint_time_groups": [
+    {
+      "name": "original_060",
+      "endpoint_piece_time_factor": 1.0,
+      "budget_s": 0.6
+    },
+    {
+      "name": "endpoint150_060",
+      "endpoint_piece_time_factor": 1.5,
+      "budget_s": 0.6
+    }
+  ],
+  "endpoint_piece_rule": "multiply unique first/last piece indices within each gear segment once; leave every other piece unchanged",
+  "solver_overlay_freeze": true,
+  "boundary_pvaj_unchanged": true,
+  "gear_unchanged": true,
+  "native_acceptance_unchanged": true,
+  "initialization_scope": "only unique first/last piece durations per gear segment are multiplied by 1.5 in the treatment",
+  "latest_environment_acceptance_exercised": false,
+  "delivery_improvement_demonstrated": false
+}

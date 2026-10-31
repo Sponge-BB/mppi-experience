@@ -1,0 +1,90 @@
+{
+  "created": "2026-10-30T01:44:14.480140+00:00",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/delivery_optimization_20261030_01",
+  "build_manifest_sha256": "c42e1e39cb1496e3f6230c9608242b17da78245d881c09db8dae9c555ef581e9",
+  "trials": [
+    {
+      "scene": "static",
+      "group": "baseline",
+      "seed": 11,
+      "directory": "static_baseline_seed11"
+    },
+    {
+      "scene": "static",
+      "group": "optimized",
+      "seed": 11,
+      "directory": "static_optimized_seed11"
+    },
+    {
+      "scene": "midcross",
+      "group": "optimized",
+      "seed": 11,
+      "directory": "midcross_optimized_seed11"
+    },
+    {
+      "scene": "midcross",
+      "group": "baseline",
+      "seed": 11,
+      "directory": "midcross_baseline_seed11"
+    }
+  ],
+  "duration_s": 55.0,
+  "scenes": [
+    "static",
+    "midcross"
+  ],
+  "groups": [
+    "baseline",
+    "optimized"
+  ],
+  "paired_order": "AB/BA by scene",
+  "seed": 11,
+  "goal": [
+    6.0,
+    0.0
+  ],
+  "bounds": [
+    -1.5,
+    7.5,
+    -2.0,
+    2.0
+  ],
+  "actor_appearance_after_motion_s": 2.0,
+  "scene_actors": {
+    "static": [
+      [
+        3.0,
+        0.0,
+        0.0,
+        0.0,
+        0.23
+      ]
+    ],
+    "midcross": [
+      [
+        3.0,
+        -1.6,
+        0.0,
+        0.18,
+        0.23
+      ]
+    ]
+  },
+  "native_spheres": 67,
+  "wheel_omega": 4.1,
+  "prediction_upper_bound_s": 3.0,
+  "deadline_ms": 200.0,
+  "lease_ms": 250.0,
+  "initial_budget_s": 1.5,
+  "refresh_budget_s": 0.6,
+  "treatment_switches": [
+    "DELIVERY_FAST_QUERY",
+    "DELIVERY_ACCEPT_CANDIDATE"
+  ],
+  "same_binary": true,
+  "logging": "light timing capture; actual search subset at 1 Hz, no large input snapshots",
+  "no_outcome_selected_reruns": true,
+  "storage_reserve_mib": 400,
+  "scope": "fresh full REMANI+MPPI fixed-arm numerical ROS SIL; NOT Gazebo or hardware",
+  "limitations": "one seed per pair; tests combined changes online, not individual causal effects or success rates"
+}

@@ -1,0 +1,52 @@
+{
+  "group": "engineering",
+  "engineering": true,
+  "execution_weight": 0.0,
+  "handover_weight": 0.0,
+  "seed": 11,
+  "legacy_rolling": false,
+  "legacy_prefix": false,
+  "diagnostic_pause": true,
+  "genuine_online_closed_loop": false,
+  "engineering_scope": "additional projected qualification/soft cost only; retain native 3D, self-collision, wheel and long-horizon dynamic guards; not full dynamic feasibility equivalence and not an endpoint-stagnation fix",
+  "scope": "one frozen backend input; not a complete online delivery measurement",
+  "state_contract_capture": true,
+  "signed_low_speed": true,
+  "domain_recovery": true,
+  "boundary_admission": false,
+  "clearance_recovery": false,
+  "seed_parameterization_fix": true,
+  "navigation_metrics_valid": false,
+  "refresh_ordinal": 1,
+  "capture_predicate": "first normal 0.6s optimizer entry after reference exists, ordinary request (not dynamic_repair), valid nonempty native dynamic snapshot; ineligible entries do not consume refresh ordinal; no outcome selection",
+  "diagnostic_phases": [
+    "delivery_baseline_060",
+    "delivery_optimized_060"
+  ],
+  "diagnostic_budgets_s": [
+    0.6,
+    0.6
+  ],
+  "constraints_unchanged": true,
+  "objective_unchanged": true,
+  "initialization_unchanged": true,
+  "constraints_relaxed": false,
+  "supplemental_projected_final_gate": false,
+  "original_stop_policy": false,
+  "feasibility_stop_veto": false,
+  "detailed_profiling_only_inside_paused_solver": true,
+  "diagnostic_candidates_published": false,
+  "treatment_by_phase": {
+    "delivery_baseline_060": {
+      "fast_query": false,
+      "accept_candidate": false
+    },
+    "delivery_optimized_060": {
+      "fast_query": true,
+      "accept_candidate": true
+    }
+  },
+  "treatment": "equivalent dynamic distance query plus last-accepted timeout candidate native validation",
+  "budget_unchanged": true,
+  "candidate_gate": "same native IsTrajSafe; no publication from diagnostic; latest FSM gates not exercised"
+}

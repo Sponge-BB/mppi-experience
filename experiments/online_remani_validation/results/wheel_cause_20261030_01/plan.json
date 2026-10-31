@@ -1,0 +1,76 @@
+{
+  "created": "2026-10-30T04:36:56.782393+00:00",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/wheel_cause_20261030_03",
+  "build_manifest_sha256": "a660fa154c6a69d0c917e838babc4fd502f52d0a1e73744bde93618a46173984",
+  "trials": [
+    {
+      "directory": "midcross_wheel_seed11",
+      "target": "wheel",
+      "seed": 11
+    }
+  ],
+  "scene": "sphere_timing_midcross",
+  "duration_s": 55.0,
+  "goal": [
+    6.0,
+    0.0
+  ],
+  "bounds": [
+    -1.5,
+    7.5,
+    -2.0,
+    2.0
+  ],
+  "actor": [
+    3.0,
+    -1.6,
+    0.0,
+    0.18,
+    0.23
+  ],
+  "actor_appearance_after_motion_s": 2.0,
+  "collision_spheres": 67,
+  "deadline_ms": 200.0,
+  "lease_ms": 250.0,
+  "refresh_budget_s": 0.6,
+  "capture_predicate": "first normal 0.6s refresh solve rejected by unchanged native wheel speed/acceleration acceptance; one fresh midcross seed11 run, with solver overlay pinned; all three replays use that paused fixed input",
+  "groups": [
+    {
+      "name": "original_060",
+      "time_scale": 1.0,
+      "budget_s": 0.6
+    },
+    {
+      "name": "original_120",
+      "time_scale": 1.0,
+      "budget_s": 1.2
+    },
+    {
+      "name": "time150_060",
+      "time_scale": 1.5,
+      "budget_s": 0.6
+    }
+  ],
+  "candidate_audit_freeze_solver": 1,
+  "wheel_cause_replay": 1,
+  "same_paused_input": true,
+  "boundary_pvaj_unchanged": true,
+  "gear_unchanged": true,
+  "native_constraints_unchanged": true,
+  "native_acceptance_unchanged": true,
+  "storage_reserve_mib": 400,
+  "capture_allowance_mib": 12,
+  "no_outcome_selected_reruns": true,
+  "all_outcomes_retained": true,
+  "diagnostic_candidates_published": false,
+  "navigation_metrics_valid": false,
+  "online_performance_report": false,
+  "limitations": [
+    "one fresh seed11 run; target rejection may not occur",
+    "groups share the captured paused input, not three independent online runs",
+    "only native seed durations or solver budget change; boundary pvaj, gear and limits stay fixed",
+    "solver pin and paused replay add diagnostic work; whole-wall timing is contaminated",
+    "diagnostic candidates are never published; no live handoff or navigation improvement claim",
+    "numerical ROS SIL only; not Gazebo or hardware"
+  ]
+}

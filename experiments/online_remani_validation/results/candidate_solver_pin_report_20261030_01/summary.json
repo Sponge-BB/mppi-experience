@@ -1,0 +1,1982 @@
+{
+  "schema": "candidate_solver_pin_report_v1",
+  "plan": {
+    "created": "2026-10-30T03:42:02.095367+00:00",
+    "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/candidate_audit_20261030_03",
+    "build_manifest_sha256": "a6d015819034ef205a9f1eb627d0f3f3c3ccd8bfd6f1d12918e0cfc67a9703d2",
+    "trials": [
+      {
+        "scene": "midcross",
+        "group": "pin0",
+        "seed": 11,
+        "directory": "midcross_pin0_seed11"
+      },
+      {
+        "scene": "midcross",
+        "group": "pin1",
+        "seed": 11,
+        "directory": "midcross_pin1_seed11"
+      }
+    ],
+    "duration_s": 55.0,
+    "groups": [
+      "pin0",
+      "pin1"
+    ],
+    "seed": 11,
+    "goal": [
+      6.0,
+      0.0
+    ],
+    "bounds": [
+      -1.5,
+      7.5,
+      -2.0,
+      2.0
+    ],
+    "actor": [
+      3.0,
+      -1.6,
+      0.0,
+      0.18,
+      0.23
+    ],
+    "actor_appearance_after_motion_s": 2.0,
+    "collision_spheres": 67,
+    "wheel_omega": 4.1,
+    "deadline_ms": 200.0,
+    "lease_ms": 250.0,
+    "initial_budget_s": 1.5,
+    "refresh_budget_s": 0.6,
+    "sole_algorithm_switch": "CANDIDATE_AUDIT_FREEZE_SOLVER",
+    "delivery_fast_query": 1,
+    "delivery_accept_candidate": 1,
+    "recorder_target": "observe",
+    "recorder_enabled_in_both": true,
+    "runtime_pin_counter_available": true,
+    "diagnostic_pause": false,
+    "genuine_online_closed_loop": true,
+    "navigation_metrics_valid": true,
+    "storage_reserve_mib": 400,
+    "no_outcome_selected_reruns": true,
+    "scope": "fixed-arm full REMANI+MPPI numerical ROS SIL; not Gazebo or hardware",
+    "limitations": [
+      "one seed and fixed OFF/ON order; not a statistical success-rate comparison",
+      "same recorder memory and instrumentation in both arms; recorder overhead remains",
+      "pin holds the present overlay during eligible solve/native gate; live FSM keeps its current-map acceptance",
+      "per-request pin/overlay counters are recorded; post-run analysis must verify actual ownership and changes",
+      "online states and later optimizer inputs can differ between arms"
+    ]
+  },
+  "trials": [
+    {
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_solver_pin_20261030_01/midcross_pin0_seed11",
+      "scene": "sphere_timing_midcross",
+      "seed": 11,
+      "total_spheres": 67,
+      "fixed_spheres": 47,
+      "arm_spheres": 20,
+      "valid_experiment": true,
+      "audit_valid": true,
+      "required_process_failed": false,
+      "runner_error": null,
+      "termination": "goal",
+      "reached_goal": true,
+      "observed_duration_s": 37.07027311099955,
+      "goal_sent_t": 7.012611058000402,
+      "anchor_t": 8.552973146001023,
+      "end_t": 45.623246257000574,
+      "model_sample_contact": false,
+      "minimum_own_model_sample_gap_m": 0.33843515797838875,
+      "measured_stops": {
+        "available": true,
+        "window_start_s": 8.552973146001023,
+        "window_end_s": 44.631969645000936,
+        "total_s": 0.10919093499978771,
+        "longest_s": 0.10919093499978771,
+        "intervals": [
+          {
+            "start_s": 18.659430738000083,
+            "end_s": 18.76862167299987,
+            "duration_s": 0.10919093499978771
+          }
+        ],
+        "definition": "measured |v| < 0.01 m/s and |w| < 0.03 rad/s; left-sample intervals",
+        "zero_command_is_not_measured_stop": true
+      },
+      "mppi": {
+        "published_cycles": 648,
+        "invoked_solver_cycles": 635,
+        "kernel_ms": {
+          "n": 635,
+          "p50": 13.700621,
+          "p95": 74.9730834,
+          "maximum": 129.378222,
+          "mean": 20.02145268031496
+        },
+        "callback_ms": {
+          "n": 635,
+          "p50": 36.61491700040642,
+          "p95": 93.48964729870204,
+          "maximum": 157.45491099914943,
+          "mean": 39.63071501254783
+        },
+        "validation": {
+          "cycles": 635,
+          "attempts": 642,
+          "cycle_wall_ms": {
+            "n": 635,
+            "p50": 15.099263999218238,
+            "p95": 28.917037099745357,
+            "maximum": 44.98750800303242,
+            "mean": 15.100691845710092
+          },
+          "cycle_main_thread_cpu_ms": {
+            "n": 635,
+            "p50": 13.119679999999967,
+            "p95": 24.8197343999994,
+            "maximum": 44.83887999999858,
+            "mean": 13.293080239370127
+          },
+          "per_attempt_wall_ms": {
+            "n": 642,
+            "p50": 14.996987501035619,
+            "p95": 28.833515199676178,
+            "maximum": 42.985738000425044,
+            "mean": 14.936042557672755
+          },
+          "per_attempt_main_thread_cpu_ms": {
+            "n": 642,
+            "p50": 13.043568000000505,
+            "p95": 24.785316800000956,
+            "maximum": 31.974560000001873,
+            "mean": 13.14814011214958
+          },
+          "missing_or_incomplete_timer_cycles": 0,
+          "retry_cycles": 1,
+          "extra_retry_attempts": 7,
+          "final_code_counts": {
+            "0": 634,
+            "3": 1
+          },
+          "scope": "sum of actual execution-validation call timers per solver cycle, including all retries; not callback minus kernel; thread CPU excludes other threads"
+        },
+        "solver_phase": {
+          "freepath": {
+            "kernel_ms": {
+              "n": 129,
+              "p50": 2.27445,
+              "p95": 8.3132652,
+              "maximum": 18.28005,
+              "mean": 3.124806968992248
+            },
+            "callback_ms": {
+              "n": 129,
+              "p50": 7.762198998534586,
+              "p95": 21.49208820046621,
+              "maximum": 51.24529999920924,
+              "mean": 9.749700620111332
+            }
+          },
+          "monitoring": {
+            "kernel_ms": {
+              "n": 427,
+              "p50": 14.314051,
+              "p95": 23.159927699999997,
+              "maximum": 45.43917,
+              "mean": 15.010142355971897
+            },
+            "callback_ms": {
+              "n": 427,
+              "p50": 37.688010999772814,
+              "p95": 57.28389119940402,
+              "maximum": 85.88695999969786,
+              "mean": 39.19432407255059
+            }
+          },
+          "intervention": {
+            "kernel_ms": {
+              "n": 79,
+              "p50": 71.435977,
+              "p95": 111.6124753,
+              "maximum": 129.378222,
+              "mean": 74.69862743037974
+            },
+            "callback_ms": {
+              "n": 79,
+              "p50": 85.4982109995035,
+              "p95": 132.0322459005183,
+              "maximum": 157.45491099914943,
+              "mean": 90.78248448094189
+            }
+          },
+          "unknown": {
+            "kernel_ms": {
+              "n": 0,
+              "p50": null,
+              "p95": null,
+              "maximum": null,
+              "mean": null
+            },
+            "callback_ms": {
+              "n": 0,
+              "p50": null,
+              "p95": null,
+              "maximum": null,
+              "mean": null
+            }
+          }
+        },
+        "publication_interval_ms": {
+          "n": 647,
+          "p50": 55.62692899911781,
+          "p95": 105.39128800010076,
+          "maximum": 174.84375999993063,
+          "mean": 59.589056415766564
+        },
+        "publication_intervals_over_lease": 0,
+        "callback_over_deadline": 0,
+        "deadline_labels": 0,
+        "validated_nonzero_discarded_late": 0,
+        "reason_counts": {
+          "waiting_native_trajectory": 13,
+          "ok": 634,
+          "local_validation_failed": 1
+        },
+        "missing_diagnostic_invocations": 0,
+        "kernel_failures": 0,
+        "scope": "invoked solver cycles, including failures; update intervals use all consecutive actual command publications after goal; monotonic wall-clock milliseconds"
+      },
+      "loop": {
+        "available": true,
+        "active_loop_wall_ms": {
+          "n": 648,
+          "p50": 47.61659250016237,
+          "p95": 105.79593805005061,
+          "maximum": 170.64332100017054,
+          "mean": 50.89897919597038
+        },
+        "active_loop_main_thread_cpu_ms": {
+          "n": 648,
+          "p50": 37.24580800000021,
+          "p95": 93.27388319999947,
+          "maximum": 139.1562879999988,
+          "mean": 40.67279209876542
+        },
+        "scope": "cycle_start to sleep_enter, including publication/logging; excludes deliberate sleep and other Python/ROS threads"
+      },
+      "cpu": {
+        "remani_planner_node": {
+          "n": 192,
+          "p50": 153.9595263223207,
+          "p95": 179.86539341851372,
+          "maximum": 199.83808518863256,
+          "mean": 142.98733923944565
+        },
+        "base_mppi": {
+          "n": 192,
+          "p50": 94.92470643511392,
+          "p95": 114.91343240752077,
+          "maximum": 119.91324157100671,
+          "mean": 88.37380415616325
+        },
+        "system_busy_pct": {
+          "n": 192,
+          "p50": 78.40324240864643,
+          "p95": 86.12992922143579,
+          "maximum": 97.10144927536231,
+          "mean": 77.28095297968171
+        },
+        "scope": "process total CPU percent; 100% is one logical core; sampled mean/P95, filtered by monotonic command-publication interval; not optimizer-only CPU"
+      },
+      "remani": {
+        "available": true,
+        "started": 3,
+        "completed": 3,
+        "pending": 0,
+        "accepted": 2,
+        "failed": 1,
+        "unknown_outcome": 0,
+        "refresh_completed": 2,
+        "refresh_accepted": 1,
+        "completed_request_wall_ms": {
+          "n": 3,
+          "p50": 1042.5697520004178,
+          "p95": 1328.4163751006417,
+          "maximum": 1360.1771110006666,
+          "mean": 1002.8044606672969
+        },
+        "completed_refresh_wall_ms": {
+          "n": 2,
+          "p50": 1201.3734315005422,
+          "p95": 1344.2967430506542,
+          "maximum": 1360.1771110006666,
+          "mean": 1201.3734315005422
+        },
+        "request_groups": {
+          "initial": {
+            "n": 1,
+            "p50": 605.6665190008061,
+            "p95": 605.6665190008061,
+            "maximum": 605.6665190008061,
+            "mean": 605.6665190008061
+          },
+          "refresh_success": {
+            "n": 1,
+            "p50": 1042.5697520004178,
+            "p95": 1042.5697520004178,
+            "maximum": 1042.5697520004178,
+            "mean": 1042.5697520004178
+          },
+          "refresh_failure": {
+            "n": 1,
+            "p50": 1360.1771110006666,
+            "p95": 1360.1771110006666,
+            "maximum": 1360.1771110006666,
+            "mean": 1360.1771110006666
+          }
+        },
+        "completed_request_cumulative_ms": 3008.4133820018906,
+        "frontend_wall_ms": {
+          "n": 3,
+          "p50": 443.2468209997751,
+          "p95": 694.2243759993289,
+          "maximum": 722.1107709992793,
+          "mean": 427.9753599997396
+        },
+        "backend_wall_ms": {
+          "n": 3,
+          "p50": 548.158114999751,
+          "p95": 624.8089037000682,
+          "maximum": 633.3256580001034,
+          "mean": 540.4869909998524
+        },
+        "backend_thread_cpu_ms": {
+          "n": 3,
+          "p50": 541.8155200000001,
+          "p95": 603.0073983999996,
+          "maximum": 609.8064959999996,
+          "mean": 529.2347306666666
+        },
+        "backend_runqueue_wait_ms": {
+          "n": 3,
+          "p50": 2.772256000000028,
+          "p95": 12.459740800000137,
+          "maximum": 13.53612800000015,
+          "mean": 5.9775680000001
+        },
+        "backend_outcomes": {
+          "ok": 2,
+          "planning_collision": 1
+        },
+        "outcomes": {
+          "accepted": 2,
+          "optimizer_reject_or_timeout": 1
+        },
+        "blocked_to_first_consumed_refresh_s": 3.6151681640000106,
+        "first_native_blocked_t": 17.14290499599997,
+        "first_refresh_consume_t": 20.75807315999998,
+        "waiting_for_refresh_at_end": false,
+        "observed_refresh_wait_lower_bound_s": null,
+        "request_rows": [
+          {
+            "request_id": 1,
+            "start_sim_s": 7.052788437999993,
+            "end_sim_s": 7.655335421000018,
+            "start_mono": 10009.37657812,
+            "end_mono": 10009.982244639,
+            "request_wall_ms": 605.6665190008061,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 0,
+            "start_y": 0,
+            "start_yaw": 0,
+            "stage_wall_ms": {
+              "search": 118.5684880001645,
+              "initialization": 118.73899000056554,
+              "optimizer": 440.1915119997284,
+              "manager_replan": 562.473702000716,
+              "live_acceptance": 41.17453700018814
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 5.561480000324082,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 2,
+                "wall_ms": 439.9771999997029,
+                "thread_cpu_ms": 436.082176,
+                "runqueue_wait_ms": 2.772256000000028,
+                "budget_s": 1.5,
+                "iterations": 66,
+                "input_hash": "8775951166031383002",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.100165932810685,
+                "max_right_omega": 4.100165932810685
+              }
+            ],
+            "outcome_class": "accepted"
+          },
+          {
+            "request_id": 2,
+            "start_sim_s": 17.367740088999994,
+            "end_sim_s": 18.739750586000014,
+            "start_mono": 10019.711702081,
+            "end_mono": 10021.071879192,
+            "request_wall_ms": 1360.1771110006666,
+            "success": false,
+            "local_execution_owner": true,
+            "start_x": 1.9746821373626509,
+            "start_y": -0.033165309699558346,
+            "start_yaw": -0.06155369956312048,
+            "stage_wall_ms": {
+              "search": 722.1107709992793,
+              "initialization": 722.3398990008718,
+              "optimizer": 633.7390169992432,
+              "manager_replan": 1358.7409949996072
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 4.098195000551641,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 4,
+                "wall_ms": 633.3256580001034,
+                "thread_cpu_ms": 609.8064959999996,
+                "runqueue_wait_ms": 13.53612800000015,
+                "budget_s": 0.6,
+                "iterations": 43,
+                "input_hash": "5762751943519555193",
+                "success": false,
+                "failure_trace_matched": true,
+                "reason": "planning_collision",
+                "rejection_value": 0,
+                "max_left_omega": 4.178816316286178,
+                "max_right_omega": 4.117775844209671,
+                "lbfgs_wall_ms": 604.8883470000001,
+                "native_validation_ms": 25.983047,
+                "force_stop": 3
+              }
+            ],
+            "outcome_class": "optimizer_reject_or_timeout"
+          },
+          {
+            "request_id": 3,
+            "start_sim_s": 19.613939242000015,
+            "end_sim_s": 20.651973567000027,
+            "start_mono": 10021.938204078,
+            "end_mono": 10022.98077383,
+            "request_wall_ms": 1042.5697520004178,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 2.0468661363119875,
+            "start_y": -0.03339373810867656,
+            "start_yaw": 0.025839090002842204,
+            "stage_wall_ms": {
+              "search": 443.2468209997751,
+              "initialization": 443.41031499970995,
+              "optimizer": 548.4196600009454,
+              "manager_replan": 994.6199000005436,
+              "live_acceptance": 44.31727399969532
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 6.422503000067081,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 6,
+                "wall_ms": 548.158114999751,
+                "thread_cpu_ms": 541.8155200000001,
+                "runqueue_wait_ms": 1.624320000000123,
+                "budget_s": 0.6,
+                "iterations": 69,
+                "input_hash": "15039467596403462505",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.097049106542176,
+                "max_right_omega": 4.10115509456986,
+                "lbfgs_wall_ms": 459.596017,
+                "native_validation_ms": 86.37373000000001,
+                "force_stop": 0
+              }
+            ],
+            "outcome_class": "accepted"
+          }
+        ],
+        "incomplete_request_ids": [],
+        "limitations": "search includes A* / initial polynomial work, not pure graph-search CPU; request/frontend/backend overlap and must not be summed; all completed failures included"
+      },
+      "alignment": {
+        "excluded_contact_or_later_rows": 1,
+        "missing_diagnostics": 0,
+        "missing_precontact_diagnostics": 0,
+        "unmatched_diagnostics": 0,
+        "matched_by": "solve timestamp, reason, validation code, ordered within duplicate keys; cycle publication controls cutoff"
+      },
+      "consumed_references": 2,
+      "actual_reference_settings": {
+        "goal": [
+          6.0,
+          0.0
+        ],
+        "previous_goal": [
+          3.0,
+          0.0
+        ],
+        "bounds": [
+          -1.5,
+          7.5,
+          -2.0,
+          2.0
+        ],
+        "previous_bounds": [
+          -1.5,
+          4.5,
+          -2.0,
+          2.0
+        ],
+        "wheel_omega_rad_s": 4.1,
+        "previous_wheel_omega_rad_s": 3.28,
+        "wheel_v_m_s": 0.287,
+        "previous_wheel_v_m_s": 0.2296,
+        "wheel_acceleration_unchanged": true,
+        "prediction_upper_bound_s": 3.0,
+        "previous_native_prediction_upper_bound_s": 2.0,
+        "actual_mppi_horizon": "Native validity minus observation age and 10 ms reserve, rounded down to 0.1 s steps",
+        "map_grid": "Native 15 x 10 m grid unchanged; goal and whole fixed body remain inside its x upper limit of 7.5 m",
+        "actor_crossing_x_m": null,
+        "actor_velocity_m_s": null,
+        "appearance_after_motion_s": 2.0,
+        "constant_velocity_actor_persists": true,
+        "terminal_near_obstacle_cost": "MPPI预测轨迹末端近障惩罚: not restored in this settings-only experiment",
+        "unchanged": [
+          "candidate strategy",
+          "wheel and body acceleration limits",
+          "body speed and yaw-speed caps",
+          "200 ms deadline / 250 ms command lease",
+          "REMANI solve budgets",
+          "latest-state rollout and fallback braking validation"
+        ],
+        "notes": "Common 6m arena/speed/horizon; each scene comes from manifest.scenario. Only collision model differs within a pair.",
+        "production_changed": false,
+        "compiled_binary_reused": true,
+        "scope": "One fixed-arm differential-drive native ROS numerical SIL run, NOT Gazebo/hardware",
+        "configuration_sha256": {
+          "limits.json": "ad2dd3664eab3d90d12bfe1be0cd3cd3d154b9246c0a2b80fa42e7b7568037a6",
+          "parameters.yaml": "94acb024c791486ea4fe1d48401bee19e3027ff29ce176287a725727a427beed",
+          "scenario.json": "80028ca1face903246d0d3ca948a9461135f96ee5cc33ce032fbb6a33bfcb452",
+          "shared_collision_config.json": "4215ed94a89411ea2eaf09070bba2d7ad6aeec9eb28733417b22d9d908d8627e"
+        }
+      },
+      "collision_scope": "own recorded sphere model versus finite walls/cylinders; different sphere geometry means these gaps are not a common mesh-level accuracy test",
+      "scope": "fixed-arm differential-drive full REMANI + MPPI online numerical ROS SIL; not Gazebo or hardware",
+      "statistical_success_rate_claim": false,
+      "input_sha256": {
+        "manifest.json": "05a5e2872db886a949ce0e657f0686e916abd177ea259e9e89f608798952b095",
+        "coupling_parameters.json": "dc4c56343f3715a62725295463b023b31d925bd51350c9678eb865000377ae15",
+        "result.json": "4883bfca0eacb7d855b6cf1eb4df286aed4fd43c24e1438685b6e318fa2c495c",
+        "run_status.json": "cca3623cd385c2f206cc9d6985a74f4fe6d98b9895256a2ca807d8030676404b",
+        "trial_audit.json": "a4f1a3d335a41f0216388b19b10b21b1adc12d93f27c2b4e758f5bea2fc9bab1",
+        "state.csv": "6990e82d7f710f904dc9b2ce2b2d29cda527ef3d0cec3864444798d24c581479",
+        "native_collision_3d_body.json": "e40091a34c146f80b7c00a0bd6482158f0876a9f6956b975e984c2bca3f8326c",
+        "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+        "consumed_references.jsonl": "de8b20c678587f2c20905e1de69a93b57389898ba307ad8fd1f0a8b55eb5f5a6",
+        "reference_events.jsonl": "1a793f4909064cfe014ea55cb12ed8553b9531eba3842a230aea26303ec9ca5c",
+        "execution_rollouts.jsonl.gz": "25b553ae48b9ee755eb304b1e081619d36e08881e42cfa1f94149a0407ee2968",
+        "mppi_diagnostics.json.gz": "c09d7bb78ca68b0b21f20a4668debc326bb3d8db619b973be06224e511577487",
+        "search/000000.npz": "7a8e5f3311e3306386570caa27d6b1ab70365d2c279f2f2459dc39110899bc3c",
+        "search/000001.npz": "f4568d8117eaa984730623865eaa5e35e2801bab65fd76da508c88c81f9fba87",
+        "search/000002.npz": "0756db360a086fa242e4baec1b588b4ae59bcffe1bc6c6d6423bcc0a3ca82fc3",
+        "search/000003.npz": "7039a94d2de295b56024e1e31d23ed012318f0522ebe83a3f4d5cb903fa51927",
+        "search/000004.npz": "a9474c8df837fc7e21f34308dd5fe6022ebc546258ba08809b2823a35bb40e0c",
+        "search/000005.npz": "b7926750aefdfc5c15b9bd259e69fe44a540aad3880cc6452475af5ac91251ae",
+        "search/000006.npz": "df1388a3bdd097f477439483b0077b2820c94d3fe7fc5a06d85dd87430973a2b",
+        "search/000007.npz": "aa9495b3ae4e87443c51ad9dc32c31e4b7c59afa2624f25b3f6f290236a7bdef",
+        "search/000008.npz": "5533a877f0862a2de8af74cdf041ed8ed9247953d4e7cbfac040d2d248bb4e79",
+        "search/000009.npz": "56805d8226e0c85e294057037311425216b25f72af802c6030362e0954592d0c",
+        "search/000010.npz": "b1c35783d35f16c15f7894689fb6a8d9a422c0abb920ceb41b2891f3eb292019",
+        "search/000011.npz": "9220c27b95473fa7b96b1be5c69b1c65cb757454469539f53c804366f12adb87",
+        "search/000012.npz": "3a380d810948ce95400b9d8393dc171e9a6031f75c32e704329a5ed5029f7883",
+        "search/000013.npz": "051cb8c3635449e3c97d609798f8fe9f137b3786f4376cf36c8de99775bf2f0c",
+        "search/000014.npz": "aa7bfea04cce6ce61fb717e491ac6bd09c5dc5ec7b3503a53d038e25127fba78",
+        "search/000015.npz": "fb09b66c3e19391b094811f03cb45691f5715f9fa5a05da1f521f12a93cca4ed",
+        "search/000016.npz": "403b78217920eb622848c17b059760d7c7aa4b2869caee04fd4a773eb3cccee3",
+        "search/000017.npz": "947bde5f4c5bdd2acba59a467ffd00085b0e4d345373fd62e9901ac2fb21995a",
+        "search/000018.npz": "af84d9cda99e3e364c9160812bf2099a0bd821b72027eb71a8fb7e8a0db13193",
+        "search/000019.npz": "26395bf3309df18464c25b4a1860395a931c8a34d3fac638b2a967b0c1ac7168",
+        "search/000020.npz": "fcfcbf83fa93e2351a1ca3395ba23ca6a57798aeb16bcd62edfe1983f4cd4009",
+        "search/000021.npz": "6afb25d69b88f4c02f072259a17d573b24a7906e0d9855b11deb6b363db6fe62",
+        "search/000022.npz": "ebf5c7b9e5dac83776aa4f72c7e0a3c4c98d54be1c1c015e4781cf91e420cee1",
+        "search/000023.npz": "6a457dcca4a448cc89a211a9d3d61dd7c20965a454bb04af7a401a02a7634b4f",
+        "search/000024.npz": "9d6fa544e98c559490a447991a895bcc108a3f5b125795cd35963ca6905c3a3a",
+        "search/000025.npz": "d6ba284f8df120897db2ba53a7df84180ebcffda8578d7e5d0991a97e2e5a979",
+        "search/000026.npz": "5128116a9055509f12c2ab5cef252d533c4c6710671cee1197b201b1fb8ccbed",
+        "search/000027.npz": "ce8b43bd373aeb397f714293acd443f3ef0afcd478708b11c220964ecb3ce4b6",
+        "search/000028.npz": "ce52bdeb563c1f1094de07fad47612b374b9a90a63fdba723da88cd639baacbe",
+        "search/000029.npz": "b6ad916139ebcff49445b2ef2486e3cd437ef16c2a652fe65f8341738580203f",
+        "search/000030.npz": "c1f5b5522f086dc3c53630e318e67cd5240bbdf32aed448c17822ac4ef3b3427",
+        "search/000031.npz": "6b0b25802cc5a3badfb5e1555b8636f62ef0916c1641ddda204cdce56198f6b5",
+        "search/000032.npz": "042a043e095a464f7ceebf878cd559e6bdb1fa92c98f7d08dab318521f9807bb",
+        "search/000033.npz": "81822d1b4019d607a85389d6b81bd9b46b1a6b3d732a7cc70b975a03c4a8f8e0",
+        "search/000034.npz": "4a3ec9202416219087d41d73ee2c87a70b483d0e4dc454e6e5aa4956cf0f2815",
+        "search/000035.npz": "9ff72ee70c3148e9ff0e89082a2c246e7f53d27951a832448d5f7b651768ca8a",
+        "search/000036.npz": "0a34f3e7424f03f379080bc12df941171047ad5a3aa0a20931e1df4ecaaea20f",
+        "search/000037.npz": "fd344e368f7a9f53ed9847fff3f6f0a9d654bada3c58c4c38a3e746983d70d2b",
+        "search/000038.npz": "e8f73f7a2b7ffd6565cf21d44c76ab5039e87cf921d2eab5e2706d5ade1fba72",
+        "search/000039.npz": "75917269c0a612f49d8355d464aa0fb588329d2f8981bc9bb8b82db844425963",
+        "search/000040.npz": "836746a4e7de379ff42f695f5a9781c976467f59d1528db6d7ed41b9d3905f55",
+        "search/000041.npz": "356595432cb36839cfad9757ce14b81716b82a4d1bad990a54a3827df61c80c6",
+        "search/000042.npz": "563f4717a5693779e9bd57d2cdbf7e586fbd637e2247c7bf7c9b46b3d118d737",
+        "search/000043.npz": "bb2bba2e816f738160f857fcb157b230107c53edbb06f6bffe36e60312cf2b54",
+        "search/000044.npz": "fc0509acc8f683fbff92913f6c8ac3eb52191ee7a7ea410dbb9fd3ce6863cb0d",
+        "obstacles.csv": "27a4f8bfd84f84adb0c8b682c1dd975ab5c1d5c38ed2a36b1a1ca45a6ddfac76",
+        "state_mppi_cycles.jsonl": "bf6f7c5855d311370a590fb1c2f9dcebae1fed257cf834c6f3376bdd2d2e1daa",
+        "cpu_samples.jsonl.gz": "5400df26326e0a635d44af600a8608a2c520d9757933778cba946d360ffad383",
+        "loop_stages.json": "ff7a411f5203b2eb2c3c7c60b1f0239319bc496f768babaf62d1206cee1fa8bb",
+        "analysis/summary.json": "502bae6bc7a7af71e45febfdbb7631ec66d8ba4c7ab875e3a8344f81f4527ccd",
+        "limits.json": "ad2dd3664eab3d90d12bfe1be0cd3cd3d154b9246c0a2b80fa42e7b7568037a6",
+        "solver_trace.jsonl": "ca64d214ef94e64e39c5c9fe00cd76f68b1cdb19378b9660e4e7e4a53db0d5e3"
+      },
+      "group": "pin0",
+      "pin_runtime": {
+        "eligible_calls": 2,
+        "runtime_proof_pass": true,
+        "evaluations": 112,
+        "evaluations_with_changed_overlay": 21,
+        "calls_with_changed_entry_return": 2,
+        "calls": [
+          {
+            "optimizer_id": 4,
+            "passed": true,
+            "requested": 0,
+            "acquired": 0,
+            "entry": {
+              "sequence": 150,
+              "refresh_nsec": 1018088466715,
+              "size": 1521,
+              "radii_size": 1521,
+              "cloud_address": "281472024033936",
+              "enabled": true,
+              "ready": true,
+              "frozen": false
+            },
+            "returned": {
+              "sequence": 157,
+              "refresh_nsec": 1018739750586,
+              "size": 1521,
+              "radii_size": 1521,
+              "cloud_address": "281472023936416",
+              "enabled": true,
+              "ready": true,
+              "frozen": false
+            },
+            "completed_evaluations": 43,
+            "evaluations_with_changed_overlay": 12,
+            "content_stable": false,
+            "lbfgs_wall_ms": 604.8883470000001,
+            "native_validation_ms": 25.983047,
+            "optimizer_success": false,
+            "force_stop": 3
+          },
+          {
+            "optimizer_id": 6,
+            "passed": true,
+            "requested": 0,
+            "acquired": 0,
+            "entry": {
+              "sequence": 169,
+              "refresh_nsec": 1020038178373,
+              "size": 1352,
+              "radii_size": 1352,
+              "cloud_address": "281472023937696",
+              "enabled": true,
+              "ready": true,
+              "frozen": false
+            },
+            "returned": {
+              "sequence": 175,
+              "refresh_nsec": 1020590890699,
+              "size": 1274,
+              "radii_size": 1274,
+              "cloud_address": "281472023956400",
+              "enabled": true,
+              "ready": true,
+              "frozen": false
+            },
+            "completed_evaluations": 69,
+            "evaluations_with_changed_overlay": 9,
+            "content_stable": false,
+            "lbfgs_wall_ms": 459.596017,
+            "native_validation_ms": 86.37373000000001,
+            "optimizer_success": true,
+            "force_stop": 0
+          }
+        ],
+        "scope": "ordinary completed 0.6s refresh solver calls; return key observed before function-scope pin release"
+      },
+      "refresh_requests": [
+        {
+          "request_id": 2,
+          "start_sim_s": 17.367740088999994,
+          "end_sim_s": 18.739750586000014,
+          "start_mono": 10019.711702081,
+          "end_mono": 10021.071879192,
+          "request_wall_ms": 1360.1771110006666,
+          "success": false,
+          "local_execution_owner": true,
+          "start_x": 1.9746821373626509,
+          "start_y": -0.033165309699558346,
+          "start_yaw": -0.06155369956312048,
+          "stage_wall_ms": {
+            "search": 722.1107709992793,
+            "initialization": 722.3398990008718,
+            "optimizer": 633.7390169992432,
+            "manager_replan": 1358.7409949996072
+          },
+          "search_results": [
+            {
+              "status": 2,
+              "success": true,
+              "status_name": "REACH_END"
+            }
+          ],
+          "target_selection_reject_source_ros": [],
+          "acceptance_rejections": [],
+          "other_request_wall_ms": 4.098195000551641,
+          "search_inside_initialization": true,
+          "optimizer_calls": [
+            {
+              "resource_optimizer_id": 4,
+              "wall_ms": 633.3256580001034,
+              "thread_cpu_ms": 609.8064959999996,
+              "runqueue_wait_ms": 13.53612800000015,
+              "budget_s": 0.6,
+              "iterations": 43,
+              "input_hash": "5762751943519555193",
+              "success": false,
+              "failure_trace_matched": true,
+              "reason": "planning_collision",
+              "rejection_value": 0,
+              "max_left_omega": 4.178816316286178,
+              "max_right_omega": 4.117775844209671,
+              "lbfgs_wall_ms": 604.8883470000001,
+              "native_validation_ms": 25.983047,
+              "force_stop": 3
+            }
+          ],
+          "outcome_class": "optimizer_reject_or_timeout"
+        },
+        {
+          "request_id": 3,
+          "start_sim_s": 19.613939242000015,
+          "end_sim_s": 20.651973567000027,
+          "start_mono": 10021.938204078,
+          "end_mono": 10022.98077383,
+          "request_wall_ms": 1042.5697520004178,
+          "success": true,
+          "local_execution_owner": true,
+          "start_x": 2.0468661363119875,
+          "start_y": -0.03339373810867656,
+          "start_yaw": 0.025839090002842204,
+          "stage_wall_ms": {
+            "search": 443.2468209997751,
+            "initialization": 443.41031499970995,
+            "optimizer": 548.4196600009454,
+            "manager_replan": 994.6199000005436,
+            "live_acceptance": 44.31727399969532
+          },
+          "search_results": [
+            {
+              "status": 2,
+              "success": true,
+              "status_name": "REACH_END"
+            }
+          ],
+          "target_selection_reject_source_ros": [],
+          "acceptance_rejections": [],
+          "other_request_wall_ms": 6.422503000067081,
+          "search_inside_initialization": true,
+          "optimizer_calls": [
+            {
+              "resource_optimizer_id": 6,
+              "wall_ms": 548.158114999751,
+              "thread_cpu_ms": 541.8155200000001,
+              "runqueue_wait_ms": 1.624320000000123,
+              "budget_s": 0.6,
+              "iterations": 69,
+              "input_hash": "15039467596403462505",
+              "success": true,
+              "failure_trace_matched": true,
+              "reason": "ok",
+              "rejection_value": 0,
+              "max_left_omega": 4.097049106542176,
+              "max_right_omega": 4.10115509456986,
+              "lbfgs_wall_ms": 459.596017,
+              "native_validation_ms": 86.37373000000001,
+              "force_stop": 0
+            }
+          ],
+          "outcome_class": "accepted"
+        }
+      ],
+      "refresh_failure_reasons": {
+        "planning_collision": 1
+      },
+      "refresh_lbfgs_wall_ms": {
+        "n": 2,
+        "p50": 532.2421820000001,
+        "p95": 597.6237305000001,
+        "maximum": 604.8883470000001,
+        "mean": 532.2421820000001
+      },
+      "refresh_native_validation_ms": {
+        "n": 2,
+        "p50": 56.178388500000004,
+        "p95": 83.35419585000001,
+        "maximum": 86.37373000000001,
+        "mean": 56.178388500000004
+      },
+      "refresh_live_acceptance_ms": {
+        "n": 1,
+        "p50": 44.31727399969532,
+        "p95": 44.31727399969532,
+        "maximum": 44.31727399969532,
+        "mean": 44.31727399969532
+      }
+    },
+    {
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/candidate_solver_pin_20261030_01/midcross_pin1_seed11",
+      "scene": "sphere_timing_midcross",
+      "seed": 11,
+      "total_spheres": 67,
+      "fixed_spheres": 47,
+      "arm_spheres": 20,
+      "valid_experiment": true,
+      "audit_valid": true,
+      "required_process_failed": false,
+      "runner_error": null,
+      "termination": "goal",
+      "reached_goal": true,
+      "observed_duration_s": 39.486568749998696,
+      "goal_sent_t": 7.016100623999591,
+      "anchor_t": 8.628984199000115,
+      "end_t": 48.11555294899881,
+      "model_sample_contact": false,
+      "minimum_own_model_sample_gap_m": 0.20142494510001763,
+      "measured_stops": {
+        "available": true,
+        "window_start_s": 8.628984199000115,
+        "window_end_s": 47.12459110099917,
+        "total_s": 0.27566607399785426,
+        "longest_s": 0.21539824299907195,
+        "intervals": [
+          {
+            "start_s": 19.517903021000166,
+            "end_s": 19.733301263999238,
+            "duration_s": 0.21539824299907195
+          },
+          {
+            "start_s": 22.485168971999883,
+            "end_s": 22.545436802998665,
+            "duration_s": 0.0602678309987823
+          }
+        ],
+        "definition": "measured |v| < 0.01 m/s and |w| < 0.03 rad/s; left-sample intervals",
+        "zero_command_is_not_measured_stop": true
+      },
+      "mppi": {
+        "published_cycles": 673,
+        "invoked_solver_cycles": 657,
+        "kernel_ms": {
+          "n": 657,
+          "p50": 12.499618,
+          "p95": 86.19607219999993,
+          "maximum": 138.136104,
+          "mean": 21.93875515372907
+        },
+        "callback_ms": {
+          "n": 657,
+          "p50": 33.61205700093706,
+          "p95": 104.21239480019712,
+          "maximum": 164.4966359999671,
+          "mean": 39.077886707775754
+        },
+        "validation": {
+          "cycles": 657,
+          "attempts": 678,
+          "cycle_wall_ms": {
+            "n": 657,
+            "p50": 13.436836001346819,
+            "p95": 27.432442799545225,
+            "maximum": 51.22373000449443,
+            "mean": 13.384529742795625
+          },
+          "cycle_main_thread_cpu_ms": {
+            "n": 657,
+            "p50": 12.194048000001345,
+            "p95": 24.6414399999999,
+            "maximum": 48.422944000000356,
+            "mean": 11.989557382039603
+          },
+          "per_attempt_wall_ms": {
+            "n": 678,
+            "p50": 12.912128499920072,
+            "p95": 27.048525749432883,
+            "maximum": 41.550967000148376,
+            "mean": 12.969964662266557
+          },
+          "per_attempt_main_thread_cpu_ms": {
+            "n": 678,
+            "p50": 11.792751999998075,
+            "p95": 24.125769600000517,
+            "maximum": 31.62003200000285,
+            "mean": 11.618199410029527
+          },
+          "missing_or_incomplete_timer_cycles": 0,
+          "retry_cycles": 4,
+          "extra_retry_attempts": 21,
+          "final_code_counts": {
+            "0": 655,
+            "3": 2
+          },
+          "scope": "sum of actual execution-validation call timers per solver cycle, including all retries; not callback minus kernel; thread CPU excludes other threads"
+        },
+        "solver_phase": {
+          "freepath": {
+            "kernel_ms": {
+              "n": 176,
+              "p50": 2.241713,
+              "p95": 9.7071415,
+              "maximum": 21.788752,
+              "mean": 3.152878721590909
+            },
+            "callback_ms": {
+              "n": 176,
+              "p50": 7.300934499653522,
+              "p95": 23.80868025102245,
+              "maximum": 54.52797699945222,
+              "mean": 9.704473193261782
+            }
+          },
+          "monitoring": {
+            "kernel_ms": {
+              "n": 367,
+              "p50": 13.513574,
+              "p95": 23.3406445,
+              "maximum": 34.766915,
+              "mean": 14.282294479564033
+            },
+            "callback_ms": {
+              "n": 367,
+              "p50": 36.01614299986977,
+              "p95": 56.69345349997457,
+              "maximum": 76.86033200116071,
+              "mean": 36.752033081745566
+            }
+          },
+          "intervention": {
+            "kernel_ms": {
+              "n": 114,
+              "p50": 70.256575,
+              "p95": 116.18005704999999,
+              "maximum": 138.136104,
+              "mean": 75.58994216666667
+            },
+            "callback_ms": {
+              "n": 114,
+              "p50": 84.8446360005255,
+              "p95": 136.6657283000677,
+              "maximum": 164.4966359999671,
+              "mean": 91.91393108766646
+            }
+          },
+          "unknown": {
+            "kernel_ms": {
+              "n": 0,
+              "p50": null,
+              "p95": null,
+              "maximum": null,
+              "mean": null
+            },
+            "callback_ms": {
+              "n": 0,
+              "p50": null,
+              "p95": null,
+              "maximum": null,
+              "mean": null
+            }
+          }
+        },
+        "publication_interval_ms": {
+          "n": 672,
+          "p50": 55.23440249999112,
+          "p95": 117.02071259996947,
+          "maximum": 177.3843320006563,
+          "mean": 61.05451545684424
+        },
+        "publication_intervals_over_lease": 0,
+        "callback_over_deadline": 0,
+        "deadline_labels": 0,
+        "validated_nonzero_discarded_late": 0,
+        "reason_counts": {
+          "waiting_native_trajectory": 15,
+          "ok": 654,
+          "local_validation_failed": 2,
+          "native3d_dynamic_stale": 2
+        },
+        "missing_diagnostic_invocations": 0,
+        "kernel_failures": 0,
+        "scope": "invoked solver cycles, including failures; update intervals use all consecutive actual command publications after goal; monotonic wall-clock milliseconds"
+      },
+      "loop": {
+        "available": true,
+        "active_loop_wall_ms": {
+          "n": 673,
+          "p50": 44.024463999448926,
+          "p95": 117.97681919961177,
+          "maximum": 185.871228999531,
+          "mean": 49.98891885738284
+        },
+        "active_loop_main_thread_cpu_ms": {
+          "n": 673,
+          "p50": 34.9252799999995,
+          "p95": 106.31234559999974,
+          "maximum": 145.23571199999986,
+          "mean": 40.9423933432392
+        },
+        "scope": "cycle_start to sleep_enter, including publication/logging; excludes deliberate sleep and other Python/ROS threads"
+      },
+      "cpu": {
+        "remani_planner_node": {
+          "n": 205,
+          "p50": 149.88783668345667,
+          "p95": 171.68736364103094,
+          "maximum": 204.82326210347978,
+          "mean": 140.6497959900751
+        },
+        "base_mppi": {
+          "n": 205,
+          "p50": 94.92389429322829,
+          "p95": 114.90835356864717,
+          "maximum": 124.88644387889491,
+          "mean": 86.61738504535622
+        },
+        "system_busy_pct": {
+          "n": 205,
+          "p50": 76.22950819672131,
+          "p95": 84.2495126705653,
+          "maximum": 89.07563025210084,
+          "mean": 75.55874496267462
+        },
+        "scope": "process total CPU percent; 100% is one logical core; sampled mean/P95, filtered by monotonic command-publication interval; not optimizer-only CPU"
+      },
+      "remani": {
+        "available": true,
+        "started": 5,
+        "completed": 5,
+        "pending": 0,
+        "accepted": 3,
+        "failed": 2,
+        "unknown_outcome": 0,
+        "refresh_completed": 4,
+        "refresh_accepted": 2,
+        "completed_request_wall_ms": {
+          "n": 5,
+          "p50": 993.2810999998765,
+          "p95": 1161.4508979997481,
+          "maximum": 1194.6619099999225,
+          "mean": 952.382790199772
+        },
+        "completed_refresh_wall_ms": {
+          "n": 4,
+          "p50": 1010.9439749994635,
+          "p95": 1169.7536509997917,
+          "maximum": 1194.6619099999225,
+          "mean": 1038.0712862497603
+        },
+        "request_groups": {
+          "initial": {
+            "n": 1,
+            "p50": 609.6288059998187,
+            "p95": 609.6288059998187,
+            "maximum": 609.6288059998187,
+            "mean": 609.6288059998187
+          },
+          "refresh_success": {
+            "n": 2,
+            "p50": 982.1710674996211,
+            "p95": 1023.9632717491077,
+            "maximum": 1028.6068499990506,
+            "mean": 982.1710674996211
+          },
+          "refresh_failure": {
+            "n": 2,
+            "p50": 1093.9715049998995,
+            "p95": 1184.5928694999202,
+            "maximum": 1194.6619099999225,
+            "mean": 1093.9715049998995
+          }
+        },
+        "completed_request_cumulative_ms": 4761.91395099886,
+        "frontend_wall_ms": {
+          "n": 5,
+          "p50": 259.35371200102963,
+          "p95": 523.4272084009717,
+          "maximum": 563.5702200015658,
+          "mean": 303.86973840031715
+        },
+        "backend_wall_ms": {
+          "n": 5,
+          "p50": 626.3913599996158,
+          "p95": 709.7597031992336,
+          "maximum": 717.5949609991221,
+          "mean": 617.8371647998574
+        },
+        "backend_thread_cpu_ms": {
+          "n": 5,
+          "p50": 623.428992,
+          "p95": 703.8240960000002,
+          "maximum": 711.2624320000003,
+          "mean": 613.3253568
+        },
+        "backend_runqueue_wait_ms": {
+          "n": 5,
+          "p50": 0.7341440000001587,
+          "p95": 5.407807999999913,
+          "maximum": 6.230143999999882,
+          "mean": 1.9902272000000167
+        },
+        "backend_outcomes": {
+          "ok": 3,
+          "left_wheel_acceleration": 2
+        },
+        "outcomes": {
+          "accepted": 3,
+          "optimizer_reject_or_timeout": 2
+        },
+        "blocked_to_first_consumed_refresh_s": 1.0890350390000094,
+        "first_native_blocked_t": 16.967078895999975,
+        "first_refresh_consume_t": 18.056113934999985,
+        "waiting_for_refresh_at_end": false,
+        "observed_refresh_wait_lower_bound_s": null,
+        "request_rows": [
+          {
+            "request_id": 1,
+            "start_sim_s": 7.156921110999974,
+            "end_sim_s": 7.7800968999999895,
+            "start_mono": 10070.303411605,
+            "end_mono": 10070.913040411,
+            "request_wall_ms": 609.6288059998187,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 0,
+            "start_y": 0,
+            "start_yaw": 0,
+            "stage_wall_ms": {
+              "search": 121.23952900037693,
+              "initialization": 121.72533800003293,
+              "optimizer": 441.2034519991721,
+              "manager_replan": 566.651068000283,
+              "live_acceptance": 40.9522569989349
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 5.747759001678787,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 2,
+                "wall_ms": 440.983860000415,
+                "thread_cpu_ms": 439.631264,
+                "runqueue_wait_ms": 0.1542719999999553,
+                "budget_s": 1.5,
+                "iterations": 66,
+                "input_hash": "8775951166031383002",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.100165932810685,
+                "max_right_omega": 4.100165932810685
+              }
+            ],
+            "outcome_class": "accepted"
+          },
+          {
+            "request_id": 2,
+            "start_sim_s": 17.007261332999974,
+            "end_sim_s": 18.03515148500003,
+            "start_mono": 10080.138129217,
+            "end_mono": 10081.166736067,
+            "request_wall_ms": 1028.6068499990506,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 1.986260772661651,
+            "start_y": 0.01979298022214476,
+            "start_yaw": 0.18984704979291198,
+            "stage_wall_ms": {
+              "search": 259.35371200102963,
+              "initialization": 259.5505190001859,
+              "optimizer": 717.8322170002502,
+              "manager_replan": 980.426844998874,
+              "live_acceptance": 46.099162000246
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 5.124951998368488,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 4,
+                "wall_ms": 717.5949609991221,
+                "thread_cpu_ms": 711.2624320000003,
+                "runqueue_wait_ms": 0.7341440000001587,
+                "budget_s": 0.6,
+                "iterations": 59,
+                "input_hash": "13422058359722132121",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.099502128873392,
+                "max_right_omega": 4.101975578651861,
+                "lbfgs_wall_ms": 604.207939,
+                "native_validation_ms": 110.983576,
+                "force_stop": 3
+              }
+            ],
+            "outcome_class": "accepted"
+          },
+          {
+            "request_id": 3,
+            "start_sim_s": 19.820934398999952,
+            "end_sim_s": 21.006224643999985,
+            "start_mono": 10082.950755653,
+            "end_mono": 10084.145417563,
+            "request_wall_ms": 1194.6619099999225,
+            "success": false,
+            "local_execution_owner": true,
+            "start_x": 2.1138232596691546,
+            "start_y": 0.028708694928060663,
+            "start_yaw": 0.06834712558601164,
+            "stage_wall_ms": {
+              "search": 563.5702200015658,
+              "initialization": 563.830869999947,
+              "optimizer": 626.249787001143,
+              "manager_replan": 1192.9736900001444
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 4.581252998832497,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 6,
+                "wall_ms": 625.7969710004545,
+                "thread_cpu_ms": 623.428992,
+                "runqueue_wait_ms": 0.7141120000000445,
+                "budget_s": 0.6,
+                "iterations": 37,
+                "input_hash": "8371649492503811547",
+                "success": false,
+                "failure_trace_matched": true,
+                "reason": "left_wheel_acceleration",
+                "rejection_value": -4.477940858290826,
+                "max_left_omega": 6.7145576615993,
+                "max_right_omega": 5.2362738977465995,
+                "lbfgs_wall_ms": 616.258004,
+                "native_validation_ms": 7.090559000000001,
+                "force_stop": 3
+              }
+            ],
+            "outcome_class": "optimizer_reject_or_timeout"
+          },
+          {
+            "request_id": 4,
+            "start_sim_s": 21.920666684000025,
+            "end_sim_s": 22.915980592999972,
+            "start_mono": 10085.070089891,
+            "end_mono": 10086.063370991,
+            "request_wall_ms": 993.2810999998765,
+            "success": false,
+            "local_execution_owner": true,
+            "start_x": 2.2358921420816897,
+            "start_y": 0.11171471433276946,
+            "start_yaw": 0.867537519191697,
+            "stage_wall_ms": {
+              "search": 362.8551619985956,
+              "initialization": 363.02313600026537,
+              "optimizer": 626.757997999448,
+              "manager_replan": 991.8967929988867
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 3.4999660001631128,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 8,
+                "wall_ms": 626.3913599996158,
+                "thread_cpu_ms": 618.2333440000001,
+                "runqueue_wait_ms": 6.230143999999882,
+                "budget_s": 0.6,
+                "iterations": 42,
+                "input_hash": "3049550158021058750",
+                "success": false,
+                "failure_trace_matched": true,
+                "reason": "left_wheel_acceleration",
+                "rejection_value": -4.533535935683665,
+                "max_left_omega": 6.825771631185693,
+                "max_right_omega": 5.341995429775474,
+                "lbfgs_wall_ms": 613.759578,
+                "native_validation_ms": 10.28341,
+                "force_stop": 3
+              }
+            ],
+            "outcome_class": "optimizer_reject_or_timeout"
+          },
+          {
+            "request_id": 5,
+            "start_sim_s": 23.691788079000048,
+            "end_sim_s": 24.621647409999923,
+            "start_mono": 10086.828931549,
+            "end_mono": 10087.764666834,
+            "request_wall_ms": 935.7352850001917,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 2.2494502436998003,
+            "start_y": 0.12301900029120956,
+            "start_yaw": 0.7492243375392035,
+            "stage_wall_ms": {
+              "search": 212.33006900001783,
+              "initialization": 212.74733200152696,
+              "optimizer": 678.6933050007065,
+              "manager_replan": 894.2609309997351,
+              "live_acceptance": 39.37789599876851
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 4.916751999189728,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 10,
+                "wall_ms": 678.4186719996796,
+                "thread_cpu_ms": 674.0707519999995,
+                "runqueue_wait_ms": 2.118464000000042,
+                "budget_s": 0.6,
+                "iterations": 73,
+                "input_hash": "2821598042135615211",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.100394325842722,
+                "max_right_omega": 4.1003976070863235,
+                "lbfgs_wall_ms": 601.224183,
+                "native_validation_ms": 75.025034,
+                "force_stop": 3
+              }
+            ],
+            "outcome_class": "accepted"
+          }
+        ],
+        "incomplete_request_ids": [],
+        "limitations": "search includes A* / initial polynomial work, not pure graph-search CPU; request/frontend/backend overlap and must not be summed; all completed failures included"
+      },
+      "alignment": {
+        "excluded_contact_or_later_rows": 1,
+        "missing_diagnostics": 0,
+        "missing_precontact_diagnostics": 0,
+        "unmatched_diagnostics": 0,
+        "matched_by": "solve timestamp, reason, validation code, ordered within duplicate keys; cycle publication controls cutoff"
+      },
+      "consumed_references": 3,
+      "actual_reference_settings": {
+        "goal": [
+          6.0,
+          0.0
+        ],
+        "previous_goal": [
+          3.0,
+          0.0
+        ],
+        "bounds": [
+          -1.5,
+          7.5,
+          -2.0,
+          2.0
+        ],
+        "previous_bounds": [
+          -1.5,
+          4.5,
+          -2.0,
+          2.0
+        ],
+        "wheel_omega_rad_s": 4.1,
+        "previous_wheel_omega_rad_s": 3.28,
+        "wheel_v_m_s": 0.287,
+        "previous_wheel_v_m_s": 0.2296,
+        "wheel_acceleration_unchanged": true,
+        "prediction_upper_bound_s": 3.0,
+        "previous_native_prediction_upper_bound_s": 2.0,
+        "actual_mppi_horizon": "Native validity minus observation age and 10 ms reserve, rounded down to 0.1 s steps",
+        "map_grid": "Native 15 x 10 m grid unchanged; goal and whole fixed body remain inside its x upper limit of 7.5 m",
+        "actor_crossing_x_m": null,
+        "actor_velocity_m_s": null,
+        "appearance_after_motion_s": 2.0,
+        "constant_velocity_actor_persists": true,
+        "terminal_near_obstacle_cost": "MPPI预测轨迹末端近障惩罚: not restored in this settings-only experiment",
+        "unchanged": [
+          "candidate strategy",
+          "wheel and body acceleration limits",
+          "body speed and yaw-speed caps",
+          "200 ms deadline / 250 ms command lease",
+          "REMANI solve budgets",
+          "latest-state rollout and fallback braking validation"
+        ],
+        "notes": "Common 6m arena/speed/horizon; each scene comes from manifest.scenario. Only collision model differs within a pair.",
+        "production_changed": false,
+        "compiled_binary_reused": true,
+        "scope": "One fixed-arm differential-drive native ROS numerical SIL run, NOT Gazebo/hardware",
+        "configuration_sha256": {
+          "limits.json": "ad2dd3664eab3d90d12bfe1be0cd3cd3d154b9246c0a2b80fa42e7b7568037a6",
+          "parameters.yaml": "94acb024c791486ea4fe1d48401bee19e3027ff29ce176287a725727a427beed",
+          "scenario.json": "80028ca1face903246d0d3ca948a9461135f96ee5cc33ce032fbb6a33bfcb452",
+          "shared_collision_config.json": "4215ed94a89411ea2eaf09070bba2d7ad6aeec9eb28733417b22d9d908d8627e"
+        }
+      },
+      "collision_scope": "own recorded sphere model versus finite walls/cylinders; different sphere geometry means these gaps are not a common mesh-level accuracy test",
+      "scope": "fixed-arm differential-drive full REMANI + MPPI online numerical ROS SIL; not Gazebo or hardware",
+      "statistical_success_rate_claim": false,
+      "input_sha256": {
+        "manifest.json": "8bccf8b7ecdc149ea870a5b32661464144427703f92255bb7f2c83075fd93c88",
+        "coupling_parameters.json": "dc4c56343f3715a62725295463b023b31d925bd51350c9678eb865000377ae15",
+        "result.json": "e9597e44c8dd3f3ca8d53fd1967c99b099f44c6720b0970dec39f43491536c5e",
+        "run_status.json": "0bb8082be2d358923f8d420719810134a700e7cb019d66009fc5c140c4871f2c",
+        "trial_audit.json": "4190bb1dfe1f2aeffbe5bccf3cafc6ba8f08f21f0df2d726d5d30dd453c843ee",
+        "state.csv": "2a2ffb6b9252c7ea88c29d09ab2c8011b6948e89ad5d6d309fe5cf5e53efc182",
+        "native_collision_3d_body.json": "a2a036a96e9578ebcb55cdf42443c3247eee2193352f202078e0a99be2551714",
+        "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+        "consumed_references.jsonl": "39e45d5434246a7cfa675e5181a27b935c5402b84950b7697784f4a3cb871450",
+        "reference_events.jsonl": "10e22d266f0af366be74048e3bcc08ea0d90a7f16c11afb3387187b711b9ff3b",
+        "execution_rollouts.jsonl.gz": "e6d3bb4c9414e4f89fc92ce9d6f8afa034d69fc1d0fbf9e9e2cf6a0623c395c3",
+        "mppi_diagnostics.json.gz": "8b43a1bdc09867f85239a368db9f7d2dfee49baeb314660034fd9b9cf3dddb06",
+        "search/000000.npz": "ca5b5474779c3edcbd415134ae1e3b12db90758e1c9d82c1d9db6c5e2fb12b14",
+        "search/000001.npz": "2272ded559f4b3e78ec555ebfa7467ea006f8c521462c1026f1fdd76e75ee6f0",
+        "search/000002.npz": "57a60fd20d701d06cef73b4050f8b042a6f30942e27ad4e9a84d2155354b3867",
+        "search/000003.npz": "a7c2b9d6325e9a38b4c0fbe0ac40d568839793bbf1dcf4fb2c9770a7f665251e",
+        "search/000004.npz": "4e6efc181ece6df70e399f52a060eaebcfa44331acf8267bd404428fc6317d41",
+        "search/000005.npz": "55e81c3f07b4b132aa5933b696b9d18c6d1126e4f01899b127d5edf79a347bcc",
+        "search/000006.npz": "679eebbe5140cb59dcea330ba5d1995fb941571b0abc74ea3fcd62a443885881",
+        "search/000007.npz": "2c10569e1706c17c6538d8ee776bf319d35ecc0a730c7fc0e8e3c13d1939f530",
+        "search/000008.npz": "3f07e437202e2708b2c6bc683989e0b607a53b8c4fba064f3a990b604497fa70",
+        "search/000009.npz": "8c996ad4ba412f43ea1ac62de2671697d80449c43e69ebea47e78e853d814269",
+        "search/000010.npz": "2d6dd601da2054dac0086c37b55fd8a905eeaae0b4b036d61e61e383c6e52134",
+        "search/000011.npz": "0e10a763fbb7d8c19a75f66568166f0a9968c55ded8979555485e93902a6c3d5",
+        "search/000012.npz": "2a65a2eb83d1ae7989a33f195545a0170c6a59186b4417cecb075ba9cfbb0d0d",
+        "search/000013.npz": "8d3cd4415595557503d2edf5a01b86e1b4d1f8f63374f12609be86cc6661eaf2",
+        "search/000014.npz": "faf7a7e0bc966960b839fd1cc3fa57ff7c1fe1772d53a4c92aee0ceec75a47b5",
+        "search/000015.npz": "ac32fa75fd093f4c1931252187fb40fc2e3232f8aa1574b2f547c1a036adeeee",
+        "search/000016.npz": "9db610159cafba9949a5be0f8e13470588c247ccab8188a647698e35a9e3e12f",
+        "search/000017.npz": "d7185ce18fdcd3814622ea50b7ae659df8b4055591568392fcf3b871d19fe28a",
+        "search/000018.npz": "e5638385f7a3e44702d69ad1ccf6fea36d52bb245ab6a942bf34674b074a72dd",
+        "search/000019.npz": "ea06440982b4c1201644b06fc999e76a7a7408057333d9a5c4f0bbb0d4170f8b",
+        "search/000020.npz": "3f989f9b865d55df507a198c354367ec3727e123d9e24aea25e8ad40e4ae366a",
+        "search/000021.npz": "ee262a5e9235c65a4c5fd2e63371244f5bfaf02b96571efbf9c34b1c920951f3",
+        "search/000022.npz": "31d51b5f98fa6d68248e00b338c5ae9b85c8ad990848515835960074718effd2",
+        "search/000023.npz": "30274f569505af938a81bf8c76eae1fa2e2552e619b59deda442b7c570538449",
+        "search/000024.npz": "649f0a36efdfc6993ffc8f4b4cb6af6b1823a748cb1faf421b58f387d88e20c6",
+        "search/000025.npz": "0a46ea1867f07445ed665a1dd859e13c4041353dbd90faa87d72eca37128f93a",
+        "search/000026.npz": "d9f92bd1c1ab7ef9578871db603e7573b7acaab891b2cad1dbce7d9e7d4ef1b9",
+        "search/000027.npz": "ddbdf7f08ba0cbf5e2e1c90ae7ae3bb2978d25116f99b6bc4adcb9dbb9d4d9cb",
+        "search/000028.npz": "6d9367159f4304dbc6a2b04044dd20ef79810902e56dbf461d15ef0246c7e0fe",
+        "search/000029.npz": "a72b8f75452de2787e27207c0886cc23485a23883d080437791ad93c7a428df7",
+        "search/000030.npz": "da689cb130e50f50ef5766ba7dd0a0ba8bad7c644cd743fdb98a437002f513b0",
+        "search/000031.npz": "08b4c6bdfe5972646f18f4d04e83a9d8ce65151c9ccb7f0afaaa5b9b4d3fa0f8",
+        "search/000032.npz": "7f80209a296218e5c54abfccbbb30e046d2525d45e56532d60f19392625e3779",
+        "search/000033.npz": "e681976200300f41b235c919eb011b851a337d290ca8f5b766b9f6e548dabbf1",
+        "search/000034.npz": "c2203e920aaf5f816befc800ebe5d870837ec7e92aa27ddc1fd9c75016d1055c",
+        "search/000035.npz": "bfdfddbc6c7ccb811f8bfcfb89f60621f3aaa646c8fea8e6c4ff57702220cb69",
+        "search/000036.npz": "b6db786fddd3963a582498fb835095738df6b6243c4e718087d529f248ea3031",
+        "search/000037.npz": "b3e55ec20ef45df4e68a02426343cc7b67f5633f6b08589ac36c2685c92cc64b",
+        "search/000038.npz": "d0f07a80ab782a6d9e1691d8fcf11296d818b2b9cd19d162bc57cfdc44218976",
+        "search/000039.npz": "dfe6e40eefb25b3d9fe493a736f3b3e8998f20f446b7604dc1406caa5be4c4d9",
+        "search/000040.npz": "37282abf18f2c482cc5432958e9a47b90e1bb508562259c21e3f08519626e83a",
+        "search/000041.npz": "9df93913675339b5703e5fd874db96affc0fe2157682d1335a174ddfe248ea1d",
+        "search/000042.npz": "07e32277083d02bfc18eb8b6e8ad760961ffbfc8b50497fa3553f063c483b262",
+        "search/000043.npz": "0c8195c6aa1b30ea42257f0429154540baa28367138db40121b662d0bbae75bb",
+        "search/000044.npz": "842594687858c3059f1a2201ac0f1d4b2132d00754700cfceca9507364a59ea4",
+        "search/000045.npz": "aec62ba3fd01f48b546dbf8ae78eb91bcac4b366488e003749e6c540e4a5c248",
+        "search/000046.npz": "ab5c9c5edad4bd43290e064727511f9170e44c10814eaa21fe9d2097f5ef877e",
+        "obstacles.csv": "65272ae984405ef99c6fb9da90df9e09a9ed89b0c1b3870973d8864d1fb4185e",
+        "state_mppi_cycles.jsonl": "b2dc5b35daac2bac51badd9f35dba01afee0c826806288e4c86b5bf46b946bf2",
+        "cpu_samples.jsonl.gz": "7f174e9c38e550da204d74714ccc35580c5c9d12f2a664332319bcaac8233477",
+        "loop_stages.json": "a5c945d034dbf805d2c4edf76111993addb6d04c60fe9a7dd3c1a804adc73cc4",
+        "analysis/summary.json": "f71c1704e6a3b77837376808600093fc7299c837ac80c5e0b7880b7b19f7b139",
+        "limits.json": "ad2dd3664eab3d90d12bfe1be0cd3cd3d154b9246c0a2b80fa42e7b7568037a6",
+        "solver_trace.jsonl": "f41b7f4a1815d0b929ca0b311d600353c739aa2b6bc8f2ca98c73da5a931de0d"
+      },
+      "group": "pin1",
+      "pin_runtime": {
+        "eligible_calls": 4,
+        "runtime_proof_pass": true,
+        "evaluations": 211,
+        "evaluations_with_changed_overlay": 0,
+        "calls_with_changed_entry_return": 0,
+        "calls": [
+          {
+            "optimizer_id": 4,
+            "passed": true,
+            "requested": 1,
+            "acquired": 1,
+            "entry": {
+              "sequence": 152,
+              "refresh_nsec": 1017268607596,
+              "size": 1521,
+              "radii_size": 1521,
+              "cloud_address": "281472158154624",
+              "enabled": true,
+              "ready": true,
+              "frozen": true
+            },
+            "returned": {
+              "sequence": 152,
+              "refresh_nsec": 1017268607596,
+              "size": 1521,
+              "radii_size": 1521,
+              "cloud_address": "281472158154624",
+              "enabled": true,
+              "ready": true,
+              "frozen": true
+            },
+            "completed_evaluations": 59,
+            "evaluations_with_changed_overlay": 0,
+            "content_stable": true,
+            "lbfgs_wall_ms": 604.207939,
+            "native_validation_ms": 110.983576,
+            "optimizer_success": true,
+            "force_stop": 3
+          },
+          {
+            "optimizer_id": 6,
+            "passed": true,
+            "requested": 1,
+            "acquired": 1,
+            "entry": {
+              "sequence": 181,
+              "refresh_nsec": 1020363308690,
+              "size": 1443,
+              "radii_size": 1443,
+              "cloud_address": "281472158155344",
+              "enabled": true,
+              "ready": true,
+              "frozen": true
+            },
+            "returned": {
+              "sequence": 181,
+              "refresh_nsec": 1020363308690,
+              "size": 1443,
+              "radii_size": 1443,
+              "cloud_address": "281472158155344",
+              "enabled": true,
+              "ready": true,
+              "frozen": true
+            },
+            "completed_evaluations": 37,
+            "evaluations_with_changed_overlay": 0,
+            "content_stable": true,
+            "lbfgs_wall_ms": 616.258004,
+            "native_validation_ms": 7.090559000000001,
+            "optimizer_success": false,
+            "force_stop": 3
+          },
+          {
+            "optimizer_id": 8,
+            "passed": true,
+            "requested": 1,
+            "acquired": 1,
+            "entry": {
+              "sequence": 200,
+              "refresh_nsec": 1022304158846,
+              "size": 1443,
+              "radii_size": 1443,
+              "cloud_address": "281472158154496",
+              "enabled": true,
+              "ready": true,
+              "frozen": true
+            },
+            "returned": {
+              "sequence": 200,
+              "refresh_nsec": 1022304158846,
+              "size": 1443,
+              "radii_size": 1443,
+              "cloud_address": "281472158154496",
+              "enabled": true,
+              "ready": true,
+              "frozen": true
+            },
+            "completed_evaluations": 42,
+            "evaluations_with_changed_overlay": 0,
+            "content_stable": true,
+            "lbfgs_wall_ms": 613.759578,
+            "native_validation_ms": 10.28341,
+            "optimizer_success": false,
+            "force_stop": 3
+          },
+          {
+            "optimizer_id": 10,
+            "passed": true,
+            "requested": 1,
+            "acquired": 1,
+            "entry": {
+              "sequence": 216,
+              "refresh_nsec": 1023913016227,
+              "size": 1521,
+              "radii_size": 1521,
+              "cloud_address": "281472158170944",
+              "enabled": true,
+              "ready": true,
+              "frozen": true
+            },
+            "returned": {
+              "sequence": 216,
+              "refresh_nsec": 1023913016227,
+              "size": 1521,
+              "radii_size": 1521,
+              "cloud_address": "281472158170944",
+              "enabled": true,
+              "ready": true,
+              "frozen": true
+            },
+            "completed_evaluations": 73,
+            "evaluations_with_changed_overlay": 0,
+            "content_stable": true,
+            "lbfgs_wall_ms": 601.224183,
+            "native_validation_ms": 75.025034,
+            "optimizer_success": true,
+            "force_stop": 3
+          }
+        ],
+        "scope": "ordinary completed 0.6s refresh solver calls; return key observed before function-scope pin release"
+      },
+      "refresh_requests": [
+        {
+          "request_id": 2,
+          "start_sim_s": 17.007261332999974,
+          "end_sim_s": 18.03515148500003,
+          "start_mono": 10080.138129217,
+          "end_mono": 10081.166736067,
+          "request_wall_ms": 1028.6068499990506,
+          "success": true,
+          "local_execution_owner": true,
+          "start_x": 1.986260772661651,
+          "start_y": 0.01979298022214476,
+          "start_yaw": 0.18984704979291198,
+          "stage_wall_ms": {
+            "search": 259.35371200102963,
+            "initialization": 259.5505190001859,
+            "optimizer": 717.8322170002502,
+            "manager_replan": 980.426844998874,
+            "live_acceptance": 46.099162000246
+          },
+          "search_results": [
+            {
+              "status": 2,
+              "success": true,
+              "status_name": "REACH_END"
+            }
+          ],
+          "target_selection_reject_source_ros": [],
+          "acceptance_rejections": [],
+          "other_request_wall_ms": 5.124951998368488,
+          "search_inside_initialization": true,
+          "optimizer_calls": [
+            {
+              "resource_optimizer_id": 4,
+              "wall_ms": 717.5949609991221,
+              "thread_cpu_ms": 711.2624320000003,
+              "runqueue_wait_ms": 0.7341440000001587,
+              "budget_s": 0.6,
+              "iterations": 59,
+              "input_hash": "13422058359722132121",
+              "success": true,
+              "failure_trace_matched": true,
+              "reason": "ok",
+              "rejection_value": 0,
+              "max_left_omega": 4.099502128873392,
+              "max_right_omega": 4.101975578651861,
+              "lbfgs_wall_ms": 604.207939,
+              "native_validation_ms": 110.983576,
+              "force_stop": 3
+            }
+          ],
+          "outcome_class": "accepted"
+        },
+        {
+          "request_id": 3,
+          "start_sim_s": 19.820934398999952,
+          "end_sim_s": 21.006224643999985,
+          "start_mono": 10082.950755653,
+          "end_mono": 10084.145417563,
+          "request_wall_ms": 1194.6619099999225,
+          "success": false,
+          "local_execution_owner": true,
+          "start_x": 2.1138232596691546,
+          "start_y": 0.028708694928060663,
+          "start_yaw": 0.06834712558601164,
+          "stage_wall_ms": {
+            "search": 563.5702200015658,
+            "initialization": 563.830869999947,
+            "optimizer": 626.249787001143,
+            "manager_replan": 1192.9736900001444
+          },
+          "search_results": [
+            {
+              "status": 2,
+              "success": true,
+              "status_name": "REACH_END"
+            }
+          ],
+          "target_selection_reject_source_ros": [],
+          "acceptance_rejections": [],
+          "other_request_wall_ms": 4.581252998832497,
+          "search_inside_initialization": true,
+          "optimizer_calls": [
+            {
+              "resource_optimizer_id": 6,
+              "wall_ms": 625.7969710004545,
+              "thread_cpu_ms": 623.428992,
+              "runqueue_wait_ms": 0.7141120000000445,
+              "budget_s": 0.6,
+              "iterations": 37,
+              "input_hash": "8371649492503811547",
+              "success": false,
+              "failure_trace_matched": true,
+              "reason": "left_wheel_acceleration",
+              "rejection_value": -4.477940858290826,
+              "max_left_omega": 6.7145576615993,
+              "max_right_omega": 5.2362738977465995,
+              "lbfgs_wall_ms": 616.258004,
+              "native_validation_ms": 7.090559000000001,
+              "force_stop": 3
+            }
+          ],
+          "outcome_class": "optimizer_reject_or_timeout"
+        },
+        {
+          "request_id": 4,
+          "start_sim_s": 21.920666684000025,
+          "end_sim_s": 22.915980592999972,
+          "start_mono": 10085.070089891,
+          "end_mono": 10086.063370991,
+          "request_wall_ms": 993.2810999998765,
+          "success": false,
+          "local_execution_owner": true,
+          "start_x": 2.2358921420816897,
+          "start_y": 0.11171471433276946,
+          "start_yaw": 0.867537519191697,
+          "stage_wall_ms": {
+            "search": 362.8551619985956,
+            "initialization": 363.02313600026537,
+            "optimizer": 626.757997999448,
+            "manager_replan": 991.8967929988867
+          },
+          "search_results": [
+            {
+              "status": 2,
+              "success": true,
+              "status_name": "REACH_END"
+            }
+          ],
+          "target_selection_reject_source_ros": [],
+          "acceptance_rejections": [],
+          "other_request_wall_ms": 3.4999660001631128,
+          "search_inside_initialization": true,
+          "optimizer_calls": [
+            {
+              "resource_optimizer_id": 8,
+              "wall_ms": 626.3913599996158,
+              "thread_cpu_ms": 618.2333440000001,
+              "runqueue_wait_ms": 6.230143999999882,
+              "budget_s": 0.6,
+              "iterations": 42,
+              "input_hash": "3049550158021058750",
+              "success": false,
+              "failure_trace_matched": true,
+              "reason": "left_wheel_acceleration",
+              "rejection_value": -4.533535935683665,
+              "max_left_omega": 6.825771631185693,
+              "max_right_omega": 5.341995429775474,
+              "lbfgs_wall_ms": 613.759578,
+              "native_validation_ms": 10.28341,
+              "force_stop": 3
+            }
+          ],
+          "outcome_class": "optimizer_reject_or_timeout"
+        },
+        {
+          "request_id": 5,
+          "start_sim_s": 23.691788079000048,
+          "end_sim_s": 24.621647409999923,
+          "start_mono": 10086.828931549,
+          "end_mono": 10087.764666834,
+          "request_wall_ms": 935.7352850001917,
+          "success": true,
+          "local_execution_owner": true,
+          "start_x": 2.2494502436998003,
+          "start_y": 0.12301900029120956,
+          "start_yaw": 0.7492243375392035,
+          "stage_wall_ms": {
+            "search": 212.33006900001783,
+            "initialization": 212.74733200152696,
+            "optimizer": 678.6933050007065,
+            "manager_replan": 894.2609309997351,
+            "live_acceptance": 39.37789599876851
+          },
+          "search_results": [
+            {
+              "status": 2,
+              "success": true,
+              "status_name": "REACH_END"
+            }
+          ],
+          "target_selection_reject_source_ros": [],
+          "acceptance_rejections": [],
+          "other_request_wall_ms": 4.916751999189728,
+          "search_inside_initialization": true,
+          "optimizer_calls": [
+            {
+              "resource_optimizer_id": 10,
+              "wall_ms": 678.4186719996796,
+              "thread_cpu_ms": 674.0707519999995,
+              "runqueue_wait_ms": 2.118464000000042,
+              "budget_s": 0.6,
+              "iterations": 73,
+              "input_hash": "2821598042135615211",
+              "success": true,
+              "failure_trace_matched": true,
+              "reason": "ok",
+              "rejection_value": 0,
+              "max_left_omega": 4.100394325842722,
+              "max_right_omega": 4.1003976070863235,
+              "lbfgs_wall_ms": 601.224183,
+              "native_validation_ms": 75.025034,
+              "force_stop": 3
+            }
+          ],
+          "outcome_class": "accepted"
+        }
+      ],
+      "refresh_failure_reasons": {
+        "left_wheel_acceleration": 2
+      },
+      "refresh_lbfgs_wall_ms": {
+        "n": 4,
+        "p50": 608.9837585,
+        "p95": 615.8832401000001,
+        "maximum": 616.258004,
+        "mean": 608.8624260000001
+      },
+      "refresh_native_validation_ms": {
+        "n": 4,
+        "p50": 42.654222000000004,
+        "p95": 105.58979469999998,
+        "maximum": 110.983576,
+        "mean": 50.84564475
+      },
+      "refresh_live_acceptance_ms": {
+        "n": 2,
+        "p50": 42.73852899950725,
+        "p95": 45.76309870017212,
+        "maximum": 46.099162000246,
+        "mean": 42.73852899950725
+      }
+    }
+  ],
+  "pair_checks": {
+    "passed": true,
+    "same_binary": true,
+    "same_runtime": true,
+    "same_parameters": true,
+    "same_native_spheres": 67,
+    "sole_planner_switch_difference": "CANDIDATE_AUDIT_FREEZE_SOLVER",
+    "diagnostic_pause": false,
+    "navigation_metrics_valid": true,
+    "runtime_pin_counter_available": true,
+    "scope": "fresh online inputs may diverge; per-request pin/overlay counters require post-run verification"
+  },
+  "gif": {
+    "frames": 100,
+    "speedup": 2.0,
+    "genuine_online_motion": true,
+    "reference_and_sphere_projection": true,
+    "no_paused_candidate_replay": true
+  },
+  "runtime_pin_proof_pass": true,
+  "scope": "fresh unpaused numerical ROS SIL pair; one seed; no statistical success-rate claim"
+}
