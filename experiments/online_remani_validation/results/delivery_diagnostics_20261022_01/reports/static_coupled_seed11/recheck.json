@@ -1,0 +1,486 @@
+{
+  "schema": "delivery_independent_recheck_v1",
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_diagnostics_20261022_01/static_coupled_seed11/delivery_diagnostics",
+  "dt": 0.02,
+  "method": "Independent NumPy bilinear field + recorded disk-union; no optimizer, retiming or ROS",
+  "limitations": [
+    "Recorded geometry is not independent physical ground truth.",
+    "K8 is per piece; dense uses original whole-block gate sample times.",
+    "Both samplers keep candidate.start_time+offset. K8 is only a sampling-density sensitivity, NOT full optimizer-objective replay: the online added dynamic objective uses solve_frame.now+offset.",
+    "Unknown dynamic horizon is not collision and is not a safety certificate.",
+    "Same candidate only; differences do not estimate closed-loop policy performance.",
+    "Low-speed heading remains the native velocity-derived convention; no explicit endpoint yaw is fabricated."
+  ],
+  "source_snapshot_sha256": {
+    "snapshots/156a9ae465ede9d8.json": "5014bc11040b7d9c53210679522b7357dca23912fd6b491da0fea135e25d348b",
+    "snapshots/2a5f5a32bd04c72a.json": "6c2da30ceeb0cfee878628b16e54ed88231db3895e57118432f1df3b093b7e54",
+    "snapshots/309f3d05e6c5b674.json": "ee8c2f67c91f4a73e3a92386827b4677f35200305fc7fca012c7151245b9b226",
+    "snapshots/89b18adb9bea3882.json": "abce4a4bb1ff81a20120f07480469218a79a327da48f1900c9c3de53ef38a056",
+    "snapshots/b48d333d5584ad69.json": "f615fc265d88c78a75cd83c3a301f89136743ef8d28db8adc2f0ef33887ebad2",
+    "snapshots/d782b576a5509cba.json": "47ad250d1f0390ede8714d73955180fc8e53023b40db9949c8f590a35ab9f2c4",
+    "snapshots/f18b03a8b5cbfc3c.json": "fb7a1348b17b2cf7e334bb46a08f892e984b95a817ada17be95d0a5ab15c2c2e"
+  },
+  "candidate_count": 3,
+  "audits": [
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_diagnostics_20261022_01/static_coupled_seed11/delivery_diagnostics/candidates/28241_1.json",
+      "sha256": "17a9c6dd4fed15f347dcaa1bcc2b2b569810b5b03948b3a3d5b5b7b1222ac157",
+      "recorded_failure": null,
+      "recorded_finished": true,
+      "recorded_accepted": true,
+      "replay_gate_status_agrees": true,
+      "first_failure_comparison": null,
+      "request_id": 1,
+      "scope_id": 1,
+      "summaries": [
+        {
+          "candidate": "28241_1.json",
+          "frame": "solve_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 54,
+          "snapshot_age": 0.10809154799994758,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 45,
+            "dynamic_safe": 6,
+            "dynamic_unknown": 39
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28241_1.json",
+          "frame": "solve_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 54,
+          "snapshot_age": 0.10809154799994758,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 826,
+            "dynamic_safe": 116,
+            "dynamic_unknown": 710
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28241_1.json",
+          "frame": "accept_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 61,
+          "snapshot_age": 0.020096335000062027,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 45,
+            "dynamic_past": 1,
+            "dynamic_safe": 6,
+            "dynamic_unknown": 38
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28241_1.json",
+          "frame": "accept_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 61,
+          "snapshot_age": 0.020096335000062027,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 826,
+            "dynamic_past": 3,
+            "dynamic_safe": 149,
+            "dynamic_unknown": 674
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        }
+      ]
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_diagnostics_20261022_01/static_coupled_seed11/delivery_diagnostics/candidates/28241_3.json",
+      "sha256": "8506c0ffa561b20b6adf1205cafbcd980f980f2d025908b884b6c0cbb93e81e8",
+      "recorded_failure": {
+        "reason": "static_gap",
+        "part": 0,
+        "piece": 0,
+        "sample": 49,
+        "q": 0.9799610959880365,
+        "piece_time": 0.9799610959880365,
+        "query_time": 1018.2648897769881,
+        "p": [
+          1.0659259372463417,
+          0.22263133109151548,
+          0,
+          0.5209807817203074,
+          -1.048907973863552,
+          -3.490658503988659e-05,
+          0.9472949048124424,
+          5.235987755982989e-05
+        ],
+        "v": [
+          0.07046426769141759,
+          0.14836861694968692,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "yaw": 1.1274075229896805,
+        "physical": 0.09977866948289671,
+        "gap": -0.00022133051710329643,
+        "evaluation": {
+          "valid": true,
+          "physical": 0.09977866948289671,
+          "gap": -0.00022133051710329643,
+          "cost": 0.41342733473769266,
+          "gx": 60.126991578497226,
+          "gy": -9.136739108229909,
+          "gyaw": 1.822626740499385,
+          "gt": 0
+        },
+        "leaf": {
+          "reason": "static_minimum",
+          "body_index": 2,
+          "body_center": [
+            1.0525016204430344,
+            0.194358300701462
+          ],
+          "grid": [
+            171.0500324088607,
+            103.88716601402923
+          ],
+          "distance": 0.43590304270582525,
+          "physical": 0.09977866948289671,
+          "gap": -0.00022133051710329643
+        }
+      },
+      "recorded_finished": true,
+      "recorded_accepted": false,
+      "replay_gate_status_agrees": true,
+      "first_failure_comparison": {
+        "part_matches": true,
+        "absolute_differences": {
+          "query_time": 0.0,
+          "yaw": 0.0,
+          "physical": 0.0,
+          "gap": 0.0
+        }
+      },
+      "request_id": 5,
+      "scope_id": 4,
+      "summaries": [
+        {
+          "candidate": "28241_3.json",
+          "frame": "solve_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 149,
+          "snapshot_age": 0.10458156599997892,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 32,
+            "dynamic_safe": 5,
+            "static_margin_only": 4,
+            "dynamic_unknown": 31
+          },
+          "min_static_gap": -0.014515074870617789,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": {
+            "layer": "static",
+            "part": 0,
+            "piece": 0,
+            "sample": 2,
+            "q": 1.010999746018158,
+            "local_t": 1.010999746018158,
+            "t": 1.010999746018158,
+            "query_time": 1018.2959284270181,
+            "x": 1.0681111529442253,
+            "y": 0.22723679990773318,
+            "vx": 0.07034172191052142,
+            "vy": 0.14838797569878975,
+            "speed": 0.16421616599263833,
+            "yaw": 1.1281321833726037,
+            "gear": 1,
+            "category": "margin_only",
+            "reason": "geometric_clearance",
+            "physical": 0.09830425827971945,
+            "gap": -0.001695741720280558,
+            "body_index": 2,
+            "obstacle_index": null
+          },
+          "gate_ok": false
+        },
+        {
+          "candidate": "28241_3.json",
+          "frame": "solve_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 149,
+          "snapshot_age": 0.10458156599997892,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 709,
+            "dynamic_safe": 125,
+            "static_margin_only": 79,
+            "dynamic_unknown": 663
+          },
+          "min_static_gap": -0.016310559354607318,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": {
+            "layer": "static",
+            "part": 0,
+            "piece": 0,
+            "sample": 49,
+            "q": 0.9799610959880365,
+            "local_t": 0.9799610959880365,
+            "t": 0.9799610959880365,
+            "query_time": 1018.2648897769881,
+            "x": 1.0659259372463417,
+            "y": 0.22263133109151548,
+            "vx": 0.07046426769141759,
+            "vy": 0.14836861694968692,
+            "speed": 0.16425120857044154,
+            "yaw": 1.1274075229896805,
+            "gear": 1,
+            "category": "margin_only",
+            "reason": "geometric_clearance",
+            "physical": 0.09977866948289671,
+            "gap": -0.00022133051710329643,
+            "body_index": 2,
+            "obstacle_index": null
+          },
+          "gate_ok": false
+        },
+        {
+          "candidate": "28241_3.json",
+          "frame": "accept_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 156,
+          "snapshot_age": 0.08046367800000098,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 32,
+            "dynamic_past": 1,
+            "dynamic_safe": 6,
+            "static_margin_only": 4,
+            "dynamic_unknown": 29
+          },
+          "min_static_gap": -0.014515074870617789,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": {
+            "layer": "static",
+            "part": 0,
+            "piece": 0,
+            "sample": 2,
+            "q": 1.010999746018158,
+            "local_t": 1.010999746018158,
+            "t": 1.010999746018158,
+            "query_time": 1018.2959284270181,
+            "x": 1.0681111529442253,
+            "y": 0.22723679990773318,
+            "vx": 0.07034172191052142,
+            "vy": 0.14838797569878975,
+            "speed": 0.16421616599263833,
+            "yaw": 1.1281321833726037,
+            "gear": 1,
+            "category": "margin_only",
+            "reason": "geometric_clearance",
+            "physical": 0.09830425827971945,
+            "gap": -0.001695741720280558,
+            "body_index": 2,
+            "obstacle_index": null
+          },
+          "gate_ok": false
+        },
+        {
+          "candidate": "28241_3.json",
+          "frame": "accept_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 156,
+          "snapshot_age": 0.08046367800000098,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 709,
+            "dynamic_past": 15,
+            "dynamic_safe": 146,
+            "static_margin_only": 79,
+            "dynamic_unknown": 627
+          },
+          "min_static_gap": -0.016310559354607318,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": {
+            "layer": "static",
+            "part": 0,
+            "piece": 0,
+            "sample": 49,
+            "q": 0.9799610959880365,
+            "local_t": 0.9799610959880365,
+            "t": 0.9799610959880365,
+            "query_time": 1018.2648897769881,
+            "x": 1.0659259372463417,
+            "y": 0.22263133109151548,
+            "vx": 0.07046426769141759,
+            "vy": 0.14836861694968692,
+            "speed": 0.16425120857044154,
+            "yaw": 1.1274075229896805,
+            "gear": 1,
+            "category": "margin_only",
+            "reason": "geometric_clearance",
+            "physical": 0.09977866948289671,
+            "gap": -0.00022133051710329643,
+            "body_index": 2,
+            "obstacle_index": null
+          },
+          "gate_ok": false
+        }
+      ]
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_diagnostics_20261022_01/static_coupled_seed11/delivery_diagnostics/candidates/28241_4.json",
+      "sha256": "eb2042215424eed50ad7f60004e58cb0817e8badb4e8882e495ebdcad3c98f2d",
+      "recorded_failure": null,
+      "recorded_finished": true,
+      "recorded_accepted": true,
+      "replay_gate_status_agrees": true,
+      "first_failure_comparison": null,
+      "request_id": 6,
+      "scope_id": 5,
+      "summaries": [
+        {
+          "candidate": "28241_4.json",
+          "frame": "solve_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 165,
+          "snapshot_age": 0.06211722899990946,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 36,
+            "dynamic_safe": 5,
+            "dynamic_unknown": 31
+          },
+          "min_static_gap": 0.005645491434250277,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28241_4.json",
+          "frame": "solve_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 165,
+          "snapshot_age": 0.06211722899990946,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 800,
+            "dynamic_safe": 127,
+            "dynamic_unknown": 673
+          },
+          "min_static_gap": 0.004636273151719744,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28241_4.json",
+          "frame": "accept_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 170,
+          "snapshot_age": 0.10044436099997256,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 36,
+            "dynamic_past": 1,
+            "dynamic_safe": 5,
+            "dynamic_unknown": 30
+          },
+          "min_static_gap": 0.005645491434250277,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28241_4.json",
+          "frame": "accept_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 170,
+          "snapshot_age": 0.10044436099997256,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 800,
+            "dynamic_past": 8,
+            "dynamic_safe": 145,
+            "dynamic_unknown": 647
+          },
+          "min_static_gap": 0.004636273151719744,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        }
+      ]
+    }
+  ],
+  "geometry_error_audits": [
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_diagnostics_20261022_01/static_coupled_seed11/delivery_diagnostics/geometry_errors/28241_2.json",
+      "sha256": "a9c5017f60f0f90458923165d9e8d19f64c641383bcfde95bd51c60f7edf2af0",
+      "request_id": 2,
+      "scope_id": 2,
+      "block": 0,
+      "piece": 2,
+      "sample": 3,
+      "forecast": 10.687897283286588,
+      "stored_leaf": {
+        "reason": "static_field_out_of_bounds",
+        "body_index": 1,
+        "body_center": [
+          0.3950292304431109,
+          5.03130554094473
+        ],
+        "grid": [
+          157.9005846088622,
+          200.62611081889457
+        ]
+      },
+      "independent_cause": "body_outside_grid",
+      "reconstructed_parameter_deltas": {
+        "p_max_abs": 0.0,
+        "v_max_abs": 1.1102230246251565e-16
+      },
+      "snapshot_fresh": true,
+      "static": {
+        "category": "invalid",
+        "reason": "body_outside_grid",
+        "body_index": 1,
+        "physical": null,
+        "gap": null
+      },
+      "dynamic": {
+        "category": "unknown",
+        "reason": "outside_prediction",
+        "physical": null,
+        "gap": null
+      }
+    }
+  ]
+}

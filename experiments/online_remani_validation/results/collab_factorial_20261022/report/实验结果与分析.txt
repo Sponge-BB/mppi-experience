@@ -1,0 +1,71 @@
+REMANI—MPPI：目标选择×局部初值反馈实验
+日期：2026-10-22，Asia/Shanghai
+
+范围：原生ROS规划/检测器＋数值差速底盘；固定机械臂；不是Gazebo或实车。
+四组全部由MPPI执行；A是原V12协同逻辑，不是Tracker或原论文REMANI的单独基线。
+A原V12逻辑；B仅紧凑MPPI前缀反馈；C仅滚动子目标；D两者结合。
+C/D还包含子目标的双重可行性检查与提前续段；不是只改一个距离参数。
+两层碰撞代价未统一，原有异步交接未修复；不把本轮叫作已解决双时间尺度联合优化。
+试验时限从发布目标开始计48s；travel_time_s从实际启动运动起计，不含初始规划等候。
+正式结果不混入构建02失败冒烟；全部失败保留，未交付参考不填0秒。
+
+一、正式在线结果
+A：{"trials": 12, "goals": 12, "collisions": 0, "refresh_status": {"no_delivery": 2, "delivered": 5, "not_triggered": 5}, "median_delivered_latency_s": 3.2996970849999343, "refresh_requests": 69, "accepted_refresh_requests": 5, "prefix_attempts": 0, "prefix_used": 0}
+  dynamic_four：到达3/3；耗时[27.748, 27.808, 27.637]；更新状态{'no_delivery': 2, 'delivered': 1}
+  dynamic_head_on_center：到达3/3；耗时[26.162, 25.906, 25.948]；更新状态{'delivered': 1, 'not_triggered': 2}
+  empty：到达3/3；耗时[16.383, 16.411, 16.239]；更新状态{'not_triggered': 3}
+  static：到达3/3；耗时[28.299, 25.271, 27.986]；更新状态{'delivered': 3}
+B：{"trials": 12, "goals": 12, "collisions": 0, "refresh_status": {"no_delivery": 3, "delivered": 4, "not_triggered": 5}, "median_delivered_latency_s": 12.312219564500083, "refresh_requests": 90, "accepted_refresh_requests": 4, "prefix_attempts": 46, "prefix_used": 35}
+  dynamic_four：到达3/3；耗时[27.445, 27.457, 27.525]；更新状态{'no_delivery': 3}
+  dynamic_head_on_center：到达3/3；耗时[25.988, 25.815, 25.962]；更新状态{'delivered': 1, 'not_triggered': 2}
+  empty：到达3/3；耗时[16.049, 16.646, 16.398]；更新状态{'not_triggered': 3}
+  static：到达3/3；耗时[25.586, 26.0, 26.842]；更新状态{'delivered': 3}
+C：{"trials": 12, "goals": 10, "collisions": 0, "refresh_status": {"delivered": 6, "not_triggered": 5, "no_delivery": 1}, "median_delivered_latency_s": 3.7562733309999885, "refresh_requests": 58, "accepted_refresh_requests": 9, "prefix_attempts": 0, "prefix_used": 0}
+  dynamic_four：到达3/3；耗时[27.621, 28.018, 27.461]；更新状态{'delivered': 2, 'no_delivery': 1}
+  dynamic_head_on_center：到达3/3；耗时[26.389, 26.596, 25.174]；更新状态{'not_triggered': 2, 'delivered': 1}
+  empty：到达3/3；耗时[16.367, 16.641, 16.408]；更新状态{'not_triggered': 3}
+  static：到达1/3；耗时[46.332, 24.996, 46.267]；更新状态{'delivered': 3}
+D：{"trials": 12, "goals": 11, "collisions": 0, "refresh_status": {"no_delivery": 5, "not_triggered": 4, "delivered": 3}, "median_delivered_latency_s": 12.657260337999901, "refresh_requests": 100, "accepted_refresh_requests": 5, "prefix_attempts": 65, "prefix_used": 49}
+  dynamic_four：到达3/3；耗时[27.863, 27.793, 27.553]；更新状态{'no_delivery': 3}
+  dynamic_head_on_center：到达2/3；耗时[25.309, 25.977, 46.343]；更新状态{'no_delivery': 2, 'not_triggered': 1}
+  empty：到达3/3；耗时[16.007, 16.739, 16.311]；更新状态{'not_triggered': 3}
+  static：到达3/3；耗时[26.723, 26.827, 28.941]；更新状态{'delivered': 3}
+
+二、同输入配对结果（不是独立导航成功率）
+快照总体：first_refresh；不同总体不可合并推断平均效果。
+A：有效0/12；实际使用前缀0次；请求中位耗时0.33ms；优化结果{'not_entered': 8, 'budget_timeout': 2, 'left_wheel_acceleration': 2}；初值段数[None, None, None, None, None, None, None, None, 4, 4, 8, 8]
+B：有效0/12；实际使用前缀0次；请求中位耗时0.13ms；优化结果{'not_entered': 8, 'budget_timeout': 2, 'left_wheel_acceleration': 2}；初值段数[None, None, None, None, None, None, None, None, 4, 4, 8, 8]
+C：有效0/12；实际使用前缀0次；请求中位耗时1.94ms；优化结果{'not_entered': 10, 'budget_timeout': 2}；初值段数[None, None, None, None, None, None, None, None, None, None, 9, 9]
+D：有效0/12；实际使用前缀0次；请求中位耗时1.87ms；优化结果{'not_entered': 10, 'budget_timeout': 2}；初值段数[None, None, None, None, None, None, None, None, None, None, 9, 9]
+快照总体：first_eligible_prefix；不同总体不可合并推断平均效果。
+A：有效4/12；实际使用前缀0次；请求中位耗时250.34ms；优化结果{'not_entered': 6, 'left_wheel_speed': 2, 'ok': 4}；初值段数[None, None, None, None, None, None, 4, 4, 4, 4, 4, 4]
+B：有效0/12；实际使用前缀6次；请求中位耗时201.50ms；优化结果{'not_entered': 6, 'budget_timeout': 4, 'right_wheel_speed': 2}；初值段数[None, None, None, None, None, None, 6, 6, 7, 7, 6, 6]
+C：有效2/12；实际使用前缀0次；请求中位耗时1.94ms；优化结果{'not_entered': 8, 'left_wheel_speed': 2, 'ok': 2}；初值段数[None, None, None, None, None, None, 4, 4, None, None, 5, 5]
+D：有效0/12；实际使用前缀4次；请求中位耗时1.79ms；优化结果{'not_entered': 8, 'budget_timeout': 4}；初值段数[None, None, None, None, None, None, 6, 6, None, None, 6, 6]
+
+三、解释边界
+1. A/B及C/D同目标对照才用于判断初值反馈；C改变阶段任务，不能把它的提速全称优化器提速。
+2. 在线同种子不等于同状态；同输入求解另用暂停后的快照，暂停运行不计导航性能。
+3. 初始化转换、后续搜索和失败回退均计入请求耗时；实际多项式段数/优化预算在CSV保留。
+4. 0.6秒是协同刷新优化预算；短段结束后原有GEN_NEW入口可能使用1.5秒。预算分布需一起看，不能只报均值。
+5. 目前没有理论闭环安全或必达证明；数值无碰撞不能代替实车验收。
+6. 比较是否真的有帮助，要同时看首次有效交付、最终导航、停车和安全，不只看总到达率。
+7. 本轮不修改碰撞后端/学习调度/实车，不自动上传GitHub。
+
+四、审计
+生产文件变更：[]
+配对审计：[{"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_first_01/dynamic_four_A_seed01", "population": "first_refresh", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_first_01/dynamic_four_A_seed02", "population": "first_refresh", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_first_01/dynamic_head_on_center_A_seed01", "population": "first_refresh", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_first_01/dynamic_head_on_center_A_seed02", "population": "first_refresh", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_first_01/static_A_seed01", "population": "first_refresh", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_first_01/static_A_seed02", "population": "first_refresh", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_eligible_01/dynamic_four_B_seed02", "population": "first_eligible_prefix", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_eligible_01/dynamic_four_B_seed03", "population": "first_eligible_prefix", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_eligible_01/dynamic_head_on_center_B_seed02", "population": "first_eligible_prefix", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_eligible_01/dynamic_head_on_center_B_seed03", "population": "first_eligible_prefix", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_eligible_01/static_B_seed02", "population": "first_eligible_prefix", "valid": true, "errors": [], "warnings": []}, {"path": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/paired_eligible_01/static_B_seed03", "population": "first_eligible_prefix", "valid": true, "errors": [], "warnings": []}]
+在线接口审计全部有效：True
+数值执行轮速/轮加速度边界全部通过：True
+
+五、关键GIF（预先按最小种子选择，不挑最好成绩）
+figures/static/overview.gif
+figures/dynamic_head_on_center/overview.gif
+figures/dynamic_four/overview.gif
+
+六、静态新参考的二维执行模型复核
+只复核非初始参考及采用时已出现的固定障碍；参考按约40ms采样，非连续碰撞证明。
+新参考17条，其中8条某处净距小于MPPI要求的余量。
+该差异是两层几何可行性不一致的证据，不等于机器人实际碰撞或证明所有停滞由此导致。
+起点及按原参考时钟插值的位置与实际位置差异也记录在CSV；只是交接诊断，
+MPPI以实测路径投影推进，并不承诺按原时钟跟踪，不能单凭该差异判定交接故障。本轮不修改交接。

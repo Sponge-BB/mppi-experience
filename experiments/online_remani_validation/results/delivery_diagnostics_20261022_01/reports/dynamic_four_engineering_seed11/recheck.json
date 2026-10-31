@@ -1,0 +1,109 @@
+{
+  "schema": "delivery_independent_recheck_v1",
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_diagnostics_20261022_01/dynamic_four_engineering_seed11/delivery_diagnostics",
+  "dt": 0.02,
+  "method": "Independent NumPy bilinear field + recorded disk-union; no optimizer, retiming or ROS",
+  "limitations": [
+    "Recorded geometry is not independent physical ground truth.",
+    "K8 is per piece; dense uses original whole-block gate sample times.",
+    "Both samplers keep candidate.start_time+offset. K8 is only a sampling-density sensitivity, NOT full optimizer-objective replay: the online added dynamic objective uses solve_frame.now+offset.",
+    "Unknown dynamic horizon is not collision and is not a safety certificate.",
+    "Same candidate only; differences do not estimate closed-loop policy performance.",
+    "Low-speed heading remains the native velocity-derived convention; no explicit endpoint yaw is fabricated."
+  ],
+  "source_snapshot_sha256": {
+    "snapshots/4482570dd7626f00.json": "0b5875414f654c904d6633c7b4a60043a3b9bae61ecf6e4129afb6be417c747f",
+    "snapshots/f98783f0b1194f91.json": "1a766a41f13fe7a7419431631da798c9e6a1fe3a24ba179766a485b8ba2e4f32"
+  },
+  "candidate_count": 1,
+  "audits": [
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_diagnostics_20261022_01/dynamic_four_engineering_seed11/delivery_diagnostics/candidates/29198_1.json",
+      "sha256": "f3910dfcb47485f51927e89e53d58d61df1e7bad2aaa5168ec824ade100da62a",
+      "recorded_failure": null,
+      "recorded_finished": true,
+      "recorded_accepted": true,
+      "replay_gate_status_agrees": true,
+      "first_failure_comparison": null,
+      "request_id": 1,
+      "scope_id": 1,
+      "summaries": [
+        {
+          "candidate": "29198_1.json",
+          "frame": "solve_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 56,
+          "snapshot_age": 0.04018690999998853,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 45,
+            "dynamic_safe": 6,
+            "dynamic_unknown": 39
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "29198_1.json",
+          "frame": "solve_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 56,
+          "snapshot_age": 0.04018690999998853,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 826,
+            "dynamic_safe": 121,
+            "dynamic_unknown": 705
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "29198_1.json",
+          "frame": "accept_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 62,
+          "snapshot_age": 0.04017753400000856,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 45,
+            "dynamic_past": 1,
+            "dynamic_safe": 6,
+            "dynamic_unknown": 38
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "29198_1.json",
+          "frame": "accept_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 62,
+          "snapshot_age": 0.04017753400000856,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 826,
+            "dynamic_past": 4,
+            "dynamic_safe": 148,
+            "dynamic_unknown": 674
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        }
+      ]
+    }
+  ],
+  "geometry_error_audits": []
+}

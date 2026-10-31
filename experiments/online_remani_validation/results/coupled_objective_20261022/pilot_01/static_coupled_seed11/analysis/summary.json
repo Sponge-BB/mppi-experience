@@ -1,0 +1,967 @@
+{
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/coupled_objective_20261022/pilot_01/static_coupled_seed11",
+  "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+  "scene": "static",
+  "result": "goal",
+  "anchor_sim_s": 8.84844570000132,
+  "end_sim_s": 38.26264324600197,
+  "clock_origin_ros_s": 1000.0,
+  "latency": {
+    "actor_truth_appearance_sim_s": 12.865009382003336,
+    "actor_note": "first recorded simulator actor sample; NOT perception identification",
+    "first_native_blocked_sim_s": 13.066448175999994,
+    "first_refresh_trigger_sim_s": 13.066448175999994,
+    "first_refresh_publish_sim_s": 23.061748858999977,
+    "first_refresh_consume_sim_s": 23.102107098000033,
+    "first_refresh_control_sim_s": 23.102107098000033,
+    "appearance_to_first_native_blocked_sim_s": 0.2014387939966582,
+    "appearance_to_first_refresh_trigger_sim_s": 0.2014387939966582,
+    "appearance_to_first_refresh_publish_sim_s": 10.19673947699664,
+    "appearance_to_first_refresh_consume_sim_s": 10.237097715996697,
+    "appearance_to_first_refresh_control_sim_s": 10.237097715996697
+  },
+  "native_wall_accounting": {
+    "window": "first native blocked check to first later native reference publication",
+    "total_wall_s": 10.004004032998637,
+    "request_union_wall_s": 4.476628077005444,
+    "closed_explicit_wait_union_wall_s": 5.43409266600429,
+    "request_and_wait_overlap_wall_s": 0.0,
+    "unattributed_wall_s": 0.09328328998890356,
+    "wait_by_key_union_wall_s": {
+      "cooperative_retry": 4.449924183001713,
+      "esdf:GEN_NEW_TRAJ": 0.0,
+      "esdf:LOCAL_EXECUTION_REFRESH": 0.984168483002577
+    },
+    "interpretation": "closed measured intervals only; wait keys can overlap; unattributed is not assumed CPU contention"
+  },
+  "requests": [
+    {
+      "request_id": 1,
+      "start_sim_s": 7.148164307000002,
+      "end_sim_s": 7.790959597999972,
+      "start_mono": 25380.414447393,
+      "end_mono": 25381.042817978,
+      "request_wall_ms": 628.3705850000842,
+      "success": true,
+      "local_execution_owner": true,
+      "start_x": 0,
+      "start_y": 0,
+      "start_yaw": 0,
+      "stage_wall_ms": {
+        "search": 126.10062200110406,
+        "initialization": 126.2840210001741,
+        "optimizer": 442.71449700318044,
+        "manager_replan": 570.3691260023334,
+        "live_acceptance": 57.36642799820402
+      },
+      "search_results": [
+        {
+          "status": 2,
+          "success": true,
+          "status_name": "REACH_END"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [],
+      "other_request_wall_ms": 2.005638998525683,
+      "search_inside_initialization": true,
+      "optimizer_calls": [
+        {
+          "resource_optimizer_id": 2,
+          "wall_ms": 442.5943010028277,
+          "thread_cpu_ms": 433.6888639999999,
+          "runqueue_wait_ms": 7.800256000000005,
+          "budget_s": 1.5,
+          "iterations": 67,
+          "input_hash": "11444132805052239300",
+          "success": true,
+          "failure_trace_matched": true,
+          "reason": "ok",
+          "rejection_value": 0,
+          "max_left_omega": 3.2797135333158,
+          "max_right_omega": 3.2797135333158
+        }
+      ],
+      "outcome_class": "accepted"
+    },
+    {
+      "request_id": 2,
+      "start_sim_s": 13.216241450999973,
+      "end_sim_s": 13.979767188999972,
+      "start_mono": 25386.468074966,
+      "end_mono": 25387.234741104,
+      "request_wall_ms": 766.6661379989819,
+      "success": false,
+      "local_execution_owner": true,
+      "start_x": 0.9779584467961421,
+      "start_y": -0.008947352818546684,
+      "start_yaw": 0.07175073452738044,
+      "stage_wall_ms": {
+        "search": 158.78965899901232,
+        "initialization": 158.93843199955882,
+        "optimizer": 606.1507849990448,
+        "manager_replan": 766.4476969985117
+      },
+      "search_results": [
+        {
+          "status": 2,
+          "success": true,
+          "status_name": "REACH_END"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [],
+      "other_request_wall_ms": 1.5769210003782064,
+      "search_inside_initialization": true,
+      "optimizer_calls": [
+        {
+          "resource_optimizer_id": 4,
+          "wall_ms": 606.0427490010625,
+          "thread_cpu_ms": 604.1472319999999,
+          "runqueue_wait_ms": 0.4410879999999784,
+          "budget_s": 0.6,
+          "iterations": 110,
+          "input_hash": "13818455029838875833",
+          "success": false,
+          "failure_trace_matched": true,
+          "reason": "budget_timeout",
+          "rejection_value": 0,
+          "max_left_omega": null,
+          "max_right_omega": null
+        }
+      ],
+      "outcome_class": "optimizer_reject_or_timeout"
+    },
+    {
+      "request_id": 3,
+      "start_sim_s": 14.848455842000021,
+      "end_sim_s": 14.928815473999975,
+      "start_mono": 25388.116500335,
+      "end_mono": 25388.189227439,
+      "request_wall_ms": 72.72710400138749,
+      "success": false,
+      "local_execution_owner": true,
+      "start_x": 0.931583319756255,
+      "start_y": -0.0139843818506147,
+      "start_yaw": 0.12218480853324741,
+      "stage_wall_ms": {
+        "search": 71.29822099886951,
+        "initialization": 71.46251399899484,
+        "manager_replan": 72.28200000099605
+      },
+      "search_results": [
+        {
+          "status": 3,
+          "success": false,
+          "status_name": "NO_PATH"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [],
+      "other_request_wall_ms": 1.2645900023926515,
+      "search_inside_initialization": true,
+      "optimizer_calls": [],
+      "outcome_class": "search_failure"
+    },
+    {
+      "request_id": 4,
+      "start_sim_s": 15.95342645200003,
+      "end_sim_s": 16.780506359000015,
+      "start_mono": 25389.203943472,
+      "end_mono": 25390.03292367,
+      "request_wall_ms": 828.9801980026823,
+      "success": false,
+      "local_execution_owner": true,
+      "start_x": 0.9154916695563218,
+      "start_y": -0.010255025790692786,
+      "start_yaw": 0.6057735476510576,
+      "stage_wall_ms": {
+        "search": 143.86906300205737,
+        "initialization": 144.18379400012782,
+        "optimizer": 620.8431490013027,
+        "manager_replan": 766.6321199976665,
+        "live_acceptance": 61.98204900283599
+      },
+      "search_results": [
+        {
+          "status": 2,
+          "success": true,
+          "status_name": "REACH_END"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [
+        "additional_projected_qualification"
+      ],
+      "other_request_wall_ms": 1.9712059984158259,
+      "search_inside_initialization": true,
+      "optimizer_calls": [
+        {
+          "resource_optimizer_id": 7,
+          "wall_ms": 620.6699579997803,
+          "thread_cpu_ms": 607.8116800000001,
+          "runqueue_wait_ms": 9.971520000000012,
+          "budget_s": 0.6,
+          "iterations": 95,
+          "input_hash": "16076851499124697927",
+          "success": true,
+          "failure_trace_matched": true,
+          "reason": "ok",
+          "rejection_value": 0,
+          "max_left_omega": 3.2798049481834517,
+          "max_right_omega": 3.2246205040076346
+        }
+      ],
+      "outcome_class": "live_acceptance_reject"
+    },
+    {
+      "request_id": 5,
+      "start_sim_s": 17.668817632000014,
+      "end_sim_s": 18.393875374000004,
+      "start_mono": 25390.921191102,
+      "end_mono": 25391.662572722,
+      "request_wall_ms": 741.3816200023575,
+      "success": false,
+      "local_execution_owner": true,
+      "start_x": 1.0408336352587306,
+      "start_y": 0.2016517455657604,
+      "start_yaw": 1.2161136597219944,
+      "stage_wall_ms": {
+        "search": 138.33763400180032,
+        "initialization": 138.50215200000093,
+        "optimizer": 601.5282850021322,
+        "manager_replan": 741.0414480000327
+      },
+      "search_results": [
+        {
+          "status": 2,
+          "success": true,
+          "status_name": "REACH_END"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [],
+      "other_request_wall_ms": 1.3511830002244096,
+      "search_inside_initialization": true,
+      "optimizer_calls": [
+        {
+          "resource_optimizer_id": 9,
+          "wall_ms": 601.4106490001723,
+          "thread_cpu_ms": 595.6574080000001,
+          "runqueue_wait_ms": 4.125280000000009,
+          "budget_s": 0.6,
+          "iterations": 135,
+          "input_hash": "3094727808571919688",
+          "success": false,
+          "failure_trace_matched": true,
+          "reason": "budget_timeout",
+          "rejection_value": 0,
+          "max_left_omega": null,
+          "max_right_omega": null
+        }
+      ],
+      "outcome_class": "optimizer_reject_or_timeout"
+    },
+    {
+      "request_id": 6,
+      "start_sim_s": 19.199783262999972,
+      "end_sim_s": 19.74240592800004,
+      "start_mono": 25392.454706392,
+      "end_mono": 25393.006907958,
+      "request_wall_ms": 552.2015659989847,
+      "success": false,
+      "local_execution_owner": true,
+      "start_x": 1.0653607237192892,
+      "start_y": 0.2786229482333999,
+      "start_yaw": 1.0268871984804657,
+      "stage_wall_ms": {
+        "search": 134.50808900233824,
+        "initialization": 134.7517779977352,
+        "optimizer": 359.66852999990806,
+        "manager_replan": 495.5249550002918,
+        "live_acceptance": 56.430715001624776
+      },
+      "search_results": [
+        {
+          "status": 2,
+          "success": true,
+          "status_name": "REACH_END"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [
+        "additional_projected_qualification"
+      ],
+      "other_request_wall_ms": 1.3505429997167084,
+      "search_inside_initialization": true,
+      "optimizer_calls": [
+        {
+          "resource_optimizer_id": 11,
+          "wall_ms": 359.5533579973562,
+          "thread_cpu_ms": 356.4834240000004,
+          "runqueue_wait_ms": 2.021056000000021,
+          "budget_s": 0.6,
+          "iterations": 65,
+          "input_hash": "9983351098081753703",
+          "success": true,
+          "failure_trace_matched": true,
+          "reason": "ok",
+          "rejection_value": 0,
+          "max_left_omega": 3.2802326382835347,
+          "max_right_omega": 3.041437684626715
+        }
+      ],
+      "outcome_class": "live_acceptance_reject"
+    },
+    {
+      "request_id": 7,
+      "start_sim_s": 20.58198688799996,
+      "end_sim_s": 21.26553233599998,
+      "start_mono": 25393.850039701,
+      "end_mono": 25394.531892256,
+      "request_wall_ms": 681.8525550006598,
+      "success": false,
+      "local_execution_owner": true,
+      "start_x": 1.0555187679785714,
+      "start_y": 0.2632468572288035,
+      "start_yaw": 0.9796460332466277,
+      "stage_wall_ms": {
+        "search": 122.4558200010506,
+        "initialization": 122.61422600204241,
+        "optimizer": 501.8099790031556,
+        "manager_replan": 625.5541649989027,
+        "live_acceptance": 56.038956998236245
+      },
+      "search_results": [
+        {
+          "status": 2,
+          "success": true,
+          "status_name": "REACH_END"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [
+        "additional_projected_qualification"
+      ],
+      "other_request_wall_ms": 1.3893929972255137,
+      "search_inside_initialization": true,
+      "optimizer_calls": [
+        {
+          "resource_optimizer_id": 13,
+          "wall_ms": 501.6971429977275,
+          "thread_cpu_ms": 499.1747200000001,
+          "runqueue_wait_ms": 1.069216000000095,
+          "budget_s": 0.6,
+          "iterations": 97,
+          "input_hash": "10451436322679487449",
+          "success": true,
+          "failure_trace_matched": true,
+          "reason": "ok",
+          "rejection_value": 0,
+          "max_left_omega": 3.2827592731040984,
+          "max_right_omega": 3.277076374010636
+        }
+      ],
+      "outcome_class": "live_acceptance_reject"
+    },
+    {
+      "request_id": 8,
+      "start_sim_s": 22.226741149999953,
+      "end_sim_s": 23.061748858999977,
+      "start_mono": 25395.495416673,
+      "end_mono": 25396.328342516,
+      "request_wall_ms": 832.9258430021582,
+      "success": true,
+      "local_execution_owner": true,
+      "start_x": 1.1188919740456287,
+      "start_y": 0.3771960821707767,
+      "start_yaw": 1.0765787353192064,
+      "stage_wall_ms": {
+        "search": 149.22614999886719,
+        "initialization": 149.4109240011312,
+        "optimizer": 631.6478859989729,
+        "manager_replan": 782.2728369974357,
+        "live_acceptance": 49.50640400056727
+      },
+      "search_results": [
+        {
+          "status": 2,
+          "success": true,
+          "status_name": "REACH_END"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [],
+      "other_request_wall_ms": 2.3606290014868136,
+      "search_inside_initialization": true,
+      "optimizer_calls": [
+        {
+          "resource_optimizer_id": 15,
+          "wall_ms": 631.5330020006513,
+          "thread_cpu_ms": 626.1202880000001,
+          "runqueue_wait_ms": 3.57027199999993,
+          "budget_s": 0.6,
+          "iterations": 128,
+          "input_hash": "120862409867211368",
+          "success": true,
+          "failure_trace_matched": true,
+          "reason": "ok",
+          "rejection_value": 0,
+          "max_left_omega": 3.282948398485645,
+          "max_right_omega": 3.2801117790946086
+        }
+      ],
+      "outcome_class": "accepted"
+    }
+  ],
+  "request_count_until_first_refresh": 7,
+  "request_outcomes_until_first_refresh": {
+    "optimizer_reject_or_timeout": 2,
+    "search_failure": 1,
+    "live_acceptance_reject": 3,
+    "accepted": 1
+  },
+  "optimizer_reasons_until_first_refresh": {
+    "budget_timeout": 2,
+    "ok": 4
+  },
+  "reference_chains": [
+    {
+      "transaction_fnv64": "1814859086151758818",
+      "publish_sim_s": 7.790959597999972,
+      "publish_mono": 25381.042652308,
+      "request_id": 1,
+      "observer_receipt_matched": true,
+      "receipt_time_is_transport_observation": true,
+      "observer_receipt_sim_s": 7.790959597999972,
+      "message_hashes": [
+        "a8b0005419064fe565dae01d525886852704ea2ab850aa4dd0deb5cc5112f6aa"
+      ],
+      "commit_matched": true,
+      "consumption_matched": true,
+      "commit_sim_s": 7.790959597999972,
+      "commit_revision": 1,
+      "consume_sim_s": 7.843778153000017,
+      "consume_revision": 1,
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "publish_to_consume_sim_s": 0.0528185550000444,
+      "first_control_sim_s": 7.843778153000017,
+      "first_control_reason": "ok",
+      "first_control_v": 0.13989115965076415,
+      "first_control_w": 0.020316630135189275,
+      "publish_to_first_control_sim_s": 0.0528185550000444,
+      "first_control_matched": true,
+      "complete_exact_chain": true
+    },
+    {
+      "transaction_fnv64": "14090062603529223791",
+      "publish_sim_s": 23.061748858999977,
+      "publish_mono": 25396.328235569,
+      "request_id": 8,
+      "observer_receipt_matched": true,
+      "receipt_time_is_transport_observation": true,
+      "observer_receipt_sim_s": 23.061748858999977,
+      "message_hashes": [
+        "e6a4de58622c3990caf4f88f4f46430040d9a624d08abd34586d453e642db71c"
+      ],
+      "commit_matched": true,
+      "consumption_matched": true,
+      "commit_sim_s": 23.08180733400002,
+      "commit_revision": 2,
+      "consume_sim_s": 23.102107098000033,
+      "consume_revision": 2,
+      "reference_sha256": "55ea82cc9fc445d15cade3a704c6e9c6f3f91e988b9d380d4eae8e23498fe547",
+      "publish_to_consume_sim_s": 0.04035823900005653,
+      "first_control_sim_s": 23.102107098000033,
+      "first_control_reason": "ok",
+      "first_control_v": 0.2001784425625599,
+      "first_control_w": -0.15903544560778426,
+      "publish_to_first_control_sim_s": 0.04035823900005653,
+      "first_control_matched": true,
+      "complete_exact_chain": true
+    }
+  ],
+  "stop_analysis": {
+    "reason_duration_s": {
+      "ok": 27.0157104700005,
+      "local_validation_failed": 0.2010309419999885,
+      "no_feasible_candidate": 0.752530274000037,
+      "deadline_miss": 1.4449258600001258
+    },
+    "zero_command_duration_s": {
+      "local_validation_failed": 0.2010309419999885,
+      "no_feasible_candidate": 0.752530274000037,
+      "deadline_miss": 1.4449258600001258,
+      "ok": 0.1263630959999773
+    },
+    "low_linear_command_duration_s": {
+      "local_validation_failed": 0.2010309419999885,
+      "no_feasible_candidate": 0.752530274000037,
+      "deadline_miss": 1.4449258600001258,
+      "ok": 2.3056774000020823
+    },
+    "longest_both_zero_command_s": 1.013838404000012,
+    "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+    "low_linear_note": "includes in-place turning; not automatically a stop",
+    "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation",
+    "measured_nearly_zero_motion_s": 1.0053375230017991,
+    "measured_thresholds": {
+      "v_abs_m_s": 0.01,
+      "w_abs_rad_s": 0.03
+    },
+    "native_clock_freeze_used_as_stop_evidence": false
+  },
+  "stop_by_phase": {
+    "terminal_settling_start_sim_s": 37.26968587600277,
+    "navigation_end_sim_s": 37.26968587600277,
+    "phases": {
+      "before_obstacle": {
+        "start_sim_s": 8.84844570000132,
+        "end_sim_s": 12.865009382003336,
+        "duration_sim_s": 4.016563682002015,
+        "measured_nearly_zero_motion_s": 0.0,
+        "reason_duration_s": {
+          "ok": 4.016563682002015
+        },
+        "zero_command_duration_s": {},
+        "low_linear_command_duration_s": {},
+        "longest_both_zero_command_s": 0.0,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation"
+      },
+      "obstacle_until_new_reference": {
+        "start_sim_s": 12.865009382003336,
+        "end_sim_s": 23.102107098000033,
+        "duration_sim_s": 10.237097715996697,
+        "measured_nearly_zero_motion_s": 0.8244806460024847,
+        "reason_duration_s": {
+          "ok": 7.838610639996546,
+          "local_validation_failed": 0.2010309419999885,
+          "no_feasible_candidate": 0.752530274000037,
+          "deadline_miss": 1.4449258600001258
+        },
+        "zero_command_duration_s": {
+          "local_validation_failed": 0.2010309419999885,
+          "no_feasible_candidate": 0.752530274000037,
+          "deadline_miss": 1.4449258600001258,
+          "ok": 0.1263630959999773
+        },
+        "low_linear_command_duration_s": {
+          "local_validation_failed": 0.2010309419999885,
+          "no_feasible_candidate": 0.752530274000037,
+          "deadline_miss": 1.4449258600001258,
+          "ok": 0.6032703310000898
+        },
+        "longest_both_zero_command_s": 1.013838404000012,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation"
+      },
+      "after_new_reference_before_goal": {
+        "start_sim_s": 23.102107098000033,
+        "end_sim_s": 37.26968587600277,
+        "duration_sim_s": 14.167578778002735,
+        "measured_nearly_zero_motion_s": 0.0,
+        "reason_duration_s": {
+          "ok": 14.167578778002735
+        },
+        "zero_command_duration_s": {},
+        "low_linear_command_duration_s": {
+          "ok": 0.7094496990027892
+        },
+        "longest_both_zero_command_s": 0.0,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation"
+      },
+      "terminal_settling": {
+        "start_sim_s": 37.26968587600277,
+        "end_sim_s": 38.26264324600197,
+        "duration_sim_s": 0.9929573699992034,
+        "measured_nearly_zero_motion_s": 0.1808568769993144,
+        "reason_duration_s": {
+          "ok": 0.9929573699992034
+        },
+        "zero_command_duration_s": {},
+        "low_linear_command_duration_s": {
+          "ok": 0.9929573699992034
+        },
+        "longest_both_zero_command_s": 0.0,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation"
+      }
+    },
+    "terminal_condition": {
+      "goal_xy": [
+        3.0,
+        0.0
+      ],
+      "distance_strict_lt_m": 0.05,
+      "raw_abs_yaw_strict_lt_rad": 0.1,
+      "abs_v_strict_lt_m_s": 0.05,
+      "angular_speed_not_part_of_goal_condition": true
+    },
+    "boundary_method": "backtracked final contiguous recorded at_goal samples, same Simulator.run predicate; one-sample resolution",
+    "no_new_reference_rule": "obstacle phase continues to navigation_end; initial reference consumption is never used as a refresh"
+  },
+  "unmatched": {
+    "requests": [],
+    "stages": [],
+    "waits": []
+  },
+  "run_status": {
+    "returncode": 0,
+    "result_written": true,
+    "graph_audited": true,
+    "required_process_failed": false,
+    "monitored_node_pids": {
+      "/crop_box_filter": 21866,
+      "/dynamic_obstacle_tracker": 21867,
+      "/mm_controller_node": 21858,
+      "/passthrough_z": 21864,
+      "/pcl_manager_filter": 21859,
+      "/rosout": 21849,
+      "/sim_lidar_tf": 21886,
+      "/sim_map_to_odom": 21880,
+      "/sim_world_to_map": 21873,
+      "/algorithm_simulator": 21904,
+      "/base_mppi": 21910,
+      "/dual_timescale_observer": 21923,
+      "/filter_joint_states": 21856,
+      "/remani_planner_node": 21857,
+      "/shared_collision_model": 21916
+    },
+    "runner_error": null,
+    "stop_errors": [],
+    "elapsed_wall_s": 43.34001932400133,
+    "production_hashes_unchanged": true,
+    "build_manifest_unchanged": true,
+    "coupling_group": "coupled",
+    "free_bytes_after_run": 350113792
+  },
+  "publisher_audit": {
+    "publishers": {
+      "/rosout_agg": [
+        "/rosout"
+      ],
+      "/rosout": [
+        "/mm_controller_node",
+        "/passthrough_z",
+        "/crop_box_filter",
+        "/pcl_manager_filter",
+        "/sim_map_to_odom",
+        "/sim_world_to_map",
+        "/sim_lidar_tf",
+        "/dynamic_obstacle_tracker",
+        "/remani_planner_node",
+        "/filter_joint_states",
+        "/algorithm_simulator",
+        "/dual_timescale_observer",
+        "/base_mppi",
+        "/shared_collision_model"
+      ],
+      "/tf_static": [
+        "/sim_map_to_odom",
+        "/sim_world_to_map",
+        "/sim_lidar_tf"
+      ],
+      "/passthrough_z/parameter_descriptions": [
+        "/pcl_manager_filter"
+      ],
+      "/passthrough_z/parameter_updates": [
+        "/pcl_manager_filter"
+      ],
+      "/livox/lidar_no_ground": [
+        "/pcl_manager_filter"
+      ],
+      "/pcl_manager_filter/bond": [
+        "/pcl_manager_filter",
+        "/passthrough_z",
+        "/crop_box_filter"
+      ],
+      "/crop_box_filter/parameter_descriptions": [
+        "/pcl_manager_filter"
+      ],
+      "/crop_box_filter/parameter_updates": [
+        "/pcl_manager_filter"
+      ],
+      "/velodyne_points": [
+        "/pcl_manager_filter"
+      ],
+      "/sim/classified_cloud": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_points": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/confirmed_track_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/motion_qualified_track_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/stationary_confirmed_track_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/stationary_background_anchor_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/cluster_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/processing_ms": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/input_age": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/residual_point_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/maximum_confirmed_speed": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/maximum_motion_qualified_speed": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/perception_healthy": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/perception_health_state": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/suppressed_motion_track_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/remani_planner_node/goal_point": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/global_traj": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/init_ctrl_pts": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/optmizing_traj": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/init_waypoints": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/optimal_ctrl_pts": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/optimal_waypoints": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/failed_list": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/a_star_list": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/init_debug_list": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/pt0_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grad0_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/pt1_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grad1_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/smoo_grad_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/dist_grad_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/feas_grad_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/mm_controller_node/destory_cmd": [
+        "/remani_planner_node"
+      ],
+      "/mm/joint_states": [
+        "/filter_joint_states"
+      ],
+      "/remani_planner_node/grid_map/occupancy": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/occupancy_inflate": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/esdf": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/dynamic_point_swept": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/dynamic_prediction_nominal": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/dynamic_prediction_markers": [
+        "/remani_planner_node"
+      ],
+      "/odom": [
+        "/algorithm_simulator"
+      ],
+      "/gazebo/joint_states": [
+        "/algorithm_simulator"
+      ],
+      "/mm/mani/gripper_state": [
+        "/algorithm_simulator"
+      ],
+      "/clock": [
+        "/algorithm_simulator"
+      ],
+      "/sim/raw_cloud": [
+        "/algorithm_simulator"
+      ],
+      "/map_generator/global_cloud": [
+        "/algorithm_simulator"
+      ],
+      "/move_base_simple/goal": [
+        "/algorithm_simulator"
+      ],
+      "/tf": [
+        "/algorithm_simulator"
+      ],
+      "/remani_planner_node/kinoastar/path": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/kinoastar/local_start_goal": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/kinoastar/search_nodes": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/traj_pt_vis": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/traj_init_pt_vis": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/front_end_mm_mesh_vis": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/back_end_mm_mesh_vis": [
+        "/remani_planner_node"
+      ],
+      "/planning/trajectory": [
+        "/remani_planner_node"
+      ],
+      "/planning/data_display": [
+        "/remani_planner_node"
+      ],
+      "/mm_controller_node/gripper_cmd": [
+        "/remani_planner_node",
+        "/mm_controller_node"
+      ],
+      "/map_generator/map_state": [
+        "/remani_planner_node"
+      ],
+      "/planning/start": [
+        "/remani_planner_node"
+      ],
+      "/planning/finish": [
+        "/remani_planner_node"
+      ],
+      "/planning/safety_speed_limit": [
+        "/remani_planner_node"
+      ],
+      "/planning/execution_state": [
+        "/remani_planner_node"
+      ],
+      "/planning/execution_reference": [
+        "/remani_planner_node"
+      ],
+      "/planning/dynamic_point_flow_state": [
+        "/remani_planner_node"
+      ],
+      "/planning/dynamic_point_flow_ttc": [
+        "/remani_planner_node"
+      ],
+      "/sim/unified_collision": [
+        "/shared_collision_model"
+      ],
+      "/sim/cmd_vel": [
+        "/base_mppi"
+      ],
+      "/sim/mppi_diagnostics": [
+        "/base_mppi"
+      ],
+      "/sim/mppi/native_reference": [
+        "/base_mppi"
+      ],
+      "/tracking_fault": [
+        "/base_mppi"
+      ],
+      "/mm_controller_node/trajectory_progress": [
+        "/base_mppi"
+      ],
+      "/planning/local_execution_rollout": [
+        "/base_mppi"
+      ],
+      "/sim/local_execution_cmd": [
+        "/base_mppi"
+      ],
+      "/sim/mppi_seed_states": [
+        "/base_mppi"
+      ],
+      "/sim/mppi_target_field": [
+        "/base_mppi"
+      ],
+      "/mm_controller_node/car_cmd": [
+        "/mm_controller_node"
+      ],
+      "/mm_controller_node/joint_cmd": [
+        "/mm_controller_node"
+      ],
+      "/traj_start_trigger": [
+        "/mm_controller_node"
+      ],
+      "/sim/native_controller_progress": [
+        "/mm_controller_node"
+      ],
+      "/mm_controller_node/arm_tracking_error": [
+        "/mm_controller_node"
+      ],
+      "/mm_controller_node/base_tracking_error": [
+        "/mm_controller_node"
+      ]
+    },
+    "errors": [],
+    "verified": true
+  },
+  "source_sha256": {
+    "dual_timeline.jsonl": "5968a15a0c8d9668a434164cf91c0ac33246b63211277555b9cd6d43246fe119",
+    "observer_events.jsonl": "38dcada1616070e508099e9d958b61f395157477c9f9a3b3dbddc9c7acef8f39",
+    "solver_trace.jsonl": "af4267dbf9a5da29a009b4b73a1877126aef399a53cc50f5f8ebe8c64854068b",
+    "failure_trace.jsonl": "ea01887eb0f3564432b14498141c632a3fba1ff22d1934522f7e467aed51018e",
+    "state.csv": "8e5ab20ac30a91beb3803a0a421a2de6ebbac5510ffd061f11352d630fbdfd6e",
+    "obstacles.csv": "ac7d64f35e104d092382c9ce228551ecc9cdd13da60bd6973ea1bb6a44ed4021",
+    "result.json": "dc4811918101e5aeffe94cbdac6b082aa775d14ca7f0104acc9182a7c32d900e",
+    "run_status.json": "033b1062c131c20e55e6a157b6b638e7d3776341a3ec27d17ece564971fc05a4",
+    "mppi_diagnostics.json": "870f338a2bac6ea33719c2c8ac83427284764402270b3aeb0c8afb1f78337821",
+    "consumed_references.jsonl": "6bb90f2fbc00481be8875d97af57ebd276396c8ab797ed9e522e159bd8823fbe",
+    "reference_events.jsonl": "dc95236dbfa0950c5bca0b405d1d9f9b24d3ec5610e21913452978fd28e09e03",
+    "limits.json": "1270d92d9a77adee78c89ec8e0ca33a82cac6c4e52b2a4c4848a8fc01bbe79aa",
+    "launch_stdout.log": "055c42e22bcd6468f8f0185c6a8906037b5405009b31f3692239b5b921db9761"
+  },
+  "reporter_sha256": "46daf5a702280dbdee42f63750c2886fc9fefa27679994ea98a702136615ddc4",
+  "limitations": [
+    "No Tracker-freeze explanation applied to MPPI-owned execution.",
+    "Small repeated closed loops; native random search not identical-input causal pairs.",
+    "Simulator appearance is not detector identification; observer receipt is not publisher time.",
+    "Unclosed waits excluded from attributed duration; not silently extended to run end.",
+    "Clock fractions and wall delays are not mixed; profiler overhead not subtracted."
+  ]
+}

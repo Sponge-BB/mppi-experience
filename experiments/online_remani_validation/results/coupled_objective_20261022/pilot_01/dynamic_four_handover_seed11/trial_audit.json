@@ -1,0 +1,166 @@
+{
+  "trial": "dynamic_four_handover_seed11",
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/coupled_objective_20261022/pilot_01/dynamic_four_handover_seed11",
+  "valid_experiment": true,
+  "errors": [],
+  "warnings": [
+    "wait(s) right-censored at log end; no duration silently imputed"
+  ],
+  "navigation_outcome": "goal",
+  "outcome_policy": "goal/collision/navigation timeout all retained; only setup, crash or contradicted interface invalidates",
+  "phase_integrity": {
+    "pass_integrity": true,
+    "errors": [],
+    "warnings": [
+      "wait(s) right-censored at log end; no duration silently imputed"
+    ],
+    "events": 281,
+    "requests": 21,
+    "closed_requests": 21,
+    "closed_stages": 29,
+    "closed_waits": 40,
+    "resource_links": 7,
+    "right_censored_requests": [],
+    "right_censored_stages": [],
+    "right_censored_waits": [
+      {
+        "event": "wait_begin",
+        "mono": 23824.282878637,
+        "sim": 1036.333492984,
+        "pid": 16310,
+        "request_id": 0,
+        "until_sim": 1037.063370703,
+        "wait_key": "cooperative_retry"
+      }
+    ],
+    "publications": 1,
+    "nesting": "strict native request/stage stack; stages are nested, never summed twice"
+  },
+  "reference_chain_integrity": {
+    "pass_integrity": true,
+    "errors": [],
+    "warnings": [],
+    "chains": [
+      {
+        "transaction_fnv64": "12526834980433953752",
+        "request_id": 1,
+        "publish_sim": 1007.76078389,
+        "observer_receipt": true,
+        "commit": true,
+        "consumption": true,
+        "reconstructed_transaction_fnv64": "12526834980433953752",
+        "reconstructed_transaction_sha256": "1a1cd3394fc69c5ad945f5a4a67f3e57993e59d8319f57a3b9a83cd9d9e14838",
+        "commit_revision": 1,
+        "consume_revision": 1,
+        "consume_sim": 1007.807676013,
+        "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+        "first_control_cycle": true
+      }
+    ],
+    "reporter_crosscheck": true,
+    "clock_note": "source ROS event times used; observer tail mono is never treated as MPPI receipt"
+  },
+  "native_coefficients_pass": true,
+  "native_reference_audit": {
+    "reference_contract_pass": true,
+    "closed_loop_reached": true,
+    "required_process_failed": false,
+    "failures": [],
+    "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+    "native_bundles": 1,
+    "consumed_versions": 1,
+    "live_kernel_calls": 576,
+    "stop_reasons": {
+      "odom_stale": 1,
+      "perception_unhealthy": 33,
+      "native_hard_stop": 105,
+      "waiting_native_trajectory": 15,
+      "ok": 575,
+      "deadline_miss": 1
+    },
+    "trial_result": {
+      "reason": "goal",
+      "goal_sent": 7.012728063997201,
+      "motion_anchor": 8.837139912997372,
+      "scenario_start": "motion",
+      "trajectory_bundles": 1,
+      "min_clearance": 0.3167261134505962,
+      "collision_conservative_projection": false,
+      "arm_max_error": 0.0,
+      "final_state": [
+        2.993153467288803,
+        -0.0001652581018621933,
+        -0.018627312517278626,
+        0.0034603968447687768,
+        0.03731139516602693
+      ],
+      "elapsed": 36.56718381799874,
+      "scene": "dynamic_four",
+      "scope": "native ROS algorithm SIL, not Gazebo/real vehicle"
+    },
+    "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+  },
+  "advisory_freeze": {
+    "valid_same_reference_advisory_zero_cycles": 537,
+    "mppi_nonzero_command_cycles": 528,
+    "also_measured_nonzero_motion_cycles": 528,
+    "examples": [
+      {
+        "sim": 1009.762472414,
+        "reference_revision": 1,
+        "native_virtual_time": 1.7286325581838082,
+        "v": 0.21827341130044275,
+        "w": -0.02095627503392788,
+        "reason": "ok"
+      },
+      {
+        "sim": 1009.862957572,
+        "reference_revision": 1,
+        "native_virtual_time": 1.7286325581838082,
+        "v": 0.2132964777157232,
+        "w": -0.004586786918501356,
+        "reason": "ok"
+      },
+      {
+        "sim": 1009.883031818,
+        "reference_revision": 1,
+        "native_virtual_time": 1.7286325581838082,
+        "v": 0.20935116492634462,
+        "w": 0.07941444977485726,
+        "reason": "ok"
+      },
+      {
+        "sim": 1009.923195096,
+        "reference_revision": 1,
+        "native_virtual_time": 1.7286325581838082,
+        "v": 0.20543812161447345,
+        "w": 0.011045961221494191,
+        "reason": "ok"
+      }
+    ],
+    "interpretation": "advisory controller-clock hold is not MPPI stop; commands are separate from measured motion",
+    "matching": "exact consumed revision/hash and same native start stamp; latest advisory and odom age <0.2s",
+    "nonzero_thresholds": {
+      "abs_v_m_s": 0.02,
+      "abs_w_rad_s": 0.04
+    }
+  },
+  "solver_outcomes": {
+    "ok": 1,
+    "budget_timeout": 5,
+    "left_wheel_acceleration": 1
+  },
+  "inputs_sha256": {
+    "manifest.json": "042988c2f727c8d5a08c6cf1048efc7b4a69359f56c4b0826a4fa5128083245d",
+    "run_status.json": "8806326a694b60c685b3e298c15de7f831e858acba8f56f87f7bb3615d72460b",
+    "publisher_audit.json": "3c6cbcb450b7ee5f0aa96bb41e1b23a7ff00c1a3b3d42fadb704a37cbc9f1493",
+    "dual_timeline.jsonl": "82ff54adf9efa573da2a4794b62f94b1b6fe11ba695e366cf28f54fb71b07720",
+    "observer_events.jsonl": "94a5c2020a5f4f9ae607ade3b2945f3c0b052c954ad47d5224158f0ba3714bf5",
+    "solver_trace.jsonl": "2a7e2253781e0c345f3e7dd9bdba5807d620e1428796ac7d70689a93ae4382e4",
+    "failure_trace.jsonl": "1b562765e3177b210af7320082da2be65ea9500b6211f2c7f7e2b74555e353de",
+    "trajectories.json": "554542989bd1c410095bebe02dada6612fd7e29f67ac1aaeedd2ea43499f6ef4",
+    "consumed_references.jsonl": "5d6cd1039f00d62d2cd8c852a3234f3a74c59bdb5415d50ebacb4f382e084505",
+    "reference_events.jsonl": "adb4fa721f8c51393984ad96e54d0da5d224f0c3330f95ce76b60056eeb4d7b3",
+    "mppi_diagnostics.json": "19b54dffcf6d50c4123443836687827dae053998ab03ef5599136c21db283285"
+  }
+}

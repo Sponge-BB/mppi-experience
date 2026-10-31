@@ -1,0 +1,198 @@
+{
+  "schema": "delivery_independent_recheck_v1",
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_diagnostics_20261022_01/static_engineering_seed11/delivery_diagnostics",
+  "dt": 0.02,
+  "method": "Independent NumPy bilinear field + recorded disk-union; no optimizer, retiming or ROS",
+  "limitations": [
+    "Recorded geometry is not independent physical ground truth.",
+    "K8 is per piece; dense uses original whole-block gate sample times.",
+    "Both samplers keep candidate.start_time+offset. K8 is only a sampling-density sensitivity, NOT full optimizer-objective replay: the online added dynamic objective uses solve_frame.now+offset.",
+    "Unknown dynamic horizon is not collision and is not a safety certificate.",
+    "Same candidate only; differences do not estimate closed-loop policy performance.",
+    "Low-speed heading remains the native velocity-derived convention; no explicit endpoint yaw is fabricated."
+  ],
+  "source_snapshot_sha256": {
+    "snapshots/391820de1386240c.json": "dd2cfe56858554c3ec1d71e72d198777ed3481b071aeb082911b8ac24544706d",
+    "snapshots/8ba5de8f08fb03e7.json": "35663c849b26872db712b6ffa0cd3438e1b951b6eae8ca4ff2e1275f69f90bbe",
+    "snapshots/9d47f1e52fd1ba22.json": "abbf0344a575bdb282796f295cd097e5bab097b61eabeabd9471aae4b64a7b68",
+    "snapshots/9d991bd23f366eb8.json": "f99fb92582d94ba10d6718682bbdc825f305a8bfca3c4d5c8a4bf359b2c17376"
+  },
+  "candidate_count": 2,
+  "audits": [
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_diagnostics_20261022_01/static_engineering_seed11/delivery_diagnostics/candidates/28723_1.json",
+      "sha256": "f8e9ca4c2218cb9f2883c9733d243c546969a5227de6fadf1a53d22432f4062e",
+      "recorded_failure": null,
+      "recorded_finished": true,
+      "recorded_accepted": true,
+      "replay_gate_status_agrees": true,
+      "first_failure_comparison": null,
+      "request_id": 1,
+      "scope_id": 1,
+      "summaries": [
+        {
+          "candidate": "28723_1.json",
+          "frame": "solve_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 55,
+          "snapshot_age": 0.02008088000002317,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 45,
+            "dynamic_safe": 6,
+            "dynamic_unknown": 39
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28723_1.json",
+          "frame": "solve_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 55,
+          "snapshot_age": 0.02008088000002317,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 826,
+            "dynamic_safe": 121,
+            "dynamic_unknown": 705
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28723_1.json",
+          "frame": "accept_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 61,
+          "snapshot_age": 0.04017938899994533,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 45,
+            "dynamic_past": 1,
+            "dynamic_safe": 6,
+            "dynamic_unknown": 38
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28723_1.json",
+          "frame": "accept_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 61,
+          "snapshot_age": 0.04017938899994533,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 826,
+            "dynamic_past": 4,
+            "dynamic_safe": 148,
+            "dynamic_unknown": 674
+          },
+          "min_static_gap": 0.9247808246938717,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        }
+      ]
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_diagnostics_20261022_01/static_engineering_seed11/delivery_diagnostics/candidates/28723_2.json",
+      "sha256": "1d46ea25e871ac50b047741e43a4f06df267980c5bb052653b7f1cba82a6834d",
+      "recorded_failure": null,
+      "recorded_finished": true,
+      "recorded_accepted": true,
+      "replay_gate_status_agrees": true,
+      "first_failure_comparison": null,
+      "request_id": 4,
+      "scope_id": 3,
+      "summaries": [
+        {
+          "candidate": "28723_2.json",
+          "frame": "solve_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 138,
+          "snapshot_age": 0.12071942299996863,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 45,
+            "dynamic_safe": 6,
+            "dynamic_unknown": 39
+          },
+          "min_static_gap": 0.0004222387949462114,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28723_2.json",
+          "frame": "solve_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 138,
+          "snapshot_age": 0.12071942299996863,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 889,
+            "dynamic_safe": 125,
+            "dynamic_unknown": 764
+          },
+          "min_static_gap": 0.00024673028529467733,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28723_2.json",
+          "frame": "accept_frame",
+          "sampling": "K8",
+          "snapshot_sequence": 143,
+          "snapshot_age": 0.08037286100000074,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 45,
+            "dynamic_past": 1,
+            "dynamic_safe": 6,
+            "dynamic_unknown": 38
+          },
+          "min_static_gap": 0.0004222387949462114,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        },
+        {
+          "candidate": "28723_2.json",
+          "frame": "accept_frame",
+          "sampling": "dense",
+          "snapshot_sequence": 143,
+          "snapshot_age": 0.08037286100000074,
+          "snapshot_fresh": true,
+          "counts": {
+            "static_safe": 889,
+            "dynamic_past": 4,
+            "dynamic_safe": 147,
+            "dynamic_unknown": 738
+          },
+          "min_static_gap": 0.00024673028529467733,
+          "min_dynamic_gap": null,
+          "low_speed_samples": 0,
+          "first_failure": null,
+          "gate_ok": true
+        }
+      ]
+    }
+  ],
+  "geometry_error_audits": []
+}

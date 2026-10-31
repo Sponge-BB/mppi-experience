@@ -1,0 +1,87 @@
+双时间尺度耦合优化：15/15独立瓶颈审计
+
+范围：固定机械臂、真实REMANI在线规划与MPPI数值闭环；不是Gazebo或实车。本目录仅新写诊断，不修改算法/配置/原数据。
+
+一、可引用结论
+1. 新代价确实进入了真实优化，但本批尚未证明耦合整体更好；不能用15次都到达代替协同收益。
+2. 四障碍慢层主要先被最终目标资格挡住：native拒绝15次，其余各组14次。首次blocked后约12秒才首次进入优化。
+3. type0定位到终点底盘环境检查；没有逐项距离记录，不能将其全部归因动态swept层。
+4. 静态coupled相对engineering交付变慢约4.666秒，导航变慢约1.899秒，有3次新增投影资格拒收；负面结果必须保留。
+5. 静态handover交付约3.345秒看似更快，但有效预测scope为0，不能归因新增交接项。
+6. static engineering有一次失败明确由新增geometry样本异常触发，不能统称原框架问题。
+
+二、全15试次（时间为ROS秒减1000；—表示无事件，不是0秒）
+场景 | 组 | 目标拒绝/真优化/新参考发布 | blocked到首优化 | blocked到首发布 | 障碍出现到首优化 | 障碍出现到首发布
+static | native | 0/3/1 | 0.282 | 4.766 | 0.564 | 5.048
+static | engineering | 0/3/1 | 0.246 | 5.330 | 0.475 | 5.559
+static | execution | 0/3/1 | 0.328 | 5.026 | 0.529 | 5.227
+static | handover | 0/2/1 | 0.265 | 3.303 | 0.541 | 3.579
+static | coupled | 0/6/1 | 0.310 | 9.995 | 0.512 | 10.197
+dynamic_four | native | 15/3/1 | 12.881 | 16.679 | 18.024 | 21.822
+dynamic_four | engineering | 14/2/1 | 12.833 | 15.043 | 17.731 | 19.941
+dynamic_four | execution | 14/6/0 | 12.621 | — | 17.738 | —
+dynamic_four | handover | 14/6/0 | 12.434 | — | 17.250 | —
+dynamic_four | coupled | 14/2/1 | 12.386 | 14.786 | 17.534 | 19.934
+dynamic_head_on_center | native | 0/0/0 | — | — | — | —
+dynamic_head_on_center | engineering | 0/0/0 | — | — | — | —
+dynamic_head_on_center | execution | 0/0/0 | — | — | — | —
+dynamic_head_on_center | handover | 0/0/0 | — | — | — | —
+dynamic_head_on_center | coupled | 0/0/0 | — | — | — | —
+
+三、确切目标检查对象
+planner_manager::getLocalTarget最后分支检查global_end_pt=(3,0,global_end_yaw)和固定机械臂；失败直接返回，搜索和LBFGS都没开始。
+coll_type0=底盘对环境碰撞，不是机械臂、轮速约束或Tracker末端误差。
+底盘不是点：0.5×0.5×0.6m边界采样，球半径0.08m。safe=false仍比较0.08+地图分辨率0.05=0.13m。
+getPlanningDistance取精确ESDF和动态扫掠距离较小值，无到达时间参数。日志不保存两个距离贡献，因此不能断言所有拒用均来自overlay或均是不合理保守。
+global_plan=true将配置5m时域覆写为1000m，继承上次global终点进度且cooperative refresh不投影当前位置；仅调小horizon不一定足够。
+障碍当前/短窗扫掠占据终点，会在完整长时域搜索之前阻止生成候选，即使机器人真正到达可能更晚。这是待验证的规划目标/时间可行性缺口。
+
+四、coupled相对engineering（描述性，不作单种子因果结论）
+static：交付延迟5.330→9.995秒，差4.666秒；导航27.516→29.414秒，差+1.899秒；优化3→6次；资格拒绝{}→{'additional_projected_qualification': 3}。
+dynamic_four：交付延迟15.043→14.786秒，差-0.257秒；导航27.922→27.207秒，差-0.716秒；优化2→2次；资格拒绝{}→{}。
+dynamic_head_on_center：交付延迟—→—秒，差—秒；导航25.895→25.967秒，差+0.072秒；优化0→0次；资格拒绝{}→{}。
+
+静态coupled request4/6/7求解成功但被additional_projected_qualification拒收，不是3次全部求解失败。
+四障碍execution/handover各6次优化0交付，各5次超时、1次左轮加速度不合格；但MPPI沿旧参考仍能完成导航。
+迎面场景五组都无refresh，不能验证慢层耦合收益。四障碍coupled只比engineering交付快约0.257秒，输入并非配对相同，不足以作正面结论。
+
+五、新增geometry错误（确切调用链与未知叶原因）
+static_engineering_seed11 request2，sim1013.523508117，event=coupling_objective_error，异常文本invalid projected geometry objective sample。
+新增addGeometry调用projectionCost返回valid=false，在coupling_native_integration.hpp:60抛异常；poly_traj_optimizer.cpp:761-763捕获并设STOP_FOR_ERROR。
+prediction两项权重均0，所以本次来自新增工程geometry项。failure_trace的nonfinite只是通用错误标签，不能说已证实原生目标先NaN。
+初始总cost=10228.082374432299有限；约0.3秒后试探样本失效。未记录坏sample p/v/forecast，不能进一步确诊具体分支。
+valid=false分支包括：非有限状态/时刻、无效静态查询（含投影圆盘越出双线性地图单元）、负forecast、动态核失效、非有限梯度。
+当前新增策略把非法线搜索试探升级为整次求解中止；瞬时越界是可能风险，不是该次已证实叶原因。
+
+六、生效覆盖及不能支持的主张
+native：有效预测scope 0/6；非零回调0/0；目标拒用15；优化6；交付2；新增cost异常0。
+engineering：有效预测scope 0/5；非零回调0/0；目标拒用14；优化5；交付2；新增cost异常1。
+execution：有效预测scope 7/9；非零回调7/311；目标拒用14；优化9；交付1；新增cost异常0。
+handover：有效预测scope 6/8；非零回调235/235；目标拒用14；优化8；交付1；新增cost异常0。
+coupled：有效预测scope 5/8；非零回调439/439；目标拒用14；优化8；交付2；新增cost异常0。
+coupled有效scope=5/8；3个无效scope都标记delivery_outside_checked_interval（初始seed为空时原因会被此标签覆盖，不能据此断言确有长预测但不足0.65秒）。
+execution软管大部分在死区；只看initial/final端点cost会漏掉中间试探非零。handover非零只证明参与，不证明改善了真实交接。
+phase=final是析构时最后callback缓存，不是已交付轨迹独立后验；不能据代价升降直接证明真实收益。
+同在线种子并非相同优化输入；需后续冻结同输入反事实与新种子统计。工程B也不代表所有工程问题已解决。
+
+七、源码SHA256/行号（确切运行构建及其原生父构建）
+/home/l/remani_ws/experiments/online_remani_validation/builds/coupled_objective_20261022_04/source/planner_manager.cpp
+SHA256 74b03ee3f783bf45bf8d46d4fd37ec87b0f7b8ff0b04665ae609c0fb6a6c36c1；行[[305, 322], [358, 409]]；target search and final-goal check
+/home/l/remani_ws/experiments/online_remani_validation/builds/coupled_objective_20261022_04/source/remani_replan_fsm.cpp
+SHA256 8a0567d7a5cc824478e17160962f7452f6f69cde73589e524f62129c16c2133a；行[[168, 172], [3021, 3043], [3209, 3227]]；1000m horizon, Request lifetime, projected acceptance gate
+/home/l/remani_ws/experiments/online_remani_validation/builds/fixed_arm_01/source/mm_remani_planner/mm_config/src/mm_config.cpp
+SHA256 5236b359d4769934d9d976c97765f5ece8f8668e046abe4c0f5ed8d01985ac14；行[[426, 474], [750, 764], [1223, 1245]]；base body samples, distance threshold, coll_type0
+/home/l/remani_ws/experiments/online_remani_validation/builds/fixed_arm_01/source/mm_remani_planner/plan_env/src/grid_map.cpp
+SHA256 0a988e15b51567445b169cea66f941341fd85db7637137d0f4b1d074653fed9e；行[[2530, 2569], [4094, 4102]]；ESDF/swept minimum without arrival time
+/home/l/remani_ws/experiments/online_remani_validation/builds/coupled_objective_20261022_04/source/coupling_native_integration.hpp
+SHA256 24a0ded9d646d0f24baa52b3ca80bfc51dd6b611e5d31c204b523ac4af7ca84b；行[[45, 61]]；new projection sample invalid -> runtime_error
+/home/l/remani_ws/experiments/online_remani_validation/builds/coupled_objective_20261022_04/source/coupling_geometry_ros.hpp
+SHA256 67770b8187af94b16219dc672407d7a4be84457a8c1e36015f6f2893ef91b446；行[[133, 168]]；new projection objective validity branches
+/home/l/remani_ws/experiments/online_remani_validation/builds/coupled_objective_20261022_04/source/coupling_collision.hpp
+SHA256 63d384656d1164774ab3d3278275738dbdff210654913033a60fcc250c539cd3；行[[47, 65], [94, 105]]；finite-state and map-cell guards
+/home/l/remani_ws/experiments/online_remani_validation/builds/coupled_objective_20261022_04/source/poly_traj_optimizer.cpp
+SHA256 e1659c74a9a326e9f17716863eaa6ad3fff7df45c1a4fe2f3d49748390eaf84b；行[[755, 764]]；new exception -> STOP_FOR_ERROR
+/home/l/remani_ws/experiments/online_remani_validation/builds/coupled_objective_20261022_04/source/coupling_bridge.hpp
+SHA256 1c7bff3fa446ce6c3e0d93c536cba0bed2d427696016263fb602100e048bdddf；行[[103, 107], [141, 146]]；final event caches the last callback
+
+完整逐次时间、scope初始/最后回调、失败原因、原始日志SHA256见audit.json。
