@@ -1,0 +1,115 @@
+{
+  "scope": "Read-only geometry audit. Reconstruct actor sensor points and height/CropBox masks only; no ROS, solver, or new closed-loop trial.",
+  "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/execution_timing_pair_20261028_01/dynamic_head_on_center_matched_seed11",
+  "snapshot_sequence": 476,
+  "body_index_zero_based": 120,
+  "observation_time_s": 23.959697768999945,
+  "observation_pose_xy_yaw": [
+    1.4380684476230052,
+    0.25733124239641214,
+    -1.0776044382939296
+  ],
+  "body_local_xyz": [
+    0.16999999999999998,
+    0.16999999999999998,
+    0.56
+  ],
+  "hard_radius_m": 0.13,
+  "physical_radius_m": 0.08,
+  "body_world_xyz_at_observation": [
+    1.6682936634113594,
+    0.18807555659946268,
+    0.56
+  ],
+  "parameters": {
+    "crop_min_lidar_xyz": [
+      -0.8,
+      -0.9,
+      -0.01
+    ],
+    "crop_max_lidar_xyz": [
+      0.05,
+      0.4,
+      0.7
+    ],
+    "crop_negative": true,
+    "lidar_offset_xyz": [
+      0.28,
+      0.0,
+      0.002
+    ],
+    "height_min": 0.01,
+    "height_max": 1.55
+  },
+  "stages": {
+    "raw_actor_reconstruction": {
+      "count": 689,
+      "hard_gap_m": -0.04260582286072696,
+      "nearest_xyz": [
+        1.7370726720349454,
+        0.13509263735262755,
+        0.5499999780654907
+      ]
+    },
+    "after_height_mask": {
+      "count": 689,
+      "hard_gap_m": -0.04260582286072696,
+      "nearest_xyz": [
+        1.7370726720349454,
+        0.13509263735262755,
+        0.5499999780654907
+      ]
+    },
+    "after_crop_mask": {
+      "count": 605,
+      "hard_gap_m": 0.05475010189173912,
+      "nearest_xyz": [
+        1.6845980349031764,
+        0.0043181970718123575,
+        0.5499999780654907
+      ]
+    },
+    "recorded_dynamic_output_separate_observation": {
+      "count": 153,
+      "hard_gap_m": 0.06671229546254018,
+      "nearest_xyz": [
+        1.68505859375,
+        -0.007665760815143585,
+        0.5499999523162842
+      ]
+    }
+  },
+  "crop_removed_actor_points": 84,
+  "closest_before_crop_lidar_xyz": [
+    -0.030768537893891362,
+    0.2054981291294098,
+    0.5479999780654907
+  ],
+  "closest_before_crop_inside_box": true,
+  "collision_endpoint": {
+    "time_s": 24.103079137999885,
+    "pose_xy_yaw": [
+      1.4292009900514768,
+      0.27510945122924113,
+      -1.1429750630059476
+    ],
+    "analytic_actor_physical_gap_body120_m": -0.0003245333826772251,
+    "snapshot_prediction_age_s": 0.1433813689999397,
+    "recorded_dynamic_min_hard_gap_all_balls_m": 0.05346764017001526,
+    "recorded_dynamic_hard_gap_body120_m": 0.06940849527486004
+  },
+  "inputs_sha256": {
+    "parameters.yaml": "0de8df9f07b4409cc3ad83e1677f7eaeaadce1d5be9f5b28b0f4b4a92e617223",
+    "state.csv": "b395391c4bea70d398937be36280f6320404945a2e502d582546bc4077cce1db",
+    "obstacles.csv": "efa3afda67cb93a31c7ef429d963f1ccd69e3b0b76ec404a5d74058a13c9edc7",
+    "runtime/simulator.py": "4327653b398d88be0966a51dcc6e6f573b7e9001848bb40d51004cabe1e0fbab"
+  },
+  "snapshot_prefix_sha256": "7075cccadd1e46018110f8c12a9b3a84b06e87c7fef2569b61d74791a7227d88",
+  "limits": [
+    "Raw cloud was not recorded; actor points are deterministic reconstruction from the frozen synthetic sensor recipe and recorded pose/truth.",
+    "Static-map points are excluded from reconstructed stage counts and actor-surface distances.",
+    "Actual dynamic output is observed after additional voxel, range, static-background, clustering, tracking and point-budget stages; those stages are NOT replayed.",
+    "This establishes specific external-obstacle point deletion, not an exclusive attribution of every missing point to CropBox.",
+    "Between-cycle timing stall is a separate issue; this audit does not diagnose it."
+  ]
+}
