@@ -1,0 +1,45 @@
+{
+  "created": "2026-10-26T09:52:54.833825+00:00",
+  "scope": "Two NEW same-process paused cost-stop diagnostics, no vehicle I/O.\n\nOFF / ON / OFF at the same .6s budget and exact captured inputs. This changes\nonly eligibility for relative-cost stopping, not objective/initialization/limits.\nThis is not a historical replay, online delivery benchmark or full recovery.\n",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/feasibility_stop_20261026_01",
+  "build_manifest_sha256": "57d9bb686814f93a94772f23b0566fca3e9a0843ea7f7544c6021b717e9950fd",
+  "diagnostic_jobs": [
+    {
+      "seed": 11,
+      "ordinal": 2
+    },
+    {
+      "seed": 12,
+      "ordinal": 2
+    }
+  ],
+  "phases": [
+    "delivery_nominal_060",
+    "delivery_stop_on_060",
+    "delivery_repeat_060"
+  ],
+  "budgets_s": [
+    0.6,
+    0.6,
+    0.6
+  ],
+  "treatment_order": [
+    "OFF",
+    "ON",
+    "OFF"
+  ],
+  "source_sha256": "5470be6d04aeb5096d727f823daff6db5888db00a0e1ce749c428478fc8145f3",
+  "execution_weight": 0.0,
+  "handover_weight": 0.0,
+  "constraints_relaxed": false,
+  "no_outcome_selected_rerun": true,
+  "diagnostic_candidates_published": false,
+  "native_map_buffer_dumped": false,
+  "navigation_metrics_valid": false,
+  "limitations": [
+    "Fresh same-process captures, not replay of old request IDs.",
+    "Captured ordinal follows current execution; lack of a capture or no gate activation is retained.",
+    "Guard scan/logging cost counts against unchanged solver deadline; outside-budget posterior audits are separate.",
+    "No new restoration objective, no hardware, no Gazebo, no online-delivery improvement claim."
+  ]
+}

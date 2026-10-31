@@ -1,0 +1,49 @@
+{
+  "schema": "feasibility_stop_synthetic_unit_v1",
+  "inputs": {
+    "test": {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/test_feasibility_stop_gate.cpp",
+      "sha256": "2e153e750ea3efd2d08a1995b29553c58d393f87ac2928a0cde1e367c110a664"
+    },
+    "new_gate_header": {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/builds/feasibility_stop_20261026_01/source/feasibility_stop_gate.hpp",
+      "sha256": "0e6b9f9f15e928eb176ba85e2b6c335f5d7983b80a6df23109f8e1b4783f8e1f"
+    },
+    "parent_domain_header": {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/builds/seed_parameterization_20261025_01/source/domain_lbfgs.hpp",
+      "sha256": "61f12f271651044b7a05a2f1fd34f0e66362535ce1b09ea02a73d4d25efec0e5"
+    },
+    "patched_domain_header": {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/builds/feasibility_stop_20261026_01/source/domain_lbfgs.hpp",
+      "sha256": "440bc807bab787bd5bbd22592f9556d4dadcf1615ab381d16aa433e30ceaa4f6"
+    },
+    "parent_domain_step_header": {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/builds/seed_parameterization_20261025_01/source/domain_step_rejection.hpp",
+      "sha256": "8c8cb4b552542e2b304cf22f62e5b7c3e129f9fad542ce80d87cab405fd3e5a5"
+    },
+    "patched_domain_step_header": {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/builds/feasibility_stop_20261026_01/source/domain_step_rejection.hpp",
+      "sha256": "8c8cb4b552542e2b304cf22f62e5b7c3e129f9fad542ce80d87cab405fd3e5a5"
+    }
+  },
+  "compile_command": [
+    "/usr/bin/c++",
+    "-std=gnu++17",
+    "-O2",
+    "-DNDEBUG",
+    "-pthread",
+    "-I/usr/include/eigen3",
+    "-I/home/l/remani_ws/experiments/online_remani_validation/builds/feasibility_stop_20261026_01/source",
+    "-I/home/l/remani_ws/experiments/online_remani_validation",
+    "-DPARENT_LBFGS_HEADER=\"/home/l/remani_ws/experiments/online_remani_validation/builds/seed_parameterization_20261025_01/source/domain_lbfgs.hpp\"",
+    "-DPATCHED_LBFGS_HEADER=\"/home/l/remani_ws/experiments/online_remani_validation/builds/feasibility_stop_20261026_01/source/domain_lbfgs.hpp\"",
+    "/home/l/remani_ws/experiments/online_remani_validation/test_feasibility_stop_gate.cpp",
+    "-o",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/feasibility_stop_unit_20261026_02/test_feasibility_stop_gate"
+  ],
+  "scope": "pure C++ synthetic logic contracts; no ROS, native optimization or physical feasibility evidence",
+  "checks_enabled_under_ndebug": true,
+  "old_results_overwritten": false,
+  "supersedes_harness_compile_failure": "/home/l/remani_ws/experiments/online_remani_validation/results/feasibility_stop_unit_20261026_01",
+  "reason": "Removed erroneous namespace macro for byte-identical pragma-once domain_step header; no algorithm/header change"
+}

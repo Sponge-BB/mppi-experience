@@ -1,0 +1,23 @@
+Guide实际接入诊断（不是p0残差/真实拼接证明）
+精确定位guide首次实际调用；局部sampled片段相容性与command时序不是实际拼接证明或OFF/ON因果改善。
+
+OFF：static_coupled_seed11_signed_off
+rev=1 first cycle=158 exact=True status=current_gear_unknown；横向/朝向/速度误差=未知/未知/未知；Δcmd(v,w)=[0.13989115965076415, 0.020316630135189275]；first非零cmd=158；零命令原因={"local_validation_failed": 3, "no_feasible_candidate": 16, "deadline_miss": 11}
+  首用时zero-command停顿界=未知秒；是否先于guide首用=未知；右删失=未知；实测低速段恢复cycle=161（命令非零不是运动证明）
+rev=2 first cycle=406 exact=True status=unique_sampled_same_gear_neighborhood；横向/朝向/速度误差=-0.01364/-0.2496/0.008157；Δcmd(v,w)=[0.003273516217552494, 0.02264552173690676]；first非零cmd=406；零命令原因={"deadline_miss": 3}
+  首用时zero-command停顿界=未知秒；是否先于guide首用=未知；右删失=未知；实测低速段恢复cycle=未知（命令非零不是运动证明）
+
+ON：static_coupled_seed11_signed_on
+rev=1 first cycle=161 exact=True status=current_gear_unknown；横向/朝向/速度误差=未知/未知/未知；Δcmd(v,w)=[0.13989115965076415, 0.020316630135189275]；first非零cmd=161；零命令原因={"no_feasible_candidate": 17, "local_validation_failed": 3, "deadline_miss": 3}
+  首用时zero-command停顿界=未知秒；是否先于guide首用=未知；右删失=未知；实测低速段恢复cycle=164（命令非零不是运动证明）
+rev=2 first cycle=337 exact=True status=unique_sampled_same_gear_neighborhood；横向/朝向/速度误差=0.0138/0.03219/0.08414；Δcmd(v,w)=[-0.004299401056423652, 0.023240005710398248]；first非零cmd=337；零命令原因={"deadline_miss": 3}
+  首用时zero-command停顿界=未知秒；是否先于guide首用=未知；右删失=未知；实测低速段恢复cycle=未知（命令非零不是运动证明）
+
+解释边界：
+使用首次实际online_step调用时复制的状态及精确transaction/refSHA/odom链，不用p0残差或最近CSV代替。
+投影对象是实际记录的MPPI sampled_reference数组，不是原生多项式；数组内线性/角度插值只是离线诊断。
+最近有序same-gear片段不等于kernel实际选中片段、真实拼接、可行连接或控制授权；交叉/多分支保留歧义。
+零速/极低速实测状态不能证明当前gear；不继承历史方向，不用角度相似偷偷确定gear。
+MPPI使用整条几何guide；本报告不把native epoch推算成实际消费相位，也不丢弃负/过期epoch部分。
+command变化、零命令原因、实测低速及恢复只是时序关联；命令非零不等于物理恢复，缺失时钟不补50ms。
+OFF/ON是不同闭环请求，不是同一输入因果配对；诊断I/O可改变后续时序，不作速度或安全改善结论。

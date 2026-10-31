@@ -1,0 +1,46 @@
+{
+  "group": "coupled",
+  "engineering": true,
+  "execution_weight": 0.0,
+  "handover_weight": 0.0,
+  "seed": 12,
+  "legacy_rolling": false,
+  "legacy_prefix": false,
+  "diagnostic_pause": true,
+  "genuine_online_closed_loop": false,
+  "engineering_scope": "additional projected qualification/soft cost only; retain native 3D, self-collision, wheel and long-horizon dynamic guards; not full dynamic feasibility equivalence and not an endpoint-stagnation fix",
+  "scope": "new same-process paused native static capture, not exact historical replay or navigation benchmark",
+  "state_contract_capture": true,
+  "signed_low_speed": true,
+  "domain_recovery": true,
+  "boundary_admission": false,
+  "boundary_admission_static_scene": true,
+  "clearance_recovery": false,
+  "seed_parameterization_fix": true,
+  "navigation_metrics_valid": false,
+  "refresh_ordinal": 2,
+  "ordinal_semantics": "Nth eligible normal 0.6s optimizer entry after a reference exists; not FSM request ordinal",
+  "feasibility_stop_diagnostic": true,
+  "diagnostic_budgets_s": [
+    0.6,
+    0.6,
+    0.6
+  ],
+  "diagnostic_phases": [
+    "delivery_nominal_060",
+    "delivery_stop_on_060",
+    "delivery_repeat_060"
+  ],
+  "diagnostic_treatment_order": [
+    "OFF",
+    "ON",
+    "OFF"
+  ],
+  "treatment": "gate only relative-cost stop by unchanged native and projected hard checks",
+  "objective_unchanged": true,
+  "initialization_unchanged": true,
+  "constraints_unchanged": true,
+  "total_budget_reset_on_rejected_stop": false,
+  "full_native_map_cross_process_replay": false,
+  "candidate_publication": false
+}

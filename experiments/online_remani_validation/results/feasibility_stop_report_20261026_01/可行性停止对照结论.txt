@@ -1,0 +1,47 @@
+可行性停止条件：固定输入OFF/ON/OFF对照（2026-10-26）
+目的：检验“总代价停滞但轨迹尚不可行时，拒绝停止”能否在同一0.6秒内产生合格候选。
+本轮不是联合恢复算法，也不是在线轨迹交付改善证明。
+
+static_stop_seed11_refresh2 captured=True evidence_valid=True
+  首x/f/g一致=True，冻结上下文一致=True，capture相对障碍出现=2.241920921999622
+  delivery_nominal_060：LBFGS=162.550957ms，最终判定=0.163868058s，门耗时=0s，原生返回=False，reason=right_wheel_acceleration
+    stop检查=0，veto=0，允许=0，门中预算耗尽=0，fatal=False；候选8 / native过0 / 投影过0 / 双过0（后验）。
+    最后候选双轮四项峰值/最终限值：left_speed=1.4074, right_speed=1.2742, left_acceleration=1.5861, right_acceleration=1.4865
+    canonical后验审计=0.008971416002168553s，明确排除在求解/最终判定时间之外。
+  delivery_stop_on_060：LBFGS=602.1142540000001ms，最终判定=0.602312533s，门耗时=0.0005996227264404297s，原生返回=False，reason=budget_timeout
+    stop检查=1，veto=1，允许=0，门中预算耗尽=0，fatal=False；候选55 / native过0 / 投影过0 / 双过0（后验）。
+    最后候选双轮四项峰值/最终限值：left_speed=0.9810, right_speed=1.2211, left_acceleration=1.1045, right_acceleration=1.0919
+    canonical后验审计=0.20306970800083946s，明确排除在求解/最终判定时间之外。
+  delivery_repeat_060：LBFGS=159.342429ms，最终判定=0.160622346s，门耗时=0s，原生返回=False，reason=right_wheel_acceleration
+    stop检查=0，veto=0，允许=0，门中预算耗尽=0，fatal=False；候选8 / native过0 / 投影过0 / 双过0（后验）。
+    最后候选双轮四项峰值/最终限值：left_speed=1.4074, right_speed=1.2742, left_acceleration=1.5861, right_acceleration=1.4865
+    canonical后验审计=0.00923289600177668s，明确排除在求解/最终判定时间之外。
+  OFF复测时间差=-3.208528000000001ms；只是顺序抖动对照，不是独立重复样本。
+static_stop_seed12_refresh2 captured=True evidence_valid=True
+  首x/f/g一致=True，冻结上下文一致=True，capture相对障碍出现=2.3016981330006274
+  delivery_nominal_060：LBFGS=159.043091ms，最终判定=0.160823153s，门耗时=0s，原生返回=False，reason=right_wheel_acceleration
+    stop检查=0，veto=0，允许=0，门中预算耗尽=0，fatal=False；候选7 / native过0 / 投影过0 / 双过0（后验）。
+    最后候选双轮四项峰值/最终限值：left_speed=1.2845, right_speed=1.4055, left_acceleration=1.5319, right_acceleration=1.6238
+    canonical后验审计=0.011811450000095647s，明确排除在求解/最终判定时间之外。
+  delivery_stop_on_060：LBFGS=602.0393710000001ms，最终判定=0.602254355s，门耗时=0.00937962532043457s，原生返回=False，reason=budget_timeout
+    stop检查=5，veto=5，允许=0，门中预算耗尽=0，fatal=False；候选59 / native过0 / 投影过0 / 双过0（后验）。
+    最后候选双轮四项峰值/最终限值：left_speed=1.2306, right_speed=1.1671, left_acceleration=0.9034, right_acceleration=0.9858
+    canonical后验审计=0.13447299000108615s，明确排除在求解/最终判定时间之外。
+  delivery_repeat_060：LBFGS=159.264443ms，最终判定=0.161012695s，门耗时=0s，原生返回=False，reason=right_wheel_acceleration
+    stop检查=0，veto=0，允许=0，门中预算耗尽=0，fatal=False；候选7 / native过0 / 投影过0 / 双过0（后验）。
+    最后候选双轮四项峰值/最终限值：left_speed=1.2845, right_speed=1.4055, left_acceleration=1.5319, right_acceleration=1.6238
+    canonical后验审计=0.01183938699978171s，明确排除在求解/最终判定时间之外。
+  OFF复测时间差=0.221351999999996ms；只是顺序抖动对照，不是独立重复样本。
+
+边界：
+两个NEW同进程暂停捕获，OFF/ON/OFF各0.6秒；不是历史157ms请求的精确重放，不作跨批速度因果比较。
+只改变总代价相对改善停止是否允许；没有新增恢复目标、扩大预算、改变初值/罚权/轮限制/安全余量。
+三臂共同新增最终返回截止时间防线；这批OFF并非旧构建逐字节原版，不能据此估计共同防线的单独收益。
+门内原生/投影扫描计入原截止时间；feasibility_decision_elapsed_s包含最终判定，不包括之后的canonical候选后验重建验收。
+failure_trace.lbfgs_wall_ms仅是L-BFGS阶段；failure_trace.wall_ms含预算外审计，不当作求解或交付耗时。
+所有候选的原生与冻结投影20ms结果均为求解后的审计；首次双过的迭代时间不是可实时交付时间。
+仅最后一个canonical候选补完整左右轮10ms/边界诊断；其他候选的原生结论来自同进程原生验收，不能冒称全部做过独立轮扫描。
+同首x/f/g与冻结上下文是诊断证据，不单独证明完整native地图内存及全部隐状态逐字节冻结。
+有诊断前normal规划不代表捕获成功；没有capture、没有触发代价停止、缺失/不完整记录全部保留，不补成成功。
+诊断候选不发布；本轮不证明在线交付、MPPI协同、动态安全或实车表现改善，也不作总体成功率统计。
+原生检查跳过前0.05秒，完整投影包含k0；抽样通过不证明连续时间或未来FSM live接收通过。
