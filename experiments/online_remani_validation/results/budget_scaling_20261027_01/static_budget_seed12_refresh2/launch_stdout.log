@@ -1,0 +1,958 @@
+... logging to /home/l/remani_ws/experiments/online_remani_validation/results/budget_scaling_20261027_01/static_budget_seed12_refresh2/roslogs/0841249e-d1c5-11f1-a0ab-50bbb5b84c3d/roslaunch-ubuntu-11205.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/home/l/remani_ws/experiments/online_remani_validation/results/budget_scaling_20261027_01/static_budget_seed12_refresh2/experiment.launch
+[1mstarted roslaunch server http://localhost:36129/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /algorithm_simulator/auto_goal: True
+ * /algorithm_simulator/duration: 55.0
+ * /algorithm_simulator/local_execution_owner: True
+ * /algorithm_simulator/out: /home/l/remani_ws...
+ * /algorithm_simulator/scenario_start: motion
+ * /algorithm_simulator/scene: static
+ * /base_mppi/classified_cloud: True
+ * /base_mppi/library: /home/l/remani_ws...
+ * /base_mppi/local_execution_owner: True
+ * /base_mppi/mode: mppi
+ * /base_mppi/out: /home/l/remani_ws...
+ * /base_mppi/projection_progress: True
+ * /base_mppi/random_seed: 12
+ * /base_mppi/record_search: False
+ * /base_mppi/reference_delay: 0.0
+ * /base_mppi/shared_collision: True
+ * /crop_box_filter/max_queue_size: 1
+ * /crop_box_filter/max_x: 0.05
+ * /crop_box_filter/max_y: 0.4
+ * /crop_box_filter/max_z: 0.7
+ * /crop_box_filter/min_x: -0.8
+ * /crop_box_filter/min_y: -0.9
+ * /crop_box_filter/min_z: -0.01
+ * /crop_box_filter/negative: True
+ * /dynamic_obstacle_tracker/association_gate: 0.35
+ * /dynamic_obstacle_tracker/association_position_allowance: 0.12
+ * /dynamic_obstacle_tracker/association_shape_weight: 0.2
+ * /dynamic_obstacle_tracker/cluster_tolerance: 0.32
+ * /dynamic_obstacle_tracker/direction_consistency_cosine: 0.6
+ * /dynamic_obstacle_tracker/dynamic_enter_speed: 0.12
+ * /dynamic_obstacle_tracker/dynamic_exit_speed: 0.08
+ * /dynamic_obstacle_tracker/future_stamp_tolerance: 0.05
+ * /dynamic_obstacle_tracker/health_degradation_frames: 3
+ * /dynamic_obstacle_tracker/health_maximum_motion_tracks: 3
+ * /dynamic_obstacle_tracker/health_recovery_frames: 15
+ * /dynamic_obstacle_tracker/input_topic: /velodyne_points
+ * /dynamic_obstacle_tracker/max_cloud_age: 0.3
+ * /dynamic_obstacle_tracker/maximum_cluster_extent: 2.2
+ * /dynamic_obstacle_tracker/maximum_cluster_points: 1200
+ * /dynamic_obstacle_tracker/maximum_extent_change: 0.45
+ * /dynamic_obstacle_tracker/maximum_missed_frames: 3
+ * /dynamic_obstacle_tracker/maximum_motion_step_speed_ratio: 1.25
+ * /dynamic_obstacle_tracker/maximum_output_points: 160
+ * /dynamic_obstacle_tracker/maximum_point_count_ratio: 4.0
+ * /dynamic_obstacle_tracker/maximum_range: 6.0
+ * /dynamic_obstacle_tracker/maximum_residual_points: 800
+ * /dynamic_obstacle_tracker/maximum_stationary_background_anchors: 128
+ * /dynamic_obstacle_tracker/maximum_track_dt: 0.35
+ * /dynamic_obstacle_tracker/maximum_track_speed: 2.0
+ * /dynamic_obstacle_tracker/maximum_world_z: 1.7
+ * /dynamic_obstacle_tracker/minimum_cluster_points: 8
+ * /dynamic_obstacle_tracker/minimum_confirmed_hits: 4
+ * /dynamic_obstacle_tracker/minimum_direction_consistency_fraction: 0.75
+ * /dynamic_obstacle_tracker/minimum_dynamic_displacement: 0.06
+ * /dynamic_obstacle_tracker/minimum_dynamic_hits: 3
+ * /dynamic_obstacle_tracker/minimum_motion_cluster_points: 15
+ * /dynamic_obstacle_tracker/minimum_motion_duration: 0.25
+ * /dynamic_obstacle_tracker/minimum_motion_efficiency: 0.7
+ * /dynamic_obstacle_tracker/minimum_range: 0.3
+ * /dynamic_obstacle_tracker/minimum_stationary_background_hits: 5
+ * /dynamic_obstacle_tracker/minimum_stationary_hits: 3
+ * /dynamic_obstacle_tracker/minimum_track_dt: 0.03
+ * /dynamic_obstacle_tracker/minimum_world_z: 0.15
+ * /dynamic_obstacle_tracker/motion_center_minimum_stable_core_points: 8
+ * /dynamic_obstacle_tracker/motion_center_stable_core_lower_height_ratio: 0.35
+ * /dynamic_obstacle_tracker/motion_center_stable_core_upper_height_ratio: 0.9
+ * /dynamic_obstacle_tracker/motion_center_tall_target_min_height: 0.65
+ * /dynamic_obstacle_tracker/motion_center_trim_fraction: 0.15
+ * /dynamic_obstacle_tracker/motion_direction_alpha: 0.3
+ * /dynamic_obstacle_tracker/motion_history_duration: 0.8
+ * /dynamic_obstacle_tracker/output_topic: /dynamic_points
+ * /dynamic_obstacle_tracker/position_alpha: 0.65
+ * /dynamic_obstacle_tracker/regression_velocity_weight: 0.75
+ * /dynamic_obstacle_tracker/require_static_map: True
+ * /dynamic_obstacle_tracker/static_map_leaf_size: 0.08
+ * /dynamic_obstacle_tracker/static_map_topic: /map_generator/gl...
+ * /dynamic_obstacle_tracker/static_match_radius: 0.12
+ * /dynamic_obstacle_tracker/stationary_background_dwell_duration: 2.0
+ * /dynamic_obstacle_tracker/stationary_background_dwell_radius: 0.3
+ * /dynamic_obstacle_tracker/stationary_background_maximum_displacement: 0.06
+ * /dynamic_obstacle_tracker/stationary_background_maximum_speed: 0.1
+ * /dynamic_obstacle_tracker/stationary_background_merge_radius: 0.2
+ * /dynamic_obstacle_tracker/stationary_background_minimum_duration: 0.5
+ * /dynamic_obstacle_tracker/stationary_background_release_radius: 0.25
+ * /dynamic_obstacle_tracker/tf_timeout: 0.03
+ * /dynamic_obstacle_tracker/velocity_alpha: 0.3
+ * /dynamic_obstacle_tracker/velocity_deadband: 0.08
+ * /dynamic_obstacle_tracker/voxel_leaf_size: 0.1
+ * /dynamic_obstacle_tracker/world_frame: world
+ * /mm_controller_node/controller/arm_tracking_joint_timeout: 0.25
+ * /mm_controller_node/controller/arm_tracking_min_time_scale: 0.1
+ * /mm_controller_node/controller/arm_tracking_resume_error: 0.06
+ * /mm_controller_node/controller/arm_tracking_slow_error: 0.1
+ * /mm_controller_node/controller/arm_tracking_stop_error: 0.25
+ * /mm_controller_node/controller/base_tracking_min_time_scale: 0.1
+ * /mm_controller_node/controller/base_tracking_resume_distance: 0.05
+ * /mm_controller_node/controller/base_tracking_resume_yaw: 0.15
+ * /mm_controller_node/controller/base_tracking_slow_distance: 0.08
+ * /mm_controller_node/controller/base_tracking_slow_yaw: 0.25
+ * /mm_controller_node/controller/base_tracking_stop_distance: 0.16
+ * /mm_controller_node/controller/base_tracking_stop_yaw: 0.55
+ * /mm_controller_node/controller/curvature_ff_full_speed: 0.1
+ * /mm_controller_node/controller/curvature_ff_start_speed: 0.04
+ * /mm_controller_node/controller/max_feedforward_omega: 0.55
+ * /mm_controller_node/controller/odom_timeout: 0.25
+ * /mm_controller_node/controller/terminal_yaw_min_speed: 0.01
+ * /mm_controller_node/controller/terminal_yaw_sample_window: 1.0
+ * /mm_controller_node/controller/virtual_time_min_reference_speed: 0.05
+ * /mm_controller_node/controller/virtual_time_scale_fall_rate: 2.0
+ * /mm_controller_node/controller/virtual_time_scale_rise_rate: 0.8
+ * /mm_controller_node/controller/yaw_hold_speed: 0.04
+ * /mm_controller_node/dynamic_point_flow/isolated_worker_enable: True
+ * /mm_controller_node/fsm/actual_base_emergency_margin: 0.01
+ * /mm_controller_node/fsm/actual_state_collision_check_interval: 0.05
+ * /mm_controller_node/fsm/capture_startup_standby: False
+ * /mm_controller_node/fsm/controller_progress_timeout: 0.5
+ * /mm_controller_node/fsm/dynamic_astar_replan_wall_time: 0.6
+ * /mm_controller_node/fsm/dynamic_astar_search_time: 0.45
+ * /mm_controller_node/fsm/dynamic_local_replan_enable: True
+ * /mm_controller_node/fsm/dynamic_replan_handoff_time: 0.3
+ * /mm_controller_node/fsm/dynamic_replan_hold_arm: True
+ * /mm_controller_node/fsm/dynamic_replan_horizon: 2.0
+ * /mm_controller_node/fsm/emergency_time: 1.5
+ * /mm_controller_node/fsm/esdf_freshness_wait_timeout: 0.75
+ * /mm_controller_node/fsm/global_plan: True
+ * /mm_controller_node/fsm/global_plan_dynamic_clear_hold_time: 0.8
+ * /mm_controller_node/fsm/global_plan_dynamic_confirm_frames: 2
+ * /mm_controller_node/fsm/global_plan_dynamic_confirm_timeout: 0.6
+ * /mm_controller_node/fsm/global_plan_dynamic_emergency_deceleration: 0.35
+ * /mm_controller_node/fsm/global_plan_dynamic_emergency_margin: 0.05
+ * /mm_controller_node/fsm/global_plan_dynamic_emergency_max_distance: 0.22
+ * /mm_controller_node/fsm/global_plan_dynamic_emergency_min_distance: 0.15
+ * /mm_controller_node/fsm/global_plan_dynamic_emergency_reaction_time: 0.15
+ * /mm_controller_node/fsm/global_plan_dynamic_far_sample_distance: 0.1
+ * /mm_controller_node/fsm/global_plan_dynamic_immediate_confirm_distance: 1.0
+ * /mm_controller_node/fsm/global_plan_dynamic_lookahead_distance: 2.0
+ * /mm_controller_node/fsm/global_plan_dynamic_replan_hold_time: 0.35
+ * /mm_controller_node/fsm/global_plan_dynamic_same_obstacle_radius: 0.45
+ * /mm_controller_node/fsm/global_plan_dynamic_slowdown_distance: 2.0
+ * /mm_controller_node/fsm/global_plan_dynamic_slowdown_max_speed: 0.2
+ * /mm_controller_node/fsm/global_plan_dynamic_slowdown_min_speed: 0.08
+ * /mm_controller_node/fsm/global_plan_max_failures: 5
+ * /mm_controller_node/fsm/global_plan_max_wall_time: 3.0
+ * /mm_controller_node/fsm/global_plan_trial_times: 5
+ * /mm_controller_node/fsm/goal_arm_tolerance: 0.12
+ * /mm_controller_node/fsm/goal_position_tolerance: 0.1
+ * /mm_controller_node/fsm/goal_yaw_alignment_timeout: 8.0
+ * /mm_controller_node/fsm/goal_yaw_tolerance: 0.15
+ * /mm_controller_node/fsm/init_gripper_close: False
+ * /mm_controller_node/fsm/init_state: [0.0, 0.0, 0.0, 2...
+ * /mm_controller_node/fsm/init_yaw: 0.0
+ * /mm_controller_node/fsm/manual_restore_standby_after_goal: True
+ * /mm_controller_node/fsm/manual_restore_tolerance: 0.05
+ * /mm_controller_node/fsm/manual_target_end_arm_standby: True
+ * /mm_controller_node/fsm/manual_use_work_arm_waypoint: False
+ * /mm_controller_node/fsm/manual_work_arm_waypoint_id: 0
+ * /mm_controller_node/fsm/planning_horizon: 5.0
+ * /mm_controller_node/fsm/rear_goal_plan_cos: -0.2
+ * /mm_controller_node/fsm/rear_goal_plan_distance: 0.5
+ * /mm_controller_node/fsm/rear_goal_plan_max_failures: 3
+ * /mm_controller_node/fsm/rear_goal_plan_trial_times: 3
+ * /mm_controller_node/fsm/replan_feedback_arm_threshold: 0.1
+ * /mm_controller_node/fsm/replan_feedback_position_threshold: 0.08
+ * /mm_controller_node/fsm/replan_feedback_yaw_threshold: 0.15
+ * /mm_controller_node/fsm/replan_trajectory_time: 0.4
+ * /mm_controller_node/fsm/target_type: 1
+ * /mm_controller_node/fsm/thresh_replan_time: 2.5
+ * /mm_controller_node/fsm/time_for_gripper: 0.05
+ * /mm_controller_node/fsm/waypoint0: [6.0, -3.0, 0.0, ...
+ * /mm_controller_node/fsm/waypoint0_gripper_close: True
+ * /mm_controller_node/fsm/waypoint0_yaw: 0
+ * /mm_controller_node/fsm/waypoint1: [2.0, 2.0, 0.0, -...
+ * /mm_controller_node/fsm/waypoint1_gripper_close: False
+ * /mm_controller_node/fsm/waypoint1_yaw: -90.0
+ * /mm_controller_node/fsm/waypoint_num: 2
+ * /mm_controller_node/grid_map/async_esdf_enable: True
+ * /mm_controller_node/grid_map/async_esdf_max_result_age: 0.75
+ * /mm_controller_node/grid_map/dynamic_static_match_radius: 0.075
+ * /mm_controller_node/grid_map/enable_performance_diagnostics: True
+ * /mm_controller_node/grid_map/esdf_visualization_stride: 1
+ * /mm_controller_node/grid_map/esdf_warn_ms: 50.0
+ * /mm_controller_node/grid_map/live_lidar_future_tolerance: 0.05
+ * /mm_controller_node/grid_map/live_lidar_health_monitor_enable: True
+ * /mm_controller_node/grid_map/live_lidar_message_max_age: 0.5
+ * /mm_controller_node/grid_map/live_lidar_pending_max_age: 0.35
+ * /mm_controller_node/grid_map/live_lidar_startup_grace: 5.0
+ * /mm_controller_node/grid_map/live_lidar_timeout: 0.75
+ * /mm_controller_node/grid_map/live_obstacle_expiry_enable: True
+ * /mm_controller_node/grid_map/live_obstacle_max_missed_fusions: 4
+ * /mm_controller_node/grid_map/occupancy_warn_ms: 50.0
+ * /mm_controller_node/grid_map/parallel_threads: 3
+ * /mm_controller_node/grid_map/parallel_voxel_threshold: 50000
+ * /mm_controller_node/grid_map/performance_log_interval: 5.0
+ * /mm_controller_node/grid_map/use_global_map: True
+ * /mm_controller_node/grid_map/use_load_map: False
+ * /mm_controller_node/grid_map/visualization_interval: 0.1
+ * /mm_controller_node/map/map_type: 0
+ * /mm_controller_node/mm/base_mani_fixed_joint_xyz_ypr: [0.005, 0.0, 0.68...
+ * /mm_controller_node/mm/manipulator_config: [0.123, 0.28503, ...
+ * /mm_controller_node/mm/manipulator_dof: 6
+ * /mm_controller_node/mm/manipulator_max_acc: 3.14
+ * /mm_controller_node/mm/manipulator_max_pos: [2.618, 3.14, 0.0...
+ * /mm_controller_node/mm/manipulator_max_vel: 1.57
+ * /mm_controller_node/mm/manipulator_min_pos: [-2.618, 0.0, -2....
+ * /mm_controller_node/mm/manipulator_thickness: 0.034
+ * /mm_controller_node/mm/mobile_base_check_radius: 0.08
+ * /mm_controller_node/mm/mobile_base_dof: 2
+ * /mm_controller_node/mm/mobile_base_height: 0.6
+ * /mm_controller_node/mm/mobile_base_length: 0.5
+ * /mm_controller_node/mm/mobile_base_max_wheel_alpha: 20.0
+ * /mm_controller_node/mm/mobile_base_max_wheel_omega: 10.0
+ * /mm_controller_node/mm/mobile_base_non_singul_vel: 0.05
+ * /mm_controller_node/mm/mobile_base_wheel_base: 0.37
+ * /mm_controller_node/mm/mobile_base_wheel_radius: 0.07
+ * /mm_controller_node/mm/mobile_base_width: 0.5
+ * /mm_controller_node/mm/use_fast_armer: False
+ * /mm_controller_node/optimization/constrain_points_perPiece: 16
+ * /mm_controller_node/optimization/dense_sample_resolution: 16
+ * /mm_controller_node/optimization/ground_safe_dis: 0.03
+ * /mm_controller_node/optimization/ground_safe_margin: 0.03
+ * /mm_controller_node/optimization/manipulator_hold_disable_path_deviation: 0.35
+ * /mm_controller_node/optimization/max_iterations: 300
+ * /mm_controller_node/optimization/max_wall_time: 1.5
+ * /mm_controller_node/optimization/mobile_base_opt_gear: True
+ * /mm_controller_node/optimization/safe_margin: 0.1
+ * /mm_controller_node/optimization/safe_margin_mani: 0.1
+ * /mm_controller_node/optimization/self_safe_margin: 0.1
+ * /mm_controller_node/optimization/weight_base_feasibility: 100.0
+ * /mm_controller_node/optimization/weight_manipulator_feasibility: 100.0
+ * /mm_controller_node/optimization/weight_manipulator_hold: 2.0
+ * /mm_controller_node/optimization/weight_manipulator_self: 1000.0
+ * /mm_controller_node/optimization/weight_obstacle: 50000.0
+ * /mm_controller_node/optimization/weight_time: 1.0
+ * /mm_controller_node/search/allocate_num: 100000
+ * /mm_controller_node/search/check_num: 16
+ * /mm_controller_node/search/curvatureDisCoe: 0.4
+ * /mm_controller_node/search/dist_resolution: 0.6
+ * /mm_controller_node/search/goal_rate: 0.4
+ * /mm_controller_node/search/lambda_heu: 5
+ * /mm_controller_node/search/manipulator_acceleration_utilization: 0.6
+ * /mm_controller_node/search/manipulator_time_safety_factor: 1.15
+ * /mm_controller_node/search/manipulator_velocity_utilization: 0.6
+ * /mm_controller_node/search/max_arc: 0.5
+ * /mm_controller_node/search/max_loop_num: 5000
+ * /mm_controller_node/search/max_mani_search_time: 0.12
+ * /mm_controller_node/search/max_sample_time: 0.2
+ * /mm_controller_node/search/max_seach_time: 0.9
+ * /mm_controller_node/search/min_turning_radius: 0.2
+ * /mm_controller_node/search/oneshot_check_len: 0.02
+ * /mm_controller_node/search/oneshot_range: 1.5
+ * /mm_controller_node/search/sample_time: 0.1
+ * /mm_controller_node/search/search_vis_max_points: 3000
+ * /mm_controller_node/search/search_vis_publish_interval: 50
+ * /mm_controller_node/search/search_vis_stride: 1
+ * /mm_controller_node/search/traj_back_penalty: 3.0
+ * /mm_controller_node/search/traj_forward_penalty: 1.0
+ * /mm_controller_node/search/traj_gear_switch_penalty: 10.0
+ * /mm_controller_node/search/traj_steer_change_penalty: 1.5
+ * /mm_controller_node/search/traj_steer_penalty: 4.0
+ * /mm_controller_node/search/try_astar_times: 10
+ * /mm_controller_node/search/visualize_search: True
+ * /mm_controller_node/search/yaw_resolution: 3.15
+ * /online_validation/enabled: True
+ * /online_validation/mode: mppi
+ * /passthrough_z/filter_field_name: z
+ * /passthrough_z/filter_limit_max: 1.55
+ * /passthrough_z/filter_limit_min: 0.01
+ * /passthrough_z/filter_limit_negative: False
+ * /passthrough_z/max_queue_size: 1
+ * /real_base_tracker/command_timeout: 0.3
+ * /real_base_tracker/control_rate: 50.0
+ * /real_base_tracker/final_alignment_k_yaw: 1.0
+ * /real_base_tracker/final_alignment_max_angular_speed: 0.45
+ * /real_base_tracker/final_alignment_position_tolerance: 0.1
+ * /real_base_tracker/goal_position_tolerance: 0.05
+ * /real_base_tracker/goal_speed_tolerance: 0.05
+ * /real_base_tracker/goal_yaw_tolerance: 0.1
+ * /real_base_tracker/odom_header_timeout: 0.25
+ * /real_base_tracker/odom_timeout: 0.25
+ * /real_base_tracker/tracker_max_angular_accel: 1.0
+ * /real_base_tracker/tracker_max_linear_accel: 0.35
+ * /real_base_tracker/tracker_max_v: 0.3
+ * /real_base_tracker/tracker_max_w: 0.8
+ * /real_base_tracker/tracking_fault_confirm_frames: 5
+ * /real_base_tracker/tracking_hard_stop_distance: 0.35
+ * /real_base_tracker/tracking_hard_stop_yaw: 1.2
+ * /real_base_tracker/tracking_recover_distance: 0.08
+ * /real_base_tracker/tracking_recover_frames: 5
+ * /real_base_tracker/tracking_recover_yaw: 0.25
+ * /real_base_tracker/tracking_stop_distance: 0.22
+ * /real_base_tracker/tracking_stop_yaw: 0.7
+ * /real_base_tracker/turn_alignment_exit_yaw: 0.07
+ * /real_base_tracker/turn_alignment_max_reference_speed: 0.08
+ * /real_base_tracker/turn_alignment_min_angular_speed: 0.12
+ * /real_base_tracker/turn_alignment_position_tolerance: 0.1
+ * /remani_planner_node/controller/curvature_ff_full_speed: 0.1
+ * /remani_planner_node/controller/curvature_ff_start_speed: 0.04
+ * /remani_planner_node/controller/max_feedforward_omega: 0.6
+ * /remani_planner_node/controller/odom_timeout: 0.25
+ * /remani_planner_node/controller/terminal_yaw_min_speed: 0.01
+ * /remani_planner_node/controller/terminal_yaw_sample_window: 1.0
+ * /remani_planner_node/controller/virtual_time_min_reference_speed: 0.05
+ * /remani_planner_node/controller/virtual_time_scale_fall_rate: 2.0
+ * /remani_planner_node/controller/virtual_time_scale_rise_rate: 0.8
+ * /remani_planner_node/controller/yaw_hold_speed: 0.04
+ * /remani_planner_node/dynamic_point_flow/acceleration_bound: 0.0
+ * /remani_planner_node/dynamic_point_flow/active_clear_hold_time: 0.3
+ * /remani_planner_node/dynamic_point_flow/active_confirm_frames: 2
+ * /remani_planner_node/dynamic_point_flow/active_emergency_ttc: 0.45
+ * /remani_planner_node/dynamic_point_flow/active_immediate_ttc: 0.65
+ * /remani_planner_node/dynamic_point_flow/active_mode: True
+ * /remani_planner_node/dynamic_point_flow/active_replan: True
+ * /remani_planner_node/dynamic_point_flow/active_slowdown_ttc: 1.5
+ * /remani_planner_node/dynamic_point_flow/empty_clear_frames: 3
+ * /remani_planner_node/dynamic_point_flow/enable: True
+ * /remani_planner_node/dynamic_point_flow/fail_safe_on_unavailable: False
+ * /remani_planner_node/dynamic_point_flow/future_stamp_tolerance: 0.05
+ * /remani_planner_node/dynamic_point_flow/isolated_worker_enable: True
+ * /remani_planner_node/dynamic_point_flow/max_age: 0.35
+ * /remani_planner_node/dynamic_point_flow/max_point_speed: 2.0
+ * /remani_planner_node/dynamic_point_flow/max_points: 240
+ * /remani_planner_node/dynamic_point_flow/max_prediction_time: 2.0
+ * /remani_planner_node/dynamic_point_flow/min_confidence: 0.5
+ * /remani_planner_node/dynamic_point_flow/planning_overlay_enable: True
+ * /remani_planner_node/dynamic_point_flow/planning_overlay_extra_inflation: 0.03
+ * /remani_planner_node/dynamic_point_flow/planning_overlay_horizon: 1.2
+ * /remani_planner_node/dynamic_point_flow/planning_overlay_influence_distance: 0.75
+ * /remani_planner_node/dynamic_point_flow/planning_overlay_max_inflation: 0.3
+ * /remani_planner_node/dynamic_point_flow/planning_overlay_time_step: 0.1
+ * /remani_planner_node/dynamic_point_flow/planning_overlay_update_interval: 0.05
+ * /remani_planner_node/dynamic_point_flow/position_uncertainty: 0.0
+ * /remani_planner_node/dynamic_point_flow/require_world_frame: True
+ * /remani_planner_node/dynamic_point_flow/shadow_check_interval: 0.05
+ * /remani_planner_node/dynamic_point_flow/shadow_mode: False
+ * /remani_planner_node/dynamic_point_flow/topic: /dynamic_points
+ * /remani_planner_node/dynamic_point_flow/velocity_uncertainty: 0.0
+ * /remani_planner_node/fsm/actual_base_emergency_margin: 0.01
+ * /remani_planner_node/fsm/actual_state_collision_check_interval: 0.05
+ * /remani_planner_node/fsm/capture_startup_standby: False
+ * /remani_planner_node/fsm/controller_progress_timeout: 0.5
+ * /remani_planner_node/fsm/dynamic_astar_replan_wall_time: 0.6
+ * /remani_planner_node/fsm/dynamic_astar_search_time: 0.45
+ * /remani_planner_node/fsm/dynamic_local_replan_enable: True
+ * /remani_planner_node/fsm/dynamic_replan_handoff_time: 0.7
+ * /remani_planner_node/fsm/dynamic_replan_hold_arm: True
+ * /remani_planner_node/fsm/dynamic_replan_horizon: 2.0
+ * /remani_planner_node/fsm/emergency_time: 1
+ * /remani_planner_node/fsm/esdf_freshness_wait_timeout: 0.75
+ * /remani_planner_node/fsm/fail_safe: True
+ * /remani_planner_node/fsm/global_plan: True
+ * /remani_planner_node/fsm/global_plan_dynamic_check_interval: 0.1
+ * /remani_planner_node/fsm/global_plan_dynamic_check_time_step: 0.05
+ * /remani_planner_node/fsm/global_plan_dynamic_clear_hold_time: 0.8
+ * /remani_planner_node/fsm/global_plan_dynamic_confirm_frames: 2
+ * /remani_planner_node/fsm/global_plan_dynamic_confirm_timeout: 0.6
+ * /remani_planner_node/fsm/global_plan_dynamic_emergency_deceleration: 0.35
+ * /remani_planner_node/fsm/global_plan_dynamic_emergency_margin: 0.05
+ * /remani_planner_node/fsm/global_plan_dynamic_emergency_max_distance: 0.22
+ * /remani_planner_node/fsm/global_plan_dynamic_emergency_min_distance: 0.15
+ * /remani_planner_node/fsm/global_plan_dynamic_emergency_reaction_time: 0.15
+ * /remani_planner_node/fsm/global_plan_dynamic_far_sample_distance: 0.1
+ * /remani_planner_node/fsm/global_plan_dynamic_immediate_confirm_distance: 1.0
+ * /remani_planner_node/fsm/global_plan_dynamic_lookahead_distance: 2.0
+ * /remani_planner_node/fsm/global_plan_dynamic_lookahead_time: 2.0
+ * /remani_planner_node/fsm/global_plan_dynamic_replan_hold_time: 0.35
+ * /remani_planner_node/fsm/global_plan_dynamic_same_obstacle_radius: 0.45
+ * /remani_planner_node/fsm/global_plan_dynamic_slowdown_distance: 2.0
+ * /remani_planner_node/fsm/global_plan_dynamic_slowdown_max_speed: 0.2
+ * /remani_planner_node/fsm/global_plan_dynamic_slowdown_min_speed: 0.08
+ * /remani_planner_node/fsm/global_plan_max_failures: 5
+ * /remani_planner_node/fsm/global_plan_max_wall_time: 3.0
+ * /remani_planner_node/fsm/global_plan_static_check_time_step: 0.1
+ * /remani_planner_node/fsm/global_plan_trial_times: 5
+ * /remani_planner_node/fsm/goal_arm_tolerance: 0.12
+ * /remani_planner_node/fsm/goal_position_tolerance: 0.05
+ * /remani_planner_node/fsm/goal_yaw_alignment_timeout: 8.0
+ * /remani_planner_node/fsm/goal_yaw_tolerance: 0.1
+ * /remani_planner_node/fsm/init_gripper_close: False
+ * /remani_planner_node/fsm/init_state: [0.0, 0.0, 0.0, 2...
+ * /remani_planner_node/fsm/init_yaw: 0.0
+ * /remani_planner_node/fsm/local_execution_owner: True
+ * /remani_planner_node/fsm/manual_restore_standby_after_goal: False
+ * /remani_planner_node/fsm/manual_restore_tolerance: 0.05
+ * /remani_planner_node/fsm/manual_target_end_arm_standby: False
+ * /remani_planner_node/fsm/manual_use_work_arm_waypoint: False
+ * /remani_planner_node/fsm/manual_work_arm_waypoint_id: 0
+ * /remani_planner_node/fsm/planning_horizon: 5.0
+ * /remani_planner_node/fsm/rear_goal_plan_cos: -0.2
+ * /remani_planner_node/fsm/rear_goal_plan_distance: 0.5
+ * /remani_planner_node/fsm/rear_goal_plan_max_failures: 3
+ * /remani_planner_node/fsm/rear_goal_plan_trial_times: 3
+ * /remani_planner_node/fsm/replan_feedback_arm_threshold: 0.1
+ * /remani_planner_node/fsm/replan_feedback_position_threshold: 0.08
+ * /remani_planner_node/fsm/replan_feedback_yaw_threshold: 0.15
+ * /remani_planner_node/fsm/replan_trajectory_time: 0.4
+ * /remani_planner_node/fsm/target_type: 1
+ * /remani_planner_node/fsm/thresh_no_replan_meter: 1.0
+ * /remani_planner_node/fsm/thresh_replan_time: 2.5
+ * /remani_planner_node/fsm/time_for_gripper: 0.05
+ * /remani_planner_node/fsm/waypoint0: [6.0, -3.0, 0.0, ...
+ * /remani_planner_node/fsm/waypoint0_gripper_close: True
+ * /remani_planner_node/fsm/waypoint0_yaw: 0
+ * /remani_planner_node/fsm/waypoint1: [2.0, 2.0, 0.0, -...
+ * /remani_planner_node/fsm/waypoint1_gripper_close: False
+ * /remani_planner_node/fsm/waypoint1_yaw: -90.0
+ * /remani_planner_node/fsm/waypoint_num: 2
+ * /remani_planner_node/grid_map/async_esdf_enable: True
+ * /remani_planner_node/grid_map/async_esdf_max_result_age: 0.75
+ * /remani_planner_node/grid_map/cx: 321.04638671875
+ * /remani_planner_node/grid_map/cy: 243.44969177246094
+ * /remani_planner_node/grid_map/depth_filter_margin: 2
+ * /remani_planner_node/grid_map/depth_filter_maxdist: 5.0
+ * /remani_planner_node/grid_map/depth_filter_mindist: 0.2
+ * /remani_planner_node/grid_map/depth_filter_tolerance: 0.15
+ * /remani_planner_node/grid_map/dynamic_static_match_radius: 0.075
+ * /remani_planner_node/grid_map/enable_performance_diagnostics: True
+ * /remani_planner_node/grid_map/enable_visualization: False
+ * /remani_planner_node/grid_map/esdf_slice_height: 0.05
+ * /remani_planner_node/grid_map/esdf_visualization_stride: 2
+ * /remani_planner_node/grid_map/esdf_warn_ms: 50.0
+ * /remani_planner_node/grid_map/frame_id: world
+ * /remani_planner_node/grid_map/fuse_global_map: True
+ * /remani_planner_node/grid_map/fx: 387.229248046875
+ * /remani_planner_node/grid_map/fy: 387.229248046875
+ * /remani_planner_node/grid_map/global_map_full_esdf: True
+ * /remani_planner_node/grid_map/global_map_lidar_clear: False
+ * /remani_planner_node/grid_map/global_map_lidar_clear_min_misses: 3
+ * /remani_planner_node/grid_map/global_map_lidar_clear_radius: 0.0
+ * /remani_planner_node/grid_map/global_map_obstacles_inflation: 0
+ * /remani_planner_node/grid_map/ground_height: 0.0
+ * /remani_planner_node/grid_map/k_depth_scaling_factor: 1000.0
+ * /remani_planner_node/grid_map/lidar_offset_x: 0.28
+ * /remani_planner_node/grid_map/lidar_offset_y: 0.0
+ * /remani_planner_node/grid_map/lidar_offset_z: 0.002
+ * /remani_planner_node/grid_map/live_lidar_future_tolerance: 0.05
+ * /remani_planner_node/grid_map/live_lidar_health_monitor_enable: True
+ * /remani_planner_node/grid_map/live_lidar_message_max_age: 0.5
+ * /remani_planner_node/grid_map/live_lidar_pending_max_age: 0.35
+ * /remani_planner_node/grid_map/live_lidar_startup_grace: 5.0
+ * /remani_planner_node/grid_map/live_lidar_timeout: 0.75
+ * /remani_planner_node/grid_map/live_obstacle_expiry_enable: True
+ * /remani_planner_node/grid_map/live_obstacle_max_missed_fusions: 4
+ * /remani_planner_node/grid_map/local_bound_inflate: 0.0
+ * /remani_planner_node/grid_map/local_esdf_follow_odom: True
+ * /remani_planner_node/grid_map/local_map_margin: 15
+ * /remani_planner_node/grid_map/local_update_range_x: 8
+ * /remani_planner_node/grid_map/local_update_range_y: 8
+ * /remani_planner_node/grid_map/local_update_range_z: 3.0
+ * /remani_planner_node/grid_map/map_size_x: 15.0
+ * /remani_planner_node/grid_map/map_size_y: 10.0
+ * /remani_planner_node/grid_map/map_size_z: 3.0
+ * /remani_planner_node/grid_map/max_ray_length: 4.5
+ * /remani_planner_node/grid_map/min_ray_length: 0.1
+ * /remani_planner_node/grid_map/obstacles_inflation: 0
+ * /remani_planner_node/grid_map/occupancy_warn_ms: 50.0
+ * /remani_planner_node/grid_map/p_hit: 0.65
+ * /remani_planner_node/grid_map/p_max: 0.9
+ * /remani_planner_node/grid_map/p_min: 0.12
+ * /remani_planner_node/grid_map/p_miss: 0.35
+ * /remani_planner_node/grid_map/p_occ: 0.8
+ * /remani_planner_node/grid_map/parallel_threads: 3
+ * /remani_planner_node/grid_map/parallel_voxel_threshold: 50000
+ * /remani_planner_node/grid_map/performance_log_interval: 5.0
+ * /remani_planner_node/grid_map/pose_type: 2
+ * /remani_planner_node/grid_map/resolution: 0.05
+ * /remani_planner_node/grid_map/self_filter_enable: True
+ * /remani_planner_node/grid_map/self_filter_max_x: 0.45
+ * /remani_planner_node/grid_map/self_filter_max_y: 0.55
+ * /remani_planner_node/grid_map/self_filter_max_z: 0.9
+ * /remani_planner_node/grid_map/self_filter_min_x: -0.8
+ * /remani_planner_node/grid_map/self_filter_min_y: -0.85
+ * /remani_planner_node/grid_map/self_filter_min_z: -0.2
+ * /remani_planner_node/grid_map/show_esdf_time: False
+ * /remani_planner_node/grid_map/show_occ_time: False
+ * /remani_planner_node/grid_map/skip_pixel: 2
+ * /remani_planner_node/grid_map/use_depth_filter: True
+ * /remani_planner_node/grid_map/use_global_map: True
+ * /remani_planner_node/grid_map/use_load_map: True
+ * /remani_planner_node/grid_map/virtual_ceil_height: 4.0
+ * /remani_planner_node/grid_map/visualization_interval: 0.2
+ * /remani_planner_node/grid_map/visualization_truncate_height: 2.8
+ * /remani_planner_node/grid_map/z_length: 0.0
+ * /remani_planner_node/manager/control_points_distance: 0.4
+ * /remani_planner_node/manager/feasibility_tolerance: 0.05
+ * /remani_planner_node/manager/polyTraj_piece_length: 2.0
+ * /remani_planner_node/map/map_type: 0
+ * /remani_planner_node/mm/base_mani_fixed_joint_xyz_ypr: [0.005, 0.0, 0.68...
+ * /remani_planner_node/mm/manipulator_config: [0.123, 0.28503, ...
+ * /remani_planner_node/mm/manipulator_dof: 6
+ * /remani_planner_node/mm/manipulator_max_acc: 0.9
+ * /remani_planner_node/mm/manipulator_max_pos: [0.0, 0.520980781...
+ * /remani_planner_node/mm/manipulator_max_vel: 0.45
+ * /remani_planner_node/mm/manipulator_min_pos: [0.0, 0.520980781...
+ * /remani_planner_node/mm/manipulator_thickness: 0.034
+ * /remani_planner_node/mm/mobile_base_check_radius: 0.08
+ * /remani_planner_node/mm/mobile_base_dof: 2
+ * /remani_planner_node/mm/mobile_base_height: 0.6
+ * /remani_planner_node/mm/mobile_base_length: 0.5
+ * /remani_planner_node/mm/mobile_base_max_wheel_alpha: 4.25
+ * /remani_planner_node/mm/mobile_base_max_wheel_omega: 3.28
+ * /remani_planner_node/mm/mobile_base_non_singul_vel: 0.05
+ * /remani_planner_node/mm/mobile_base_wheel_base: 0.37
+ * /remani_planner_node/mm/mobile_base_wheel_radius: 0.07
+ * /remani_planner_node/mm/mobile_base_width: 0.5
+ * /remani_planner_node/mm/use_fast_armer: False
+ * /remani_planner_node/optimization/constrain_points_perPiece: 16
+ * /remani_planner_node/optimization/dense_sample_resolution: 16
+ * /remani_planner_node/optimization/ground_safe_dis: 0.03
+ * /remani_planner_node/optimization/ground_safe_margin: 0.03
+ * /remani_planner_node/optimization/manipulator_hold_disable_path_deviation: 0.35
+ * /remani_planner_node/optimization/max_iterations: 300
+ * /remani_planner_node/optimization/max_wall_time: 1.5
+ * /remani_planner_node/optimization/mobile_base_opt_gear: True
+ * /remani_planner_node/optimization/safe_margin: 0.1
+ * /remani_planner_node/optimization/safe_margin_mani: 0.1
+ * /remani_planner_node/optimization/self_safe_margin: 0.1
+ * /remani_planner_node/optimization/weight_base_feasibility: 100.0
+ * /remani_planner_node/optimization/weight_manipulator_feasibility: 100.0
+ * /remani_planner_node/optimization/weight_manipulator_hold: 2.0
+ * /remani_planner_node/optimization/weight_manipulator_self: 1000.0
+ * /remani_planner_node/optimization/weight_obstacle: 50000.0
+ * /remani_planner_node/optimization/weight_time: 1.0
+ * /remani_planner_node/search/allocate_num: 100000
+ * /remani_planner_node/search/allow_reverse: True
+ * /remani_planner_node/search/check_num: 16
+ * /remani_planner_node/search/curvatureDisCoe: 0.4
+ * /remani_planner_node/search/dist_resolution: 0.6
+ * /remani_planner_node/search/goal_rate: 0.4
+ * /remani_planner_node/search/lambda_heu: 5
+ * /remani_planner_node/search/manipulator_acceleration_utilization: 0.6
+ * /remani_planner_node/search/manipulator_time_safety_factor: 1.15
+ * /remani_planner_node/search/manipulator_velocity_utilization: 0.6
+ * /remani_planner_node/search/max_arc: 0.5
+ * /remani_planner_node/search/max_loop_num: 5000
+ * /remani_planner_node/search/max_mani_search_time: 0.12
+ * /remani_planner_node/search/max_sample_time: 0.2
+ * /remani_planner_node/search/max_seach_time: 0.9
+ * /remani_planner_node/search/min_turning_radius: 0.2
+ * /remani_planner_node/search/oneshot_check_len: 0.02
+ * /remani_planner_node/search/oneshot_range: 1.5
+ * /remani_planner_node/search/sample_time: 0.1
+ * /remani_planner_node/search/search_vis_max_points: 3000
+ * /remani_planner_node/search/search_vis_publish_interval: 50
+ * /remani_planner_node/search/search_vis_stride: 1
+ * /remani_planner_node/search/traj_back_penalty: 3.0
+ * /remani_planner_node/search/traj_forward_penalty: 1.0
+ * /remani_planner_node/search/traj_gear_switch_penalty: 10.0
+ * /remani_planner_node/search/traj_steer_change_penalty: 1.5
+ * /remani_planner_node/search/traj_steer_penalty: 4.0
+ * /remani_planner_node/search/try_astar_times: 10
+ * /remani_planner_node/search/visualize_search: False
+ * /remani_planner_node/search/yaw_resolution: 3.15
+ * /remani_planner_node/visualization/enable_heavy: False
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+ * /shared_collision_model/out: /home/l/remani_ws...
+ * /use_sim_time: True
+
+NODES
+  /
+    algorithm_simulator (online_remani_experiment/simulator.py)
+    base_mppi (online_remani_experiment/mppi_node.py)
+    crop_box_filter (nodelet/nodelet)
+    dual_timescale_observer (online_remani_experiment/dual_timescale_observer.py)
+    dynamic_obstacle_tracker (online_remani_experiment/dynamic_obstacle_tracker_node)
+    filter_joint_states (mm_remani/filter_joint_states.py)
+    mm_controller_node (online_remani_experiment/mm_controller_node)
+    passthrough_z (nodelet/nodelet)
+    pcl_manager_filter (nodelet/nodelet)
+    remani_planner_node (online_remani_experiment/remani_planner_node)
+    shared_collision_model (online_remani_experiment/shared_collision_node.py)
+    sim_lidar_tf (tf2_ros/static_transform_publisher)
+    sim_map_to_odom (tf2_ros/static_transform_publisher)
+    sim_world_to_map (tf2_ros/static_transform_publisher)
+[WARN] [1793077962.752460029]: [DynamicPointFlow][active] Experimental predictive avoidance is ACTIVE. Existing occupancy/ESDF safety remains enabled.
+[WARN] [1793077962.962735068, 1000.307990725]: [DynamicPointFlow][overlay] Planning overlay unavailable (no_observation); static/live-map planning remains active.
+[WARN] [1793077963.108983625, 1000.448797167]: [GridMap][deadline] Synchronous ESDF update 118.84ms exceeds 50.00ms budget.
+[WARN] [1793077963.374927054, 1000.709970089]: [GridMap][AsyncESDF][worker] Computation 145.66ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077963.967867295, 1001.313079591]: [DynamicPointFlow][overlay] Planning overlay unavailable (no_observation); static/live-map planning remains active.
+[WARN] [1793077964.385230154, 1001.715160592]: [DynamicPointFlow] Empty observation is treated as an unconfirmed detector dropout (1/3), not as immediate CLEAR.
+[WARN] [1793077964.419023619, 1001.755316554]: [GridMap][AsyncESDF][worker] Computation 103.21ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077965.434002566, 1002.765815311]: [GridMap][AsyncESDF][worker] Computation 119.98ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077966.633754553, 1003.968520075]: [GridMap][AsyncESDF][worker] Computation 127.20ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077967.677299546, 1005.012249330]: [GridMap][AsyncESDF][worker] Computation 125.78ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077968.869431836, 1006.205132238]: [GridMap][AsyncESDF][worker] Computation 122.15ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077969.876234555, 1007.211563296]: [GridMap][AsyncESDF][worker] Computation 114.91ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077970.895995689, 1008.231091783]: [GridMap][AsyncESDF][worker] Computation 129.48ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077971.836098648, 1009.182270050]: [MMctrl] Base tracking lag position=0.080 m yaw=0.007 rad; scale whole-body progress to 1.00.
+[WARN] [1793077971.948502411, 1009.282750123]: [GridMap][AsyncESDF][worker] Computation 122.70ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077972.385075077, 1009.730541078]: [MMctrl] Base tracking lag (position 0.167 m, yaw 0.015 rad); freeze reference progress until feedback catches up.
+[WARN] [1793077973.046373570, 1010.382559335]: [GridMap][AsyncESDF][worker] Computation 139.47ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077974.193332629, 1011.528505398]: [GridMap][AsyncESDF][worker] Computation 119.30ms exceeds 50.00ms; the ROS callback queue remains available.
+[WARN] [1793077975.382699476, 1012.718350181]: [GridMap][AsyncESDF][worker] Computation 121.81ms exceeds 50.00ms; the ROS callback queue remains available.
+[ERROR] [1793077976.568130567, 1013.896110886]: The optimization result is : The iteration has been canceled by the monitor callback.
+[WARN] [1793077976.568325645, 1013.896110886]: [Optimizer] Stop after 0.60 s wall-time budget.
+[WARN] [1793077976.731176940, 1014.057380428]: [LocalExecution] Native guide refresh failed; retain the guide and retry independently of local execution.
+[WARN] [1793077976.882996481, 1014.219935265]: [GridMap][AsyncESDF][worker] Computation 121.60ms exceeds 50.00ms; the ROS callback queue remains available.
+[ERROR] [1793077978.655120197, 1015.161330749]: The optimization result is : The iteration has been canceled by the monitor callback.
+[WARN] [1793077978.655214728, 1015.161330749]: [Optimizer] Stop after 0.60 s wall-time budget.
+[WARN] [1793077978.656374354, 1015.161330749]: -4.762067 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793077978.657407511, 1015.161330749]: -4.512213 max left wheel alpha is not feasible at relative time 0.100000! opt failed
+[WARN] [1793077978.658457980, 1015.161330749]: -4.588133 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793077978.659574340, 1015.161330749]: -4.564942 max right wheel alpha is not feasible at relative time 0.130000! opt failed
+[WARN] [1793077978.660738606, 1015.161330749]: -4.630002 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077978.661890231, 1015.161330749]: -4.656868 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077978.663043072, 1015.161330749]: -4.534349 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077978.664195465, 1015.161330749]: -4.497414 max left wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077978.665388564, 1015.161330749]: -4.556670 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077978.666611968, 1015.161330749]: -4.556465 max left wheel alpha is not feasible at relative time 0.160000! opt failed
+[WARN] [1793077978.667819691, 1015.161330749]: -4.503280 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077978.669013270, 1015.161330749]: -4.534365 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077978.670210305, 1015.161330749]: -4.661381 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077978.673782112, 1015.161330749]: 4.647903 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077978.674573917, 1015.161330749]: -4.688531 max right wheel alpha is not feasible at relative time 0.050000! opt failed
+[WARN] [1793077978.675353848, 1015.161330749]: -4.490638 max right wheel alpha is not feasible at relative time 0.050000! opt failed
+[WARN] [1793077978.676838638, 1015.161330749]: 4.581659 max right wheel alpha is not feasible at relative time 0.220000! opt failed
+[WARN] [1793077978.680415629, 1015.161330749]: 4.588464 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077978.684009998, 1015.161330749]: 4.588952 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077978.687778165, 1015.161330749]: 4.584585 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077978.691370869, 1015.161330749]: 4.580420 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077978.695073754, 1015.161330749]: 4.552120 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077978.696978078, 1015.161330749]: 4.547286 max left wheel alpha is not feasible at relative time 0.310000! opt failed
+[WARN] [1793077978.700754725, 1015.161330749]: 4.627679 max left wheel alpha is not feasible at relative time 0.750000! opt failed
+[WARN] [1793077978.702243834, 1015.161330749]: 4.644840 max left wheel alpha is not feasible at relative time 0.220000! opt failed
+[WARN] [1793077978.703808658, 1015.161330749]: 4.592719 max left wheel alpha is not feasible at relative time 0.240000! opt failed
+[WARN] [1793077978.707486645, 1015.161330749]: 4.523393 max left wheel alpha is not feasible at relative time 0.770000! opt failed
+[WARN] [1793077978.709667459, 1015.161330749]: 4.477727 max right wheel alpha is not feasible at relative time 0.390000! opt failed
+[WARN] [1793077978.711833361, 1015.161330749]: 4.505053 max right wheel alpha is not feasible at relative time 0.390000! opt failed
+[WARN] [1793077978.714048800, 1015.161330749]: 4.515874 max right wheel alpha is not feasible at relative time 0.400000! opt failed
+[WARN] [1793077978.717898666, 1015.161330749]: 4.487107 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077978.719927954, 1015.161330749]: 4.491706 max right wheel alpha is not feasible at relative time 0.330000! opt failed
+[WARN] [1793077978.723789020, 1015.161330749]: 4.507449 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077978.727643750, 1015.161330749]: 4.500756 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077978.729400581, 1015.161330749]: 4.572912 max right wheel alpha is not feasible at relative time 0.290000! opt failed
+[WARN] [1793077978.733263727, 1015.161330749]: 4.486193 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077978.737219389, 1015.161330749]: 4.537580 max left wheel alpha is not feasible at relative time 0.820000! opt failed
+[WARN] [1793077978.739052670, 1015.161330749]: 4.482400 max right wheel alpha is not feasible at relative time 0.300000! opt failed
+[WARN] [1793077978.743245460, 1015.161330749]: 4.477344 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793077978.747554414, 1015.161330749]: 4.491641 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793077978.751663361, 1015.161330749]: 4.471230 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793077978.755814677, 1015.161330749]: 4.496804 max left wheel alpha is not feasible at relative time 0.870000! opt failed
+[WARN] [1793077978.760058477, 1015.161330749]: 4.479873 max left wheel alpha is not feasible at relative time 0.900000! opt failed
+[WARN] [1793077978.761628741, 1015.161330749]: 4.724258 max right wheel alpha is not feasible at relative time 0.240000! opt failed
+[WARN] [1793077978.773252293, 1015.161330749]: 3.449063 max left wheel omega is not feasible at relative time 2.730000! opt failed
+[WARN] [1793077978.777916876, 1015.161330749]: 4.466619 max left wheel alpha is not feasible at relative time 0.930000! opt failed
+[WARN] [1793077978.782301640, 1015.161330749]: 4.480488 max left wheel alpha is not feasible at relative time 0.940000! opt failed
+[WARN] [1793077978.797627820, 1015.161330749]: 3.446234 max right wheel omega is not feasible at relative time 3.620000! opt failed
+[WARN] [1793077978.812870702, 1015.161330749]: 3.445817 max right wheel omega is not feasible at relative time 3.630000! opt failed
+[WARN] [1793077978.828078093, 1015.161330749]: 3.446853 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[WARN] [1793077978.843202154, 1015.161330749]: 3.446387 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[WARN] [1793077978.858358792, 1015.161330749]: 3.450133 max right wheel omega is not feasible at relative time 3.610000! opt failed
+[WARN] [1793077978.873597641, 1015.161330749]: 3.446914 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[ERROR] [1793077979.481585460, 1015.161330749]: The optimization result is : The iteration has been canceled by the monitor callback.
+[WARN] [1793077979.481674423, 1015.161330749]: [Optimizer] Stop after 0.60 s wall-time budget.
+[WARN] [1793077979.482791039, 1015.161330749]: -4.762067 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793077979.483840165, 1015.161330749]: -4.512213 max left wheel alpha is not feasible at relative time 0.100000! opt failed
+[WARN] [1793077979.484892138, 1015.161330749]: -4.588133 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793077979.486020659, 1015.161330749]: -4.564942 max right wheel alpha is not feasible at relative time 0.130000! opt failed
+[WARN] [1793077979.487170332, 1015.161330749]: -4.630002 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077979.488335557, 1015.161330749]: -4.656868 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077979.489489135, 1015.161330749]: -4.534349 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077979.490644472, 1015.161330749]: -4.497414 max left wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077979.492026953, 1015.161330749]: -4.556670 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077979.493309879, 1015.161330749]: -4.556465 max left wheel alpha is not feasible at relative time 0.160000! opt failed
+[WARN] [1793077979.494506562, 1015.161330749]: -4.503280 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077979.495711885, 1015.161330749]: -4.534365 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077979.496897336, 1015.161330749]: -4.661381 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077979.500565371, 1015.161330749]: 4.647903 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077979.501436602, 1015.161330749]: -4.688531 max right wheel alpha is not feasible at relative time 0.050000! opt failed
+[WARN] [1793077979.502287832, 1015.161330749]: -4.490638 max right wheel alpha is not feasible at relative time 0.050000! opt failed
+[WARN] [1793077979.503787150, 1015.161330749]: 4.581659 max right wheel alpha is not feasible at relative time 0.220000! opt failed
+[WARN] [1793077979.507352141, 1015.161330749]: 4.588464 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077979.510915949, 1015.161330749]: 4.588952 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077979.514501133, 1015.161330749]: 4.584585 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077979.518060524, 1015.161330749]: 4.580420 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077979.521629260, 1015.161330749]: 4.552120 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077979.523452621, 1015.161330749]: 4.547286 max left wheel alpha is not feasible at relative time 0.310000! opt failed
+[WARN] [1793077979.527051918, 1015.161330749]: 4.627679 max left wheel alpha is not feasible at relative time 0.750000! opt failed
+[WARN] [1793077979.528523842, 1015.161330749]: 4.644840 max left wheel alpha is not feasible at relative time 0.220000! opt failed
+[WARN] [1793077979.530078554, 1015.161330749]: 4.592719 max left wheel alpha is not feasible at relative time 0.240000! opt failed
+[WARN] [1793077979.533776446, 1015.161330749]: 4.523393 max left wheel alpha is not feasible at relative time 0.770000! opt failed
+[WARN] [1793077979.535951020, 1015.161330749]: 4.477727 max right wheel alpha is not feasible at relative time 0.390000! opt failed
+[WARN] [1793077979.538200828, 1015.161330749]: 4.505053 max right wheel alpha is not feasible at relative time 0.390000! opt failed
+[WARN] [1793077979.540462637, 1015.161330749]: 4.515874 max right wheel alpha is not feasible at relative time 0.400000! opt failed
+[WARN] [1793077979.544316503, 1015.161330749]: 4.487107 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077979.546250652, 1015.161330749]: 4.491706 max right wheel alpha is not feasible at relative time 0.330000! opt failed
+[WARN] [1793077979.550120615, 1015.161330749]: 4.507449 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077979.554017074, 1015.161330749]: 4.500756 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077979.555812210, 1015.161330749]: 4.572912 max right wheel alpha is not feasible at relative time 0.290000! opt failed
+[WARN] [1793077979.559686877, 1015.161330749]: 4.486193 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077979.563565863, 1015.161330749]: 4.537580 max left wheel alpha is not feasible at relative time 0.820000! opt failed
+[WARN] [1793077979.565373256, 1015.161330749]: 4.482400 max right wheel alpha is not feasible at relative time 0.300000! opt failed
+[WARN] [1793077979.569372983, 1015.161330749]: 4.477344 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793077979.573381830, 1015.161330749]: 4.491641 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793077979.577387158, 1015.161330749]: 4.471230 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793077979.581482024, 1015.161330749]: 4.496804 max left wheel alpha is not feasible at relative time 0.870000! opt failed
+[WARN] [1793077979.585688286, 1015.161330749]: 4.479873 max left wheel alpha is not feasible at relative time 0.900000! opt failed
+[WARN] [1793077979.587237142, 1015.161330749]: 4.724258 max right wheel alpha is not feasible at relative time 0.240000! opt failed
+[WARN] [1793077979.598821332, 1015.161330749]: 3.449063 max left wheel omega is not feasible at relative time 2.730000! opt failed
+[WARN] [1793077979.603160111, 1015.161330749]: 4.466619 max left wheel alpha is not feasible at relative time 0.930000! opt failed
+[WARN] [1793077979.607516427, 1015.161330749]: 4.480488 max left wheel alpha is not feasible at relative time 0.940000! opt failed
+[WARN] [1793077979.622672137, 1015.161330749]: 3.446234 max right wheel omega is not feasible at relative time 3.620000! opt failed
+[WARN] [1793077979.637850215, 1015.161330749]: 3.445817 max right wheel omega is not feasible at relative time 3.630000! opt failed
+[WARN] [1793077979.653059559, 1015.161330749]: 3.446853 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[WARN] [1793077979.668120002, 1015.161330749]: 3.446387 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[WARN] [1793077979.683230206, 1015.161330749]: 3.450133 max right wheel omega is not feasible at relative time 3.610000! opt failed
+[WARN] [1793077979.698406589, 1015.161330749]: 3.446914 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[ERROR] [1793077982.706111988, 1015.161330749]: The optimization result is : The iteration has been canceled by the monitor callback.
+[WARN] [1793077982.706213400, 1015.161330749]: [Optimizer] Stop after 3.00 s wall-time budget.
+[WARN] [1793077982.707365185, 1015.161330749]: -4.762067 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793077982.708437416, 1015.161330749]: -4.512213 max left wheel alpha is not feasible at relative time 0.100000! opt failed
+[WARN] [1793077982.709528527, 1015.161330749]: -4.588133 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793077982.710702873, 1015.161330749]: -4.564942 max right wheel alpha is not feasible at relative time 0.130000! opt failed
+[WARN] [1793077982.711903395, 1015.161330749]: -4.630002 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077982.713176977, 1015.161330749]: -4.656868 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077982.714336538, 1015.161330749]: -4.534349 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077982.715502404, 1015.161330749]: -4.497414 max left wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077982.716710479, 1015.161330749]: -4.556670 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077982.717950972, 1015.161330749]: -4.556465 max left wheel alpha is not feasible at relative time 0.160000! opt failed
+[WARN] [1793077982.719153319, 1015.161330749]: -4.503280 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077982.720368818, 1015.161330749]: -4.534365 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077982.721565021, 1015.161330749]: -4.661381 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793077982.725144189, 1015.161330749]: 4.647903 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077982.725945562, 1015.161330749]: -4.688531 max right wheel alpha is not feasible at relative time 0.050000! opt failed
+[WARN] [1793077982.726734998, 1015.161330749]: -4.490638 max right wheel alpha is not feasible at relative time 0.050000! opt failed
+[WARN] [1793077982.728210539, 1015.161330749]: 4.581659 max right wheel alpha is not feasible at relative time 0.220000! opt failed
+[WARN] [1793077982.731809579, 1015.161330749]: 4.588464 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077982.735379019, 1015.161330749]: 4.588952 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077982.738955179, 1015.161330749]: 4.584585 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077982.742529611, 1015.161330749]: 4.580420 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077982.746106122, 1015.161330749]: 4.552120 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793077982.748049136, 1015.161330749]: 4.547286 max left wheel alpha is not feasible at relative time 0.310000! opt failed
+[WARN] [1793077982.751704403, 1015.161330749]: 4.627679 max left wheel alpha is not feasible at relative time 0.750000! opt failed
+[WARN] [1793077982.753220137, 1015.161330749]: 4.644840 max left wheel alpha is not feasible at relative time 0.220000! opt failed
+[WARN] [1793077982.754798113, 1015.161330749]: 4.592719 max left wheel alpha is not feasible at relative time 0.240000! opt failed
+[WARN] [1793077982.758529927, 1015.161330749]: 4.523393 max left wheel alpha is not feasible at relative time 0.770000! opt failed
+[WARN] [1793077982.760886651, 1015.161330749]: 4.477727 max right wheel alpha is not feasible at relative time 0.390000! opt failed
+[WARN] [1793077982.763078537, 1015.161330749]: 4.505053 max right wheel alpha is not feasible at relative time 0.390000! opt failed
+[WARN] [1793077982.765310841, 1015.161330749]: 4.515874 max right wheel alpha is not feasible at relative time 0.400000! opt failed
+[WARN] [1793077982.769181987, 1015.161330749]: 4.487107 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077982.771102728, 1015.161330749]: 4.491706 max right wheel alpha is not feasible at relative time 0.330000! opt failed
+[WARN] [1793077982.774954034, 1015.161330749]: 4.507449 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077982.778813500, 1015.161330749]: 4.500756 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077982.780580571, 1015.161330749]: 4.572912 max right wheel alpha is not feasible at relative time 0.290000! opt failed
+[WARN] [1793077982.784440101, 1015.161330749]: 4.486193 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793077982.788333424, 1015.161330749]: 4.537580 max left wheel alpha is not feasible at relative time 0.820000! opt failed
+[WARN] [1793077982.790139505, 1015.161330749]: 4.482400 max right wheel alpha is not feasible at relative time 0.300000! opt failed
+[WARN] [1793077982.794145408, 1015.161330749]: 4.477344 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793077982.798180208, 1015.161330749]: 4.491641 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793077982.802217121, 1015.161330749]: 4.471230 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793077982.806319091, 1015.161330749]: 4.496804 max left wheel alpha is not feasible at relative time 0.870000! opt failed
+[WARN] [1793077982.810886807, 1015.161330749]: 4.479873 max left wheel alpha is not feasible at relative time 0.900000! opt failed
+[WARN] [1793077982.812475760, 1015.161330749]: 4.724258 max right wheel alpha is not feasible at relative time 0.240000! opt failed
+[WARN] [1793077982.824262517, 1015.161330749]: 3.449063 max left wheel omega is not feasible at relative time 2.730000! opt failed
+[WARN] [1793077982.828702644, 1015.161330749]: 4.466619 max left wheel alpha is not feasible at relative time 0.930000! opt failed
+[WARN] [1793077982.833156883, 1015.161330749]: 4.480488 max left wheel alpha is not feasible at relative time 0.940000! opt failed
+[WARN] [1793077982.848445142, 1015.161330749]: 3.446234 max right wheel omega is not feasible at relative time 3.620000! opt failed
+[WARN] [1793077982.863797947, 1015.161330749]: 3.445817 max right wheel omega is not feasible at relative time 3.630000! opt failed
+[WARN] [1793077982.879188001, 1015.161330749]: 3.446853 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[WARN] [1793077982.894455811, 1015.161330749]: 3.446387 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[WARN] [1793077982.909709156, 1015.161330749]: 3.450133 max right wheel omega is not feasible at relative time 3.610000! opt failed
+[WARN] [1793077982.925173901, 1015.161330749]: 3.446914 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[WARN] [1793077982.940365388, 1015.161330749]: 3.448909 max right wheel omega is not feasible at relative time 3.580000! opt failed
+[WARN] [1793077982.955910904, 1015.161330749]: 3.452653 max right wheel omega is not feasible at relative time 3.610000! opt failed
+[WARN] [1793077982.971516486, 1015.161330749]: 3.444735 max right wheel omega is not feasible at relative time 3.660000! opt failed
+[WARN] [1793077982.987156213, 1015.161330749]: 3.451717 max right wheel omega is not feasible at relative time 3.690000! opt failed
+[WARN] [1793077983.003822313, 1015.161330749]: 3.450241 max right wheel omega is not feasible at relative time 3.780000! opt failed
+[WARN] [1793077983.006262561, 1015.161330749]: 4.651065 max right wheel alpha is not feasible at relative time 0.420000! opt failed
+[WARN] [1793077983.007270021, 1015.161330749]: 4.473846 max left wheel alpha is not feasible at relative time 0.090000! opt failed
+[WARN] [1793077983.009746013, 1015.161330749]: 4.680543 max right wheel alpha is not feasible at relative time 0.450000! opt failed
+[WARN] [1793077983.027216750, 1015.161330749]: 3.448238 max right wheel omega is not feasible at relative time 4.130000! opt failed
+[WARN] [1793077983.044584027, 1015.161330749]: 3.446416 max right wheel omega is not feasible at relative time 4.110000! opt failed
+[WARN] [1793077983.045548157, 1015.161330749]: 4.675450 max left wheel alpha is not feasible at relative time 0.070000! opt failed
+[WARN] [1793077983.046405980, 1015.161330749]: 4.478643 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.047251482, 1015.161330749]: 4.512715 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.048150106, 1015.161330749]: 4.546074 max left wheel alpha is not feasible at relative time 0.070000! opt failed
+[WARN] [1793077983.048995833, 1015.161330749]: 4.480584 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.049837943, 1015.161330749]: 4.579260 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.050691477, 1015.161330749]: 4.542947 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.051538899, 1015.161330749]: 4.591214 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.052403442, 1015.161330749]: 4.544036 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.053260529, 1015.161330749]: 4.487031 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.054154129, 1015.161330749]: 4.537994 max left wheel alpha is not feasible at relative time 0.070000! opt failed
+[WARN] [1793077983.055113043, 1015.161330749]: 4.481603 max left wheel alpha is not feasible at relative time 0.090000! opt failed
+[WARN] [1793077983.056242620, 1015.161330749]: 4.532195 max left wheel alpha is not feasible at relative time 0.130000! opt failed
+[WARN] [1793077983.058659954, 1015.161330749]: 4.488769 max right wheel alpha is not feasible at relative time 0.450000! opt failed
+[WARN] [1793077983.061059656, 1015.161330749]: 4.512931 max right wheel alpha is not feasible at relative time 0.440000! opt failed
+[WARN] [1793077983.063421308, 1015.161330749]: 4.579149 max right wheel alpha is not feasible at relative time 0.430000! opt failed
+[WARN] [1793077983.064413248, 1015.161330749]: 4.491047 max left wheel alpha is not feasible at relative time 0.090000! opt failed
+[WARN] [1793077983.065344577, 1015.161330749]: 4.557220 max left wheel alpha is not feasible at relative time 0.080000! opt failed
+[WARN] [1793077983.066185183, 1015.161330749]: 4.659876 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.066986108, 1015.161330749]: 4.584270 max left wheel alpha is not feasible at relative time 0.050000! opt failed
+[WARN] [1793077983.067848219, 1015.161330749]: 4.740793 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.068689241, 1015.161330749]: 4.663759 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.069525303, 1015.161330749]: 4.742832 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.070356180, 1015.161330749]: 4.759496 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.071198226, 1015.161330749]: 4.787665 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.072037648, 1015.161330749]: 4.758488 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.072881487, 1015.161330749]: 4.688062 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.073712204, 1015.161330749]: 4.570119 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.074603500, 1015.161330749]: 4.717121 max left wheel alpha is not feasible at relative time 0.070000! opt failed
+[WARN] [1793077983.075477355, 1015.161330749]: 4.640260 max left wheel alpha is not feasible at relative time 0.070000! opt failed
+[WARN] [1793077983.076370283, 1015.161330749]: 4.637283 max left wheel alpha is not feasible at relative time 0.070000! opt failed
+[WARN] [1793077983.077212681, 1015.161330749]: 4.462833 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.078044359, 1015.161330749]: 4.617861 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.078867621, 1015.161330749]: 4.743944 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.079678018, 1015.161330749]: 4.462758 max left wheel alpha is not feasible at relative time 0.050000! opt failed
+[WARN] [1793077983.080505279, 1015.161330749]: 4.756979 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.081332989, 1015.161330749]: 4.677152 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.082160794, 1015.161330749]: 4.662858 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.083000536, 1015.161330749]: 4.679659 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.083844695, 1015.161330749]: 4.676483 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.084688021, 1015.161330749]: 4.669496 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.085528595, 1015.161330749]: 4.644304 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.086402674, 1015.161330749]: 4.637285 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.087251376, 1015.161330749]: 4.644560 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.088104943, 1015.161330749]: 4.661632 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.088940301, 1015.161330749]: 4.670150 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.089768426, 1015.161330749]: 4.656201 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.090605640, 1015.161330749]: 4.606665 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.091438022, 1015.161330749]: 4.519671 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.092539981, 1015.161330749]: 4.518057 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.093457742, 1015.161330749]: 4.501855 max left wheel alpha is not feasible at relative time 0.060000! opt failed
+[WARN] [1793077983.094358927, 1015.161330749]: 4.621460 max left wheel alpha is not feasible at relative time 0.070000! opt failed
+[WARN] [1793077983.095295248, 1015.161330749]: 4.691112 max left wheel alpha is not feasible at relative time 0.080000! opt failed
+[WARN] [1793077983.096363606, 1015.161330749]: 4.615689 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793077983.097546721, 1015.161330749]: 4.568302 max left wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793077983.100107996, 1015.161330749]: 4.513271 max right wheel alpha is not feasible at relative time 0.480000! opt failed
+[WARN] [1793077983.102645623, 1015.161330749]: 4.472727 max right wheel alpha is not feasible at relative time 0.480000! opt failed
+[ERROR] [1793077996.220962362, 1015.161330749]: The optimization result is : The iteration has been canceled by the monitor callback.
+[WARN] [1793077996.221047581, 1015.161330749]: [Optimizer] Stop after 3.00 s wall-time budget.
+[WARN] [1793077996.222126851, 1015.161330749]: -4.762067 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793077996.223161288, 1015.161330749]: -4.835909 max left wheel alpha is not feasible at relative time 0.100000! opt failed
+[WARN] [1793077996.224228047, 1015.161330749]: -4.567627 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793077996.225278036, 1015.161330749]: -4.472831 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793077996.226350202, 1015.161330749]: -4.516365 max right wheel alpha is not feasible at relative time 0.120000! opt failed
+[WARN] [1793077996.228368675, 1015.161330749]: 4.478134 max right wheel alpha is not feasible at relative time 0.350000! opt failed
+[WARN] [1793077996.230616755, 1015.161330749]: 4.492143 max right wheel alpha is not feasible at relative time 0.410000! opt failed
+[WARN] [1793077996.247563185, 1015.161330749]: 3.446044 max right wheel omega is not feasible at relative time 4.060000! opt failed
+[WARN] [1793077996.252141013, 1015.161330749]: 4.511758 max left wheel alpha is not feasible at relative time 0.980000! opt failed
+[WARN] [1793077996.265196423, 1015.161330749]: 3.444666 max left wheel omega is not feasible at relative time 3.090000! opt failed
+[WARN] [1793077996.279608651, 1015.161330749]: 3.448271 max left wheel omega is not feasible at relative time 3.430000! opt failed
+[ERROR] [1793078003.118966959, 1015.161330749]: The optimization result is : The iteration has been canceled by the monitor callback.
+[WARN] [1793078003.119053106, 1015.161330749]: [Optimizer] Stop after 0.60 s wall-time budget.
+[WARN] [1793078003.120196667, 1015.161330749]: -4.762067 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793078003.121247169, 1015.161330749]: -4.512213 max left wheel alpha is not feasible at relative time 0.100000! opt failed
+[WARN] [1793078003.122289798, 1015.161330749]: -4.588133 max left wheel alpha is not feasible at relative time 0.110000! opt failed
+[WARN] [1793078003.123397581, 1015.161330749]: -4.564942 max right wheel alpha is not feasible at relative time 0.130000! opt failed
+[WARN] [1793078003.124589016, 1015.161330749]: -4.630002 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793078003.125740065, 1015.161330749]: -4.656868 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793078003.126903019, 1015.161330749]: -4.534349 max right wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793078003.128155704, 1015.161330749]: -4.497414 max left wheel alpha is not feasible at relative time 0.140000! opt failed
+[WARN] [1793078003.129369411, 1015.161330749]: -4.556670 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793078003.130605871, 1015.161330749]: -4.556465 max left wheel alpha is not feasible at relative time 0.160000! opt failed
+[WARN] [1793078003.131827675, 1015.161330749]: -4.503280 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793078003.133029126, 1015.161330749]: -4.534365 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793078003.134228177, 1015.161330749]: -4.661381 max left wheel alpha is not feasible at relative time 0.150000! opt failed
+[WARN] [1793078003.137791312, 1015.161330749]: 4.647903 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793078003.138587053, 1015.161330749]: -4.688531 max right wheel alpha is not feasible at relative time 0.050000! opt failed
+[WARN] [1793078003.139373737, 1015.161330749]: -4.490638 max right wheel alpha is not feasible at relative time 0.050000! opt failed
+[WARN] [1793078003.140858334, 1015.161330749]: 4.581659 max right wheel alpha is not feasible at relative time 0.220000! opt failed
+[WARN] [1793078003.144432862, 1015.161330749]: 4.588464 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793078003.148032222, 1015.161330749]: 4.588952 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793078003.151585021, 1015.161330749]: 4.584585 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793078003.155159357, 1015.161330749]: 4.580420 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793078003.158725021, 1015.161330749]: 4.552120 max left wheel alpha is not feasible at relative time 0.740000! opt failed
+[WARN] [1793078003.160597088, 1015.161330749]: 4.547286 max left wheel alpha is not feasible at relative time 0.310000! opt failed
+[WARN] [1793078003.164230241, 1015.161330749]: 4.627679 max left wheel alpha is not feasible at relative time 0.750000! opt failed
+[WARN] [1793078003.165716311, 1015.161330749]: 4.644840 max left wheel alpha is not feasible at relative time 0.220000! opt failed
+[WARN] [1793078003.167259918, 1015.161330749]: 4.592719 max left wheel alpha is not feasible at relative time 0.240000! opt failed
+[WARN] [1793078003.170957362, 1015.161330749]: 4.523393 max left wheel alpha is not feasible at relative time 0.770000! opt failed
+[WARN] [1793078003.173133664, 1015.161330749]: 4.477727 max right wheel alpha is not feasible at relative time 0.390000! opt failed
+[WARN] [1793078003.175295757, 1015.161330749]: 4.505053 max right wheel alpha is not feasible at relative time 0.390000! opt failed
+[WARN] [1793078003.177506492, 1015.161330749]: 4.515874 max right wheel alpha is not feasible at relative time 0.400000! opt failed
+[WARN] [1793078003.181361510, 1015.161330749]: 4.487107 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793078003.183283019, 1015.161330749]: 4.491706 max right wheel alpha is not feasible at relative time 0.330000! opt failed
+[WARN] [1793078003.187143541, 1015.161330749]: 4.507449 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793078003.191000991, 1015.161330749]: 4.500756 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793078003.192774654, 1015.161330749]: 4.572912 max right wheel alpha is not feasible at relative time 0.290000! opt failed
+[WARN] [1793078003.196625192, 1015.161330749]: 4.486193 max left wheel alpha is not feasible at relative time 0.810000! opt failed
+[WARN] [1793078003.200522035, 1015.161330749]: 4.537580 max left wheel alpha is not feasible at relative time 0.820000! opt failed
+[WARN] [1793078003.202319731, 1015.161330749]: 4.482400 max right wheel alpha is not feasible at relative time 0.300000! opt failed
+[WARN] [1793078003.206325763, 1015.161330749]: 4.477344 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793078003.210351187, 1015.161330749]: 4.491641 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793078003.214372002, 1015.161330749]: 4.471230 max left wheel alpha is not feasible at relative time 0.850000! opt failed
+[WARN] [1793078003.218469845, 1015.161330749]: 4.496804 max left wheel alpha is not feasible at relative time 0.870000! opt failed
+[WARN] [1793078003.222697772, 1015.161330749]: 4.479873 max left wheel alpha is not feasible at relative time 0.900000! opt failed
+[WARN] [1793078003.224278693, 1015.161330749]: 4.724258 max right wheel alpha is not feasible at relative time 0.240000! opt failed
+[WARN] [1793078003.235866659, 1015.161330749]: 3.449063 max left wheel omega is not feasible at relative time 2.730000! opt failed
+[WARN] [1793078003.240213502, 1015.161330749]: 4.466619 max left wheel alpha is not feasible at relative time 0.930000! opt failed
+[WARN] [1793078003.244587611, 1015.161330749]: 4.480488 max left wheel alpha is not feasible at relative time 0.940000! opt failed
+[WARN] [1793078003.259750457, 1015.161330749]: 3.446234 max right wheel omega is not feasible at relative time 3.620000! opt failed
+[WARN] [1793078003.274936152, 1015.161330749]: 3.445817 max right wheel omega is not feasible at relative time 3.630000! opt failed
+[WARN] [1793078003.290033524, 1015.161330749]: 3.446853 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[WARN] [1793078003.305101518, 1015.161330749]: 3.446387 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[WARN] [1793078003.320212459, 1015.161330749]: 3.450133 max right wheel omega is not feasible at relative time 3.610000! opt failed
+[WARN] [1793078003.335302470, 1015.161330749]: 3.446914 max right wheel omega is not feasible at relative time 3.600000! opt failed
+[WARN] [1793078003.556802838, 1040.695684684]: [DynamicPointFlow][overlay] Planning overlay unavailable (stale); static/live-map planning remains active.
+[WARN] [1793078003.811989051, 1041.138462276]: [LocalExecution] Native guide refresh failed; retain the guide and retry independently of local execution.
+[WARN] [1793078003.967226857, 1041.302880571]: [GridMap][AsyncESDF][worker] Computation 110.80ms exceeds 50.00ms; the ROS callback queue remains available.
+terminate called after throwing an instance of 'boost::wrapexcept<boost::lock_error>'
+  what():  boost: mutex lock failed in pthread_mutex_lock: Invalid argument
+[31m[algorithm_simulator-12] escalating to SIGTERM[0m
+[31m[algorithm_simulator-12] escalating to SIGKILL[0m
+[31mShutdown errors:
+ * process[algorithm_simulator-12, pid 11289]: required SIGKILL. May still be running.[0m
+
+auto-starting new master
+[1mprocess[master]: started with pid [11219][0m
+[1mROS_MASTER_URI=http://localhost:11441/[0m
+]2;/home/l/remani_ws/experiments/online_remani_validation/results/budget_scaling_20261027_01/static_budget_seed12_refresh2/experiment.launch http://localhost:11441/
+[1msetting /run_id to 0841249e-d1c5-11f1-a0ab-50bbb5b84c3d[0m
+[1mprocess[rosout-1]: started with pid [11234][0m
+started core service [/rosout]
+[1mprocess[filter_joint_states-2]: started with pid [11241][0m
+[1mprocess[remani_planner_node-3]: started with pid [11242][0m
+[1mprocess[mm_controller_node-4]: started with pid [11243][0m
+[1mprocess[pcl_manager_filter-5]: started with pid [11244][0m
+[1mprocess[passthrough_z-6]: started with pid [11249][0m
+[1mprocess[crop_box_filter-7]: started with pid [11251][0m
+[1mprocess[dynamic_obstacle_tracker-8]: started with pid [11252][0m
+[1mprocess[sim_world_to_map-9]: started with pid [11257][0m
+[1mprocess[sim_map_to_odom-10]: started with pid [11269][0m
+[1mprocess[sim_lidar_tf-11]: started with pid [11283][0m
+[1mprocess[algorithm_simulator-12]: started with pid [11289][0m
+[1mprocess[base_mppi-13]: started with pid [11294][0m
+[1mprocess[shared_collision_model-14]: started with pid [11297][0m
+[1mprocess[dual_timescale_observer-15]: started with pid [11302][0m
+[dual_timescale_observer-15] killing on exit
+[shared_collision_model-14] killing on exit
+[base_mppi-13] killing on exit
+[algorithm_simulator-12] killing on exit
+[sim_lidar_tf-11] killing on exit
+[sim_world_to_map-9] killing on exit
+[dynamic_obstacle_tracker-8] killing on exit
+[crop_box_filter-7] killing on exit
+[passthrough_z-6] killing on exit
+[sim_map_to_odom-10] killing on exit
+[pcl_manager_filter-5] killing on exit
+[mm_controller_node-4] killing on exit
+[remani_planner_node-3] killing on exit
+[filter_joint_states-2] killing on exit
+[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

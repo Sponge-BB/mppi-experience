@@ -1,0 +1,2118 @@
+{
+  "schema": "clearance_recovery_report_v1",
+  "created": "2026-10-23T01:48:54.456829+00:00",
+  "root": "/home/l/remani_ws/experiments/online_remani_validation/results/clearance_recovery_20261023_01",
+  "plan": {
+    "created": "2026-10-23T01:38:00.909996+00:00",
+    "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/clearance_recovery_20261023_01",
+    "build_manifest_sha256": "ef47e6d04ab2e6845217f5815457177f85a5a0ffb5a512bc3a7d67279db60ff9",
+    "scene": "static",
+    "seed": 11,
+    "group": "coupled",
+    "duration_s": 48.0,
+    "domain_recovery": true,
+    "modes": [
+      false,
+      true
+    ],
+    "rho": 100000.0,
+    "restart_limit": 1,
+    "validation_reserve_s": 0.04,
+    "performance_comparison": false,
+    "constraint_weighting": "fixed K8 omega/K collocation nodes and immutable one-update multipliers",
+    "common_budget_change": "both OFF/ON include solve-snapshot scan and reject native validation over original optimization deadline",
+    "unchanged": [
+      "full body",
+      "0.10m hard margin",
+      "native guards",
+      "original optimization deadline",
+      "MPPI",
+      "nominal objective"
+    ]
+  },
+  "complete": {
+    "complete": true,
+    "completed": [
+      {
+        "trial": "static_coupled_seed11_restoration_off",
+        "valid": true
+      },
+      {
+        "trial": "static_coupled_seed11_restoration_on",
+        "valid": true
+      }
+    ]
+  },
+  "diagnostic_only": true,
+  "performance_comparison": false,
+  "notes": [
+    "静态单 seed 诊断；新增捕获 I/O，不能证明速度或动态安全改善。",
+    "OFF/ON 都包含域回退、终止负状态 fail-closed、额外扫描及原始 deadline 门；旧批次不是精确对照。",
+    "重建的是求解器状态，不是发布参考；failed_last_evaluated_trial_NOT_canonical_x 永不作为恢复后的 canonical 状态。",
+    "K8 是逐 piece 配点；dense 是逐 block 的 0.02s 扫描。只重放同一冻结场景下的全体 body 圆盘，不调用优化器或动态预测。",
+    "几何重放不等于完整原生校验；deadline、快照新鲜度、轮速和 latest 硬门分别保留。",
+    "普通 solver/failure trace 的 L-BFGS/force_stop/final_cost 是 nominal-only；重启状态仅取 clearance_restart_end，force_stop 优先。",
+    "源码中 result=1 (LBFGS_STOP) 是相对代价停止，不代表硬约束满足，也不能单凭此声称梯度收敛；它不是失败原因的唯一因果证明。",
+    "固定边界可行性结论只适用于本次记录请求，不解释旧批次所有拒绝；margin 违反与物理碰撞不同。",
+    "缺失或格式错误保留 null；没有 canonical after 时不计算改善，不把缺失 after 当成安全或零净空。"
+  ],
+  "trials": [
+    {
+      "trial": "static_coupled_seed11_restoration_off",
+      "source": "/home/l/remani_ws/experiments/online_remani_validation/results/clearance_recovery_20261023_01/static_coupled_seed11_restoration_off",
+      "clearance_recovery": false,
+      "run_status": {
+        "returncode": 0,
+        "result_written": true,
+        "graph_audited": true,
+        "required_process_failed": false,
+        "monitored_node_pids": {
+          "/crop_box_filter": 11765,
+          "/dynamic_obstacle_tracker": 11771,
+          "/mm_controller_node": 11757,
+          "/passthrough_z": 11763,
+          "/pcl_manager_filter": 11758,
+          "/rosout": 11748,
+          "/sim_lidar_tf": 11789,
+          "/sim_map_to_odom": 11783,
+          "/sim_world_to_map": 11777,
+          "/algorithm_simulator": 11802,
+          "/base_mppi": 11810,
+          "/dual_timescale_observer": 11816,
+          "/filter_joint_states": 11755,
+          "/remani_planner_node": 11756,
+          "/shared_collision_model": 11814
+        },
+        "runner_error": null,
+        "stop_errors": [],
+        "elapsed_wall_s": 40.63397001899989,
+        "production_hashes_unchanged": true,
+        "build_manifest_unchanged": true,
+        "coupling_group": "coupled",
+        "free_bytes_after_run": 13640179712
+      },
+      "audit": {
+        "trial": "static_coupled_seed11_restoration_off",
+        "source": "/home/l/remani_ws/experiments/online_remani_validation/results/clearance_recovery_20261023_01/static_coupled_seed11_restoration_off",
+        "valid_experiment": true,
+        "errors": [],
+        "warnings": [],
+        "navigation_outcome": "goal",
+        "outcome_policy": "goal/collision/navigation timeout all retained; only setup, crash or contradicted interface invalidates",
+        "phase_integrity": {
+          "pass_integrity": true,
+          "errors": [],
+          "warnings": [],
+          "events": 202,
+          "requests": 5,
+          "closed_requests": 5,
+          "closed_stages": 22,
+          "closed_waits": 7,
+          "resource_links": 5,
+          "right_censored_requests": [],
+          "right_censored_stages": [],
+          "right_censored_waits": [],
+          "publications": 2,
+          "nesting": "strict native request/stage stack; stages are nested, never summed twice"
+        },
+        "reference_chain_integrity": {
+          "pass_integrity": true,
+          "errors": [],
+          "warnings": [],
+          "chains": [
+            {
+              "transaction_fnv64": "1672905318021951017",
+              "request_id": 1,
+              "publish_sim": 1007.978157428,
+              "observer_receipt": true,
+              "commit": true,
+              "consumption": true,
+              "reconstructed_transaction_fnv64": "1672905318021951017",
+              "reconstructed_transaction_sha256": "35c42a11bfc49620a280779601cf69c4d9c8346e66a104acf940a7e1318571ae",
+              "commit_revision": 1,
+              "consume_revision": 1,
+              "consume_sim": 1008.041364679,
+              "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+              "first_control_cycle": true
+            },
+            {
+              "transaction_fnv64": "5269920570305913969",
+              "request_id": 5,
+              "publish_sim": 1018.978119936,
+              "observer_receipt": true,
+              "commit": true,
+              "consumption": true,
+              "reconstructed_transaction_fnv64": "5269920570305913969",
+              "reconstructed_transaction_sha256": "c2c58e7d1141257dd3e518054c22179c8e0923e494b80b8103c081a7cd51abb9",
+              "commit_revision": 2,
+              "consume_revision": 2,
+              "consume_sim": 1019.051565784,
+              "reference_sha256": "262a80f30432087bf404a963cda2175e95e65054cc7d9cc507f28921c4d81254",
+              "first_control_cycle": true
+            }
+          ],
+          "reporter_crosscheck": true,
+          "clock_note": "source ROS event times used; observer tail mono is never treated as MPPI receipt"
+        },
+        "native_coefficients_pass": true,
+        "native_reference_audit": {
+          "reference_contract_pass": true,
+          "closed_loop_reached": true,
+          "required_process_failed": false,
+          "failures": [],
+          "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+          "native_bundles": 2,
+          "consumed_versions": 2,
+          "live_kernel_calls": 544,
+          "stop_reasons": {
+            "perception_unhealthy": 34,
+            "native_hard_stop": 105,
+            "waiting_native_trajectory": 20,
+            "ok": 519,
+            "local_validation_failed": 4,
+            "no_feasible_candidate": 16,
+            "deadline_miss": 5
+          },
+          "trial_result": {
+            "reason": "goal",
+            "goal_sent": 7.013708557999962,
+            "motion_anchor": 8.971657586999982,
+            "scenario_start": "motion",
+            "trajectory_bundles": 2,
+            "min_clearance": 0.15640041901664478,
+            "collision_conservative_projection": false,
+            "arm_max_error": 0.0,
+            "final_state": [
+              2.9834917097039093,
+              0.004744075365815569,
+              -0.027684556416793706,
+              0.0006643112125277669,
+              0.026292535936884038
+            ],
+            "elapsed": 35.31768543399994,
+            "scene": "static",
+            "scope": "native ROS algorithm SIL, not Gazebo/real vehicle"
+          },
+          "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+        },
+        "advisory_freeze": {
+          "valid_same_reference_advisory_zero_cycles": 508,
+          "mppi_nonzero_command_cycles": 475,
+          "also_measured_nonzero_motion_cycles": 472,
+          "examples": [
+            {
+              "sim": 1009.813425896,
+              "reference_revision": 1,
+              "native_virtual_time": 1.568826062847446,
+              "v": 0.1683379052963594,
+              "w": -0.010131178776399116,
+              "reason": "ok"
+            },
+            {
+              "sim": 1009.853915531,
+              "reference_revision": 1,
+              "native_virtual_time": 1.568826062847446,
+              "v": 0.22703238229913883,
+              "w": 0.013879014599249569,
+              "reason": "ok"
+            },
+            {
+              "sim": 1009.914207682,
+              "reference_revision": 1,
+              "native_virtual_time": 1.568826062847446,
+              "v": 0.222831178175794,
+              "w": -0.015769704177914814,
+              "reason": "ok"
+            },
+            {
+              "sim": 1009.974511097,
+              "reference_revision": 1,
+              "native_virtual_time": 1.568826062847446,
+              "v": 0.22138348960242793,
+              "w": -0.0287996782924501,
+              "reason": "ok"
+            }
+          ],
+          "interpretation": "advisory controller-clock hold is not MPPI stop; commands are separate from measured motion",
+          "matching": "exact consumed revision/hash and same native start stamp; latest advisory and odom age <0.2s",
+          "nonzero_thresholds": {
+            "abs_v_m_s": 0.02,
+            "abs_w_rad_s": 0.04
+          }
+        },
+        "solver_outcomes": {
+          "ok": 2,
+          "budget_timeout": 3
+        },
+        "inputs_sha256": {
+          "manifest.json": "e39300f221e1439cc044d46125a2198a0c0504c6d1e5c4013bdaa09ec25a92ae",
+          "run_status.json": "7078827c6020ad0b43d0360afc53e393ea252c1439878a55986126e710dad94c",
+          "publisher_audit.json": "0a4f84bb4b5846a5deb723820b1cde36c975fed24fc388db4f5b3354a84d51b3",
+          "dual_timeline.jsonl": "4092f9ef455edf11054e4210d48f2062b39c3d600e81ffa815108be8cb609e31",
+          "observer_events.jsonl": "acfac34cea868876f0814c15ad23d7fd9c58df916b79f171d335d2d13bf80dc6",
+          "solver_trace.jsonl": "b0095ba59984c6250d6baa57fce9af222695db182875063c3fb2e5e938b34ffb",
+          "failure_trace.jsonl": "45311c2ab52d825fc1a07eba64228bff3575ec91cd838e90ede8f4b54b90706b",
+          "trajectories.json": "95ec463bfeb45560866f46f1769a1edc48a0d1c6e19e5b66d73c4bbdd10dd360",
+          "consumed_references.jsonl": "cb58882af013ecf43e63c9831dad2b0e8fa550556283a6fc4e526ec7168bb2f7",
+          "reference_events.jsonl": "f5be7abbee9cd44e84e5d62fc3a945177392eefba9ed4e627abdc23cc3af846e",
+          "mppi_diagnostics.json": "8faf85c907b5529defc3edf5a060ef65d80971c0593bdc11f1ac741dab612066"
+        }
+      },
+      "outcome": {
+        "reason": "goal",
+        "goal_sent": 7.013708557999962,
+        "motion_anchor": 8.971657586999982,
+        "scenario_start": "motion",
+        "trajectory_bundles": 2,
+        "min_clearance": 0.15640041901664478,
+        "collision_conservative_projection": false,
+        "arm_max_error": 0.0,
+        "final_state": [
+          2.9834917097039093,
+          0.004744075365815569,
+          -0.027684556416793706,
+          0.0006643112125277669,
+          0.026292535936884038
+        ],
+        "elapsed": 35.31768543399994,
+        "scene": "static",
+        "scope": "native ROS algorithm SIL, not Gazebo/real vehicle"
+      },
+      "settings": {
+        "group": "coupled",
+        "engineering": true,
+        "execution_weight": 1.0,
+        "handover_weight": 1.0,
+        "seed": 11,
+        "legacy_rolling": false,
+        "legacy_prefix": false,
+        "diagnostic_pause": false,
+        "genuine_online_closed_loop": true,
+        "engineering_scope": "additional projected qualification/soft cost only; retain native 3D, self-collision, wheel and long-horizon dynamic guards; not full dynamic feasibility equivalence and not an endpoint-stagnation fix",
+        "scope": "fixed-arm native ROS numerical SIL; no hardware drivers or Gazebo",
+        "domain_recovery": true,
+        "terminal_solver_failure_fail_closed": true,
+        "clearance_recovery": false,
+        "clearance_rho": 100000.0,
+        "clearance_validation_reserve_s": 0.04,
+        "clearance_restart_limit": 1,
+        "clearance_weighting": "fixed K8 collocation weights, not duration-dependent integral"
+      },
+      "input_sha256": {
+        "manifest.json": "e39300f221e1439cc044d46125a2198a0c0504c6d1e5c4013bdaa09ec25a92ae",
+        "run_status.json": "7078827c6020ad0b43d0360afc53e393ea252c1439878a55986126e710dad94c",
+        "trial_audit.json": "250adea6376ce32533269f6118d8be5099a0563f5dc7eb2a8f109cfedc02ee4b",
+        "result.json": "3cb6a891001e8ccfb28e980b4b65fd68c34627ffd3982e62a8742887dae07b75",
+        "dual_timeline.jsonl": "4092f9ef455edf11054e4210d48f2062b39c3d600e81ffa815108be8cb609e31",
+        "solver_trace.jsonl": "b0095ba59984c6250d6baa57fce9af222695db182875063c3fb2e5e938b34ffb"
+      },
+      "counts": {
+        "nominal_scan_events": 2,
+        "restored_scan_events": 0,
+        "skipped_budget_events": 0,
+        "restart_begin": 0,
+        "restart_end": 0,
+        "restart_status": {},
+        "deadline_reject": 0,
+        "state_files": 2,
+        "canonical_x_records": 0,
+        "recorded_native_qualified": 2,
+        "outcome_counts": {
+          "native_qualified_pending_latest_gate": 2
+        },
+        "latest_hard_accepted": 2,
+        "latest_hard_rejected": 0
+      },
+      "state_records": [
+        {
+          "file": "clearance_recovery/11756_1.json",
+          "sha256": "705e44798ac4d137dcf5ed7820f67f0e39d723331781cb7f6bc41716afc934c4",
+          "pid": 11756,
+          "request_id": 1,
+          "scope_id": 1,
+          "enabled": false,
+          "outcome": "native_qualified_pending_latest_gate",
+          "errors": [],
+          "identity_certified": true,
+          "identity_proof": "filename_pid+unique_request+exact_coupling_scope_id",
+          "phases": [
+            {
+              "phase": "nominal",
+              "state_kind": "nominal_or_other",
+              "error": null,
+              "sampling": {
+                "dense": {
+                  "valid": true,
+                  "samples": 826,
+                  "counts": {
+                    "safe": 826
+                  },
+                  "min_gap": 0.9247808246938717,
+                  "min_physical": 1.0247808246938717,
+                  "worst": {
+                    "part": 0,
+                    "piece": 0,
+                    "sample": 0,
+                    "q": 0.0,
+                    "local_t": 0.0,
+                    "t": 0.0,
+                    "query_time": 1007.114225726,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "vx": 0.05,
+                    "vy": 0.0,
+                    "speed": 0.05,
+                    "yaw": 0.0,
+                    "gear": 1,
+                    "category": "safe",
+                    "reason": "geometric_clearance",
+                    "physical": 1.0247808246938717,
+                    "gap": 0.9247808246938717,
+                    "body_index": 0,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1007.114225726,
+                      "x": 0.0,
+                      "y": 0.0,
+                      "vx": 0.05,
+                      "vy": 0.0,
+                      "speed": 0.05,
+                      "yaw": 0.0,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 1.0247808246938717,
+                      "gap": 0.9247808246938717,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 4,
+                      "sample": 825,
+                      "q": 16.497555628185772,
+                      "local_t": 3.293500616049608,
+                      "t": 16.497555628185772,
+                      "query_time": 1023.6117813541857,
+                      "x": 3.0000000000000004,
+                      "y": 0.0,
+                      "vx": 0.05000000000000088,
+                      "vy": 0.0,
+                      "speed": 0.05000000000000088,
+                      "yaw": 0.0,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 1.0247808246938717,
+                      "gap": 0.9247808246938717,
+                      "body_index": 1,
+                      "obstacle_index": null
+                    }
+                  }
+                },
+                "K8": {
+                  "valid": true,
+                  "samples": 45,
+                  "counts": {
+                    "safe": 45
+                  },
+                  "min_gap": 0.9247808246938717,
+                  "min_physical": 1.0247808246938717,
+                  "worst": {
+                    "part": 0,
+                    "piece": 0,
+                    "sample": 0,
+                    "q": 0.0,
+                    "local_t": 0.0,
+                    "t": 0.0,
+                    "query_time": 1007.114225726,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "vx": 0.05,
+                    "vy": 0.0,
+                    "speed": 0.05,
+                    "yaw": 0.0,
+                    "gear": 1,
+                    "category": "safe",
+                    "reason": "geometric_clearance",
+                    "physical": 1.0247808246938717,
+                    "gap": 0.9247808246938717,
+                    "body_index": 0,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1007.114225726,
+                      "x": 0.0,
+                      "y": 0.0,
+                      "vx": 0.05,
+                      "vy": 0.0,
+                      "speed": 0.05,
+                      "yaw": 0.0,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 1.0247808246938717,
+                      "gap": 0.9247808246938717,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 4,
+                      "sample": 44,
+                      "q": 16.497555628185772,
+                      "local_t": 3.2935006160496085,
+                      "t": 16.497555628185772,
+                      "query_time": 1023.6117813541857,
+                      "x": 3.0000000000000004,
+                      "y": 0.0,
+                      "vx": 0.05000000000000088,
+                      "vy": 0.0,
+                      "speed": 0.05000000000000088,
+                      "yaw": 0.0,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 1.0247808246938717,
+                      "gap": 0.9247808246938717,
+                      "body_index": 1,
+                      "obstacle_index": null
+                    }
+                  }
+                }
+              },
+              "snapshot_fresh": true,
+              "boundary_feasibility": {
+                "initial": true,
+                "final": true
+              }
+            }
+          ],
+          "nominal_comparison": {
+            "recorded_event": {
+              "event": "clearance_nominal",
+              "mono": 1784.897206215,
+              "sim": 1007.616573103,
+              "pid": 11756,
+              "request_id": 1,
+              "enabled": 0,
+              "valid": true,
+              "reason": "ok",
+              "min_physical": 1.0247808246938717,
+              "min_gap": 0.9247808246938717,
+              "samples": 826,
+              "budget_s": 1.5,
+              "elapsed_s": 0.37062859535217285
+            },
+            "independent_min_gap": 0.9247808246938717,
+            "delta": 0.0,
+            "agrees": true,
+            "note": "only a unique valid completed dense scan is comparable; no deadline replay"
+          },
+          "restored_comparison": {
+            "recorded_event": null,
+            "independent_min_gap": null,
+            "delta": null,
+            "agrees": null,
+            "note": "only a unique valid completed dense scan is comparable; no deadline replay"
+          },
+          "restart_begin": null,
+          "restart_end": null,
+          "restart_status": "unknown",
+          "canonical_x_recorded": false,
+          "canonical_status_certified": false,
+          "independent_pre_gap": 0.9247808246938717,
+          "independent_post_gap": null,
+          "independent_canonical_gap_delta": null,
+          "independent_pre_physical": 1.0247808246938717,
+          "independent_post_physical": null,
+          "independent_post_K8_gap": null,
+          "fixed_boundary_obstructions": [],
+          "failure_explanation": null,
+          "frame": {
+            "now": 1007.114225726,
+            "snapshot": "snapshots/8e64932fefdb9adc.json",
+            "snapshot_payload_hash": "8e64932fefdb9adc",
+            "hash_algorithm": "fnv1a64_json"
+          },
+          "recorded_native_qualified": true,
+          "actual_latest_candidates": [
+            {
+              "file": "delivery_diagnostics/candidates/11756_2.json",
+              "sha256": "e4c96b248262b74af9098527d6a95ec0081e1bf6aafaa6ab57d7db8f1f33291a",
+              "schema": "delivery_candidate_v1",
+              "pid": 11756,
+              "request_id": 1,
+              "scope_id": 1,
+              "finished": true,
+              "recorded_accepted": true,
+              "online_accept": null,
+              "failure": null,
+              "hard_gate_state": "accepted"
+            }
+          ],
+          "latest_hard_accepted": 1
+        },
+        {
+          "file": "clearance_recovery/11756_3.json",
+          "sha256": "58f598d50c5cfe18e28a3e8dc90ccb60c3bc509383231b2c8278e43d9756c659",
+          "pid": 11756,
+          "request_id": 5,
+          "scope_id": 5,
+          "enabled": false,
+          "outcome": "native_qualified_pending_latest_gate",
+          "errors": [],
+          "identity_certified": true,
+          "identity_proof": "filename_pid+unique_request+exact_coupling_scope_id",
+          "phases": [
+            {
+              "phase": "nominal",
+              "state_kind": "nominal_or_other",
+              "error": null,
+              "sampling": {
+                "dense": {
+                  "valid": true,
+                  "samples": 787,
+                  "counts": {
+                    "safe": 787
+                  },
+                  "min_gap": 0.021124377945459044,
+                  "min_physical": 0.12112437794545905,
+                  "worst": {
+                    "part": 0,
+                    "piece": 2,
+                    "sample": 460,
+                    "q": 9.197689477588414,
+                    "local_t": 1.2348695715012514,
+                    "t": 9.197689477588414,
+                    "query_time": 1027.2073389765885,
+                    "x": 2.225375165221095,
+                    "y": 0.614953490721325,
+                    "vx": 0.14704829319348942,
+                    "vy": -0.11183702716001903,
+                    "speed": 0.1847450166448591,
+                    "yaw": -0.6502166086730476,
+                    "gear": 1,
+                    "category": "safe",
+                    "reason": "geometric_clearance",
+                    "physical": 0.12112437794545905,
+                    "gap": 0.021124377945459044,
+                    "body_index": 2,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1018.009649499,
+                      "x": 1.0232003885640797,
+                      "y": 0.1904492849160581,
+                      "vx": 0.027986754346205657,
+                      "vy": 0.19034255749514586,
+                      "speed": 0.1923890527359282,
+                      "yaw": 1.4248087439248507,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.12819351038406623,
+                      "gap": 0.028193510384066228,
+                      "body_index": 2,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 3,
+                      "sample": 786,
+                      "q": 15.716052020401072,
+                      "local_t": 3.9471778480117865,
+                      "t": 15.716052020401072,
+                      "query_time": 1033.7257015194011,
+                      "x": 3.0,
+                      "y": -1.1102230246251565e-16,
+                      "vx": 0.050000000000000044,
+                      "vy": -3.3306690738754696e-16,
+                      "speed": 0.050000000000000044,
+                      "yaw": -6.661338147750933e-15,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.5247808246938717,
+                      "gap": 0.4247808246938717,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    }
+                  }
+                },
+                "K8": {
+                  "valid": true,
+                  "samples": 36,
+                  "counts": {
+                    "safe": 36
+                  },
+                  "min_gap": 0.02157886059715039,
+                  "min_physical": 0.1215788605971504,
+                  "worst": {
+                    "part": 0,
+                    "piece": 2,
+                    "sample": 21,
+                    "q": 9.390090255950458,
+                    "local_t": 1.427270349863296,
+                    "t": 9.390090255950458,
+                    "query_time": 1027.3997397549506,
+                    "x": 2.2535102389008235,
+                    "y": 0.592658646252377,
+                    "vx": 0.14552862975984707,
+                    "vy": -0.11985315348767688,
+                    "speed": 0.18852946846771537,
+                    "yaw": -0.6889491460097822,
+                    "gear": 1,
+                    "category": "safe",
+                    "reason": "geometric_clearance",
+                    "physical": 0.1215788605971504,
+                    "gap": 0.02157886059715039,
+                    "body_index": 2,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1018.009649499,
+                      "x": 1.0232003885640797,
+                      "y": 0.1904492849160581,
+                      "vx": 0.027986754346205657,
+                      "vy": 0.19034255749514586,
+                      "speed": 0.1923890527359282,
+                      "yaw": 1.4248087439248507,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.12819351038406623,
+                      "gap": 0.028193510384066228,
+                      "body_index": 2,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 3,
+                      "sample": 35,
+                      "q": 15.716052020401072,
+                      "local_t": 3.9471778480117865,
+                      "t": 15.716052020401072,
+                      "query_time": 1033.7257015194011,
+                      "x": 3.0,
+                      "y": -1.1102230246251565e-16,
+                      "vx": 0.050000000000000044,
+                      "vy": -3.3306690738754696e-16,
+                      "speed": 0.050000000000000044,
+                      "yaw": -6.661338147750933e-15,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.5247808246938717,
+                      "gap": 0.4247808246938717,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    }
+                  }
+                }
+              },
+              "snapshot_fresh": true,
+              "boundary_feasibility": {
+                "initial": true,
+                "final": true
+              }
+            }
+          ],
+          "nominal_comparison": {
+            "recorded_event": {
+              "event": "clearance_nominal",
+              "mono": 1795.89810133,
+              "sim": 1018.616521116,
+              "pid": 11756,
+              "request_id": 5,
+              "enabled": 0,
+              "valid": true,
+              "reason": "ok",
+              "min_physical": 0.12112437794546022,
+              "min_gap": 0.02112437794546021,
+              "samples": 787,
+              "budget_s": 0.6,
+              "elapsed_s": 0.45536088943481445
+            },
+            "independent_min_gap": 0.021124377945459044,
+            "delta": -1.1657341758564144e-15,
+            "agrees": true,
+            "note": "only a unique valid completed dense scan is comparable; no deadline replay"
+          },
+          "restored_comparison": {
+            "recorded_event": null,
+            "independent_min_gap": null,
+            "delta": null,
+            "agrees": null,
+            "note": "only a unique valid completed dense scan is comparable; no deadline replay"
+          },
+          "restart_begin": null,
+          "restart_end": null,
+          "restart_status": "unknown",
+          "canonical_x_recorded": false,
+          "canonical_status_certified": false,
+          "independent_pre_gap": 0.021124377945459044,
+          "independent_post_gap": null,
+          "independent_canonical_gap_delta": null,
+          "independent_pre_physical": 0.12112437794545905,
+          "independent_post_physical": null,
+          "independent_post_K8_gap": null,
+          "fixed_boundary_obstructions": [],
+          "failure_explanation": null,
+          "frame": {
+            "now": 1018.009649499,
+            "snapshot": "snapshots/16d2c2c5f9668548.json",
+            "snapshot_payload_hash": "16d2c2c5f9668548",
+            "hash_algorithm": "fnv1a64_json"
+          },
+          "recorded_native_qualified": true,
+          "actual_latest_candidates": [
+            {
+              "file": "delivery_diagnostics/candidates/11756_4.json",
+              "sha256": "6643411e3bab932f83fd3b1f30793ef84c3227aa6d0754307f8eca4e6ae32b6b",
+              "schema": "delivery_candidate_v1",
+              "pid": 11756,
+              "request_id": 5,
+              "scope_id": 5,
+              "finished": true,
+              "recorded_accepted": true,
+              "online_accept": null,
+              "failure": null,
+              "hard_gate_state": "accepted"
+            }
+          ],
+          "latest_hard_accepted": 1
+        }
+      ],
+      "actual_latest_candidates": [
+        {
+          "file": "delivery_diagnostics/candidates/11756_2.json",
+          "sha256": "e4c96b248262b74af9098527d6a95ec0081e1bf6aafaa6ab57d7db8f1f33291a",
+          "schema": "delivery_candidate_v1",
+          "pid": 11756,
+          "request_id": 1,
+          "scope_id": 1,
+          "finished": true,
+          "recorded_accepted": true,
+          "online_accept": null,
+          "failure": null,
+          "hard_gate_state": "accepted"
+        },
+        {
+          "file": "delivery_diagnostics/candidates/11756_4.json",
+          "sha256": "6643411e3bab932f83fd3b1f30793ef84c3227aa6d0754307f8eca4e6ae32b6b",
+          "schema": "delivery_candidate_v1",
+          "pid": 11756,
+          "request_id": 5,
+          "scope_id": 5,
+          "finished": true,
+          "recorded_accepted": true,
+          "online_accept": null,
+          "failure": null,
+          "hard_gate_state": "accepted"
+        }
+      ],
+      "native_optimizer_success_flags": [
+        true,
+        false,
+        false,
+        false,
+        true
+      ],
+      "latest_candidate_error": null,
+      "ordinary_trace_solver_fields_scope": "nominal-only; never used to classify restart"
+    },
+    {
+      "trial": "static_coupled_seed11_restoration_on",
+      "source": "/home/l/remani_ws/experiments/online_remani_validation/results/clearance_recovery_20261023_01/static_coupled_seed11_restoration_on",
+      "clearance_recovery": true,
+      "run_status": {
+        "returncode": 0,
+        "result_written": true,
+        "graph_audited": true,
+        "required_process_failed": false,
+        "monitored_node_pids": {
+          "/crop_box_filter": 12236,
+          "/dynamic_obstacle_tracker": 12238,
+          "/mm_controller_node": 12228,
+          "/passthrough_z": 12234,
+          "/pcl_manager_filter": 12229,
+          "/rosout": 12219,
+          "/sim_lidar_tf": 12268,
+          "/sim_map_to_odom": 12254,
+          "/sim_world_to_map": 12242,
+          "/algorithm_simulator": 12274,
+          "/base_mppi": 12281,
+          "/dual_timescale_observer": 12289,
+          "/filter_joint_states": 12226,
+          "/remani_planner_node": 12227,
+          "/shared_collision_model": 12285
+        },
+        "runner_error": null,
+        "stop_errors": [],
+        "elapsed_wall_s": 41.23767952100002,
+        "production_hashes_unchanged": true,
+        "build_manifest_unchanged": true,
+        "coupling_group": "coupled",
+        "free_bytes_after_run": 13580648448
+      },
+      "audit": {
+        "trial": "static_coupled_seed11_restoration_on",
+        "source": "/home/l/remani_ws/experiments/online_remani_validation/results/clearance_recovery_20261023_01/static_coupled_seed11_restoration_on",
+        "valid_experiment": true,
+        "errors": [],
+        "warnings": [],
+        "navigation_outcome": "goal",
+        "outcome_policy": "goal/collision/navigation timeout all retained; only setup, crash or contradicted interface invalidates",
+        "phase_integrity": {
+          "pass_integrity": true,
+          "errors": [],
+          "warnings": [],
+          "events": 225,
+          "requests": 6,
+          "closed_requests": 6,
+          "closed_stages": 26,
+          "closed_waits": 10,
+          "resource_links": 6,
+          "right_censored_requests": [],
+          "right_censored_stages": [],
+          "right_censored_waits": [],
+          "publications": 2,
+          "nesting": "strict native request/stage stack; stages are nested, never summed twice"
+        },
+        "reference_chain_integrity": {
+          "pass_integrity": true,
+          "errors": [],
+          "warnings": [],
+          "chains": [
+            {
+              "transaction_fnv64": "7723426078168296251",
+              "request_id": 1,
+              "publish_sim": 1008.025403788,
+              "observer_receipt": true,
+              "commit": true,
+              "consumption": true,
+              "reconstructed_transaction_fnv64": "7723426078168296251",
+              "reconstructed_transaction_sha256": "70acc366967390c42d40c9e7d8e9cd4faaf31adbb2eecb309c79af582eb33f47",
+              "commit_revision": 1,
+              "consume_revision": 1,
+              "consume_sim": 1008.066626887,
+              "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+              "first_control_cycle": true
+            },
+            {
+              "transaction_fnv64": "10464988309418760892",
+              "request_id": 6,
+              "publish_sim": 1020.904228436,
+              "observer_receipt": true,
+              "commit": true,
+              "consumption": true,
+              "reconstructed_transaction_fnv64": "10464988309418760892",
+              "reconstructed_transaction_sha256": "b74ed1dd625abe095a3dc18153e47e6898ebc765cfa70aa7d26a117fd232ac6d",
+              "commit_revision": 2,
+              "consume_revision": 2,
+              "consume_sim": 1020.938551956,
+              "reference_sha256": "fb8a5d4ba62cb04302e3caecc4de8e41f2d3ac418edf4835636861013eab2bc5",
+              "first_control_cycle": true
+            }
+          ],
+          "reporter_crosscheck": true,
+          "clock_note": "source ROS event times used; observer tail mono is never treated as MPPI receipt"
+        },
+        "native_coefficients_pass": true,
+        "native_reference_audit": {
+          "reference_contract_pass": true,
+          "closed_loop_reached": true,
+          "required_process_failed": false,
+          "failures": [],
+          "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+          "native_bundles": 2,
+          "consumed_versions": 2,
+          "live_kernel_calls": 555,
+          "stop_reasons": {
+            "odom_stale": 1,
+            "perception_unhealthy": 33,
+            "native_hard_stop": 106,
+            "waiting_native_trajectory": 20,
+            "ok": 527,
+            "no_feasible_candidate": 16,
+            "local_validation_failed": 4,
+            "deadline_miss": 8
+          },
+          "trial_result": {
+            "reason": "goal",
+            "goal_sent": 7.016855504999967,
+            "motion_anchor": 9.044063560999803,
+            "scenario_start": "motion",
+            "trajectory_bundles": 2,
+            "min_clearance": 0.1520082016181825,
+            "collision_conservative_projection": false,
+            "arm_max_error": 0.0,
+            "final_state": [
+              2.9854163902177557,
+              0.007015213747828343,
+              -0.032883316598492376,
+              -0.004672504438823637,
+              0.03409229160904319
+            ],
+            "elapsed": 35.90725112699988,
+            "scene": "static",
+            "scope": "native ROS algorithm SIL, not Gazebo/real vehicle"
+          },
+          "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+        },
+        "advisory_freeze": {
+          "valid_same_reference_advisory_zero_cycles": 513,
+          "mppi_nonzero_command_cycles": 482,
+          "also_measured_nonzero_motion_cycles": 477,
+          "examples": [
+            {
+              "sim": 1009.897994368,
+              "reference_revision": 1,
+              "native_virtual_time": 1.601268715499385,
+              "v": 0.22653642682017663,
+              "w": 0.016559855026072174,
+              "reason": "ok"
+            },
+            {
+              "sim": 1009.938205466,
+              "reference_revision": 1,
+              "native_virtual_time": 1.601268715499385,
+              "v": 0.22257862075652018,
+              "w": -0.013113618776998627,
+              "reason": "ok"
+            },
+            {
+              "sim": 1010.003214791,
+              "reference_revision": 1,
+              "native_virtual_time": 1.601268715499385,
+              "v": 0.2213216602975378,
+              "w": -0.02611794527113992,
+              "reason": "ok"
+            },
+            {
+              "sim": 1010.04339312,
+              "reference_revision": 1,
+              "native_virtual_time": 1.601268715499385,
+              "v": 0.218301684723875,
+              "w": -0.025675591491812574,
+              "reason": "ok"
+            }
+          ],
+          "interpretation": "advisory controller-clock hold is not MPPI stop; commands are separate from measured motion",
+          "matching": "exact consumed revision/hash and same native start stamp; latest advisory and odom age <0.2s",
+          "nonzero_thresholds": {
+            "abs_v_m_s": 0.02,
+            "abs_w_rad_s": 0.04
+          }
+        },
+        "solver_outcomes": {
+          "ok": 2,
+          "budget_timeout": 3,
+          "restored_static_margin_not_feasible": 1
+        },
+        "inputs_sha256": {
+          "manifest.json": "b35ccbfd0743bdaee0599621b084967fd944e4e39e4d1e6cf95d90e2fb9132ac",
+          "run_status.json": "1a1d2bb502d098373cd5dfef45ce0c5d48cf8ad6925d518a22019a70e716febb",
+          "publisher_audit.json": "f25590d1450428ca3ea163e0216296ecda70b45b1bf77aa0fbc22eef70bac0d6",
+          "dual_timeline.jsonl": "cd9815af912c6f99ecc96ce733b21867d5cc40883c2a7db0e7b613518c6f430c",
+          "observer_events.jsonl": "32b8d405f26a493cd5278c51320b2c108f63b821c6ecc8137c5f5c3d897ef49d",
+          "solver_trace.jsonl": "c7fbd1a63096d5f3ccd38d5a928387c304a60a4f1bb202ef897f958bae2ebfc3",
+          "failure_trace.jsonl": "61ed71ee30784c9db9ef28f3d4c12ead5437acea194d5bd1ab7d97fa1135398d",
+          "trajectories.json": "3a005ae7a21ccc0dac91b88f1d750235312e8fc302ee44b8030d01fb942d27fb",
+          "consumed_references.jsonl": "aa277063e26761ed7d30e6c1ed0cd82ffc2884790fc730c4ba3aa2749775b2af",
+          "reference_events.jsonl": "3d6b6a8eb4a4c0a0e8ce02c7dbef781c93b2dda1a3d1c0630ed1220049d887cf",
+          "mppi_diagnostics.json": "dba5eebdcbec54ef9adc8922942d2c5b31c9e336deb26a4d5f5c6d29d43eb441"
+        }
+      },
+      "outcome": {
+        "reason": "goal",
+        "goal_sent": 7.016855504999967,
+        "motion_anchor": 9.044063560999803,
+        "scenario_start": "motion",
+        "trajectory_bundles": 2,
+        "min_clearance": 0.1520082016181825,
+        "collision_conservative_projection": false,
+        "arm_max_error": 0.0,
+        "final_state": [
+          2.9854163902177557,
+          0.007015213747828343,
+          -0.032883316598492376,
+          -0.004672504438823637,
+          0.03409229160904319
+        ],
+        "elapsed": 35.90725112699988,
+        "scene": "static",
+        "scope": "native ROS algorithm SIL, not Gazebo/real vehicle"
+      },
+      "settings": {
+        "group": "coupled",
+        "engineering": true,
+        "execution_weight": 1.0,
+        "handover_weight": 1.0,
+        "seed": 11,
+        "legacy_rolling": false,
+        "legacy_prefix": false,
+        "diagnostic_pause": false,
+        "genuine_online_closed_loop": true,
+        "engineering_scope": "additional projected qualification/soft cost only; retain native 3D, self-collision, wheel and long-horizon dynamic guards; not full dynamic feasibility equivalence and not an endpoint-stagnation fix",
+        "scope": "fixed-arm native ROS numerical SIL; no hardware drivers or Gazebo",
+        "domain_recovery": true,
+        "terminal_solver_failure_fail_closed": true,
+        "clearance_recovery": true,
+        "clearance_rho": 100000.0,
+        "clearance_validation_reserve_s": 0.04,
+        "clearance_restart_limit": 1,
+        "clearance_weighting": "fixed K8 collocation weights, not duration-dependent integral"
+      },
+      "input_sha256": {
+        "manifest.json": "b35ccbfd0743bdaee0599621b084967fd944e4e39e4d1e6cf95d90e2fb9132ac",
+        "run_status.json": "1a1d2bb502d098373cd5dfef45ce0c5d48cf8ad6925d518a22019a70e716febb",
+        "trial_audit.json": "d09701cbf4117ef8e2b739cb79faf7253b13c97d31acf8107d13b8f92429830b",
+        "result.json": "4c593ee0ea757e3587fa9f6e50dc273f1b88db19380474041e346e1e2d52b56c",
+        "dual_timeline.jsonl": "cd9815af912c6f99ecc96ce733b21867d5cc40883c2a7db0e7b613518c6f430c",
+        "solver_trace.jsonl": "c7fbd1a63096d5f3ccd38d5a928387c304a60a4f1bb202ef897f958bae2ebfc3"
+      },
+      "counts": {
+        "nominal_scan_events": 3,
+        "restored_scan_events": 1,
+        "skipped_budget_events": 0,
+        "restart_begin": 1,
+        "restart_end": 1,
+        "restart_status": {
+          "nonnegative_no_forced_stop": 1
+        },
+        "deadline_reject": 0,
+        "state_files": 3,
+        "canonical_x_records": 1,
+        "recorded_native_qualified": 2,
+        "outcome_counts": {
+          "native_qualified_pending_latest_gate": 2,
+          "restored_static_margin_not_feasible": 1
+        },
+        "latest_hard_accepted": 2,
+        "latest_hard_rejected": 0
+      },
+      "state_records": [
+        {
+          "file": "clearance_recovery/12227_1.json",
+          "sha256": "42bbcce0e8faecfddaad81ba68f030f2e9fc47fb58ae54300c405f91b77060c6",
+          "pid": 12227,
+          "request_id": 1,
+          "scope_id": 1,
+          "enabled": true,
+          "outcome": "native_qualified_pending_latest_gate",
+          "errors": [],
+          "identity_certified": true,
+          "identity_proof": "filename_pid+unique_request+exact_coupling_scope_id",
+          "phases": [
+            {
+              "phase": "nominal",
+              "state_kind": "nominal_or_other",
+              "error": null,
+              "sampling": {
+                "dense": {
+                  "valid": true,
+                  "samples": 826,
+                  "counts": {
+                    "safe": 826
+                  },
+                  "min_gap": 0.9247808246938717,
+                  "min_physical": 1.0247808246938717,
+                  "worst": {
+                    "part": 0,
+                    "piece": 0,
+                    "sample": 0,
+                    "q": 0.0,
+                    "local_t": 0.0,
+                    "t": 0.0,
+                    "query_time": 1007.178489779,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "vx": 0.05,
+                    "vy": 0.0,
+                    "speed": 0.05,
+                    "yaw": 0.0,
+                    "gear": 1,
+                    "category": "safe",
+                    "reason": "geometric_clearance",
+                    "physical": 1.0247808246938717,
+                    "gap": 0.9247808246938717,
+                    "body_index": 0,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1007.178489779,
+                      "x": 0.0,
+                      "y": 0.0,
+                      "vx": 0.05,
+                      "vy": 0.0,
+                      "speed": 0.05,
+                      "yaw": 0.0,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 1.0247808246938717,
+                      "gap": 0.9247808246938717,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 4,
+                      "sample": 825,
+                      "q": 16.497555628185772,
+                      "local_t": 3.293500616049608,
+                      "t": 16.497555628185772,
+                      "query_time": 1023.6760454071857,
+                      "x": 3.0000000000000004,
+                      "y": 0.0,
+                      "vx": 0.05000000000000088,
+                      "vy": 0.0,
+                      "speed": 0.05000000000000088,
+                      "yaw": 0.0,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 1.0247808246938717,
+                      "gap": 0.9247808246938717,
+                      "body_index": 1,
+                      "obstacle_index": null
+                    }
+                  }
+                },
+                "K8": {
+                  "valid": true,
+                  "samples": 45,
+                  "counts": {
+                    "safe": 45
+                  },
+                  "min_gap": 0.9247808246938717,
+                  "min_physical": 1.0247808246938717,
+                  "worst": {
+                    "part": 0,
+                    "piece": 0,
+                    "sample": 0,
+                    "q": 0.0,
+                    "local_t": 0.0,
+                    "t": 0.0,
+                    "query_time": 1007.178489779,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "vx": 0.05,
+                    "vy": 0.0,
+                    "speed": 0.05,
+                    "yaw": 0.0,
+                    "gear": 1,
+                    "category": "safe",
+                    "reason": "geometric_clearance",
+                    "physical": 1.0247808246938717,
+                    "gap": 0.9247808246938717,
+                    "body_index": 0,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1007.178489779,
+                      "x": 0.0,
+                      "y": 0.0,
+                      "vx": 0.05,
+                      "vy": 0.0,
+                      "speed": 0.05,
+                      "yaw": 0.0,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 1.0247808246938717,
+                      "gap": 0.9247808246938717,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 4,
+                      "sample": 44,
+                      "q": 16.497555628185772,
+                      "local_t": 3.2935006160496085,
+                      "t": 16.497555628185772,
+                      "query_time": 1023.6760454071857,
+                      "x": 3.0000000000000004,
+                      "y": 0.0,
+                      "vx": 0.05000000000000088,
+                      "vy": 0.0,
+                      "speed": 0.05000000000000088,
+                      "yaw": 0.0,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 1.0247808246938717,
+                      "gap": 0.9247808246938717,
+                      "body_index": 1,
+                      "obstacle_index": null
+                    }
+                  }
+                }
+              },
+              "snapshot_fresh": true,
+              "boundary_feasibility": {
+                "initial": true,
+                "final": true
+              }
+            }
+          ],
+          "nominal_comparison": {
+            "recorded_event": {
+              "event": "clearance_nominal",
+              "mono": 1834.343310172,
+              "sim": 1007.663611298,
+              "pid": 12227,
+              "request_id": 1,
+              "enabled": 1,
+              "valid": true,
+              "reason": "ok",
+              "min_physical": 1.0247808246938717,
+              "min_gap": 0.9247808246938717,
+              "samples": 826,
+              "budget_s": 1.5,
+              "elapsed_s": 0.3639528751373291
+            },
+            "independent_min_gap": 0.9247808246938717,
+            "delta": 0.0,
+            "agrees": true,
+            "note": "only a unique valid completed dense scan is comparable; no deadline replay"
+          },
+          "restored_comparison": {
+            "recorded_event": null,
+            "independent_min_gap": null,
+            "delta": null,
+            "agrees": null,
+            "note": "only a unique valid completed dense scan is comparable; no deadline replay"
+          },
+          "restart_begin": null,
+          "restart_end": null,
+          "restart_status": "unknown",
+          "canonical_x_recorded": false,
+          "canonical_status_certified": false,
+          "independent_pre_gap": 0.9247808246938717,
+          "independent_post_gap": null,
+          "independent_canonical_gap_delta": null,
+          "independent_pre_physical": 1.0247808246938717,
+          "independent_post_physical": null,
+          "independent_post_K8_gap": null,
+          "fixed_boundary_obstructions": [],
+          "failure_explanation": null,
+          "frame": {
+            "now": 1007.178489779,
+            "snapshot": "snapshots/938982c5874e7b80.json",
+            "snapshot_payload_hash": "938982c5874e7b80",
+            "hash_algorithm": "fnv1a64_json"
+          },
+          "recorded_native_qualified": true,
+          "actual_latest_candidates": [
+            {
+              "file": "delivery_diagnostics/candidates/12227_2.json",
+              "sha256": "84785c3a90d9b76a9d57ce4d3fbd5e80c9bd31fdeaa5558e79d640554e9bf33c",
+              "schema": "delivery_candidate_v1",
+              "pid": 12227,
+              "request_id": 1,
+              "scope_id": 1,
+              "finished": true,
+              "recorded_accepted": true,
+              "online_accept": null,
+              "failure": null,
+              "hard_gate_state": "accepted"
+            }
+          ],
+          "latest_hard_accepted": 1
+        },
+        {
+          "file": "clearance_recovery/12227_3.json",
+          "sha256": "27b9720abb617f2fbf229752a714b8dd18fedc1e51e17f1556582e66bee8e6ab",
+          "pid": 12227,
+          "request_id": 3,
+          "scope_id": 3,
+          "enabled": true,
+          "outcome": "restored_static_margin_not_feasible",
+          "errors": [],
+          "identity_certified": true,
+          "identity_proof": "filename_pid+unique_request+exact_coupling_scope_id",
+          "phases": [
+            {
+              "phase": "nominal",
+              "state_kind": "nominal_or_other",
+              "error": null,
+              "sampling": {
+                "dense": {
+                  "valid": true,
+                  "samples": 1197,
+                  "counts": {
+                    "margin_only": 239,
+                    "safe": 958
+                  },
+                  "min_gap": -0.06425647465738002,
+                  "min_physical": 0.035743525342619986,
+                  "worst": {
+                    "part": 0,
+                    "piece": 0,
+                    "sample": 178,
+                    "q": 3.5593644338293093,
+                    "local_t": 3.5593644338293093,
+                    "t": 3.5593644338293093,
+                    "query_time": 1018.5385609928293,
+                    "x": 1.1134552572677694,
+                    "y": -0.22996356599334156,
+                    "vx": 0.01794416794856535,
+                    "vy": -0.1714635588673634,
+                    "speed": 0.1723999570267583,
+                    "yaw": -1.466522943006629,
+                    "gear": 1,
+                    "category": "margin_only",
+                    "reason": "geometric_clearance",
+                    "physical": 0.035743525342619986,
+                    "gap": -0.06425647465738002,
+                    "body_index": 2,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1014.979196559,
+                      "x": 0.9761507782074503,
+                      "y": -0.011699092922518337,
+                      "vx": 0.04975400177092989,
+                      "vy": 0.004953716562168837,
+                      "speed": 0.05,
+                      "yaw": 0.09923713241241536,
+                      "gear": 1,
+                      "category": "margin_only",
+                      "reason": "geometric_clearance",
+                      "physical": 0.09924504205909679,
+                      "gap": -0.000754957940903217,
+                      "body_index": 1,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 4,
+                      "sample": 1196,
+                      "q": 23.915729566628393,
+                      "local_t": 4.777431526922048,
+                      "t": 23.915729566628393,
+                      "query_time": 1038.8949261256284,
+                      "x": 2.9999999999999973,
+                      "y": 1.1379786002407855e-15,
+                      "vx": 0.049999999999998435,
+                      "vy": 8.604228440844963e-16,
+                      "speed": 0.049999999999998435,
+                      "yaw": 1.7208456881690466e-14,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.5247808246938673,
+                      "gap": 0.42478082469386735,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    }
+                  }
+                },
+                "K8": {
+                  "valid": true,
+                  "samples": 45,
+                  "counts": {
+                    "margin_only": 8,
+                    "safe": 37
+                  },
+                  "min_gap": -0.06270627285976918,
+                  "min_physical": 0.037293727140230826,
+                  "worst": {
+                    "part": 0,
+                    "piece": 0,
+                    "sample": 6,
+                    "q": 3.725617930509075,
+                    "local_t": 3.725617930509075,
+                    "t": 3.725617930509075,
+                    "query_time": 1018.7048144895091,
+                    "x": 1.116288621992521,
+                    "y": -0.25913401801403324,
+                    "vx": 0.01617631532988374,
+                    "vy": -0.17924826405743866,
+                    "speed": 0.179976702229086,
+                    "yaw": -1.4807948180267416,
+                    "gear": 1,
+                    "category": "margin_only",
+                    "reason": "geometric_clearance",
+                    "physical": 0.037293727140230826,
+                    "gap": -0.06270627285976918,
+                    "body_index": 2,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1014.979196559,
+                      "x": 0.9761507782074503,
+                      "y": -0.011699092922518337,
+                      "vx": 0.04975400177092989,
+                      "vy": 0.004953716562168837,
+                      "speed": 0.05,
+                      "yaw": 0.09923713241241536,
+                      "gear": 1,
+                      "category": "margin_only",
+                      "reason": "geometric_clearance",
+                      "physical": 0.09924504205909679,
+                      "gap": -0.000754957940903217,
+                      "body_index": 1,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 4,
+                      "sample": 44,
+                      "q": 23.915729566628393,
+                      "local_t": 4.777431526922049,
+                      "t": 23.915729566628393,
+                      "query_time": 1038.8949261256284,
+                      "x": 2.999999999999998,
+                      "y": 1.2490009027033011e-15,
+                      "vx": 0.04999999999999835,
+                      "vy": 9.71445146547012e-16,
+                      "speed": 0.04999999999999835,
+                      "yaw": 1.942890293094088e-14,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.5247808246938688,
+                      "gap": 0.4247808246938688,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    }
+                  }
+                }
+              },
+              "snapshot_fresh": true,
+              "boundary_feasibility": {
+                "initial": false,
+                "final": true
+              }
+            },
+            {
+              "phase": "restored_canonical_x",
+              "state_kind": "canonical_x",
+              "error": null,
+              "sampling": {
+                "dense": {
+                  "valid": true,
+                  "samples": 1198,
+                  "counts": {
+                    "margin_only": 234,
+                    "safe": 964
+                  },
+                  "min_gap": -0.05590353840599202,
+                  "min_physical": 0.044096461594007985,
+                  "worst": {
+                    "part": 0,
+                    "piece": 0,
+                    "sample": 180,
+                    "q": 3.598673099141609,
+                    "local_t": 3.598673099141609,
+                    "t": 3.598673099141609,
+                    "query_time": 1018.5778696581416,
+                    "x": 1.1039478524920383,
+                    "y": -0.23174752898818565,
+                    "vx": 0.01094603936008906,
+                    "vy": -0.1701735125941587,
+                    "speed": 0.1705251892428415,
+                    "yaw": -1.5065620025377948,
+                    "gear": 1,
+                    "category": "margin_only",
+                    "reason": "geometric_clearance",
+                    "physical": 0.044096461594007985,
+                    "gap": -0.05590353840599202,
+                    "body_index": 2,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1014.979196559,
+                      "x": 0.9761507782074503,
+                      "y": -0.011699092922518337,
+                      "vx": 0.04975400177092989,
+                      "vy": 0.004953716562168837,
+                      "speed": 0.05,
+                      "yaw": 0.09923713241241536,
+                      "gear": 1,
+                      "category": "margin_only",
+                      "reason": "geometric_clearance",
+                      "physical": 0.09924504205909679,
+                      "gap": -0.000754957940903217,
+                      "body_index": 1,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 4,
+                      "sample": 1197,
+                      "q": 23.931176109291698,
+                      "local_t": 4.777480263248192,
+                      "t": 23.931176109291698,
+                      "query_time": 1038.9103726682918,
+                      "x": 2.999999999999998,
+                      "y": -2.7200464103316335e-15,
+                      "vx": 0.049999999999998795,
+                      "vy": -1.1657341758564144e-15,
+                      "speed": 0.049999999999998795,
+                      "yaw": -2.331468351712885e-14,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.5247808246938688,
+                      "gap": 0.4247808246938688,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    }
+                  }
+                },
+                "K8": {
+                  "valid": true,
+                  "samples": 45,
+                  "counts": {
+                    "margin_only": 8,
+                    "safe": 37
+                  },
+                  "min_gap": -0.053670359352602975,
+                  "min_physical": 0.04632964064739703,
+                  "worst": {
+                    "part": 0,
+                    "piece": 0,
+                    "sample": 2,
+                    "q": 1.2468092816066818,
+                    "local_t": 1.2468092816066818,
+                    "t": 1.2468092816066818,
+                    "query_time": 1016.2260058406067,
+                    "x": 1.0366419393458204,
+                    "y": -0.013177547296754044,
+                    "vx": 0.04523477806725046,
+                    "vy": -0.017234301017819628,
+                    "speed": 0.04840667596898409,
+                    "yaw": -0.3640176553995709,
+                    "gear": 1,
+                    "category": "margin_only",
+                    "reason": "geometric_clearance",
+                    "physical": 0.04632964064739703,
+                    "gap": -0.053670359352602975,
+                    "body_index": 1,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1014.979196559,
+                      "x": 0.9761507782074503,
+                      "y": -0.011699092922518337,
+                      "vx": 0.04975400177092989,
+                      "vy": 0.004953716562168837,
+                      "speed": 0.05,
+                      "yaw": 0.09923713241241536,
+                      "gear": 1,
+                      "category": "margin_only",
+                      "reason": "geometric_clearance",
+                      "physical": 0.09924504205909679,
+                      "gap": -0.000754957940903217,
+                      "body_index": 1,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 4,
+                      "sample": 44,
+                      "q": 23.931176109291698,
+                      "local_t": 4.777480263248194,
+                      "t": 23.931176109291698,
+                      "query_time": 1038.9103726682918,
+                      "x": 2.999999999999998,
+                      "y": -2.7200464103316335e-15,
+                      "vx": 0.04999999999999874,
+                      "vy": -1.1379786002407855e-15,
+                      "speed": 0.04999999999999874,
+                      "yaw": -2.2759572004816283e-14,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.5247808246938688,
+                      "gap": 0.4247808246938688,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    }
+                  }
+                }
+              },
+              "snapshot_fresh": true,
+              "boundary_feasibility": {
+                "initial": false,
+                "final": true
+              }
+            }
+          ],
+          "nominal_comparison": {
+            "recorded_event": {
+              "event": "clearance_nominal",
+              "mono": 1842.244078427,
+              "sim": 1015.567062582,
+              "pid": 12227,
+              "request_id": 3,
+              "enabled": 1,
+              "valid": true,
+              "reason": "ok",
+              "min_physical": 0.035743525342619986,
+              "min_gap": -0.06425647465738002,
+              "samples": 1197,
+              "budget_s": 0.6,
+              "elapsed_s": 0.4384775161743164
+            },
+            "independent_min_gap": -0.06425647465738002,
+            "delta": 0.0,
+            "agrees": true,
+            "note": "only a unique valid completed dense scan is comparable; no deadline replay"
+          },
+          "restored_comparison": {
+            "recorded_event": {
+              "event": "clearance_restored",
+              "mono": 1842.370898766,
+              "sim": 1015.711222478,
+              "pid": 12227,
+              "request_id": 3,
+              "enabled": 1,
+              "valid": true,
+              "reason": "ok",
+              "min_physical": 0.04409646159400804,
+              "min_gap": -0.055903538405991965,
+              "samples": 1198,
+              "budget_s": 0.6,
+              "elapsed_s": 0.565298318862915
+            },
+            "independent_min_gap": -0.05590353840599202,
+            "delta": -5.551115123125783e-17,
+            "agrees": true,
+            "note": "only a unique valid completed dense scan is comparable; no deadline replay"
+          },
+          "restart_begin": {
+            "event": "clearance_restart_begin",
+            "mono": 1842.244201791,
+            "sim": 1015.567062582,
+            "pid": 12227,
+            "request_id": 3,
+            "rho": 100000,
+            "constraints": 135,
+            "remaining_s": 0.1614492893218994,
+            "validation_reserve_s": 0.04
+          },
+          "restart_end": {
+            "event": "clearance_restart_end",
+            "mono": 1842.364494307,
+            "sim": 1015.691133938,
+            "pid": 12227,
+            "request_id": 3,
+            "lbfgs_result": 1,
+            "force_stop": 0,
+            "wall_ms": 120.31722068786621,
+            "rejected_trials": 0,
+            "accepted_steps_after_rejection": 0
+          },
+          "restart_status": "nonnegative_no_forced_stop",
+          "canonical_x_recorded": true,
+          "canonical_status_certified": true,
+          "independent_pre_gap": -0.06425647465738002,
+          "independent_post_gap": -0.05590353840599202,
+          "independent_canonical_gap_delta": 0.008352936251387999,
+          "independent_pre_physical": 0.035743525342619986,
+          "independent_post_physical": 0.044096461594007985,
+          "independent_post_K8_gap": -0.053670359352602975,
+          "fixed_boundary_obstructions": [
+            {
+              "endpoint": "initial",
+              "unchanged_pv_max_abs_delta": 0.0,
+              "sample": {
+                "part": 0,
+                "piece": 0,
+                "sample": 0,
+                "q": 0.0,
+                "local_t": 0.0,
+                "t": 0.0,
+                "query_time": 1014.979196559,
+                "x": 0.9761507782074503,
+                "y": -0.011699092922518337,
+                "vx": 0.04975400177092989,
+                "vy": 0.004953716562168837,
+                "speed": 0.05,
+                "yaw": 0.09923713241241536,
+                "gear": 1,
+                "category": "margin_only",
+                "reason": "geometric_clearance",
+                "physical": 0.09924504205909679,
+                "gap": -0.000754957940903217,
+                "body_index": 1,
+                "obstacle_index": null
+              },
+              "inference": "first/last request p,v are fixed in this optimizer topology; this violated endpoint cannot be moved by interior variables"
+            }
+          ],
+          "failure_explanation": "K8 配点仍违反静态 margin，不只是配点之间的漏检。 固定请求边界存在前后不变的违反节点；仅调整内部变量无法消除此边界违反（基于拓扑的推断）。",
+          "frame": {
+            "now": 1014.979196559,
+            "snapshot": "snapshots/1361f8994eb9e93e.json",
+            "snapshot_payload_hash": "1361f8994eb9e93e",
+            "hash_algorithm": "fnv1a64_json"
+          },
+          "recorded_native_qualified": false,
+          "actual_latest_candidates": [],
+          "latest_hard_accepted": 0
+        },
+        {
+          "file": "clearance_recovery/12227_4.json",
+          "sha256": "66e9d326c5099eb4736aac552425bc94df18a6a2818b3239f5d74214eea01ca3",
+          "pid": 12227,
+          "request_id": 6,
+          "scope_id": 6,
+          "enabled": true,
+          "outcome": "native_qualified_pending_latest_gate",
+          "errors": [],
+          "identity_certified": true,
+          "identity_proof": "filename_pid+unique_request+exact_coupling_scope_id",
+          "phases": [
+            {
+              "phase": "nominal",
+              "state_kind": "nominal_or_other",
+              "error": null,
+              "sampling": {
+                "dense": {
+                  "valid": true,
+                  "samples": 683,
+                  "counts": {
+                    "safe": 683
+                  },
+                  "min_gap": 0.009999759026009886,
+                  "min_physical": 0.10999975902600989,
+                  "worst": {
+                    "part": 0,
+                    "piece": 1,
+                    "sample": 344,
+                    "q": 6.872982052472609,
+                    "local_t": 3.3446311957131685,
+                    "t": 6.872982052472609,
+                    "query_time": 1026.8473341384727,
+                    "x": 2.13024691104903,
+                    "y": 0.6625781540631502,
+                    "vx": 0.17704373115202338,
+                    "vy": -0.08127984818977978,
+                    "speed": 0.19480989826490744,
+                    "yaw": -0.43039133470887986,
+                    "gear": 1,
+                    "category": "safe",
+                    "reason": "geometric_clearance",
+                    "physical": 0.10999975902600989,
+                    "gap": 0.009999759026009886,
+                    "body_index": 2,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1019.974352086,
+                      "x": 1.1137360246043946,
+                      "y": 0.4722768085351819,
+                      "vx": 0.08935848515359193,
+                      "vy": 0.1502174404154264,
+                      "speed": 0.17478620733314998,
+                      "yaw": 1.0341641287716488,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.16237672686290494,
+                      "gap": 0.062376726862904935,
+                      "body_index": 2,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 3,
+                      "sample": 682,
+                      "q": 13.626086511006742,
+                      "local_t": 3.4123312944214934,
+                      "t": 13.626086511006742,
+                      "query_time": 1033.6004385970066,
+                      "x": 2.9999999999999982,
+                      "y": 1.1379786002407855e-15,
+                      "vx": 0.04999999999999952,
+                      "vy": -8.326672684688674e-17,
+                      "speed": 0.04999999999999952,
+                      "yaw": -1.665334536937751e-15,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.5247808246938688,
+                      "gap": 0.4247808246938688,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    }
+                  }
+                },
+                "K8": {
+                  "valid": true,
+                  "samples": 36,
+                  "counts": {
+                    "safe": 36
+                  },
+                  "min_gap": 0.010123450770066461,
+                  "min_physical": 0.11012345077006647,
+                  "worst": {
+                    "part": 0,
+                    "piece": 2,
+                    "sample": 18,
+                    "q": 6.891607574191872,
+                    "local_t": 0.0,
+                    "t": 6.891607574191872,
+                    "query_time": 1026.8659596601917,
+                    "x": 2.133540333594646,
+                    "y": 0.6610593609679192,
+                    "vx": 0.17660261247317033,
+                    "vy": -0.08180810930451146,
+                    "speed": 0.19463054611321337,
+                    "yaw": -0.433803608583001,
+                    "gear": 1,
+                    "category": "safe",
+                    "reason": "geometric_clearance",
+                    "physical": 0.11012345077006647,
+                    "gap": 0.010123450770066461,
+                    "body_index": 2,
+                    "obstacle_index": null
+                  },
+                  "fixed_request_boundaries": {
+                    "initial": {
+                      "part": 0,
+                      "piece": 0,
+                      "sample": 0,
+                      "q": 0.0,
+                      "local_t": 0.0,
+                      "t": 0.0,
+                      "query_time": 1019.974352086,
+                      "x": 1.1137360246043946,
+                      "y": 0.4722768085351819,
+                      "vx": 0.08935848515359193,
+                      "vy": 0.1502174404154264,
+                      "speed": 0.17478620733314998,
+                      "yaw": 1.0341641287716488,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.16237672686290494,
+                      "gap": 0.062376726862904935,
+                      "body_index": 2,
+                      "obstacle_index": null
+                    },
+                    "final": {
+                      "part": 0,
+                      "piece": 3,
+                      "sample": 35,
+                      "q": 13.626086511006742,
+                      "local_t": 3.412331294421494,
+                      "t": 13.626086511006742,
+                      "query_time": 1033.6004385970066,
+                      "x": 2.9999999999999987,
+                      "y": 1.2351231148954867e-15,
+                      "vx": 0.04999999999999946,
+                      "vy": 0.0,
+                      "speed": 0.04999999999999946,
+                      "yaw": 0.0,
+                      "gear": 1,
+                      "category": "safe",
+                      "reason": "geometric_clearance",
+                      "physical": 0.5247808246938688,
+                      "gap": 0.4247808246938688,
+                      "body_index": 0,
+                      "obstacle_index": null
+                    }
+                  }
+                }
+              },
+              "snapshot_fresh": true,
+              "boundary_feasibility": {
+                "initial": true,
+                "final": true
+              }
+            }
+          ],
+          "nominal_comparison": {
+            "recorded_event": {
+              "event": "clearance_nominal",
+              "mono": 1847.234209443,
+              "sim": 1020.561225757,
+              "pid": 12227,
+              "request_id": 6,
+              "enabled": 1,
+              "valid": true,
+              "reason": "ok",
+              "min_physical": 0.10999975902600995,
+              "min_gap": 0.009999759026009941,
+              "samples": 683,
+              "budget_s": 0.6,
+              "elapsed_s": 0.4346129894256592
+            },
+            "independent_min_gap": 0.009999759026009886,
+            "delta": -5.551115123125783e-17,
+            "agrees": true,
+            "note": "only a unique valid completed dense scan is comparable; no deadline replay"
+          },
+          "restored_comparison": {
+            "recorded_event": null,
+            "independent_min_gap": null,
+            "delta": null,
+            "agrees": null,
+            "note": "only a unique valid completed dense scan is comparable; no deadline replay"
+          },
+          "restart_begin": null,
+          "restart_end": null,
+          "restart_status": "unknown",
+          "canonical_x_recorded": false,
+          "canonical_status_certified": false,
+          "independent_pre_gap": 0.009999759026009886,
+          "independent_post_gap": null,
+          "independent_canonical_gap_delta": null,
+          "independent_pre_physical": 0.10999975902600989,
+          "independent_post_physical": null,
+          "independent_post_K8_gap": null,
+          "fixed_boundary_obstructions": [],
+          "failure_explanation": null,
+          "frame": {
+            "now": 1019.974352086,
+            "snapshot": "snapshots/726717126455129f.json",
+            "snapshot_payload_hash": "726717126455129f",
+            "hash_algorithm": "fnv1a64_json"
+          },
+          "recorded_native_qualified": true,
+          "actual_latest_candidates": [
+            {
+              "file": "delivery_diagnostics/candidates/12227_5.json",
+              "sha256": "850d127f17b081f083e66123b75fcdaf2c7440eb0d2745d2df567391d9e2c25a",
+              "schema": "delivery_candidate_v1",
+              "pid": 12227,
+              "request_id": 6,
+              "scope_id": 6,
+              "finished": true,
+              "recorded_accepted": true,
+              "online_accept": null,
+              "failure": null,
+              "hard_gate_state": "accepted"
+            }
+          ],
+          "latest_hard_accepted": 1
+        }
+      ],
+      "actual_latest_candidates": [
+        {
+          "file": "delivery_diagnostics/candidates/12227_2.json",
+          "sha256": "84785c3a90d9b76a9d57ce4d3fbd5e80c9bd31fdeaa5558e79d640554e9bf33c",
+          "schema": "delivery_candidate_v1",
+          "pid": 12227,
+          "request_id": 1,
+          "scope_id": 1,
+          "finished": true,
+          "recorded_accepted": true,
+          "online_accept": null,
+          "failure": null,
+          "hard_gate_state": "accepted"
+        },
+        {
+          "file": "delivery_diagnostics/candidates/12227_5.json",
+          "sha256": "850d127f17b081f083e66123b75fcdaf2c7440eb0d2745d2df567391d9e2c25a",
+          "schema": "delivery_candidate_v1",
+          "pid": 12227,
+          "request_id": 6,
+          "scope_id": 6,
+          "finished": true,
+          "recorded_accepted": true,
+          "online_accept": null,
+          "failure": null,
+          "hard_gate_state": "accepted"
+        }
+      ],
+      "native_optimizer_success_flags": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "latest_candidate_error": null,
+      "ordinary_trace_solver_fields_scope": "nominal-only; never used to classify restart"
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "trial": "dynamic_four_B_seed02",
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/formal_key_01/dynamic_four_B_seed02",
+  "valid_experiment": true,
+  "errors": [],
+  "warnings": [
+    "wait(s) right-censored at log end; no duration silently imputed"
+  ],
+  "navigation_outcome": "goal",
+  "outcome_policy": "goal/collision/navigation timeout all retained; only setup, crash or contradicted interface invalidates",
+  "phase_integrity": {
+    "pass_integrity": true,
+    "errors": [],
+    "warnings": [
+      "wait(s) right-censored at log end; no duration silently imputed"
+    ],
+    "events": 279,
+    "requests": 21,
+    "closed_requests": 21,
+    "closed_stages": 35,
+    "closed_waits": 40,
+    "resource_links": 7,
+    "right_censored_requests": [],
+    "right_censored_stages": [],
+    "right_censored_waits": [
+      {
+        "event": "wait_begin",
+        "mono": 34488.472848373,
+        "sim": 1036.013650538,
+        "pid": 26432,
+        "request_id": 0,
+        "until_sim": 1036.743031293,
+        "wait_key": "cooperative_retry"
+      }
+    ],
+    "publications": 1,
+    "nesting": "strict native request/stage stack; stages are nested, never summed twice"
+  },
+  "reference_chain_integrity": {
+    "pass_integrity": true,
+    "errors": [],
+    "warnings": [],
+    "chains": [
+      {
+        "transaction_fnv64": "4146427925515111820",
+        "request_id": 1,
+        "publish_sim": 1007.745215877,
+        "observer_receipt": true,
+        "commit": true,
+        "consumption": true,
+        "reconstructed_transaction_fnv64": "4146427925515111820",
+        "reconstructed_transaction_sha256": "902997a34bf1abc1c0a6e765cf3593fab5089c89a9594cefdf1c1b1cd9006b4b",
+        "commit_revision": 1,
+        "consume_revision": 1,
+        "consume_sim": 1007.799115039,
+        "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+        "first_control_cycle": true
+      }
+    ],
+    "reporter_crosscheck": true,
+    "clock_note": "source ROS event times used; observer tail mono is never treated as MPPI receipt"
+  },
+  "native_coefficients_pass": true,
+  "native_reference_audit": {
+    "reference_contract_pass": true,
+    "closed_loop_reached": true,
+    "required_process_failed": false,
+    "failures": [],
+    "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+    "native_bundles": 1,
+    "consumed_versions": 1,
+    "live_kernel_calls": 569,
+    "stop_reasons": {
+      "perception_unhealthy": 32,
+      "native_hard_stop": 107,
+      "waiting_native_trajectory": 15,
+      "ok": 569
+    },
+    "trial_result": {
+      "reason": "goal",
+      "goal_sent": 7.001211048998812,
+      "motion_anchor": 8.752106089996232,
+      "scenario_start": "motion",
+      "trajectory_bundles": 1,
+      "min_clearance": 0.3211825298414971,
+      "collision_conservative_projection": false,
+      "arm_max_error": 0.0,
+      "final_state": [
+        2.993354942226136,
+        -0.0002486000140463926,
+        -0.02035848013237349,
+        0.0035355876802740014,
+        0.03204266495637292
+      ],
+      "elapsed": 36.19704193499638,
+      "scene": "dynamic_four",
+      "scope": "native ROS algorithm SIL, not Gazebo/real vehicle"
+    },
+    "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+  },
+  "advisory_freeze": {
+    "valid_same_reference_advisory_zero_cycles": 532,
+    "mppi_nonzero_command_cycles": 522,
+    "also_measured_nonzero_motion_cycles": 519,
+    "examples": [
+      {
+        "sim": 1009.643383857,
+        "reference_revision": 1,
+        "native_virtual_time": 1.6326716077284145,
+        "v": 0.19306361182840182,
+        "w": -0.1111790468376243,
+        "reason": "ok"
+      },
+      {
+        "sim": 1009.703673438,
+        "reference_revision": 1,
+        "native_virtual_time": 1.6326716077284145,
+        "v": 0.1953237424359774,
+        "w": -0.10736300651854985,
+        "reason": "ok"
+      },
+      {
+        "sim": 1009.744158171,
+        "reference_revision": 1,
+        "native_virtual_time": 1.6326716077284145,
+        "v": 0.19742429811707665,
+        "w": -0.10702193638151197,
+        "reason": "ok"
+      },
+      {
+        "sim": 1009.804479113,
+        "reference_revision": 1,
+        "native_virtual_time": 1.6326716077284145,
+        "v": 0.19955903841441713,
+        "w": -0.1053230301324122,
+        "reason": "ok"
+      }
+    ],
+    "interpretation": "advisory controller-clock hold is not MPPI stop; commands are separate from measured motion",
+    "matching": "exact consumed revision/hash and same native start stamp; latest advisory and odom age <0.2s",
+    "nonzero_thresholds": {
+      "abs_v_m_s": 0.02,
+      "abs_w_rad_s": 0.04
+    }
+  },
+  "solver_outcomes": {
+    "ok": 1,
+    "budget_timeout": 4,
+    "left_wheel_acceleration": 1,
+    "left_wheel_speed": 1
+  },
+  "inputs_sha256": {
+    "manifest.json": "4ec20de7d33060e9ca2733c9c6767cbff74c7a26cbc731676fc6432f491cb634",
+    "run_status.json": "5d8648501612370771722fa8af18ef8da56998854ebc35d2a4d637ab54f296e8",
+    "publisher_audit.json": "b98c0eb8b6324964990d792dd0339bd1300aea41889c8900a2e3fa788a27c9e5",
+    "dual_timeline.jsonl": "0bb228cfbe82551b1a355fdcc636f17e6586591db2e4e24fc471b5ded849a503",
+    "observer_events.jsonl": "373c2809fd5ee77d86fea21b1860287be9a11b7be49590ac02f0b02bc83f4df2",
+    "solver_trace.jsonl": "0f86097e3acc0b3bf46d6834d38d21f142399fe0cee8fee8f0cae67600574965",
+    "failure_trace.jsonl": "3a98672ffc50e0fa5985ba480471bbf3ab4c7455e52d2762cc261c25aac2ca47",
+    "trajectories.json": "99e6c83e49746879e5cc4f09d8f26dfe090b14970f1be12738a867ad22688755",
+    "consumed_references.jsonl": "99a841b548b37a1e018d07d6212acef1535fa0faaef614cd6535b876ead39fd8",
+    "reference_events.jsonl": "a9c0e135d351a8cc479ee22e27a0030d10db0f59d1a789474accaf7e75af182b",
+    "mppi_diagnostics.json": "e978b6a9cf57b28b5631fa6f031b85f0d970eadca61587a5b5b8757dc29a145a"
+  }
+}

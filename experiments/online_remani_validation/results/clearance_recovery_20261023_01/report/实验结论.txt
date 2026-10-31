@@ -1,0 +1,24 @@
+静态净空恢复诊断：求解器状态重放，不是发布参考
+
+OFF：结果=goal，保守投影碰撞=False，审计有效=True
+重启 begin/end=0/0，预算跳过=0，状态={}；canonical=0，记录原生资格=2，latest 硬门接受/拒绝=2/0
+
+ON：结果=goal，保守投影碰撞=False，审计有效=True
+重启 begin/end=1/1，预算跳过=0，状态={"nonnegative_no_forced_stop": 1}；canonical=1，记录原生资格=2，latest 硬门接受/拒绝=2/0
+请求3：dense gap 前/后=-0.06425647465738002/-0.05590353840599202 m，K8 后=-0.053670359352602975 m，重启=nonnegative_no_forced_stop；latest 接受=0
+K8 配点仍违反静态 margin，不只是配点之间的漏检。 固定请求边界存在前后不变的违反节点；仅调整内部变量无法消除此边界违反（基于拓扑的推断）。
+nominal：初/末边界 gap=-0.000754957940903217/0.42478082469386735 m；边界几何可行={'initial': False, 'final': True}。
+restored_canonical_x：初/末边界 gap=-0.000754957940903217/0.4247808246938688 m；边界几何可行={'initial': False, 'final': True}。
+canonical dense 最差样本：t=3.598673099141609 s，block=0，piece=0，body=2。
+canonical 最小物理净空=0.044096461594007985 m；正物理净空仍可能不满足 0.10m margin。
+
+解释边界：
+静态单 seed 诊断；新增捕获 I/O，不能证明速度或动态安全改善。
+OFF/ON 都包含域回退、终止负状态 fail-closed、额外扫描及原始 deadline 门；旧批次不是精确对照。
+重建的是求解器状态，不是发布参考；failed_last_evaluated_trial_NOT_canonical_x 永不作为恢复后的 canonical 状态。
+K8 是逐 piece 配点；dense 是逐 block 的 0.02s 扫描。只重放同一冻结场景下的全体 body 圆盘，不调用优化器或动态预测。
+几何重放不等于完整原生校验；deadline、快照新鲜度、轮速和 latest 硬门分别保留。
+普通 solver/failure trace 的 L-BFGS/force_stop/final_cost 是 nominal-only；重启状态仅取 clearance_restart_end，force_stop 优先。
+源码中 result=1 (LBFGS_STOP) 是相对代价停止，不代表硬约束满足，也不能单凭此声称梯度收敛；它不是失败原因的唯一因果证明。
+固定边界可行性结论只适用于本次记录请求，不解释旧批次所有拒绝；margin 违反与物理碰撞不同。
+缺失或格式错误保留 null；没有 canonical after 时不计算改善，不把缺失 after 当成安全或零净空。
