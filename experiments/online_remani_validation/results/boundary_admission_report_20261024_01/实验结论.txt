@@ -1,0 +1,33 @@
+Actual-fixed边界准入：两seed静态A/B（描述性）
+逐seed描述实际fixed预检、延期、求解与含等待的新guide接入；不把defer算成功，不以不同闭环请求宣称因果改善。
+
+seed=11 OFF: static_coupled_seed11_admission_off
+全部请求=4；eligible/would_defer/deferred=0/0/0；backend求解=3；成功请求=2；defer合同违规=0
+scene appearance→新ref实际kernel entry=4.255624821999618秒；右删失=False；删失下界=未知（等待不扣除）
+world结果=goal；导航elapsed=36.05235482799981；保守碰撞=False；零命令reason={"perception_unhealthy": 35, "native_hard_stop": 103, "waiting_native_trajectory": 16, "local_validation_failed": 3, "no_feasible_candidate": 16, "deadline_miss": 15, "ok": 3}
+
+seed=11 ON: static_coupled_seed11_admission_on
+全部请求=8；eligible/would_defer/deferred=1/1/1；backend求解=5；成功请求=2；defer合同违规=0
+scene appearance→新ref实际kernel entry=9.50318183800016秒；右删失=False；删失下界=未知（等待不扣除）
+world结果=goal；导航elapsed=37.42317587300022；保守碰撞=False；零命令reason={"native_hard_stop": 108, "perception_unhealthy": 33, "waiting_native_trajectory": 17, "no_feasible_candidate": 17, "local_validation_failed": 4, "deadline_miss": 36, "ok": 1}
+
+seed=12 OFF: static_coupled_seed12_admission_off
+全部请求=6；eligible/would_defer/deferred=1/1/0；backend求解=4；成功请求=2；defer合同违规=0
+scene appearance→新ref实际kernel entry=6.9119597129999875秒；右删失=False；删失下界=未知（等待不扣除）
+world结果=goal；导航elapsed=35.77769129199896；保守碰撞=False；零命令reason={"perception_unhealthy": 33, "native_hard_stop": 105, "waiting_native_trajectory": 17, "local_validation_failed": 4, "no_feasible_candidate": 16, "deadline_miss": 10}
+
+seed=12 ON: static_coupled_seed12_admission_on
+全部请求=5；eligible/would_defer/deferred=0/0/0；backend求解=4；成功请求=2；defer合同违规=0
+scene appearance→新ref实际kernel entry=5.365677377999759秒；右删失=False；删失下界=未知（等待不扣除）
+world结果=goal；导航elapsed=35.32659955300005；保守碰撞=False；零命令reason={"perception_unhealthy": 50, "native_hard_stop": 86, "waiting_native_trajectory": 19, "deadline_miss": 10, "local_validation_failed": 5, "no_feasible_candidate": 16}
+
+配对检查={"11": {"runtime_full_hash_equal": true, "build_identity_equal": true, "treatment_only_recorded_flag": true, "scope_checks_passed": true}, "12": {"runtime_full_hash_equal": true, "build_identity_equal": true, "treatment_only_recorded_flag": true, "scope_checks_passed": true}}
+
+解释边界：
+两个seed的静态闭环描述，不是同一完整输入的因果配对或统计性能证明；请求/前端历史可以不同。
+defer是已耗前端时间后的失败请求，不是求解成功；仅避免optimizer之后的工作，不扣除延期、重试或前端等待。
+field端点使用同一冻结投影距离场/磁盘并集，world导航结果来自仿真；二者不是相同物理口径或安全认证。
+沿用native strict gap < -1e-8拒绝规则；[-1e-8,0)是native_tolerance，不称先天不可交付。
+预检只证明outer冻结field下起点不满足margin；最终projectedCandidate会刷新latest field，哪怕静态场也会随点云更新。因此不能称每次defer都避免了一次必然失败，须按实际触发和端到端结果评价。
+端到端口径为静态scene obstacle appearance(result.motion_anchor+4)→首条其后发布新reference实际online_step入口；不是感知发布精确时刻。
+无更新时latency=null并保留删失下界；同步诊断I/O影响时序，所有等待均保留。

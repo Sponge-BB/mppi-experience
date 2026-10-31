@@ -1,0 +1,55 @@
+{
+  "created": "2026-10-27T06:53:48.761568+00:00",
+  "scope": "Prospective follow-up of the two cap-limited ordinal-1 cases.\n\nFresh captures, not exact repeats of the previous process/map state. All five\nwithin-capture arms use 1200 iterations; only the iteration computational cap\nchanges, never wheel/collision limits. Candidates are private and unpublished.\n",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/budget_scaling_20261027_01",
+  "build_manifest_sha256": "baff7ed8349883c16296774084b1512f3d13cce44763bbcfa2db97c5d10d2fdb",
+  "diagnostic_jobs": [
+    {
+      "seed": 11,
+      "ordinal": 1
+    },
+    {
+      "seed": 12,
+      "ordinal": 1
+    }
+  ],
+  "phases": [
+    "budget_original_060",
+    "budget_reference_060",
+    "budget_extended_300",
+    "budget_scaled_300",
+    "budget_repeat_060"
+  ],
+  "budgets_s": [
+    0.6,
+    0.6,
+    3.0,
+    3.0,
+    0.6
+  ],
+  "treatment_order": [
+    "original_stop",
+    "feasibility_stop",
+    "extended_budget",
+    "extended_budget_scaled",
+    "repeat_feasibility_stop"
+  ],
+  "source_sha256": "b6461bfc3994ae9bfb00f93ac02f4021ce76ca8292c2cd871ec38a95097b9196",
+  "parent_runner_sha256": "2af2e1e0c7a36a774b2b144a28ab4d50a2ec6f8c443a11bef7667474ba1040f2",
+  "optimizer_max_iterations": 1200,
+  "followup_reason": "prior ordinal-1 extended arms hit LBFGSERR_MAXIMUMITERATION at 300 accepted steps before 3 seconds",
+  "execution_weight": 0.0,
+  "handover_weight": 0.0,
+  "constraints_relaxed": false,
+  "no_outcome_selected_rerun": true,
+  "diagnostic_candidates_published": false,
+  "native_map_buffer_dumped": false,
+  "navigation_metrics_valid": false,
+  "primary_endpoint": "normal return and exact final native/projected validation before deadline",
+  "limitations": [
+    "Two prospective cap-mechanism captures, not a general success-rate estimate.",
+    "Both captures and all failures retained; previous batch is not overwritten.",
+    "All five arms share cap=1200. No same-input cap300-vs1200 causal contrast is claimed.",
+    "No robot/Gazebo/online publication, no relaxed physical constraints."
+  ]
+}
