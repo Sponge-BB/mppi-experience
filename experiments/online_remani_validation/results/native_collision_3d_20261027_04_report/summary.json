@@ -1,0 +1,430 @@
+{
+  "scope": "fixed-arm differential-drive isolated ROS numerical SIL; NOT Gazebo/hardware",
+  "sample_size": "one seed per scene/group; no statistical superiority claim",
+  "comparison": "same instrumented child binary OFF/ON; NOT pure REMANI-only vs MPPI",
+  "no_motion_note": "No motion means the motion-triggered actors did not appear; this is a realtime readiness failure, not a successful avoidance trial.",
+  "diagnostics_note": "Inherited state/trajectory diagnostic capture and common raw snapshot recording remain enabled. Timing is instrumented, not an uninstrumented benchmark.",
+  "geometry_note": "Native 3-D sampled robot geometry/hard thresholds and spatial cubic soft cost adapted; native dynamic swept overlay vs fast CV-time predictions are not a proof of full spatiotemporal feasible-set equivalence.",
+  "source_plan_sha256": "b05464de9ef6cc63bc418e8f6143e45a97cce1b7107bee2ba733e8a603e07c6c",
+  "reporter_sha256": "d7451299f3154532045d344dcb8815452c7232b6512086f5dae90909cd973526",
+  "trials": [
+    {
+      "scene": "static",
+      "group": "control",
+      "termination": "goal",
+      "reached_goal": true,
+      "started_moving": true,
+      "actor_scene_triggered": true,
+      "goal_to_end_s": 28.9211811210007,
+      "path_length_m": 3.873866822403772,
+      "goal_error_m": 0.018043024290732155,
+      "trajectory_bundles": 2,
+      "native3d_physical_sample_collision": false,
+      "native3d_min_sample_gap_m": 0.29301271264653633,
+      "kernel_samples": 558,
+      "kernel_p50_ms": 21.248622,
+      "kernel_p95_ms": 42.525270750000004,
+      "callback_p95_ms": 47.298636200230234,
+      "deadline_miss_count": 23,
+      "reasons": {
+        "waiting_native_trajectory": 16,
+        "ok": 516,
+        "local_validation_failed": 3,
+        "no_feasible_candidate": 16,
+        "deadline_miss": 23
+      },
+      "native_optimizer_outcomes": {
+        "ok": 3,
+        "budget_timeout": 1
+      },
+      "native_optimizer_samples": 4,
+      "native_optimizer_p50_ms": 535.8005645002777,
+      "native_optimizer_p95_ms": 600.0315694996061,
+      "native_refresh_latency": {
+        "actor_truth_appearance_sim_s": 12.803805437999472,
+        "actor_note": "first recorded simulator actor sample; NOT perception identification",
+        "first_native_blocked_sim_s": 12.974219005999998,
+        "first_refresh_trigger_sim_s": 12.974219005999998,
+        "first_refresh_publish_sim_s": 18.736144845000013,
+        "first_refresh_consume_sim_s": 18.75869752999995,
+        "first_refresh_control_sim_s": 18.75869752999995,
+        "appearance_to_first_native_blocked_sim_s": 0.17041356800052654,
+        "appearance_to_first_refresh_trigger_sim_s": 0.17041356800052654,
+        "appearance_to_first_refresh_publish_sim_s": 5.932339407000541,
+        "appearance_to_first_refresh_consume_sim_s": 5.9548920920004775,
+        "appearance_to_first_refresh_control_sim_s": 5.9548920920004775
+      },
+      "stop_analysis": {
+        "reason_duration_s": {
+          "ok": 24.749085939999418,
+          "local_validation_failed": 0.1413077479999174,
+          "no_feasible_candidate": 0.7836629739999807,
+          "deadline_miss": 1.4629381840003362
+        },
+        "zero_command_duration_s": {
+          "local_validation_failed": 0.1413077479999174,
+          "no_feasible_candidate": 0.7836629739999807,
+          "deadline_miss": 1.4629381840003362
+        },
+        "low_linear_command_duration_s": {
+          "local_validation_failed": 0.1413077479999174,
+          "no_feasible_candidate": 0.7836629739999807,
+          "deadline_miss": 1.4629381840003362,
+          "ok": 2.132417422000003
+        },
+        "longest_both_zero_command_s": 1.0454987470000106,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation",
+        "measured_nearly_zero_motion_s": 0.5074874160000036,
+        "measured_thresholds": {
+          "v_abs_m_s": 0.01,
+          "w_abs_rad_s": 0.03
+        },
+        "native_clock_freeze_used_as_stop_evidence": false
+      },
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/native_collision_3d_20261027_04/static_control_seed11",
+      "interface_audit_valid": true,
+      "production_unchanged": true
+    },
+    {
+      "scene": "static",
+      "group": "native3d",
+      "termination": "timeout",
+      "reached_goal": false,
+      "started_moving": false,
+      "actor_scene_triggered": false,
+      "goal_to_end_s": 55.01232542999969,
+      "path_length_m": 0.0,
+      "goal_error_m": 3.0,
+      "trajectory_bundles": 1,
+      "native3d_physical_sample_collision": false,
+      "native3d_min_sample_gap_m": 1.2325774396290916,
+      "kernel_samples": 627,
+      "kernel_p50_ms": 71.495218,
+      "kernel_p95_ms": 85.39776339999996,
+      "callback_p95_ms": 93.2149025005856,
+      "deadline_miss_count": 627,
+      "reasons": {
+        "waiting_native_trajectory": 16,
+        "deadline_miss": 627
+      },
+      "native_optimizer_outcomes": {
+        "ok": 1
+      },
+      "native_optimizer_samples": 1,
+      "native_optimizer_p50_ms": 437.9745739988721,
+      "native_optimizer_p95_ms": 437.9745739988721,
+      "native_refresh_latency": {
+        "actor_truth_appearance_sim_s": null,
+        "actor_note": "first recorded simulator actor sample; NOT perception identification",
+        "first_native_blocked_sim_s": null,
+        "first_refresh_trigger_sim_s": null,
+        "first_refresh_publish_sim_s": null,
+        "first_refresh_consume_sim_s": null,
+        "first_refresh_control_sim_s": null
+      },
+      "stop_analysis": {
+        "reason_duration_s": {
+          "native_hard_stop": 0.02008382700068978,
+          "waiting_native_trajectory": 0.7989312680000467,
+          "deadline_miss": 54.193310334998955
+        },
+        "zero_command_duration_s": {
+          "native_hard_stop": 0.02008382700068978,
+          "waiting_native_trajectory": 0.7989312680000467,
+          "deadline_miss": 54.193310334998955
+        },
+        "low_linear_command_duration_s": {
+          "native_hard_stop": 0.02008382700068978,
+          "waiting_native_trajectory": 0.7989312680000467,
+          "deadline_miss": 54.193310334998955
+        },
+        "longest_both_zero_command_s": 55.01232542999969,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation",
+        "measured_nearly_zero_motion_s": 55.01232542999969,
+        "measured_thresholds": {
+          "v_abs_m_s": 0.01,
+          "w_abs_rad_s": 0.03
+        },
+        "native_clock_freeze_used_as_stop_evidence": false
+      },
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/native_collision_3d_20261027_04/static_native3d_seed11",
+      "interface_audit_valid": true,
+      "production_unchanged": true
+    },
+    {
+      "scene": "crossing",
+      "group": "control",
+      "termination": "goal",
+      "reached_goal": true,
+      "started_moving": true,
+      "actor_scene_triggered": true,
+      "goal_to_end_s": 23.83646318400133,
+      "path_length_m": 3.290503574354161,
+      "goal_error_m": 0.004794821362506921,
+      "trajectory_bundles": 2,
+      "native3d_physical_sample_collision": false,
+      "native3d_min_sample_gap_m": 0.36670434683977576,
+      "kernel_samples": 459,
+      "kernel_p50_ms": 1.872996,
+      "kernel_p95_ms": 20.7756987,
+      "callback_p95_ms": 24.441024700354305,
+      "deadline_miss_count": 0,
+      "reasons": {
+        "waiting_native_trajectory": 17,
+        "ok": 459
+      },
+      "native_optimizer_outcomes": {
+        "ok": 2,
+        "budget_timeout": 3
+      },
+      "native_optimizer_samples": 5,
+      "native_optimizer_p50_ms": 601.2482360001741,
+      "native_optimizer_p95_ms": 717.4206096013222,
+      "native_refresh_latency": {
+        "actor_truth_appearance_sim_s": 9.902343780000592,
+        "actor_note": "first recorded simulator actor sample; NOT perception identification",
+        "first_native_blocked_sim_s": 14.853275421000035,
+        "first_refresh_trigger_sim_s": 14.853275421000035,
+        "first_refresh_publish_sim_s": 21.843640585999992,
+        "first_refresh_consume_sim_s": 21.88392482400002,
+        "first_refresh_control_sim_s": 21.88392482400002,
+        "appearance_to_first_native_blocked_sim_s": 4.950931640999443,
+        "appearance_to_first_refresh_trigger_sim_s": 4.950931640999443,
+        "appearance_to_first_refresh_publish_sim_s": 11.9412968059994,
+        "appearance_to_first_refresh_consume_sim_s": 11.981581043999427,
+        "appearance_to_first_refresh_control_sim_s": 11.981581043999427
+      },
+      "stop_analysis": {
+        "reason_duration_s": {
+          "ok": 21.966611325000486
+        },
+        "zero_command_duration_s": {},
+        "low_linear_command_duration_s": {
+          "ok": 1.4703374550005037
+        },
+        "longest_both_zero_command_s": 0.0,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation",
+        "measured_nearly_zero_motion_s": 0.2618492479996348,
+        "measured_thresholds": {
+          "v_abs_m_s": 0.01,
+          "w_abs_rad_s": 0.03
+        },
+        "native_clock_freeze_used_as_stop_evidence": false
+      },
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/native_collision_3d_20261027_04/crossing_control_seed11",
+      "interface_audit_valid": true,
+      "production_unchanged": true
+    },
+    {
+      "scene": "crossing",
+      "group": "native3d",
+      "termination": "timeout",
+      "reached_goal": false,
+      "started_moving": false,
+      "actor_scene_triggered": false,
+      "goal_to_end_s": 55.00814668699968,
+      "path_length_m": 0.0,
+      "goal_error_m": 3.0,
+      "trajectory_bundles": 1,
+      "native3d_physical_sample_collision": false,
+      "native3d_min_sample_gap_m": 1.2325774396290916,
+      "kernel_samples": 630,
+      "kernel_p50_ms": 71.1329805,
+      "kernel_p95_ms": 83.9476997,
+      "callback_p95_ms": 92.4576023501686,
+      "deadline_miss_count": 630,
+      "reasons": {
+        "native_hard_stop": 1,
+        "waiting_native_trajectory": 15,
+        "deadline_miss": 630
+      },
+      "native_optimizer_outcomes": {
+        "ok": 1
+      },
+      "native_optimizer_samples": 1,
+      "native_optimizer_p50_ms": 431.41033699976106,
+      "native_optimizer_p95_ms": 431.41033699976106,
+      "native_refresh_latency": {
+        "actor_truth_appearance_sim_s": null,
+        "actor_note": "first recorded simulator actor sample; NOT perception identification",
+        "first_native_blocked_sim_s": null,
+        "first_refresh_trigger_sim_s": null,
+        "first_refresh_publish_sim_s": null,
+        "first_refresh_consume_sim_s": null,
+        "first_refresh_control_sim_s": null
+      },
+      "stop_analysis": {
+        "reason_duration_s": {
+          "native_hard_stop": 0.06091457900095065,
+          "waiting_native_trajectory": 0.7547093199999608,
+          "deadline_miss": 54.19252278799877
+        },
+        "zero_command_duration_s": {
+          "native_hard_stop": 0.06091457900095065,
+          "waiting_native_trajectory": 0.7547093199999608,
+          "deadline_miss": 54.19252278799877
+        },
+        "low_linear_command_duration_s": {
+          "native_hard_stop": 0.06091457900095065,
+          "waiting_native_trajectory": 0.7547093199999608,
+          "deadline_miss": 54.19252278799877
+        },
+        "longest_both_zero_command_s": 55.00814668699968,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation",
+        "measured_nearly_zero_motion_s": 55.00814668699968,
+        "measured_thresholds": {
+          "v_abs_m_s": 0.01,
+          "w_abs_rad_s": 0.03
+        },
+        "native_clock_freeze_used_as_stop_evidence": false
+      },
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/native_collision_3d_20261027_04/crossing_native3d_seed11",
+      "interface_audit_valid": true,
+      "production_unchanged": true
+    },
+    {
+      "scene": "dynamic_head_on_center",
+      "group": "control",
+      "termination": "goal",
+      "reached_goal": true,
+      "started_moving": true,
+      "actor_scene_triggered": true,
+      "goal_to_end_s": 27.44037394299994,
+      "path_length_m": 3.8913928704574388,
+      "goal_error_m": 0.00750503521627268,
+      "trajectory_bundles": 2,
+      "native3d_physical_sample_collision": false,
+      "native3d_min_sample_gap_m": 0.30132336192635656,
+      "kernel_samples": 530,
+      "kernel_p50_ms": 2.4921860000000002,
+      "kernel_p95_ms": 22.7374968,
+      "callback_p95_ms": 28.053287950297047,
+      "deadline_miss_count": 1,
+      "reasons": {
+        "waiting_native_trajectory": 19,
+        "ok": 529,
+        "deadline_miss": 1
+      },
+      "native_optimizer_outcomes": {
+        "ok": 2,
+        "budget_timeout": 2
+      },
+      "native_optimizer_samples": 4,
+      "native_optimizer_p50_ms": 529.8392460008472,
+      "native_optimizer_p95_ms": 610.6041609508793,
+      "native_refresh_latency": {
+        "actor_truth_appearance_sim_s": 10.901236624000376,
+        "actor_note": "first recorded simulator actor sample; NOT perception identification",
+        "first_native_blocked_sim_s": 22.87407418500004,
+        "first_refresh_trigger_sim_s": 22.87407418500004,
+        "first_refresh_publish_sim_s": 27.4798051570001,
+        "first_refresh_consume_sim_s": 27.502365745999896,
+        "first_refresh_control_sim_s": 27.502365745999896,
+        "appearance_to_first_native_blocked_sim_s": 11.972837560999665,
+        "appearance_to_first_refresh_trigger_sim_s": 11.972837560999665,
+        "appearance_to_first_refresh_publish_sim_s": 16.578568532999725,
+        "appearance_to_first_refresh_consume_sim_s": 16.60112912199952,
+        "appearance_to_first_refresh_control_sim_s": 16.60112912199952
+      },
+      "stop_analysis": {
+        "reason_duration_s": {
+          "ok": 25.501074555999026,
+          "deadline_miss": 0.04380509899999652
+        },
+        "zero_command_duration_s": {
+          "deadline_miss": 0.04380509899999652
+        },
+        "low_linear_command_duration_s": {
+          "deadline_miss": 0.04380509899999652,
+          "ok": 3.1075773130005473
+        },
+        "longest_both_zero_command_s": 0.04380509899999652,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation",
+        "measured_nearly_zero_motion_s": 0.428227598000376,
+        "measured_thresholds": {
+          "v_abs_m_s": 0.01,
+          "w_abs_rad_s": 0.03
+        },
+        "native_clock_freeze_used_as_stop_evidence": false
+      },
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/native_collision_3d_20261027_04/dynamic_head_on_center_control_seed11",
+      "interface_audit_valid": true,
+      "production_unchanged": true
+    },
+    {
+      "scene": "dynamic_head_on_center",
+      "group": "native3d",
+      "termination": "timeout",
+      "reached_goal": false,
+      "started_moving": false,
+      "actor_scene_triggered": false,
+      "goal_to_end_s": 55.020005595999464,
+      "path_length_m": 0.0,
+      "goal_error_m": 3.0,
+      "trajectory_bundles": 1,
+      "native3d_physical_sample_collision": false,
+      "native3d_min_sample_gap_m": 1.2325774396290916,
+      "kernel_samples": 629,
+      "kernel_p50_ms": 71.432184,
+      "kernel_p95_ms": 84.91351200000001,
+      "callback_p95_ms": 94.23915479928837,
+      "deadline_miss_count": 629,
+      "reasons": {
+        "waiting_native_trajectory": 14,
+        "deadline_miss": 629
+      },
+      "native_optimizer_outcomes": {
+        "ok": 1
+      },
+      "native_optimizer_samples": 1,
+      "native_optimizer_p50_ms": 434.48699100008525,
+      "native_optimizer_p95_ms": 434.48699100008525,
+      "native_refresh_latency": {
+        "actor_truth_appearance_sim_s": null,
+        "actor_note": "first recorded simulator actor sample; NOT perception identification",
+        "first_native_blocked_sim_s": null,
+        "first_refresh_trigger_sim_s": null,
+        "first_refresh_publish_sim_s": null,
+        "first_refresh_consume_sim_s": null,
+        "first_refresh_control_sim_s": null
+      },
+      "stop_analysis": {
+        "reason_duration_s": {
+          "waiting_native_trajectory": 0.7561946019989136,
+          "deadline_miss": 54.26381099400055
+        },
+        "zero_command_duration_s": {
+          "waiting_native_trajectory": 0.7561946019989136,
+          "deadline_miss": 54.26381099400055
+        },
+        "low_linear_command_duration_s": {
+          "waiting_native_trajectory": 0.7561946019989136,
+          "deadline_miss": 54.26381099400055
+        },
+        "longest_both_zero_command_s": 55.020005595999464,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation",
+        "measured_nearly_zero_motion_s": 55.020005595999464,
+        "measured_thresholds": {
+          "v_abs_m_s": 0.01,
+          "w_abs_rad_s": 0.03
+        },
+        "native_clock_freeze_used_as_stop_evidence": false
+      },
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/native_collision_3d_20261027_04/dynamic_head_on_center_native3d_seed11",
+      "interface_audit_valid": true,
+      "production_unchanged": true
+    }
+  ]
+}
