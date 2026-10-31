@@ -1,0 +1,158 @@
+{
+  "trial": "static_native3d_seed11",
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/native_collision_3d_preflight_20261027_04/static_native3d_seed11",
+  "valid_experiment": true,
+  "errors": [],
+  "warnings": [],
+  "navigation_outcome": "timeout",
+  "outcome_policy": "goal/collision/navigation timeout all retained; only setup, crash or contradicted interface invalidates",
+  "phase_integrity": {
+    "pass_integrity": true,
+    "errors": [],
+    "warnings": [],
+    "events": 115,
+    "requests": 1,
+    "closed_requests": 1,
+    "closed_stages": 5,
+    "closed_waits": 1,
+    "resource_links": 1,
+    "right_censored_requests": [],
+    "right_censored_stages": [],
+    "right_censored_waits": [],
+    "publications": 1,
+    "nesting": "strict native request/stage stack; stages are nested, never summed twice"
+  },
+  "reference_chain_integrity": {
+    "pass_integrity": true,
+    "errors": [],
+    "warnings": [],
+    "chains": [
+      {
+        "transaction_fnv64": "3892806984358944242",
+        "request_id": 1,
+        "publish_sim": 1008.706155695,
+        "observer_receipt": true,
+        "commit": true,
+        "consumption": true,
+        "reconstructed_transaction_fnv64": "3892806984358944242",
+        "reconstructed_transaction_sha256": "99f0719d3138c4040f81fa3d55e2995e3699a841a4a7686167d2bd90299ce3a4",
+        "commit_revision": 1,
+        "consume_revision": 1,
+        "consume_sim": 1008.77441134,
+        "reference_sha256": "ce8fa9ead631dda8af945ffc18719a33ebaccb124ae588926b3614bfdf5d59bb",
+        "first_control_cycle": true
+      }
+    ],
+    "reporter_crosscheck": true,
+    "clock_note": "source ROS event times used; observer tail mono is never treated as MPPI receipt"
+  },
+  "native_coefficients_pass": true,
+  "native_reference_audit": {
+    "reference_contract_pass": true,
+    "closed_loop_reached": false,
+    "required_process_failed": false,
+    "failures": [],
+    "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+    "native_bundles": 1,
+    "consumed_versions": 1,
+    "live_kernel_calls": 327,
+    "stop_reasons": {
+      "native3d_missing_snapshot": 4,
+      "native3d_unhealthy": 31,
+      "native_hard_stop": 103,
+      "waiting_native_trajectory": 34,
+      "ok": 248,
+      "deadline_miss": 79
+    },
+    "trial_result": {
+      "reason": "timeout",
+      "goal_sent": 7.012741429000016,
+      "motion_anchor": 9.773881804001576,
+      "scenario_start": "motion",
+      "trajectory_bundles": 1,
+      "min_clearance": 0.11856079895078608,
+      "collision_conservative_projection": false,
+      "arm_max_error": 0.0,
+      "final_state": [
+        2.2948975944311996,
+        1.2699386245961926,
+        -0.7525198040570056,
+        1.789704669596974e-21,
+        -3.1023924796703186e-21
+      ],
+      "elapsed": 27.027119300000777,
+      "scene": "static",
+      "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+      "native3d_truth_monitor": {
+        "sample_collision": false,
+        "min_physical_sample_gap": 0.19967935951915577,
+        "checks": 6512,
+        "error": null,
+        "geometry_available": true,
+        "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+      }
+    },
+    "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+  },
+  "advisory_freeze": {
+    "valid_same_reference_advisory_zero_cycles": 286,
+    "mppi_nonzero_command_cycles": 207,
+    "also_measured_nonzero_motion_cycles": 207,
+    "examples": [
+      {
+        "sim": 1010.824336699,
+        "reference_revision": 1,
+        "native_virtual_time": 1.7967348369185596,
+        "v": 0.19513615716555244,
+        "w": 0.022488150113084898,
+        "reason": "ok"
+      },
+      {
+        "sim": 1010.885577819,
+        "reference_revision": 1,
+        "native_virtual_time": 1.7967348369185596,
+        "v": 0.19513787069864594,
+        "w": 0.02156538505347911,
+        "reason": "ok"
+      },
+      {
+        "sim": 1010.926013517,
+        "reference_revision": 1,
+        "native_virtual_time": 1.7967348369185596,
+        "v": 0.19513960177336667,
+        "w": 0.020624561126086606,
+        "reason": "ok"
+      },
+      {
+        "sim": 1010.986322987,
+        "reference_revision": 1,
+        "native_virtual_time": 1.7967348369185596,
+        "v": 0.1951420007450452,
+        "w": 0.019568911801012705,
+        "reason": "ok"
+      }
+    ],
+    "interpretation": "advisory controller-clock hold is not MPPI stop; commands are separate from measured motion",
+    "matching": "exact consumed revision/hash and same native start stamp; latest advisory and odom age <0.2s",
+    "nonzero_thresholds": {
+      "abs_v_m_s": 0.02,
+      "abs_w_rad_s": 0.04
+    }
+  },
+  "solver_outcomes": {
+    "ok": 1
+  },
+  "inputs_sha256": {
+    "manifest.json": "1269fced6e85b3156e99dff3d66057d023191e0101c895475654b7459156743c",
+    "run_status.json": "e78a01021ac05ab47f11b3928aff212d214a8d3e26ed6a47074ec39442a4df8d",
+    "publisher_audit.json": "fbed5f25e7827a67308c24c9480ac3a8d4cfb0dc26a6648e128c3b23fedc3de3",
+    "dual_timeline.jsonl": "1315b29fa77fd9d41ed328038ad04536cb09bb5339b69e43b7d54524969c03c8",
+    "observer_events.jsonl": "6d36f176e78fd0a3f34abb671a5973371f3d5edf30563a927e5c7cebef4e16f8",
+    "solver_trace.jsonl": "fe35d029f85fc58b2ff5dbd53c323347a01e7438f5049da39608bb7f76cd3e75",
+    "failure_trace.jsonl": "6f3199e4410cea7d52fe5ba9175213a1fdc7d01571a4175d5c08f7f0224dd962",
+    "trajectories.json": "760a47b0671cd563aa8cdd72f4c3c791e6af71f9acb5f650d7bea0b1559e69ef",
+    "consumed_references.jsonl": "51d03ba7747a6ba974bcaad2f737b22d56c0607f52e11c1d7285f0dfe4d06c09",
+    "reference_events.jsonl": "198bc0e35f35401d0bc90ad336c5215e4369335f9277c02a27052db11776e8f9",
+    "mppi_diagnostics.json": "ee6e73805dcbadf16ee77f3194456f4bd4556e017845bb63a5b6581930d13f1e"
+  }
+}
