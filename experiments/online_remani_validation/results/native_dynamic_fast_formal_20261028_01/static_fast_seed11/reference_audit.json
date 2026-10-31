@@ -1,0 +1,59 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": false,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 2,
+  "consumed_versions": 2,
+  "live_kernel_calls": 197,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 5,
+    "native3d_unhealthy": 51,
+    "native_hard_stop": 85,
+    "waiting_native_trajectory": 16,
+    "ok": 120,
+    "deadline_miss": 77
+  },
+  "trial_result": {
+    "reason": "deadline_zero_deadlock",
+    "goal_sent": 7.006335867999951,
+    "motion_anchor": 8.747934562999944,
+    "scenario_start": "motion",
+    "trajectory_bundles": 2,
+    "min_clearance": 0.12422146830579092,
+    "collision_conservative_projection": false,
+    "arm_max_error": 0.0,
+    "final_state": [
+      1.0419065535066165,
+      -0.0006625859546101073,
+      -0.09138366692898321,
+      8.559671165630201e-24,
+      -5.327094885096957e-23
+    ],
+    "elapsed": 25.18445053799951,
+    "scene": "static",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": false,
+      "min_physical_sample_gap": 0.2752170929004593,
+      "checks": 6090,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 12.7498230709989,
+      "first_observed_moving_t": null,
+      "deadline_zero_window_start": 19.808502475999944,
+      "deadline_zero_window_end": 24.91983290600001,
+      "deadline_zero_cycles": 31,
+      "deadline_zero_deadlock": true,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter",
+      "early_stop_t": 25.18445053799951
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}
