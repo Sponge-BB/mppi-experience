@@ -1,0 +1,444 @@
+{
+  "schema": "delivery_seed_geometry_v1",
+  "created": "2026-10-24T16:10:19.883841+00:00",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/delivery_stability_20261024_02",
+  "build_manifest_sha256": "6881b9924995ec9090c6e637057d4aad5cfcc7545d744ab6763af559809fce19",
+  "native_source": "/home/l/remani_ws/experiments/online_remani_validation/builds/delivery_stability_20261024_02/source/kino_astar.cpp",
+  "native_source_sha256": "1072bb6c603e719663c0521390020c6b85da4b373dd944cf84f51bb6df2d13dd",
+  "native_header": "/home/l/remani_ws/src/mm_remani_planner/path_searching/include/path_searching/kino_astar.h",
+  "native_header_sha256": "05af55ad8320bc8c0c3724389cc3652ada82cf1aea871154d622953ef86bc1c3",
+  "native_struct_header": "/home/l/remani_ws/src/mm_remani_planner/traj_utils/include/traj_utils/plan_container.hpp",
+  "native_struct_header_sha256": "19517b054ad063217bd2df6f88f7e493941d75f6ce8c76cbaff1bae3b57cbe59",
+  "native_macro": "#define inf 1 >> 30",
+  "functions": [
+    {
+      "name": "getTrajsWithTime",
+      "text": "void KinoAstar::getTrajsWithTime(){\n  double startvel = fabs(start_state_(3));\n  double endvel = fabs(end_state_(3));\n  std::vector<Eigen::Vector3d> traj_pts;\n  std::vector<double> thetas;\n  shot_lengthList.clear();\n  shot_timeList.clear();\n  shotindex.clear();\n  shot_SList.clear();\n  double tmpl = 0;\n  int lastS = (sample_trajs_[1] - sample_trajs_[0]).head(2).dot(Eigen::Vector2d(cos(sample_trajs_[0][2]), sin(sample_trajs_[0][2]))) >= 0 ? 1 : -1;\n  shotindex.push_back(0);\n\n  for(unsigned int i = 0; i < sample_trajs_.size() - 1; i++){\n    Eigen::Vector3d state1 = sample_trajs_[i];\n    Eigen::Vector3d state2 = sample_trajs_[i + 1];\n    int curS;\n    if((state2 - state1).head(2).norm() < 1e-4){\n      curS = lastS;\n    }\n    else{\n      curS = (state2 - state1).head(2).dot(Eigen::Vector2d(cos(state1[2]), sin(state1[2]))) >=0 ? 1 : -1;\n    }\n    if(curS * lastS >= 0){\n      tmpl += evaluateCurvatureWeightedDistance(state1.head(2), state2.head(2), state1[2], state2[2]); // change\n    }else{\n      shotindex.push_back(i);\n      shot_SList.push_back(lastS);\n      shot_lengthList.push_back(tmpl);\n      if(tmpl == inf) return;\n      shot_timeList.push_back(evaluateDuration(tmpl, non_siguav_, non_siguav_));\n      tmpl = evaluateCurvatureWeightedDistance(state1.head(2), state2.head(2), state1[2], state2[2]);\n    }\n    lastS = curS;\n  }\n  shot_SList.push_back(lastS);\n  shot_lengthList.push_back(tmpl);\n  shot_timeList.push_back(evaluateDuration(tmpl, non_siguav_, non_siguav_));\n  shotindex.push_back(sample_trajs_.size() - 1);\n\n  if((int)shot_timeList.size() >= 2){\n    shot_timeList[0] = evaluateDuration(shot_lengthList[0], startvel, non_siguav_);\n    shot_timeList[shot_timeList.size() - 1] = evaluateDuration(shot_lengthList.back(), non_siguav_, endvel);\n  }\n  else{\n    shot_timeList[0] = evaluateDuration(shot_lengthList[0], startvel, endvel);\n  }\n  // \n  for(unsigned int i = 0; i < shot_lengthList.size(); i++){\n    double initv = non_siguav_, finv = non_siguav_;\n    Eigen::Vector2d Initctrlinput, Finctrlinput;\n    Initctrlinput<<0,0;Finctrlinput<<0,0;\n    if(i == 0){\n      initv = startvel; \n      Initctrlinput = start_ctrl_;\n    }\n    if(i == shot_lengthList.size() - 1)\n      finv = endvel;\n\n    double locallength = shot_lengthList[i];\n    int sig = shot_SList[i];\n    std::vector<Eigen::Vector3d> localTraj;\n    localTraj.assign(sample_trajs_.begin() + shotindex[i], sample_trajs_.begin() + shotindex[i + 1] + 1);\n    traj_pts.clear();\n    thetas.clear();        \n    double samplet;\n    double tmparc = 0;\n    int index = 0;\n    double sample_time = sample_time_;\n    if(shot_timeList[i] <= sample_time){\n      sample_time = shot_timeList[i] / 2.0;\n    }\n    for(samplet = sample_time; samplet < shot_timeList[i]; samplet += sample_time){\n      double arc = evaluateLength(samplet, locallength, shot_timeList[i], initv, finv);\n      for(unsigned int k = index; k < localTraj.size() - 1; k++){\n        tmparc += evaluateCurvatureWeightedDistance(localTraj[k].head(2),localTraj[k+1].head(2),localTraj[k][2],localTraj[k+1][2]); //change\n        if(tmparc>=arc){\n          index = k;\n          double l1 = tmparc-arc;\n          // double l = (localTraj[k+1]-localTraj[k]).head(2).norm();\n          double l = evaluateCurvatureWeightedDistance(localTraj[k].head(2),localTraj[k+1].head(2),localTraj[k][2],localTraj[k+1][2]); //change\n          \n          double l2 = l-l1;//l2\n          double px = (l1/l*localTraj[k]+l2/l*localTraj[k+1])[0]; // FIXME l == 0\n          double py = (l1/l*localTraj[k]+l2/l*localTraj[k+1])[1];\n          double yaw= (l1/l*localTraj[k]+l2/l*localTraj[k+1])[2];\n\n          if(fabs(localTraj[k + 1][2] - localTraj[k][2]) >= M_PI){   \n            double normalize_yaw = 0;\n            if(localTraj[k + 1][2] <= 0){\n              normalize_yaw = l1 / l * localTraj[k][2] + l2 / l * (localTraj[k + 1][2] + 2 * M_PI);\n            }else if(localTraj[k][2] <=0){\n              normalize_yaw = l1 / l * (localTraj[k][2] + 2 * M_PI) + l2 / l * localTraj[k + 1][2];\n            }\n            yaw = normalize_yaw;\n          }\n\n          traj_pts.emplace_back(px, py, sample_time);\n          thetas.push_back(yaw);\n          // tmparc -=(localTraj[k+1]-localTraj[k]).head(2).norm();\n          tmparc -= evaluateCurvatureWeightedDistance(localTraj[k].head(2),localTraj[k+1].head(2),localTraj[k][2],localTraj[k+1][2]); //change\n          break;\n        }\n      }\n    }\n    traj_pts.emplace_back(localTraj.back()[0], localTraj.back()[1], shot_timeList[i] - (samplet - sample_time_));\n    thetas.push_back(localTraj.back()[2]);\n    // flat_trajs_\n    Eigen::MatrixXd startS;\n    Eigen::MatrixXd endS;\n    getFlatState(Eigen::Vector4d(localTraj.front()[0],localTraj.front()[1],localTraj.front()[2], initv), Initctrlinput, sig, startS);\n    getFlatState(Eigen::Vector4d(localTraj.back()[0],localTraj.back()[1],localTraj.back()[2], finv), Finctrlinput, sig, endS);\n    \n    CarFlatTrajData flat_traj;\n    flat_traj.traj_pts = traj_pts;\n    flat_traj.thetas = thetas;\n    flat_traj.start_state = startS;\n    flat_traj.final_state = endS;\n    flat_traj.singul = sig;\n    flat_trajs_.push_back(flat_traj);\n  }\n  totalTrajTime = 0;\n  for(unsigned int i = 0; i < shot_timeList.size(); i++){\n    totalTrajTime += shot_timeList[i];\n  }\n}",
+      "start_byte": 37212,
+      "end_byte": 42474,
+      "first_line": 971,
+      "last_line": 1096,
+      "sha256": "f0764a72da61eb08b491f37c45d54ea044551d4ec76fc473d85e16460e39574f"
+    },
+    {
+      "name": "evaluateCurvatureWeightedDistance",
+      "text": "double KinoAstar::evaluateCurvatureWeightedDistance(const Eigen::Vector2d &state1, const Eigen::Vector2d &state2, const double &yaw1, const double &yaw2){\n  Eigen::Vector2d diff = state2 - state1;\n  double EuDis = diff.norm();\n  double siny = sin(yaw1), cosy = cos(yaw1);\n  if( (Eigen::Vector2d(state1 + EuDis*Eigen::Vector2d(cos(yaw1),sin(yaw1)))-state2).norm()/EuDis < 0.01 ){\n    return EuDis;\n  }\n  \n  Eigen::Matrix2d A;\n  Eigen::Vector2d b;\n\n  A << cosy,siny,2*diff[0],2*diff[1];\n  b << state1[0]*cosy+state1[1]*siny,diff.dot(state1+state2);\n  b = A.colPivHouseholderQr().solve(b);\n  double radius = (b-state1).norm();\n  // std::cout<<\"state1:\"<<state1.transpose()<<\"  \"<<yaw1<<\"  state2:\"<<state2.transpose()<<\"  \"<<yaw2<<\"   radius\"<<radius<<std::endl;\n  if(radius < min_turning_radius_){\n    // std::cout<<\"radius<min_turning_radius:\"<<curvatureDisCoe_ * std::min(std::min(fabs(yaw2-yaw1),fabs(yaw2-yaw1+M_PI*2)),fabs(yaw2-yaw1-M_PI*2))<<std::endl;\n    return curvatureDisCoe_ * std::min(std::min(fabs(yaw2-yaw1),fabs(yaw2-yaw1+M_PI*2)),fabs(yaw2-yaw1-M_PI*2));\n  }\n  // std::cout<<\"noline EuDis:\"<<EuDis<<std::endl;\n  return EuDis;\n}",
+      "start_byte": 42476,
+      "end_byte": 43618,
+      "first_line": 1098,
+      "last_line": 1120,
+      "sha256": "db4f9fc70439032b2fb95d2c10b33acfafc69e4d29d4edaf42280dea9051a595"
+    },
+    {
+      "name": "evaluateDuration",
+      "text": "double KinoAstar::evaluateDuration(const double &length, const double &startV, const double &endV){\n  double critical_len; \n  if(startV > max_vel_ || endV > max_vel_){\n    ROS_ERROR(\"kinoAstar:evaluateDuration:start or end vel is larger that the limit!\");\n  }\n  double temp_max_acc = max_acc_ * 0.7;\n  double temp_max_vel = max_vel_ * 1.0;\n  double startv2 = pow(startV, 2);\n  double endv2   = pow(endV, 2);\n  double maxv2   = pow(temp_max_vel, 2);\n  critical_len = (maxv2 - startv2) /(2 * temp_max_acc) + (maxv2 - endv2) / (2 * temp_max_acc);\n  if(length >= critical_len){\n    return (temp_max_vel - startV) / temp_max_acc + (temp_max_vel - endV) / temp_max_acc + (length - critical_len) / temp_max_vel;\n  }\n  else{\n    double tmpv = sqrt(0.5 * (startv2 + endv2 + 2 * temp_max_acc * length));\n    return (tmpv - startV) / temp_max_acc + (tmpv - endV) / temp_max_acc;\n  }\n}",
+      "start_byte": 43620,
+      "end_byte": 44493,
+      "first_line": 1122,
+      "last_line": 1140,
+      "sha256": "974c6cd67da4ea7bb47f096f18ef44b6ba716ad9f6c577bee0e4558323272772"
+    },
+    {
+      "name": "evaluateLength",
+      "text": "double KinoAstar::evaluateLength(const double &curt, const double &locallength, const double &localtime, const double &startV, const double &endV){\n  double critical_len; \n  if(startV > max_vel_ || endV > max_vel_){\n    // std::cout << startV << \", \" << endV << \", \" << max_vel_ << std::endl;\n    // ROS_ERROR(\"kinoAstar:evaluateLength:start or end vel is larger that the limit!\");\n  }\n  double startv2 = pow(startV, 2);\n  double endv2 = pow(endV, 2);\n  double maxv2 = pow(max_vel_, 2);\n  critical_len = (maxv2 - startv2) / (2 * max_acc_) + (maxv2 - endv2) / (2 * max_acc_);\n  if(locallength >= critical_len){// 如果locallength距离比critical_len大，则为加速到到最大速度再减速\n    double t1 = (max_vel_-startV)/max_acc_;\n    double t2 = t1+(locallength-critical_len)/max_vel_;\n    if(curt<=t1){\n      return startV*curt + 0.5*max_acc_*pow(curt,2);\n    }else if(curt<=t2){\n      return startV*t1 + 0.5*max_acc_*pow(t1,2)+(curt-t1)*max_vel_;\n    }else{\n      return startV*t1 + 0.5*max_acc_*pow(t1,2) + (t2-t1)*max_vel_ + max_vel_*(curt-t2)-0.5*max_acc_*pow(curt-t2,2);\n    }\n  }else{\n    double tmpv = sqrt(0.5*(startv2+endv2+2*max_acc_*locallength));\n    double tmpt = (tmpv-startV)/max_acc_;\n    if(curt<=tmpt){\n      return startV*curt+0.5*max_acc_*pow(curt,2);\n    }\n    else{\n      return startV*tmpt+0.5*max_acc_*pow(tmpt,2) + tmpv*(curt-tmpt)-0.5*max_acc_*pow(curt-tmpt,2);\n    }\n  }\n}",
+      "start_byte": 44495,
+      "end_byte": 45865,
+      "first_line": 1142,
+      "last_line": 1172,
+      "sha256": "c90a018dcaf9547960f9214acb623934f6d26bfd87bf5ae4d6f6bde1de256241"
+    },
+    {
+      "name": "getFlatState",
+      "text": "void KinoAstar::getFlatState(const Eigen::Vector4d &state, const Eigen::Vector2d &control_input,const int &singul, \n                             Eigen::MatrixXd &flat_state){\n\n    flat_state.resize(2, 3);\n\n    double angle = state(2);\n    double vel   = state(3); // vel > 0 \n\n    Eigen::Matrix2d init_R;\n    init_R << cos(angle),  -sin(angle),\n              sin(angle),   cos(angle);\n\n    if (abs(vel) <= non_siguav_){\n      vel = singul * non_siguav_;\n    }\n    else{\n      vel = singul * vel;\n    }\n    flat_state << state.head(2), init_R * Eigen::Vector2d(vel, 0.0),\n                  init_R * Eigen::Vector2d(control_input(1), std::tan(control_input(0)) / mobile_base_wheel_base_ * std::pow(vel, 2));\n}",
+      "start_byte": 45867,
+      "end_byte": 46574,
+      "first_line": 1174,
+      "last_line": 1194,
+      "sha256": "9a7756ea13e27f81b807614eabf0297353b4802e469749ac4b2a7a6afdd9c497"
+    }
+  ],
+  "parameters": {
+    "max_vel_": 0.2296,
+    "max_acc_": 0.29750000000000004,
+    "non_siguav_": 0.05,
+    "mobile_base_wheel_base_": 0.37,
+    "min_turning_radius_": 0.2,
+    "curvatureDisCoe_": 0.4,
+    "sample_time_": 0.1
+  },
+  "parameters_source": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_stability_20261024_01/static_capture_seed11/parameters.yaml",
+  "parameters_source_sha256": "0de8df9f07b4409cc3ad83e1677f7eaeaadce1d5be9f5b28b0f4b4a92e617223",
+  "generated_header_sha256": "b8bc416ace92e3dccc4c75a3180f712b3ee98a663dc377973fe2546143a085c3",
+  "generated_fixture_sha256": "91c9e2d4a2ca3998682eeab48cb05f4b51fd070c2e3d08fca4f354faae431616",
+  "harness_sha256": "e33513f6c40b16b72778fa62de6ac3e91d17c07cfc6fc42ff1c8786eeca83394",
+  "verifier_sha256": "41ad9814b6f189c28945ddeedcd6fa94b23afe1531819e00ee7fec96a559c43c",
+  "compiler_command": [
+    "/usr/bin/c++",
+    "-std=c++17",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-pedantic",
+    "-I/usr/include/eigen3",
+    "-I/home/l/remani_ws/experiments/online_remani_validation/results/delivery_seed_geometry_20261025_01",
+    "/home/l/remani_ws/experiments/online_remani_validation/test_delivery_seed_geometry.cpp",
+    "-o",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_seed_geometry_20261025_01/test_delivery_seed_geometry"
+  ],
+  "compile_returncode": 0,
+  "harness_returncode": 0,
+  "binary_sha256": "97f91e1562c4ec45da49468160b498a6014083365548042261942af977f76224",
+  "constructed_boundary_fixtures": [
+    {
+      "name": "constructed_reverse_forward_at_seed11_request3_boundary",
+      "boundary_start_state": [
+        0.8795875606592911,
+        -0.021030543371894653,
+        0.19108487075299016,
+        -0.05000000000000001,
+        0,
+        0.5209807817203074,
+        -1.048907973863552,
+        -3.490658503988659e-05,
+        0.9472949048124424,
+        5.235987755982989e-05
+      ],
+      "request_id": 3,
+      "pid": 25303,
+      "source": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_stability_20261024_01/static_capture_seed11/dual_timeline.jsonl",
+      "source_sha256": "887dc9f1c575410f14d918b9f029f7370a0a553315272942d01aaa225de85e5e",
+      "historical_path_replayed": false
+    },
+    {
+      "name": "constructed_reverse_forward_at_seed12_request3_boundary",
+      "boundary_start_state": [
+        0.8804967884871404,
+        -0.00017018985570234249,
+        0.14723121264732733,
+        -0.05000000000000001,
+        0,
+        0.5209807817203074,
+        -1.048907973863552,
+        -3.490658503988659e-05,
+        0.9472949048124424,
+        5.235987755982989e-05
+      ],
+      "request_id": 3,
+      "pid": 25768,
+      "source": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_stability_20261024_01/static_capture_seed12/dual_timeline.jsonl",
+      "source_sha256": "c573106c78a83cbfe696b9eb126c9033d65596581a0e1d20d1c0444afe8d935e",
+      "historical_path_replayed": false
+    }
+  ],
+  "cases": [
+    {
+      "name": "short_forward_origin",
+      "scope": "constructed geometry only; not historical search-path replay",
+      "native_inf_macro_value": 0,
+      "signed_start_speed": 0.05,
+      "input_points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0.01,
+          0,
+          0
+        ],
+        [
+          0.02,
+          0,
+          0
+        ]
+      ],
+      "euclidean_length": 0.02,
+      "weighted_step_lengths": [
+        0.01,
+        0.01
+      ],
+      "weighted_length": 0.02,
+      "native_duration": 0.4666188098721818,
+      "native_half_time_arc": 0.01574841073158252,
+      "parameterization_early_return": false,
+      "flat_block_count": 1,
+      "flat_sample_count": 5,
+      "flat_outputs_finite": true,
+      "flat_sample_times_positive": true,
+      "native_gear_block_lengths": [
+        0.02
+      ],
+      "native_gear_block_times": [
+        0.4666188098721818
+      ]
+    },
+    {
+      "name": "short_reverse_origin",
+      "scope": "constructed geometry only; not historical search-path replay",
+      "native_inf_macro_value": 0,
+      "signed_start_speed": -0.05,
+      "input_points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -0.01,
+          0,
+          0
+        ],
+        [
+          -0.02,
+          0,
+          0
+        ]
+      ],
+      "euclidean_length": 0.02,
+      "weighted_step_lengths": [
+        0,
+        0
+      ],
+      "weighted_length": 0,
+      "native_duration": 0.09945103538369633,
+      "native_half_time_arc": -5.88485252113899e-05,
+      "parameterization_early_return": false,
+      "flat_block_count": 1,
+      "flat_sample_count": 2,
+      "flat_outputs_finite": false,
+      "flat_sample_times_positive": true,
+      "native_gear_block_lengths": [
+        0
+      ],
+      "native_gear_block_times": [
+        0.09945103538369633
+      ]
+    },
+    {
+      "name": "reverse_then_forward_origin",
+      "scope": "constructed geometry only; not historical search-path replay",
+      "native_inf_macro_value": 0,
+      "signed_start_speed": -0.05,
+      "input_points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          -0.01,
+          0,
+          0
+        ],
+        [
+          -0.02,
+          0,
+          0
+        ],
+        [
+          -0.01,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0.01,
+          0,
+          0
+        ]
+      ],
+      "euclidean_length": 0.05,
+      "weighted_step_lengths": [
+        0,
+        0,
+        0.01,
+        0.01,
+        0.01
+      ],
+      "weighted_length": 0.03,
+      "native_duration": 0.5914824049815179,
+      "native_half_time_arc": 0.023167627934855405,
+      "parameterization_early_return": true,
+      "flat_block_count": 0,
+      "flat_sample_count": 0,
+      "flat_outputs_finite": true,
+      "flat_sample_times_positive": true,
+      "native_gear_block_lengths": [
+        0
+      ],
+      "native_gear_block_times": []
+    },
+    {
+      "name": "short_reverse_translated_y",
+      "scope": "constructed geometry only; not historical search-path replay",
+      "native_inf_macro_value": 0,
+      "signed_start_speed": -0.05,
+      "input_points": [
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          -0.01,
+          1,
+          0
+        ],
+        [
+          -0.02,
+          1,
+          0
+        ]
+      ],
+      "euclidean_length": 0.02,
+      "weighted_step_lengths": [
+        0.01,
+        0.01
+      ],
+      "weighted_length": 0.02,
+      "native_duration": 0.4666188098721818,
+      "native_half_time_arc": 0.01574841073158252,
+      "parameterization_early_return": false,
+      "flat_block_count": 1,
+      "flat_sample_count": 5,
+      "flat_outputs_finite": true,
+      "flat_sample_times_positive": true,
+      "native_gear_block_lengths": [
+        0.02
+      ],
+      "native_gear_block_times": [
+        0.4666188098721818
+      ]
+    },
+    {
+      "name": "constructed_reverse_forward_at_seed11_request3_boundary",
+      "scope": "constructed geometry only; not historical search-path replay",
+      "native_inf_macro_value": 0,
+      "signed_start_speed": -0.05000000000000001,
+      "input_points": [
+        [
+          0.8795875606592911,
+          -0.021030543371894653,
+          0.19108487075299016
+        ],
+        [
+          0.8697695729614546,
+          -0.022929784684927686,
+          0.19108487075299016
+        ],
+        [
+          0.8599515852636181,
+          -0.024829025997960715,
+          0.19108487075299016
+        ],
+        [
+          0.8697695729614546,
+          -0.022929784684927686,
+          0.19108487075299016
+        ],
+        [
+          0.8795875606592911,
+          -0.021030543371894653,
+          0.19108487075299016
+        ],
+        [
+          0.8894055483571276,
+          -0.01913130205886162,
+          0.19108487075299016
+        ]
+      ],
+      "euclidean_length": 0.04999999999999999,
+      "weighted_step_lengths": [
+        0,
+        0,
+        0.009999999999999997,
+        0.009999999999999998,
+        0.009999999999999998
+      ],
+      "weighted_length": 0.029999999999999995,
+      "native_duration": 0.5914824049815177,
+      "native_half_time_arc": 0.023167627934855394,
+      "parameterization_early_return": true,
+      "flat_block_count": 0,
+      "flat_sample_count": 0,
+      "flat_outputs_finite": true,
+      "flat_sample_times_positive": true,
+      "native_gear_block_lengths": [
+        0
+      ],
+      "native_gear_block_times": []
+    },
+    {
+      "name": "constructed_reverse_forward_at_seed12_request3_boundary",
+      "scope": "constructed geometry only; not historical search-path replay",
+      "native_inf_macro_value": 0,
+      "signed_start_speed": -0.05000000000000001,
+      "input_points": [
+        [
+          0.8804967884871404,
+          -0.00017018985570234249,
+          0.14723121264732733
+        ],
+        [
+          0.8706049779894326,
+          -0.0016371885187680237,
+          0.14723121264732733
+        ],
+        [
+          0.8607131674917247,
+          -0.0031041871818337048,
+          0.14723121264732733
+        ],
+        [
+          0.8706049779894326,
+          -0.0016371885187680237,
+          0.14723121264732733
+        ],
+        [
+          0.8804967884871404,
+          -0.00017018985570234249,
+          0.14723121264732733
+        ],
+        [
+          0.8903885989848482,
+          0.0012968088073633387,
+          0.14723121264732733
+        ]
+      ],
+      "euclidean_length": 0.05,
+      "weighted_step_lengths": [
+        0,
+        0,
+        0.010000000000000066,
+        0.009999999999999957,
+        0.009999999999999957
+      ],
+      "weighted_length": 0.02999999999999998,
+      "native_duration": 0.5914824049815176,
+      "native_half_time_arc": 0.023167627934855387,
+      "parameterization_early_return": true,
+      "flat_block_count": 0,
+      "flat_sample_count": 0,
+      "flat_outputs_finite": true,
+      "flat_sample_times_positive": true,
+      "native_gear_block_lengths": [
+        0
+      ],
+      "native_gear_block_times": []
+    }
+  ],
+  "equivalence_scope": "Exact five native function texts and native macro/struct, same scalar parameters and Eigen. Minimal class only changes visibility and excludes unused ROS/search/map members. ROS_ERROR is stderr stub; valid test speeds never enter error branch.",
+  "historical_full_path_replayed": false,
+  "baseline_or_production_modified": false,
+  "ros_started": false,
+  "limitations": [
+    "构造几何验证，不是历史两例完整路径重放；未执行原生A*、地图碰撞、机械臂采样或闭环导航。",
+    "空flat块的flat_outputs_finite为真是空集结果，不能解释为产生了有效轨迹；必须同时检查块数量。",
+    "只验证原函数问题，不在本测试修改宏、距离计算、时间分配或安全约束。"
+  ]
+}

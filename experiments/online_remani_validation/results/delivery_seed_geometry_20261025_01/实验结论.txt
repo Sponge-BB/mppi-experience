@@ -1,0 +1,18 @@
+底盘种子几何与时间参数化：离线原函数验证
+
+精确提取5个原函数和原inf宏/数据struct；仅构造输入，不是历史路径完整重放。
+
+short_forward_origin：欧氏长度=0.02；原加权长度=0.02；提前返回=False；flat块=1；输出全有限=True
+short_reverse_origin：欧氏长度=0.02；原加权长度=0；提前返回=False；flat块=1；输出全有限=False
+reverse_then_forward_origin：欧氏长度=0.05；原加权长度=0.03；提前返回=True；flat块=0；输出全有限=True
+short_reverse_translated_y：欧氏长度=0.02；原加权长度=0.02；提前返回=False；flat块=1；输出全有限=True
+constructed_reverse_forward_at_seed11_request3_boundary：欧氏长度=0.04999999999999999；原加权长度=0.029999999999999995；提前返回=True；flat块=0；输出全有限=True
+constructed_reverse_forward_at_seed12_request3_boundary：欧氏长度=0.05；原加权长度=0.02999999999999998；提前返回=True；flat块=0；输出全有限=True
+
+原始宏：#define inf 1 >> 30；编译运行实际值：0
+不可只修宏后直接上线：仍需处理反向距离零值、零长度段及参数化后的有效性。
+
+Exact five native function texts and native macro/struct, same scalar parameters and Eigen. Minimal class only changes visibility and excludes unused ROS/search/map members. ROS_ERROR is stderr stub; valid test speeds never enter error branch.
+构造几何验证，不是历史两例完整路径重放；未执行原生A*、地图碰撞、机械臂采样或闭环导航。
+空flat块的flat_outputs_finite为真是空集结果，不能解释为产生了有效轨迹；必须同时检查块数量。
+只验证原函数问题，不在本测试修改宏、距离计算、时间分配或安全约束。
