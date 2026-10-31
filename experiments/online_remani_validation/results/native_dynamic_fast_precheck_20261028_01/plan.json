@@ -1,0 +1,64 @@
+{
+  "created": "2026-10-28T04:03:34.201230+00:00",
+  "stage": "precheck",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/native_dynamic_fast_20261028_01",
+  "build_manifest_sha256": "b079e880474db41e94af8a7eff28a919c7b301e20c38954a5d075086fb9b1f43",
+  "seed": 11,
+  "duration_s": 12.0,
+  "groups": [
+    "baseline",
+    "fast"
+  ],
+  "scenes": [
+    "empty"
+  ],
+  "ordered_jobs": [
+    [
+      "empty",
+      "baseline"
+    ],
+    [
+      "empty",
+      "fast"
+    ]
+  ],
+  "switches": {
+    "NATIVE_REALTIME_DEMAND": 1,
+    "NATIVE_DYNAMIC_FAST": {
+      "baseline": 0,
+      "fast": 1
+    }
+  },
+  "same_binary": true,
+  "full_online_native_planner": true,
+  "profile": false,
+  "paused": false,
+  "replay_gate": "/home/l/remani_ws/experiments/online_remani_validation/results/native_dynamic_fast_replay_20261028_01/replay.json",
+  "replay_gate_sha256": "1d75b8bad3fc107fdf42f8991f8a9e5fedc92ecc803cc20d249958052a28bc72",
+  "precheck": null,
+  "state_policy": {
+    "diagnostic_capture": true,
+    "state_contract": true,
+    "domain_recovery": true,
+    "signed_low_speed": true,
+    "clearance_recovery": false
+  },
+  "unchanged": [
+    "160 native body samples",
+    "native hard/soft distances",
+    "CV horizon",
+    "candidate count/order and RNG",
+    "50ms deadline",
+    "75ms command lease",
+    "native solver budgets and 300 iterations",
+    "actor motion"
+  ],
+  "common_early_stop": {
+    "reason": "deadline_zero_deadlock",
+    "continuous_s": 5.0,
+    "minimum_sim_s": 17.0,
+    "early_stop_is_success": false
+  },
+  "outcome_policy": "retain goal, collision, timeout; no replacement seeds or outcome filtering",
+  "scope": "paired seed11 diagnostic ROS numerical SIL; not statistical success rate, Gazebo or hardware"
+}
