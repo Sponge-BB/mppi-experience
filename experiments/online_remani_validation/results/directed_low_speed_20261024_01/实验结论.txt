@@ -1,0 +1,11 @@
+低速倒退：原生链路定向状态输入验证
+native ROS fixed-state input probe; pose derivative is intentionally inconsistent with twist; NOT physical motion, navigation, real-world safety or speed comparison
+ON负方向完整传入原生搜索/MINCO/backend=True
+相同fixture=True；相同runtime=True
+
+empty_coupled_seed11_signed_off：接口审计=True
+  请求1 raw=-0.04 -> processed=0.05 -> root=0(gear 0) -> MINCO=-0.05 -> backend=-0.05；场内起点=safe
+empty_coupled_seed11_signed_on：接口审计=True
+  请求1 raw=-0.04 -> processed=-0.05000000000000001 -> root=-0.05000000000000001(gear -1) -> MINCO=-0.05000000000000001 -> backend=-0.05000000000000001；场内起点=safe
+
+不将probe_complete计为到达目标，不根据此输入probe宣称避障效果提升。

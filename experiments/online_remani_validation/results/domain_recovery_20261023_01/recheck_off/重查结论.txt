@@ -1,0 +1,22 @@
+同候选离线重查（没有重新优化、改变轨迹时钟或放宽验收）
+physical<0：投影外形相交；physical>=0且gap<0：仅安全余量不足；invalid：查询无效；unknown：动态预测时域外。
+独立重写了插值和投影计算，但使用同一记录几何，不等于真实物理碰撞测量。
+K8仅用于同候选、同candidate.start_time时钟下的采样密度对比，不是原目标函数重放；原动态软代价使用solve_frame.now+offset，不能据本表认定动态软代价数值或时域漏检。
+
+8729_1.json: 与在线验收结论一致
+  solve_frame / K8 / fresh=True / 无不合格样本 / 最小静态gap=0.9247808246938717
+  solve_frame / dense / fresh=True / 无不合格样本 / 最小静态gap=0.9247808246938717
+  accept_frame / K8 / fresh=True / 无不合格样本 / 最小静态gap=0.9247808246938717
+  accept_frame / dense / fresh=True / 无不合格样本 / 最小静态gap=0.9247808246938717
+8729_2.json: 与在线验收结论一致
+  solve_frame / K8 / fresh=True / static margin_only t=0.594347s physical=0.07650657504986474 gap=-0.02349342495013526 / 最小静态gap=-0.056256377205451985
+  solve_frame / dense / fresh=True / static margin_only t=0.139882s physical=0.09939026865559675 gap=-0.0006097313444032582 / 最小静态gap=-0.05644005241696512
+  accept_frame / K8 / fresh=True / static margin_only t=0.594347s physical=0.07650657504986474 gap=-0.02349342495013526 / 最小静态gap=-0.056256377205451985
+  accept_frame / dense / fresh=True / static margin_only t=0.139882s physical=0.09939026865559675 gap=-0.0006097313444032582 / 最小静态gap=-0.05644005241696512
+8729_3.json: 与在线验收结论一致
+  solve_frame / K8 / fresh=True / 无不合格样本 / 最小静态gap=0.0012915556765515646
+  solve_frame / dense / fresh=True / 无不合格样本 / 最小静态gap=4.248174149984463e-06
+  accept_frame / K8 / fresh=True / 无不合格样本 / 最小静态gap=0.0012915556765515646
+  accept_frame / dense / fresh=True / 无不合格样本 / 最小静态gap=4.248174149984463e-06
+
+记录的优化几何异常：0次；原始文件保持不变。
