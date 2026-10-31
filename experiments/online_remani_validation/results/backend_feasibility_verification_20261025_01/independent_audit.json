@@ -1,0 +1,482 @@
+{
+  "schema": "backend_feasibility_independent_audit_v1",
+  "created": "2026-10-25T07:29:02.129884+00:00",
+  "batch": "/home/l/remani_ws/experiments/online_remani_validation/results/backend_feasibility_20261025_01",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/seed_parameterization_20261025_01",
+  "all_checks_passed": true,
+  "errors": [],
+  "checks": {
+    "four_prespecified_captures": true,
+    "no_outcome_selected_rerun": true,
+    "build_manifest_identity": true,
+    "98_production_unchanged": true,
+    "isolated_source_hashes": true,
+    "source_closure": true,
+    "3_native_binaries": true,
+    "mppi_library": true,
+    "archives": true,
+    "unchanged_nonsearch_binaries": true,
+    "same_prior_fix_build": true,
+    "recorded_node_pids_exited": true,
+    "port_11441_not_listening": true
+  },
+  "production_files": 98,
+  "isolated_source_files": 36,
+  "native_binaries": 3,
+  "distinct_recorded_pids": 60,
+  "recorded_pid_occurrences": 60,
+  "lossless_archives": 24,
+  "restored_archive_bytes": 35675803,
+  "trials": [
+    {
+      "trial": "static_diagnostic_seed11_refresh1",
+      "valid": true,
+      "errors": [],
+      "seed": 11,
+      "eligible_backend_ordinal": 1,
+      "capture_request_id": 2,
+      "capture_ros_time": 1013.106316972,
+      "frame_now": 1012.925462423,
+      "root_runtime_entries": 238,
+      "runtime_python_files": 208,
+      "runtime_python_mismatches": [],
+      "root_transform_mismatches": [],
+      "phase_results": [
+        {
+          "phase": "delivery_nominal_060",
+          "budget_s": 0.6,
+          "input_hash": "5267333132958483831",
+          "reason": "budget_timeout",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 601.765076,
+          "canonical_initial": 1,
+          "canonical_accepted": 64,
+          "audited_candidates": 65,
+          "first_x_hash": "9203541913391681930",
+          "first_gradient_hash": "12169428550593737884"
+        },
+        {
+          "phase": "delivery_repeat_060",
+          "budget_s": 0.6,
+          "input_hash": "5267333132958483831",
+          "reason": "budget_timeout",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 600.974233,
+          "canonical_initial": 1,
+          "canonical_accepted": 64,
+          "audited_candidates": 65,
+          "first_x_hash": "9203541913391681930",
+          "first_gradient_hash": "12169428550593737884"
+        },
+        {
+          "phase": "delivery_long_150",
+          "budget_s": 1.5,
+          "input_hash": "5267333132958483831",
+          "reason": "left_wheel_speed",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 1039.004815,
+          "canonical_initial": 1,
+          "canonical_accepted": 117,
+          "audited_candidates": 118,
+          "first_x_hash": "9203541913391681930",
+          "first_gradient_hash": "12169428550593737884"
+        }
+      ],
+      "all_failure_trace_solve_records": 4,
+      "all_failure_trace_reason_counts": {
+        "ok": 1,
+        "budget_timeout": 2,
+        "left_wheel_speed": 1
+      },
+      "lossless_archive_checks": [
+        {
+          "name": "execution_rollouts.jsonl",
+          "verified": true,
+          "restored_bytes": 5811113
+        },
+        {
+          "name": "observer_events.jsonl",
+          "verified": true,
+          "restored_bytes": 699603
+        },
+        {
+          "name": "cpu_samples.jsonl",
+          "verified": true,
+          "restored_bytes": 726325
+        },
+        {
+          "name": "mppi_diagnostics.json",
+          "verified": true,
+          "restored_bytes": 733928
+        },
+        {
+          "name": "events.json",
+          "verified": true,
+          "restored_bytes": 74009
+        },
+        {
+          "name": "trajectories.json",
+          "verified": true,
+          "restored_bytes": 54724
+        }
+      ],
+      "frozen_snapshot_sha256": "9b01eeb0f67db38e1109e04aa2c933f1c17cc9a822bd706bde93b1df2ffea078",
+      "native_internal_map_dumped": false,
+      "native_internal_KDtree_dumped": false,
+      "captured_request_published": false,
+      "input_sha256": {
+        "manifest.json": "7a49b1c66299bc2bfa7eeff906de69aefe8a1f3b255b703e7393e79d0f4d730e",
+        "run_status.json": "da79718336721cf46495e76f0ab713ef7dffd61f81f232ff49a2abb8c0cb7f27",
+        "publisher_audit.json": "dbf61a35d115e3d9a94d2dd273fe9c9b384d44857a3a621baa3f69474f05c74d",
+        "owned_pids.txt": "38c7065b7c4dba22f2670c763bddaa0744a8c39cb4ccfc50d3eb0592a1258499",
+        "diagnostic_complete.json": "5aeb30f1d061fbde05e0cdff3b9456e04b651abf96bda19b1b68ffe567fbddf1",
+        "compression_audit.json": "fbdb92196e27d99a1053d6e97941c9221ddc80c04bf9b3c63eebd5d627332e5e",
+        "dual_timeline.jsonl": "8f6c5e55c61472bcbb666b882577c3695d9ce661014209991a19ef347653058f",
+        "failure_trace.jsonl": "61208eded78389e1e095e8c679eb3689a044f936429c3a51bef4ff1a3ef86be2",
+        "delivery_replay.jsonl": "bc6a30d514b712b56e7453bdfea012d40078f0925115e6dd40967b42ba0e613b",
+        "parameters.yaml": "0de8df9f07b4409cc3ad83e1677f7eaeaadce1d5be9f5b28b0f4b4a92e617223",
+        "effective_real_params.json": "d3a67ed71bcd9ac7df32e59180a492e9e9deef823a86455796d7964240801fc3",
+        "result.json": "9cdc9166f747a83aa08268ce0c5b140de1a27c9ee678c9cb9b7653bdfee307fa"
+      }
+    },
+    {
+      "trial": "static_diagnostic_seed12_refresh2",
+      "valid": true,
+      "errors": [],
+      "seed": 12,
+      "eligible_backend_ordinal": 2,
+      "capture_request_id": 3,
+      "capture_ros_time": 1015.507269399,
+      "frame_now": 1015.346578069,
+      "root_runtime_entries": 238,
+      "runtime_python_files": 208,
+      "runtime_python_mismatches": [],
+      "root_transform_mismatches": [],
+      "phase_results": [
+        {
+          "phase": "delivery_nominal_060",
+          "budget_s": 0.6,
+          "input_hash": "8104767882263164177",
+          "reason": "budget_timeout",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 604.723923,
+          "canonical_initial": 1,
+          "canonical_accepted": 53,
+          "audited_candidates": 54,
+          "first_x_hash": "7888053682436702096",
+          "first_gradient_hash": "1330423993841383448"
+        },
+        {
+          "phase": "delivery_repeat_060",
+          "budget_s": 0.6,
+          "input_hash": "8104767882263164177",
+          "reason": "budget_timeout",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 604.8857200000001,
+          "canonical_initial": 1,
+          "canonical_accepted": 53,
+          "audited_candidates": 54,
+          "first_x_hash": "7888053682436702096",
+          "first_gradient_hash": "1330423993841383448"
+        },
+        {
+          "phase": "delivery_long_150",
+          "budget_s": 1.5,
+          "input_hash": "8104767882263164177",
+          "reason": "ok",
+          "native_return_success": true,
+          "lbfgs_wall_ms": 1069.163854,
+          "canonical_initial": 1,
+          "canonical_accepted": 97,
+          "audited_candidates": 98,
+          "first_x_hash": "7888053682436702096",
+          "first_gradient_hash": "1330423993841383448"
+        }
+      ],
+      "all_failure_trace_solve_records": 5,
+      "all_failure_trace_reason_counts": {
+        "ok": 2,
+        "budget_timeout": 3
+      },
+      "lossless_archive_checks": [
+        {
+          "name": "execution_rollouts.jsonl",
+          "verified": true,
+          "restored_bytes": 7460480
+        },
+        {
+          "name": "observer_events.jsonl",
+          "verified": true,
+          "restored_bytes": 839719
+        },
+        {
+          "name": "cpu_samples.jsonl",
+          "verified": true,
+          "restored_bytes": 949360
+        },
+        {
+          "name": "mppi_diagnostics.json",
+          "verified": true,
+          "restored_bytes": 916486
+        },
+        {
+          "name": "events.json",
+          "verified": true,
+          "restored_bytes": 60138
+        },
+        {
+          "name": "trajectories.json",
+          "verified": true,
+          "restored_bytes": 54724
+        }
+      ],
+      "frozen_snapshot_sha256": "abf56bbf63eac44ea97274fd9b81aa2db0812e3489d00545a331c1119d8218e6",
+      "native_internal_map_dumped": false,
+      "native_internal_KDtree_dumped": false,
+      "captured_request_published": false,
+      "input_sha256": {
+        "manifest.json": "09058f4ac750d6f66c07f3c6d33e839d15ea0ed601718361556a2b45a7206766",
+        "run_status.json": "3e1bdd23464517e0514bfa716c77126c2e47f48949a4b52b90a6315f7ad4764e",
+        "publisher_audit.json": "9722c4eeb1f421c3fd555a3f95ae1d3d91d0cdc24f6c55ee94fded4e18d39489",
+        "owned_pids.txt": "6f93d3fa3b995fffdc00809706dfc571e20fb70876a518e60a499e50b9c74205",
+        "diagnostic_complete.json": "5aeb30f1d061fbde05e0cdff3b9456e04b651abf96bda19b1b68ffe567fbddf1",
+        "compression_audit.json": "64130b691ca371ce7ac22c18379d89e403947d21cf95e5f4b41fe787cad1d934",
+        "dual_timeline.jsonl": "9b12a28a14780eb98f6c93c5a21ab9374866cc0c1f831514d03c95a66f09d6d7",
+        "failure_trace.jsonl": "8f12101af130b311cce79fee1b8c5fa0b251d28b8ec73bb27eb9f17f9d0093b0",
+        "delivery_replay.jsonl": "2b7b6f83a5b7a5801c56a2091a1cfe868ecb0848987196519fea2dfd67490a2e",
+        "parameters.yaml": "0de8df9f07b4409cc3ad83e1677f7eaeaadce1d5be9f5b28b0f4b4a92e617223",
+        "effective_real_params.json": "d3a67ed71bcd9ac7df32e59180a492e9e9deef823a86455796d7964240801fc3",
+        "result.json": "f1199926d15e60b9d57c8bcea189226c17020cc1ee7ebb8cf2c3f7e563af43d8"
+      }
+    },
+    {
+      "trial": "static_diagnostic_seed11_refresh2",
+      "valid": true,
+      "errors": [],
+      "seed": 11,
+      "eligible_backend_ordinal": 2,
+      "capture_request_id": 3,
+      "capture_ros_time": 1015.061437128,
+      "frame_now": 1014.860589862,
+      "root_runtime_entries": 238,
+      "runtime_python_files": 208,
+      "runtime_python_mismatches": [],
+      "root_transform_mismatches": [],
+      "phase_results": [
+        {
+          "phase": "delivery_nominal_060",
+          "budget_s": 0.6,
+          "input_hash": "10383924020193441796",
+          "reason": "left_wheel_acceleration",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 157.73916300000002,
+          "canonical_initial": 1,
+          "canonical_accepted": 6,
+          "audited_candidates": 7,
+          "first_x_hash": "17044094812260555808",
+          "first_gradient_hash": "6255894605768651671"
+        },
+        {
+          "phase": "delivery_repeat_060",
+          "budget_s": 0.6,
+          "input_hash": "10383924020193441796",
+          "reason": "left_wheel_acceleration",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 157.308331,
+          "canonical_initial": 1,
+          "canonical_accepted": 6,
+          "audited_candidates": 7,
+          "first_x_hash": "17044094812260555808",
+          "first_gradient_hash": "6255894605768651671"
+        },
+        {
+          "phase": "delivery_long_150",
+          "budget_s": 1.5,
+          "input_hash": "10383924020193441796",
+          "reason": "left_wheel_acceleration",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 157.13549300000003,
+          "canonical_initial": 1,
+          "canonical_accepted": 6,
+          "audited_candidates": 7,
+          "first_x_hash": "17044094812260555808",
+          "first_gradient_hash": "6255894605768651671"
+        }
+      ],
+      "all_failure_trace_solve_records": 5,
+      "all_failure_trace_reason_counts": {
+        "ok": 1,
+        "budget_timeout": 1,
+        "left_wheel_acceleration": 3
+      },
+      "lossless_archive_checks": [
+        {
+          "name": "execution_rollouts.jsonl",
+          "verified": true,
+          "restored_bytes": 6797667
+        },
+        {
+          "name": "observer_events.jsonl",
+          "verified": true,
+          "restored_bytes": 812106
+        },
+        {
+          "name": "cpu_samples.jsonl",
+          "verified": true,
+          "restored_bytes": 707073
+        },
+        {
+          "name": "mppi_diagnostics.json",
+          "verified": true,
+          "restored_bytes": 860189
+        },
+        {
+          "name": "events.json",
+          "verified": true,
+          "restored_bytes": 28259
+        },
+        {
+          "name": "trajectories.json",
+          "verified": true,
+          "restored_bytes": 54723
+        }
+      ],
+      "frozen_snapshot_sha256": "7d3b5edb2e7a65d578d3d2278b0d90c515ea6461ddbce34aed9eb3767ee74a52",
+      "native_internal_map_dumped": false,
+      "native_internal_KDtree_dumped": false,
+      "captured_request_published": false,
+      "input_sha256": {
+        "manifest.json": "05676e08a42b9162b7dd1d748ff723c30fe01db51d204f4ea5d09f3f44ef923f",
+        "run_status.json": "23e7916b40b9b2f159e8f4a164e5f6e1f4bed0a72beef64dab11df0fbea2faed",
+        "publisher_audit.json": "88f08b6444102dcc46b030dcdfacf23945011fc00cf01d321b4e718bb5c84193",
+        "owned_pids.txt": "7694d49857595c4d641a6e2872575f8a195c8f5e99d406d3aabd3298dda1abb8",
+        "diagnostic_complete.json": "5aeb30f1d061fbde05e0cdff3b9456e04b651abf96bda19b1b68ffe567fbddf1",
+        "compression_audit.json": "6df26e8d2e50f108776358fff346d617210f051f444107d8529150cf392add32",
+        "dual_timeline.jsonl": "076cc4b1ffe71f32e46ce6a68c70ab9617478375b57e57978f1d3e054aad9664",
+        "failure_trace.jsonl": "00a5611f8432fd6f6d739c7dd23a4f79c68b0ab045839d4fa6f5e05b0763c5e8",
+        "delivery_replay.jsonl": "9643f26fcabfdb989c0d460808101e3dada8ac3de3c83e3b0c37fd57d4b5891a",
+        "parameters.yaml": "0de8df9f07b4409cc3ad83e1677f7eaeaadce1d5be9f5b28b0f4b4a92e617223",
+        "effective_real_params.json": "d3a67ed71bcd9ac7df32e59180a492e9e9deef823a86455796d7964240801fc3",
+        "result.json": "ff16cee3c38ea337f838a75bdba21fcfdf2e42b22435608d66f37895e782171e"
+      }
+    },
+    {
+      "trial": "static_diagnostic_seed12_refresh1",
+      "valid": true,
+      "errors": [],
+      "seed": 12,
+      "eligible_backend_ordinal": 1,
+      "capture_request_id": 2,
+      "capture_ros_time": 1013.198152183,
+      "frame_now": 1013.017126923,
+      "root_runtime_entries": 238,
+      "runtime_python_files": 208,
+      "runtime_python_mismatches": [],
+      "root_transform_mismatches": [],
+      "phase_results": [
+        {
+          "phase": "delivery_nominal_060",
+          "budget_s": 0.6,
+          "input_hash": "14302380363240661947",
+          "reason": "budget_timeout",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 603.578122,
+          "canonical_initial": 1,
+          "canonical_accepted": 73,
+          "audited_candidates": 74,
+          "first_x_hash": "17141286118921632424",
+          "first_gradient_hash": "14291752680165671126"
+        },
+        {
+          "phase": "delivery_repeat_060",
+          "budget_s": 0.6,
+          "input_hash": "14302380363240661947",
+          "reason": "budget_timeout",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 604.120029,
+          "canonical_initial": 1,
+          "canonical_accepted": 73,
+          "audited_candidates": 74,
+          "first_x_hash": "17141286118921632424",
+          "first_gradient_hash": "14291752680165671126"
+        },
+        {
+          "phase": "delivery_long_150",
+          "budget_s": 1.5,
+          "input_hash": "14302380363240661947",
+          "reason": "right_wheel_speed",
+          "native_return_success": false,
+          "lbfgs_wall_ms": 734.1459,
+          "canonical_initial": 1,
+          "canonical_accepted": 89,
+          "audited_candidates": 90,
+          "first_x_hash": "17141286118921632424",
+          "first_gradient_hash": "14291752680165671126"
+        }
+      ],
+      "all_failure_trace_solve_records": 4,
+      "all_failure_trace_reason_counts": {
+        "ok": 1,
+        "budget_timeout": 2,
+        "right_wheel_speed": 1
+      },
+      "lossless_archive_checks": [
+        {
+          "name": "execution_rollouts.jsonl",
+          "verified": true,
+          "restored_bytes": 5742412
+        },
+        {
+          "name": "observer_events.jsonl",
+          "verified": true,
+          "restored_bytes": 702670
+        },
+        {
+          "name": "cpu_samples.jsonl",
+          "verified": true,
+          "restored_bytes": 727424
+        },
+        {
+          "name": "mppi_diagnostics.json",
+          "verified": true,
+          "restored_bytes": 735358
+        },
+        {
+          "name": "events.json",
+          "verified": true,
+          "restored_bytes": 72589
+        },
+        {
+          "name": "trajectories.json",
+          "verified": true,
+          "restored_bytes": 54724
+        }
+      ],
+      "frozen_snapshot_sha256": "402dc8447fba3e981a6bc16317bdcd691cc45bd09258a88d1d139fdee0555850",
+      "native_internal_map_dumped": false,
+      "native_internal_KDtree_dumped": false,
+      "captured_request_published": false,
+      "input_sha256": {
+        "manifest.json": "6309636b86fa70f14c5a05d1c812671252922d482c9b42cccdcc5f3137f2136e",
+        "run_status.json": "f2abcd7f442ee16c59cbc7523447073e57bd5373e31123ca0755b36fcea857a6",
+        "publisher_audit.json": "4f59ac62b4264c405e7d2a40da2019478ffae1fee1f931d7dfbe3abdc894e102",
+        "owned_pids.txt": "b7f09001493e658d0357061d023dfba38c39d2387df8063b94ae47d5aa4a7161",
+        "diagnostic_complete.json": "5aeb30f1d061fbde05e0cdff3b9456e04b651abf96bda19b1b68ffe567fbddf1",
+        "compression_audit.json": "8ba3aeb5bcba69cd98b50a2aa74e5f19bdd50824b9692ac55a0d7630e28a0570",
+        "dual_timeline.jsonl": "ece45f676815005199f5f0026d5455eda565f1355f018db3c7968f2f6e9f4719",
+        "failure_trace.jsonl": "5a4562aabb094943308dae969d99f0273a961d995e6a406d3bd177b7c302664f",
+        "delivery_replay.jsonl": "9274de2fc0b1fb06d139f08d1b4e7ccc5ec9b044663b1d5ea562930f1342a6f6",
+        "parameters.yaml": "0de8df9f07b4409cc3ad83e1677f7eaeaadce1d5be9f5b28b0f4b4a92e617223",
+        "effective_real_params.json": "d3a67ed71bcd9ac7df32e59180a492e9e9deef823a86455796d7964240801fc3",
+        "result.json": "41b2f4131b9defc5501f289df63f50568ddf649149030970b26471dbe163a554"
+      }
+    }
+  ],
+  "input_sha256": {
+    "plan.json": "b1c0d86fcf0fb88031f83b646d17dd246314b788bced246147ebe4569c0ce3b6",
+    "complete.json": "f5bf25c632e2c9f72517174b455356c2ca18e830f23e14b6277c53c2a5676626",
+    "build_manifest.json": "b04f3c0a8a72331d22fac90cce3501e7b7eec21355d273ddfe51300bccc02eda",
+    "prior_fixed_seed_plan.json": "d5bcac2157a6203327ca2611d440005372dc0a27617ee0a78c00fe3624c9fbd8"
+  },
+  "scope": "Independent read/hash/shape and exact captured-input/first-x-g verification only. No re-solve, geometry scan, plotting, compilation, ROS, control commands or root-source edits. Three deterministic runtime transforms independently reconstructed. Native map/KD-tree not dumped; observed consistency is not a full internal-state freeze proof. All records and outcomes retained."
+}

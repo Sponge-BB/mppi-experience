@@ -1,0 +1,27 @@
+固定种子后端：左右轮速度/加速度与完整投影后验审计
+k0为优化变量初始MINCO曲线，不是A*原始折线。轮约束左右对称，未在首个失败处截断。
+
+static_diagnostic_seed11_refresh1 evidence_valid=True
+  delivery_nominal_060 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 64, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+  delivery_repeat_060 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 64, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+  delivery_long_150 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 117, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+static_diagnostic_seed12_refresh2 evidence_valid=True
+  delivery_nominal_060 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 53, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+  delivery_repeat_060 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 53, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+  delivery_long_150 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 97, 'native_wheel_pass': 41, 'diagnostic_wheel_pass': 41, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+static_diagnostic_seed11_refresh2 evidence_valid=True
+  delivery_nominal_060 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 6, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+  delivery_repeat_060 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 6, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+  delivery_long_150 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 6, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+static_diagnostic_seed12_refresh1 evidence_valid=True
+  delivery_nominal_060 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 73, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+  delivery_repeat_060 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 73, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+  delivery_long_150 {'initial': {'count': 1, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}, 'accepted': {'count': 89, 'native_wheel_pass': 0, 'diagnostic_wheel_pass': 0, 'full_projected_pass': 0, 'native_and_projected_pass': 0}}
+
+Posterior initial/accepted MINCO candidate audit; optimizer k0 is not original A* polyline.
+Native exact 10ms grid starts .05s, excludes final endpoint; diagnostic adds k0, [0,.05), endpoints, exact piece/gear boundaries and nextafter-right samples (native strict > selector).
+All four wheel channels scanned symmetrically without stopping at first native rejection; no continuous-time extrema proof.
+Native collision and manipulator constraints are inherited only from recorded IsTrajSafe, not reconstructed by wheel equations.
+Full frozen projected 20ms robot disk-union audit is reused by exact candidate and source hash; not independent physical truth.
+All calculations are post-solver; feasible sample is not a delivered trajectory and does not certify future live FSM gate.
+Negative-zero JSON and integer identities use existing canonical parser unchanged; no restriction is relaxed.
