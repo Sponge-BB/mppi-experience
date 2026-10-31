@@ -1,0 +1,49 @@
+{
+  "scope": "Recomputed paired fixed-native-reference numerical control experiment. Ideal synchronous CV observations, exact same full body/plant/constraints/validator; no ROS, no online native replan, no Gazebo, no real-vehicle publication. Actual 50ms controller decision deadline enforced; rendering excluded. Phase association/objective are experimental changes, not a production fix.",
+  "criteria": {
+    "rejoin_distance_m": 0.05,
+    "rejoin_heading_rad": 0.15,
+    "rejoin_continuous_s": 2.0,
+    "endpoint_distance_m": 0.05,
+    "endpoint_heading_rad": 0.1,
+    "endpoint_speed_mps": 0.05,
+    "endpoint_continuous_s": 1.0,
+    "physical_collision_gap_m": 0.0,
+    "deadline_ms": 50.0,
+    "alternative_deadline_ms": 45.0,
+    "max_duration_s": 55.0,
+    "static_appearance_s": 4.0,
+    "static_reference_arclength_fraction": 0.62,
+    "static_radius_m": 0.2,
+    "dynamic_appearance_s": 2.0,
+    "dynamic_reference_arclength_fraction": 0.6,
+    "dynamic_crossing_s": 9.0,
+    "dynamic_velocity_mps": 0.24,
+    "dynamic_radius_m": 0.2
+  },
+  "builds": {
+    "gated_phase": {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/builds/cusp_gated_01",
+      "library_sha256": "6c190d66edde3a3e3d0de9f1f06a06f496abc8f987a72656417680812e135b25",
+      "manifest_sha256": "6ccb18e1931e0a6caef89130b161d5f044241c1cc1a50e305afef84944062b6e",
+      "variant": "gated_phase"
+    }
+  },
+  "sources": {
+    "source_02": "/home/l/remani_ws/experiments/online_remani_validation/results/resource_contention/validation_02/static_remani_02"
+  },
+  "variants": [
+    "gated_phase"
+  ],
+  "cases": [
+    "dynamic_crossing",
+    "static_rejoin"
+  ],
+  "seeds": [
+    1
+  ],
+  "script_sha256": "e8062fcf0b249066f385691799859aacebcc067ac6831ad9b6684d2d1f6230ca",
+  "runner_sha256": "c834282f25381d372757c11d682d6f4792155acb65ffdee4adedd4c27cf64c9f",
+  "preserved": "No changes to physical geometry, margin, speed/wheel/acceleration limits, CV model or selected/brake validator.",
+  "caveat": "Few deterministic fixtures, not a statistical real-world navigation success rate."
+}
