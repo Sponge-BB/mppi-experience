@@ -61,6 +61,16 @@ def prepare(out,build,mode,scene,duration=45,projection_progress=False,planner_v
     if execution=='local' and mode!='mppi':raise ValueError('local execution requires MPPI-only mode')
     classified=build_manifest.get('classified_cloud',False) if perception=='auto' else perception=='classified'
     local_execution=(build_manifest.get('local_execution_owner',False) if execution=='auto' else execution=='local') and mode=='mppi'
+    shared_collision=build_manifest.get('shared_collision',False)
+    if shared_collision and mode!='remani' and not local_execution:
+        raise ValueError('shared collision MPPI requires classified local execution; native/noncooperative MPPI execution is unsupported')
+    if shared_collision:
+        shared_config=dict(margin=limits['margin'],comfort=limits['margin']+.02,
+            weight=original['/remani_planner_node/optimization/weight_obstacle'],
+            max_age=limits['max_age'],max_prediction=limits['max_prediction'],
+            motion_reserve_seconds=.8,motion_reserve_cap_m=.12,
+            motion_reserve_scope='soft cost only; no hard geometry or uncertainty inflation')
+        (out/'shared_collision_config.json').write_text(json.dumps(shared_config,indent=2)+'\n')
     if local_execution and (not classified or not build_manifest.get('local_execution_owner',False)):
         raise ValueError('local execution requires classified V10 build')
     if local_execution and planner_variant!='current':raise ValueError('V10 supports current native planner only')
@@ -89,6 +99,7 @@ def prepare(out,build,mode,scene,duration=45,projection_progress=False,planner_v
     for source in HERE.glob('*.py'):shutil.copy2(source,runtime/source.name)
     for name in ('simulator.py','mppi_node.py'):
         (pkg/name).symlink_to(runtime/name)
+    if shared_collision:(pkg/'shared_collision_node.py').symlink_to(runtime/'shared_collision_node.py')
     (pkg/'progress.py').symlink_to(runtime/'progress.py')
     (out/'parameters.yaml').write_text(yaml.safe_dump(params,sort_keys=True))
     launch=ET.Element('launch')
@@ -123,7 +134,11 @@ def prepare(out,build,mode,scene,duration=45,projection_progress=False,planner_v
     if mode!='remani':
         node=ET.SubElement(launch,'node',pkg='online_remani_experiment',type='mppi_node.py',name='base_mppi',output='log',required='true')
         ET.SubElement(node,'param',name='record_search',value=str(record_search).lower(),type='bool')
+        ET.SubElement(node,'param',name='shared_collision',value=str(shared_collision).lower(),type='bool')
         for key,value in {'out':str(out),'mode':mode,'library':str(build/'build/libonline_mppi.so'),'projection_progress':str(projection_progress).lower(),'classified_cloud':str(classified).lower(),'local_execution_owner':str(local_execution).lower(),'reference_delay':str(reference_delay)}.items():ET.SubElement(node,'param',name=key,value=value)
+    if shared_collision:
+        node=ET.SubElement(launch,'node',pkg='online_remani_experiment',type='shared_collision_node.py',name='shared_collision_model',output='log',required='true')
+        ET.SubElement(node,'param',name='out',value=str(out))
     ET.ElementTree(launch).write(out/'experiment.launch',encoding='unicode')
     resolved=roslaunch.config.load_config_default([str(out/'experiment.launch')],PORT,verbose=False)
     for key,value in params.items():
@@ -139,6 +154,8 @@ def prepare(out,build,mode,scene,duration=45,projection_progress=False,planner_v
         'scope':'native REMANI ROS planning/replanning/controller/detector; synthetic sensor+lagged differential plant; NOT Gazebo or physical robot',
         'native_safety_chain':'local selected-rollout + braking validator owns base execution; native guide collision requests refresh' if local_execution else 'unchanged and shared; MPPI must obey safety_speed_limit and abort trajectories',
         'local_execution_owner':local_execution,
+        'shared_collision':shared_collision,
+        'shared_collision_source_sha256':build_manifest.get('shared_collision_source_sha256'),
         'record_search':record_search,
         'local_prediction_s':limits['max_prediction'],
         'reference_delay_s':reference_delay,

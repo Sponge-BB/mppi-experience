@@ -1239,14 +1239,14 @@ namespace remani_planner
             mm_state_pos_(0), mm_state_pos_(1), mm_car_yaw_);
         const Eigen::VectorXd actual_arm_state =
             mm_state_pos_.segment(mobile_base_dim_, manipulator_dim_);
+        // Distinct sphere radii require comparing obstacle-to-surface gaps,
+        // rather than sphere-center distances with one shared radius.
         const double actual_base_min_distance =
-            planner_manager_->mm_config_->getCarObstacleMinDistance(
+            planner_manager_->mm_config_->getCarObstacleMinSurfaceDistance(
                 actual_base_state, true);
         const double actual_base_hard_stop_distance =
-            planner_manager_->mm_config_->getBaseCheckRadius() +
             actual_base_emergency_margin_;
         const double actual_base_guard_distance =
-            planner_manager_->mm_config_->getBaseCheckRadius() +
             planner_manager_->mm_config_->getMapResolution();
 
         int actual_coll_type = -1;
@@ -1260,7 +1260,7 @@ namespace remani_planner
             ROS_WARN_THROTTLE(
                 1.0,
                 "[FSM] Real base entered the voxel guard band "
-                "(distance=%.3f m, hard_stop=%.3f m); keep monitoring without "
+                "(surface_gap=%.3f m, hard_stop_margin=%.3f m); keep monitoring without "
                 "locking the A* start state.",
                 actual_base_min_distance, actual_base_hard_stop_distance);
           }
@@ -1283,8 +1283,10 @@ namespace remani_planner
           ROS_ERROR_THROTTLE(
               1.0,
               "[FSM] Real whole-body state is in hard collision "
-              "(type=%d, distance=%.3f m); stop before using nominal trajectory.",
-              actual_coll_type, actual_collision_distance);
+              "(type=%d, check_distance=%.3f m, base_surface_gap=%.3f m); "
+              "stop before using nominal trajectory.",
+              actual_coll_type, actual_collision_distance,
+              actual_base_min_distance);
           dynamic_replan_retry_pending_ = false;
           publishSafetySpeedLimit(0.0);
           changeFSMExecState(EMERGENCY_STOP, "ACTUAL_STATE");

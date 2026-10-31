@@ -2,11 +2,13 @@
 #define _MM_CONFIG_HPP_
 
 #include <cmath>
+#include <cstddef>
 #include <Eigen/Eigen>
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <memory>
 #include <string>
+#include <vector>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include "plan_env/grid_map.h"
@@ -113,10 +115,22 @@ namespace remani_planner
         double getBaseCheckRadius() const {
             return mobile_base_check_radius_;
         }
+        double getBaseSphereRadius(std::size_t i) const {
+            return fixed_collision_spheres_.empty()
+                ? mobile_base_check_radius_ : fixed_collision_spheres_.at(i)(3);
+        }
+        double getBaseMaxCheckRadius() const {
+            return fixed_collision_spheres_.empty()
+                ? mobile_base_check_radius_ : fixed_collision_max_radius_;
+        }
+        bool hasCustomBaseSpheres() const {
+            return !fixed_collision_spheres_.empty();
+        }
         double getMapResolution() const {
             return map_resolution_;
         }
         double getCarObstacleMinDistance(const Eigen::Vector3d &car_state, bool precise);
+        double getCarObstacleMinSurfaceDistance(const Eigen::Vector3d &car_state, bool precise);
         bool getUseFastArmer() const {
             return useFastArmer_;
         }
@@ -129,6 +143,10 @@ namespace remani_planner
         int manipulator_dof_;
         double mobile_base_length_, mobile_base_width_, mobile_base_height_;
         double mobile_base_check_radius_;
+        // Ground-referenced base-local centres and physical radii.  Explicitly
+        // disabled by default, so stale sphere parameters cannot prevent rollback.
+        std::vector<Eigen::Vector4d> fixed_collision_spheres_;
+        double fixed_collision_max_radius_ = 0.0;
         double mobile_base_wheel_base_, mobile_base_wheel_radius_, mobile_base_max_wheel_omega_, mobile_base_max_wheel_alpha_;
         
         Eigen::VectorXd manipulator_config_;

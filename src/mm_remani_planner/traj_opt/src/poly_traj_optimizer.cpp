@@ -1002,7 +1002,7 @@ namespace remani_planner
     for(unsigned int i = 0; i < car_pts.size(); ++i){
       Eigen::Vector3d dist_grad;
       grid_map_->evaluatePlanningEDTWithGrad(car_pts[i], dist, dist_grad);
-      dist_err = mobile_base_check_radius_ + safe_margin_ - dist;
+      dist_err = mm_config_->getBaseSphereRadius(i) + safe_margin_ - dist;
       if (dist_err > 0){
         dist_err_2 = dist_err * dist_err;
         dist_err_3 = dist_err_2 * dist_err;
@@ -1110,6 +1110,10 @@ namespace remani_planner
     T_grad_list_self[0] = T_q_0_ * T_joint_grad[0];
     mm_config_->getCarPts(Eigen::Vector3d::Zero(), car_pts, Eigen::Vector3d::Zero());
     double factor2 = 1.0;
+    // Fixed-structure balls include the arm mount. Match the native hard-check
+    // adjacency rule for Piper; retain legacy box and arm-arm behavior.
+    const int base_arm_check_start =
+        mm_config_->hasCustomBaseSpheres() && !mm_config_->getUseFastArmer() ? 2 : 1;
     for(int i = 1; i < manipulator_dof_; ++i){ // car will not collide with link 0
       for(int j = 0; j < i; ++j){
         T_grad_list_self[j] = T_grad_list_self[j] * T_joint[i];
@@ -1122,9 +1126,9 @@ namespace remani_planner
       for(int j = 0; j < pts_size; ++j){
         // with car
         pt_on_link = (T_now * manipulator_link_pts_[i].col(j)).head(3);
-        for(unsigned int m = 0; m < car_pts.size(); ++m){
+        for(unsigned int m = 0; i >= base_arm_check_start && m < car_pts.size(); ++m){
           dist = (car_pts[m] - pt_on_link).norm(); // coarse distance
-          dist_err = manipulator_thickness_ + mobile_base_check_radius_ + self_safe_margin_ - dist; //refine distance
+          dist_err = manipulator_thickness_ + mm_config_->getBaseSphereRadius(m) + self_safe_margin_ - dist; //refine distance
           if(dist_err > 0){
             dist_err_2 = dist_err * dist_err;
             dist_err_3 = dist_err_2 * dist_err;

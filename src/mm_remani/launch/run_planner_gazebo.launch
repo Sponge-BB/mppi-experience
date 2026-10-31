@@ -5,6 +5,7 @@
   <arg name="map_size_z" value="3.0"/>
   <!-- Keep borrowing the parameter file directly from remani_planner without touching them -->
   <arg name="exp_param_file" default="$(find remani_planner)/config/exp0_param.yaml"/>
+  <arg name="use_urdf_collision_b" default="false"/>
 
   <!-- Optional diagnostics.  Simulation keeps the historical defaults; the
        real-robot entry point disables consumers that are not needed for control. -->
@@ -42,6 +43,7 @@
        Start the Core Planner ONLY (No fake Simulator, No map Generator)
        ========================================================= -->
   <include file="$(find mm_remani)/launch/piper_advanced_param.xml">
+    <arg name="use_urdf_collision_b" value="$(arg use_urdf_collision_b)"/>
     <arg name="map_size_x_"             value="$(arg map_size_x)"/>
     <arg name="map_size_y_"             value="$(arg map_size_y)"/>
     <arg name="map_size_z_"             value="$(arg map_size_z)"/>

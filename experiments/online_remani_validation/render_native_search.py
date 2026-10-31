@@ -37,9 +37,9 @@ def render(source, out, replace=False):
         if prior['source']!=str(source.resolve()):raise ValueError('cannot replace visualization from another source')
     else:out.mkdir(parents=True,exist_ok=False)
     title=ImageFont.truetype(FONT,20);small=ImageFont.truetype(FONT,16)
-    frames=[];search_frames=0;best=None;best_count=-1
+    frames=[];search_frames=0;best=None;best_count=-1;last_zoom=None
     def frame(t, zoom):
-        nonlocal search_frames,best,best_count
+        nonlocal search_frames,best,best_count,last_zoom
         terminal=t>=r['elapsed'];s=a['state'];j=max(0,np.searchsorted(s['t'],t,side='right')-1);state=s[j]
         im=Image.new('RGB',(850,650),'white');d=ImageDraw.Draw(im)
         name=CASES[r['scene']][1] if r['scene'] in CASES else r['scene']
@@ -84,18 +84,22 @@ def render(source, out, replace=False):
         d.text((22,591),f'灰箭头：感知 CV 展开（最长1.5s）；本帧预测目标 {predicted} 个',font=small,fill='#555555')
         status=('结束：'+r['reason']) if terminal else ('执行：'+execution[ei]['reason'] if ei>=0 else '尚未执行')
         d.text((22,616),'数值仿真 / 固定臂 / '+('局部放大' if zoom else '全局视图')+' / '+status,font=small,fill='#555555')
-        if zoom and feasible+rejected>best_count:best_count=feasible+rejected;best=im.copy()
+        if zoom:
+            last_zoom=im.copy()
+            if snap is not None and feasible+rejected>best_count:best_count=feasible+rejected;best=im.copy()
         return im
     times=list(np.arange(anchor,r['elapsed'],.2))+[r['elapsed']]
     for zoom,name in ((False,'overview'),(True,'search_zoom')):
         frames=[frame(t,zoom).convert('P',palette=Image.ADAPTIVE,colors=128) for t in times]
         frames[0].save(out/(name+'.gif'),save_all=True,append_images=frames[1:],duration=200,loop=0,disposal=2)
-    best.save(out/'search_snapshot.png')
+    # No search records is a real outcome (e.g. a failed startup). Use the
+    # labelled final measured frame, never synthesize candidate trajectories.
+    (best if best is not None else last_zoom).save(out/'search_snapshot.png')
     for p in inputs:assert hashlib.sha256(p.read_bytes()).hexdigest()==hashes[str(p.relative_to(source))]
     for name in ('render_native_search.py','native_visuals.py','compare_native_v9.py','dynamic_scenarios.py'):
         shutil.copy2(Path(__file__).parent/name,out/name)
     report=dict(source=str(source.resolve()),source_sha256=hashes,search_snapshots=len(search.entries),
-                rendered_search_frames=search_frames,visualization_only=True,source_unchanged=True,
+                rendered_search_frames=search_frames,snapshot_has_search=best is not None,visualization_only=True,source_unchanged=True,
                 no_missing_search_fabricated=True,body_disks=body.tolist(),result=r['reason'])
     (out/'visualization_audit.json').write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps({k:v for k,v in report.items() if k!='source_sha256'},indent=2))

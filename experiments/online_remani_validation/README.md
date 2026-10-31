@@ -2,6 +2,38 @@
 
 这是本机隔离 ROS 数值闭环，不是 Gazebo，也不是实车试验。固定机械臂，只比较底盘局部控制。
 
+[2026-10-22 目标选择×MPPI初值反馈实验](results/collab_factorial_20261022/README.md)：
+48次新在线、96次冻结配对求解、2个终点占据负例，保留3个关键GIF。
+[直白结论](results/collab_factorial_20261022/report/结论与下一步.txt)、
+[GIF索引](results/collab_factorial_20261022/report/GIF_INDEX.md)。短目标/前缀反馈未稳定改善，
+另以自由场诊断复现冻结V12末端停滞；不合并已有独立候选、不修改实车。
+
+[2026-10-18 MPPI换向停滞调整](MPPI_CUSP_ADJUSTMENT.md)：以同一真实完整原生参考，
+分开对照严格方向阶段、阶段评分、换向点占据门控及二者合并；保留静态/动态回归失败。
+本轮为不含ROS的固定参考数值实验，未替换实车或后续共享碰撞版本。
+[调整总结](results/mppi_cusp_20261018/实验结果与改进总结.txt)、
+[数据图与结果](results/mppi_cusp_20261018/README.md)、
+[分类GIF](results/mppi_cusp_20261018/GIF_INDEX.md)。最终候选18工况通过，实车尚未接入。
+
+[2026-10-18 双时间尺度定位实验](results/dual_timescale_20261018/README.md)：冻结V12的11次完整在线、
+18项MPPI独立回线及失败复核，分清目标选择拒绝、重试等待与MPPI换向停滞。
+[结果与下一步建议](results/dual_timescale_20261018/实验结果与下一步建议.txt)、
+[分类GIF](results/dual_timescale_20261018/GIF_INDEX.md)。仅增加诊断，不替换后续共享碰撞候选或实车版本。
+
+[预算、轮速验收与冻结恢复定向诊断](FAILURE_DIAGNOSIS.md)：同一真实失败请求的预算与轮速配对、
+代价热点计时、原生控制时钟和实际Tracker的固定参考诊断。生产源码和实车参数不修改。
+[正式结论与后续建议](results/failure_diagnosis/validation_05/结论与后续建议.txt)：4个主输入快照、72次配对求解，
+另有冻结状态与固定参考诊断；细分计时开销单独测量，主结论只用关闭细分计时的结果。
+
+[REMANI / 后台 MPPI / 接入 MPPI 计算资源对照](RESOURCE_CONTENTION.md)：18次在线试验与8次相同请求诊断，
+记录进程/线程CPU、优化墙钟和约束拒绝；[正式结果与分析](results/resource_contention/validation_02/诊断结论与改进顺序.txt)保留静态控制冻结和动态碰撞失败。
+
+[REMANI / V12 共用碰撞模型与参考回接](SHARED_COLLISION.md)：四组在线对照，
+共用全身二维投影、原子测量距离场与三次空间碰撞代价，另验证新参考的接续。
+仅此显式新实验统一原生环境几何；旧 V12 与实车默认流程不替换，失败记录保留。
+
+[最新有向阶段回归与对照图/GIF](results/shared_collision/validation_05/README.md)：6 轮新候选在线试验 + 18 项经核验的本批对照复用，5 轮到达、1 轮静态超时。成本统一已经实现，静态段末回接仍未修好；[实际搜索失败证据](results/shared_collision/validation_05/static_endpoint_diagnosis.md)与未验证后续方案单独保留。该候选不是 Gazebo/实车放行版本。
+
 [V12 慢速目标感知与迎面/横穿局部策略](NATIVE_V12.md)：隔离候选及多场景验证，
 保留完整车体投影、搜索 GIF、失败记录与时域/感知消融；不替换实车或旧版本默认入口。
 

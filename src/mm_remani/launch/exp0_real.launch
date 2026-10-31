@@ -4,6 +4,9 @@
 
   <!-- Load planner parameter file purely by reference -->
   <arg name="exp_param_file" value="$(find remani_planner)/config/exp0_param.yaml"/>
+  <!-- Candidate B fixed structure: 47 spheres; false restores legacy geometry
+       without changing the Tracker, speed limits or planning time budgets. -->
+  <arg name="use_urdf_collision_b" default="true"/>
 
   <!-- Real-robot production profile. Diagnostics can be re-enabled one by one
        from the command line without changing the control configuration. -->
@@ -33,6 +36,7 @@
   <!-- Boot the Gazebo mapped planner bridge -->
   <include file="$(find mm_remani)/launch/run_planner_gazebo.launch">
     <arg name="exp_param_file" value="$(arg exp_param_file)"/>
+    <arg name="use_urdf_collision_b" value="$(arg use_urdf_collision_b)"/>
     <arg name="enable_world_points" value="$(arg enable_world_points)"/>
     <arg name="enable_model_vis" value="$(arg enable_model_vis)"/>
     <arg name="enable_heavy_visualization" value="$(arg enable_heavy_visualization)"/>

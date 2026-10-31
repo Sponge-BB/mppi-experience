@@ -1,6 +1,8 @@
 #include "mm_config/mm_config.hpp"
 
+#include <algorithm>
 #include <limits>
+#include <stdexcept>
 
 namespace remani_planner
 {
@@ -16,6 +18,41 @@ void MMConfig::setParam(ros::NodeHandle &nh){
     nh.param("mm/mobile_base_width", mobile_base_width_, -1.0);
     nh.param("mm/mobile_base_height", mobile_base_height_, -1.0);
     nh.param("mm/mobile_base_check_radius", mobile_base_check_radius_, -1.0);
+    fixed_collision_spheres_.clear();
+    fixed_collision_max_radius_ = 0.0;
+    bool fixed_collision_spheres_enable = false;
+    nh.param("mm/fixed_collision_spheres_enable", fixed_collision_spheres_enable, false);
+    XmlRpc::XmlRpcValue sphere_rows;
+    if(fixed_collision_spheres_enable){
+        if(!nh.getParam("mm/fixed_collision_spheres", sphere_rows))
+            throw std::invalid_argument("mm/fixed_collision_spheres_enable is true but mm/fixed_collision_spheres is missing");
+        if(sphere_rows.getType() != XmlRpc::XmlRpcValue::TypeArray ||
+           sphere_rows.size() == 0)
+            throw std::invalid_argument("mm/fixed_collision_spheres must be a nonempty array of [x,y,z,r]");
+        for(int i = 0; i < sphere_rows.size(); ++i){
+            if(sphere_rows[i].getType() != XmlRpc::XmlRpcValue::TypeArray ||
+               sphere_rows[i].size() != 4)
+                throw std::invalid_argument("Each fixed collision sphere must contain x,y,z,r");
+            Eigen::Vector4d sphere;
+            for(int j = 0; j < 4; ++j){
+                if(sphere_rows[i][j].getType() == XmlRpc::XmlRpcValue::TypeInt)
+                    sphere(j) = static_cast<int>(sphere_rows[i][j]);
+                else if(sphere_rows[i][j].getType() == XmlRpc::XmlRpcValue::TypeDouble)
+                    sphere(j) = static_cast<double>(sphere_rows[i][j]);
+                else
+                    throw std::invalid_argument("Fixed collision sphere values must be numeric");
+            }
+            if(!sphere.allFinite() || sphere(3) <= 0.0)
+                throw std::invalid_argument("Fixed collision sphere requires finite coordinates and positive radius");
+            fixed_collision_spheres_.push_back(sphere);
+            fixed_collision_max_radius_ = std::max(fixed_collision_max_radius_, sphere(3));
+        }
+        ROS_INFO("[MMConfig] Using %zu custom fixed-structure collision spheres", fixed_collision_spheres_.size());
+    }else{
+        std::vector<Eigen::Vector3d> legacy_points;
+        getCarPts(Eigen::Vector3d::Zero(), legacy_points);
+        ROS_INFO("[MMConfig] Custom fixed-structure collision spheres disabled; using legacy sampled-box model (%zu spheres)", legacy_points.size());
+    }
 
     nh.param("mm/mobile_base_wheel_base", mobile_base_wheel_base_, -1.0);
     nh.param("mm/mobile_base_wheel_radius", mobile_base_wheel_radius_, -1.0);
@@ -136,6 +173,11 @@ void MMConfig::setParam(ros::NodeHandle &nh){
         0.25 * mobile_base_length_ * mobile_base_length_ +
         0.25 * mobile_base_width_ * mobile_base_width_ +
         mobile_base_height_ * mobile_base_height_);
+    if(hasCustomBaseSpheres()){
+        dynamic_bound = 0.0;
+        for(const auto &sphere : fixed_collision_spheres_)
+            dynamic_bound = std::max(dynamic_bound, sphere.head<3>().norm());
+    }
     double chain_translation_bound = T_q_0_.block<3, 1>(0, 3).norm();
     for(int i = 0; dynamic_bound_valid && i < manipulator_dof_; ++i){
         Eigen::Matrix4d T_joint, T_joint_grad;
@@ -424,6 +466,20 @@ void MMConfig::getCarPts(const Eigen::Vector3d &car_state, std::vector<Eigen::Ve
 }
 
 void MMConfig::getCarPts(const Eigen::Vector3d &car_state, std::vector<Eigen::Vector3d> &car_pts, const Eigen::Vector3d &inflate_size){
+    if(hasCustomBaseSpheres()){
+        if(!inflate_size.isZero(0.0))
+            throw std::invalid_argument("Custom fixed collision spheres do not support nonzero inflate_size");
+        car_pts.clear();
+        car_pts.reserve(fixed_collision_spheres_.size());
+        Eigen::Matrix2d R;
+        R << cos(car_state(2)), -sin(car_state(2)),
+             sin(car_state(2)), cos(car_state(2));
+        for(const auto &sphere : fixed_collision_spheres_){
+            const Eigen::Vector2d xy = car_state.head<2>() + R * sphere.head<2>();
+            car_pts.emplace_back(xy.x(), xy.y(), sphere.z());
+        }
+        return;
+    }
     car_pts.clear();
     Eigen::Vector3d point_3d;
     Eigen::Matrix2d R;
@@ -476,6 +532,16 @@ void MMConfig::getCarPts(const Eigen::Vector3d &car_state, std::vector<Eigen::Ve
 
 void MMConfig::getCarPtsGrad(const Eigen::Vector2d &pos_car, const Eigen::Vector2d &vel_car, const int traj_dir, const Eigen::Vector3d &inflate_size,
                     std::vector<Eigen::Vector3d> &car_pts, std::vector<Eigen::Matrix2d> &dPtdv){
+    if(hasCustomBaseSpheres()){
+        std::vector<Eigen::Vector2d> dPtdYaw;
+        getCarPtsGradNew(pos_car, vel_car, traj_dir, inflate_size, car_pts, dPtdYaw);
+        dPtdv.clear();
+        dPtdv.reserve(dPtdYaw.size());
+        const Eigen::Vector2d dYawdV = caldYawdV(vel_car);
+        for(const auto &gradient : dPtdYaw)
+            dPtdv.push_back(gradient * dYawdV.transpose());
+        return;
+    }
     car_pts.clear();
     dPtdv.clear();
     Eigen::Vector3d point_3d;
@@ -558,6 +624,17 @@ void MMConfig::getCarPtsGrad(const Eigen::Vector2d &pos_car, const Eigen::Vector
 
 void MMConfig::getCarPtsGradNew(const Eigen::Vector2d &pos_car, const Eigen::Vector2d &vel_car, const int traj_dir, const Eigen::Vector3d &inflate_size,
                     std::vector<Eigen::Vector3d> &car_pts, std::vector<Eigen::Vector2d> &dPtdYaw){
+    if(hasCustomBaseSpheres()){
+        const double yaw = atan2(traj_dir * vel_car.y(), traj_dir * vel_car.x());
+        getCarPts(Eigen::Vector3d(pos_car.x(), pos_car.y(), yaw), car_pts, inflate_size);
+        Eigen::Matrix2d dRdYaw;
+        dRdYaw << -sin(yaw), -cos(yaw), cos(yaw), -sin(yaw);
+        dPtdYaw.clear();
+        dPtdYaw.reserve(fixed_collision_spheres_.size());
+        for(const auto &sphere : fixed_collision_spheres_)
+            dPtdYaw.push_back(dRdYaw * sphere.head<2>());
+        return;
+    }
     car_pts.clear();
     dPtdYaw.clear();
     double yaw = atan2(traj_dir * vel_car(1), traj_dir * vel_car(0));
@@ -671,13 +748,27 @@ double MMConfig::getCarObstacleMinDistance(
     return min_dist;
 }
 
+double MMConfig::getCarObstacleMinSurfaceDistance(
+    const Eigen::Vector3d &car_state, bool precise){
+    std::vector<Eigen::Vector3d> car_pts;
+    getCarPts(car_state, car_pts);
+    double min_dist = std::numeric_limits<double>::infinity();
+    for(std::size_t i = 0; i < car_pts.size(); ++i){
+        const double dist = precise
+            ? grid_map_->getPreciseDistance(car_pts[i])
+            : grid_map_->getDistance(car_pts[i]);
+        min_dist = std::min(min_dist, dist - getBaseSphereRadius(i));
+    }
+    return min_dist;
+}
+
 bool MMConfig::checkCarObsCollision(Eigen::Vector3d car_state, bool precise, bool safe, double &min_dist){
     std::vector<Eigen::Vector3d> car_pts;
     getCarPts(car_state, car_pts);
     double dist;
-    double safe_dist = safe ? mobile_base_check_radius_ + car_safe_margin_ : mobile_base_check_radius_;
-    safe_dist += map_resolution_;
+    const double extra_distance = (safe ? car_safe_margin_ : 0.0) + map_resolution_;
     for(unsigned int i = 0; i < car_pts.size(); ++i){
+        const double safe_dist = getBaseSphereRadius(i) + extra_distance;
         if(precise){
             dist = grid_map_->getPreciseDistance(car_pts[i]);
         }else{
@@ -689,7 +780,7 @@ bool MMConfig::checkCarObsCollision(Eigen::Vector3d car_state, bool precise, boo
             return true;
         }
     }
-    min_dist = safe_dist;
+    min_dist = getBaseMaxCheckRadius() + extra_distance;
     return false;
 }
 
@@ -751,11 +842,11 @@ bool MMConfig::checkCarPlanningObsCollision(
     Eigen::Vector3d car_state, bool precise, bool safe, double &min_dist){
     std::vector<Eigen::Vector3d> car_pts;
     getCarPts(car_state, car_pts);
-    const double safe_dist =
-        (safe ? mobile_base_check_radius_ + car_safe_margin_ :
-                mobile_base_check_radius_) + map_resolution_;
-    min_dist = safe_dist;
-    for(const auto &point : car_pts){
+    const double extra_distance = (safe ? car_safe_margin_ : 0.0) + map_resolution_;
+    min_dist = getBaseMaxCheckRadius() + extra_distance;
+    for(std::size_t i = 0; i < car_pts.size(); ++i){
+        const auto &point = car_pts[i];
+        const double safe_dist = getBaseSphereRadius(i) + extra_distance;
         const double dist = grid_map_->getPlanningDistance(point, precise);
         min_dist = std::min(min_dist, dist);
         if(dist < safe_dist)
@@ -804,15 +895,17 @@ bool MMConfig::checkManiPlanningObsCollision(
 bool MMConfig::checkCarDynamicObsCollision(Eigen::Vector3d car_state, bool safe, double &min_dist){
     std::vector<Eigen::Vector3d> car_pts;
     getCarPts(car_state, car_pts);
-    const double safe_dist = (safe ? mobile_base_check_radius_ + car_safe_margin_ : mobile_base_check_radius_) + map_resolution_;
-    for(const auto &pt : car_pts){
+    const double extra_distance = (safe ? car_safe_margin_ : 0.0) + map_resolution_;
+    for(std::size_t i = 0; i < car_pts.size(); ++i){
+        const auto &pt = car_pts[i];
+        const double safe_dist = getBaseSphereRadius(i) + extra_distance;
         const double dist = grid_map_->getDynamicObstacleDistance(pt, safe_dist);
         if(dist < safe_dist){
             min_dist = dist;
             return true;
         }
     }
-    min_dist = safe_dist;
+    min_dist = getBaseMaxCheckRadius() + extra_distance;
     return false;
 }
 
@@ -850,12 +943,12 @@ bool MMConfig::checkCarPredictedDynamicObsCollision(
     double &min_dist, bool &query_valid){
     std::vector<Eigen::Vector3d> car_pts;
     getCarPts(car_state, car_pts);
-    const double safe_dist =
-        (safe ? mobile_base_check_radius_ + car_safe_margin_ :
-                mobile_base_check_radius_) + map_resolution_;
-    min_dist = safe_dist;
+    const double extra_distance = (safe ? car_safe_margin_ : 0.0) + map_resolution_;
+    min_dist = getBaseMaxCheckRadius() + extra_distance;
     query_valid = true;
-    for(const auto &pt : car_pts){
+    for(std::size_t i = 0; i < car_pts.size(); ++i){
+        const auto &pt = car_pts[i];
+        const double safe_dist = getBaseSphereRadius(i) + extra_distance;
         double dist = safe_dist;
         if(!grid_map_->getPredictedDynamicObstacleDistance(
                snapshot, pt, query_time, safe_dist, dist)){
@@ -909,7 +1002,7 @@ bool MMConfig::checkManiPredictedDynamicObsCollision(
 }
 
 bool MMConfig::checkCarManiCollision(Eigen::VectorXd mani_state, bool safe, double &min_dist){
-    double safe_dist = safe ? mobile_base_check_radius_ + manipulator_thickness_ + self_safe_margin_ : mobile_base_check_radius_ + manipulator_thickness_;
+    const double extra_distance = manipulator_thickness_ + (safe ? self_safe_margin_ : 0.0);
     std::vector<Eigen::Vector3d> car_pts;
     getCarPts(Eigen::Vector3d::Zero(), car_pts);
     Eigen::Vector3d pt_on_link;
@@ -933,6 +1026,7 @@ bool MMConfig::checkCarManiCollision(Eigen::VectorXd mani_state, bool safe, doub
         for(int j = 0; j < pts_size; ++j){
             pt_on_link = (T_now * manipulator_link_pts_[i].col(j)).head(3);
             for(int k = 0; k < car_pts_size; ++k){
+                const double safe_dist = getBaseSphereRadius(k) + extra_distance;
                 if((pt_on_link - car_pts[k]).norm() < safe_dist){
                     min_dist = (pt_on_link - car_pts[k]).norm();
                     return true;
@@ -940,7 +1034,7 @@ bool MMConfig::checkCarManiCollision(Eigen::VectorXd mani_state, bool safe, doub
             }
         }
     }
-    min_dist = safe_dist;
+    min_dist = getBaseMaxCheckRadius() + extra_distance;
     return false;
 }
 
@@ -1026,8 +1120,7 @@ bool MMConfig::checkPredictedDynamicObstacleCollision(
     }
 
     const double car_check_distance =
-        (safe ? mobile_base_check_radius_ + car_safe_margin_ :
-                mobile_base_check_radius_) + map_resolution_;
+        getBaseMaxCheckRadius() + (safe ? car_safe_margin_ : 0.0) + map_resolution_;
     const double mani_check_distance =
         safe ? manipulator_thickness_ + mani_safe_margin_ :
                manipulator_thickness_;
@@ -1035,8 +1128,8 @@ bool MMConfig::checkPredictedDynamicObstacleCollision(
         std::isfinite(mobile_base_length_) && mobile_base_length_ > 0.0 &&
         std::isfinite(mobile_base_width_) && mobile_base_width_ > 0.0 &&
         std::isfinite(mobile_base_height_) && mobile_base_height_ > 0.0 &&
-        std::isfinite(mobile_base_check_radius_) &&
-            mobile_base_check_radius_ > 0.0 &&
+        std::isfinite(getBaseMaxCheckRadius()) &&
+            getBaseMaxCheckRadius() > 0.0 &&
         std::isfinite(map_resolution_) && map_resolution_ >= 0.0 &&
         std::isfinite(car_check_distance) && car_check_distance > 0.0 &&
         std::isfinite(mani_check_distance) && mani_check_distance > 0.0;
@@ -1167,16 +1260,16 @@ bool MMConfig::checkPredictedDynamicObstacleCollision(
         coll_type = -1;
         return false;
     }
-    const double car_collision_distance =
-        car_check_distance + prediction_uncertainty;
     const double mani_collision_distance =
         mani_check_distance + prediction_uncertainty;
-    const double car_collision_distance_sq =
-        car_collision_distance * car_collision_distance;
     const double mani_collision_distance_sq =
         mani_collision_distance * mani_collision_distance;
 
-    for(const auto &robot_point : car_pts){
+    for(std::size_t i = 0; i < car_pts.size(); ++i){
+        const auto &robot_point = car_pts[i];
+        const double car_collision_distance = getBaseSphereRadius(i) +
+            (safe ? car_safe_margin_ : 0.0) + map_resolution_ + prediction_uncertainty;
+        const double car_collision_distance_sq = car_collision_distance * car_collision_distance;
         for(const auto &obstacle_point : predicted_positions){
             if((robot_point - obstacle_point).squaredNorm() <
                car_collision_distance_sq){
@@ -1410,6 +1503,21 @@ void MMConfig::visCarCheckBall(ros::Publisher &pub, std::string ns, int idx, dou
     sphere.color.g = color_set_[0](1);
     sphere.color.b = color_set_[0](2);
     sphere.color.a = alpha > 1e-5 ? alpha : 1.0;
+    if(hasCustomBaseSpheres()){
+        // SPHERE_LIST has one shared scale. Publish individual markers so
+        // variable physical radii are not visualized as a uniform envelope.
+        sphere.type = visualization_msgs::Marker::SPHERE;
+        sphere.ns = ns + "/fixed_collision_spheres";
+        for(std::size_t i = 0; i < car_pts.size(); ++i){
+            sphere.id = idx * vis_idx_size_ + static_cast<int>(i);
+            sphere.pose.position.x = car_pts[i].x();
+            sphere.pose.position.y = car_pts[i].y();
+            sphere.pose.position.z = car_pts[i].z();
+            sphere.scale.x = sphere.scale.y = sphere.scale.z = 2.0 * getBaseSphereRadius(i);
+            pub.publish(sphere);
+        }
+        return;
+    }
     sphere.scale.x = mobile_base_check_radius_ * 2.0;
     sphere.scale.y = mobile_base_check_radius_ * 2.0;
     sphere.scale.z = mobile_base_check_radius_ * 2.0;

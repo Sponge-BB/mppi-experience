@@ -14,12 +14,13 @@ from geometry_msgs.msg import Twist,Vector3Stamped,PoseStamped
 from nav_msgs.msg import Odometry,Path as RosPath
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs import point_cloud2 as pc2
-from std_msgs.msg import Bool,Float64,String
+from std_msgs.msg import Bool,Float64,String,Float64MultiArray
 from quadrotor_msgs.msg import PolynomialTraj
 from simulator import isolation,polynomial
 from progress import project
 from native_reference import NativeReference,sampled_reference,fingerprint
 from classified_frame import collision_frame
+from state_contract_records import capture_enabled, identity_or_error
 
 DP=ct.POINTER(ct.c_double)
 def ptr(a):return a.ctypes.data_as(DP)
@@ -52,6 +53,12 @@ class Node:
         self.lib.online_feedback.argtypes=[ct.c_void_p,ct.c_double,ct.c_double];self.lib.online_destroy.argtypes=[ct.c_void_p]
         self.handle=self.lib.online_create(ptr(p),ptr(body),len(body),1)
         if not self.handle:raise RuntimeError('MPPI kernel initialization failed')
+        self.shared_collision=rospy.get_param('~shared_collision',False)
+        self.collision_payload=None;self.collision_sequence=0.;self.expected_body=body
+        if self.shared_collision:
+            if not hasattr(self.lib,'online_set_collision_snapshot'):raise RuntimeError('shared collision ABI missing')
+            self.lib.online_set_collision_snapshot.argtypes=[ct.c_void_p,DP,ct.c_int]
+            self.lib.online_set_collision_snapshot.restype=ct.c_int
         self.v2=hasattr(self.lib,'online_debug');self.kernel_bundle=-1
         self.v3=hasattr(self.lib,'online_status')
         self.v4=hasattr(self.lib,'online_local_route')
@@ -72,6 +79,8 @@ class Node:
             self.lib.online_reset.argtypes=[ct.c_void_p]
             self.lib.online_debug.argtypes=[ct.c_void_p,DP]
         self.lock=threading.Lock();self.state=None;self.odom_stamp=0.;self.refs=[];self.ref_changed=0.;self.ref_start=0.;self.bundle=0
+        # Initialize before Subscriber can deliver its first callback.
+        self.state_contract_enabled=capture_enabled();self.odom_identity=None
         self.native=NativeReference();self.revision=0;self.last_logged_reference=None
         self.reference_log=(out/'consumed_references.jsonl').open('w',buffering=1)
         self.reference_events=(out/'reference_events.jsonl').open('w',buffering=1)
@@ -91,7 +100,9 @@ class Node:
         rospy.Subscriber('/planning/safety_speed_limit',Float64,self.safety_limit,queue_size=1)
         rospy.Subscriber('/dynamic_obstacle_tracker/perception_healthy',Bool,self.perception_health,queue_size=1)
         rospy.Subscriber('/map_generator/global_cloud',PointCloud2,self.map,queue_size=1)
-        if self.classified:
+        if self.shared_collision:
+            rospy.Subscriber('/sim/unified_collision',Float64MultiArray,self.shared_cloud,queue_size=1)
+        elif self.classified:
             rospy.Subscriber('/sim/classified_cloud',PointCloud2,self.classified_cloud,queue_size=1)
         else:
             rospy.Subscriber('/velodyne_points',PointCloud2,self.cloud,queue_size=1)
@@ -102,7 +113,11 @@ class Node:
 
     def odom(self,m):
         q=m.pose.pose.orientation;yaw=math.atan2(2*(q.w*q.z+q.x*q.y),1-2*(q.y*q.y+q.z*q.z))
-        with self.lock:self.state=np.array([m.pose.pose.position.x,m.pose.pose.position.y,yaw,m.twist.twist.linear.x,m.twist.twist.angular.z]);self.odom_stamp=m.header.stamp.to_sec()
+        # Serialization is diagnostic computation only; never do file I/O here.
+        identity=identity_or_error(m) if getattr(self,'state_contract_enabled',False) else None
+        with self.lock:
+            self.state=np.array([m.pose.pose.position.x,m.pose.pose.position.y,yaw,m.twist.twist.linear.x,m.twist.twist.angular.z]);self.odom_stamp=m.header.stamp.to_sec()
+            if getattr(self,'state_contract_enabled',False):self.odom_identity=identity
 
     def safety_limit(self,m):
         with self.lock:self.safety=m.data if math.isfinite(m.data) else 0.
@@ -150,6 +165,29 @@ class Node:
                 self.classification=stats;self.classified_error=None
         except (ValueError,KeyError,AssertionError) as exc:
             with self.lock:self.field=None;self.classified_error=str(exc)
+
+    def shared_cloud(self,m):
+        try:
+            values=np.ascontiguousarray(m.data,dtype=np.float64)
+            if len(values)<16 or not np.all(np.isfinite(values)):raise ValueError('malformed shared snapshot')
+            h=values[:16];nx,ny,nb,no=map(int,(h[3],h[4],h[11],h[12]))
+            if h[0]!=1 or (nx,ny)!=(self.nx,self.ny) or nb!=len(self.expected_body) or not 0<=no<=16:
+                raise ValueError('shared snapshot geometry or shape mismatch')
+            if len(values)!=16+3*nb+6*no+nx*ny:raise ValueError('incomplete shared snapshot')
+            if not np.array_equal(values[16:16+3*nb].reshape((-1,3)),self.expected_body):raise ValueError('body cover drift')
+            stamp=h[2];now=rospy.get_time()
+            if not -.05<=now-stamp<=.35:raise ValueError('stale shared snapshot')
+            obs=np.ascontiguousarray(values[16+3*nb:16+3*nb+6*no].reshape((-1,6)))
+            field=np.ascontiguousarray(values[16+3*nb+6*no:].reshape((ny,nx)))
+            with self.lock:
+                if stamp<=self.cloud_stamp:return
+                self.collision_payload=values;self.collision_sequence=h[1]
+                self.field=field if h[15] else None;self.obs=obs;self.cloud_stamp=stamp;self.obs_stamp=stamp
+                self.classification={'shared_sequence':h[1],'dynamic_tracks':no,'shared_source':'/sim/unified_collision'}
+                self.classified_error=None
+                if not h[15]:self.healthy=False
+        except (ValueError,IndexError) as exc:
+            with self.lock:self.field=None;self.collision_payload=None;self.classified_error=str(exc)
 
     def cloud(self,m):
         try:

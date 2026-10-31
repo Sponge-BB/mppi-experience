@@ -13,6 +13,7 @@ from std_msgs.msg import String
 from quadrotor_msgs.msg import PolynomialTraj
 from native_reference import NativeReference, sampled_reference, fingerprint
 from progress import project
+from state_contract_records import JsonlCapture, capture_enabled, copy_state_and_identity
 
 DP=ct.POINTER(ct.c_double)
 def ptr(a):return a.ctypes.data_as(DP)
@@ -94,6 +95,9 @@ def configure(node):
         lib.online_accept_execution_controls.argtypes=[ct.c_void_p,DP,ct.c_int]
         lib.online_accept_execution_controls.restype=ct.c_int
     node.execution=ExecutionSession();node.execution_log=(node.out/'execution_rollouts.jsonl').open('w',buffering=1)
+    node.state_contract_cycles=JsonlCapture(node.out/'state_mppi_cycles.jsonl',
+        enabled=getattr(node,'state_contract_enabled',capture_enabled()))
+    if node.state_contract_cycles.enabled:rospy.on_shutdown(node.state_contract_cycles.close)
     node.strategy_debug=hasattr(lib,'online_dynamic_strategy_debug')
     if node.strategy_debug:lib.online_dynamic_strategy_debug.argtypes=[ct.c_void_p,DP]
     node.search_recorder=None
@@ -146,12 +150,20 @@ def configure(node):
 
 def run(node):
     rate=rospy.Rate(20);last_reference=None;kernel_task=-1;kernel_revision=-1
+    cycle_id=0;kernel_reference_cycles=set();validated_reference_cycles=set()
+    state_capture=getattr(node,'state_contract_cycles',None)
+    capture_states=state_capture is not None and state_capture.enabled
     while not rospy.is_shutdown():
+        cycle_id+=1
         wall=time.monotonic();result=np.zeros(8);validation=np.zeros(6)
         checked=np.zeros((650,8));validated_count=0;controls=np.empty((0,2));code=-1;validation_code=-1
         candidates=[];validation_attempts=[];accepted_candidate=-1
         reference=None;reference_hash=None
-        phase_debug=None
+        phase_debug=None;online_step_invoked=False
+        online_step_entry_ros_time=None;online_step_entry_monotonic=None
+        command_publish_before_ros_time=None;command_publish_before_monotonic=None
+        command_publish_after_ros_time=None;command_publish_after_monotonic=None
+        solve_odom_identity=None;validation_odom_identity=None
         with node.lock:
             now=rospy.get_time()
             ready=[item for item in node.pending_execution_transactions if item[0]<=now]
@@ -161,11 +173,20 @@ def run(node):
             now=rospy.get_time()
             session=node.execution;generation=session.generation;guide=session.guide
             reason=session.authority();revision=session.revision;cancelled=session.guide_cancelled
-            state=None if node.state is None else node.state.copy();field=node.field;obs=node.obs.copy()
+            if capture_states:
+                state,solve_odom_identity=copy_state_and_identity(node.state,getattr(node,'odom_identity',None))
+                guide_epoch=guide.epoch if guide is not None else None
+                guide_revision=guide.revision if guide is not None else None
+                guide_message_hashes=list(guide.messages) if guide is not None else []
+            else:state=None if node.state is None else node.state.copy()
+            field=node.field;obs=node.obs.copy()
             cloud_stamp=node.cloud_stamp;stamp=node.obs_stamp;odom_stamp=node.odom_stamp
             healthy=node.healthy;arm_stamp=node.arm_stamp;arm_error=node.arm_error
+            collision_payload=node.collision_payload if node.shared_collision else None
             classified_error=node.classified_error;classification=dict(node.classification)
         solve_obstacles=obs.copy();solve_age=max(0.,now-stamp)
+        solve_odom_stamp=odom_stamp
+        solve_collision_sequence=float(collision_payload[1]) if collision_payload is not None else None
         if reason=='ok':
             if state is None or not -.05<=now-odom_stamp<=.2:reason='odom_stale'
             elif not healthy or field is None or not -.05<=now-cloud_stamp<=.35:reason='perception_unhealthy'
@@ -177,8 +198,21 @@ def run(node):
                     node.lib.online_reset(node.handle);kernel_task=generation;kernel_revision=-1
                 if kernel_revision!=guide.revision:
                     node.lib.online_reference_changed(node.handle);kernel_revision=guide.revision
-                code=node.lib.online_step(node.handle,ptr(state),ptr(reference),len(reference),ptr(obs),len(obs),
-                    max(0.,now-stamp),ptr(field),node.nx,node.ny,node.gx,node.gy,node.res,0,ptr(result))
+                if node.shared_collision and (collision_payload is None or
+                    node.lib.online_set_collision_snapshot(node.handle,ptr(collision_payload),len(collision_payload))):
+                    reason='shared_collision_binding_failed'
+                    code=-1
+                else:
+                    code=0
+                if code==-1:
+                    result[6]=1
+                else:
+                    online_step_invoked=True
+                    if capture_states:
+                        online_step_entry_ros_time=rospy.get_time()
+                        online_step_entry_monotonic=time.monotonic()
+                    code=node.lib.online_step(node.handle,ptr(state),ptr(reference),len(reference),ptr(obs),len(obs),
+                        max(0.,now-stamp),ptr(field),node.nx,node.ny,node.gx,node.gy,node.res,0,ptr(result))
                 decision=np.zeros(12);recovery=np.zeros(10)
                 node.lib.online_decision_debug(node.handle,ptr(decision));node.lib.online_recovery_debug(node.handle,ptr(recovery))
                 phase_debug={'decision':decision.tolist(),'recovery':recovery.tolist()}
@@ -206,7 +240,12 @@ def run(node):
         # callbacks cannot change the safety inputs between check and command.
         with node.lock:
             published=rospy.get_time();session=node.execution
-            current_state=None if node.state is None else node.state.copy()
+            if capture_states:
+                current_state,validation_odom_identity=copy_state_and_identity(node.state,getattr(node,'odom_identity',None))
+                validation_snapshot_ros_time=published
+                validation_generation=session.generation
+                validation_revision=session.revision
+            else:current_state=None if node.state is None else node.state.copy()
             field=node.field;obs=node.obs.copy();stamp=node.obs_stamp;cloud_stamp=node.cloud_stamp;odom_stamp=node.odom_stamp
             if session.generation!=generation:reason='goal_changed'
             elif session.authority()!='ok':reason=session.authority()
@@ -214,6 +253,11 @@ def run(node):
             elif not node.healthy or field is None or not -.05<=published-cloud_stamp<=.35:reason='perception_unhealthy'
             elif not -.05<=published-stamp<=.35:reason='dynamic_stale'
             elif not -.05<=published-node.arm_stamp<=.2 or node.arm_error>.05:reason='fixed_arm_invalid'
+            if reason=='ok':
+                collision_payload=node.collision_payload if node.shared_collision else None
+                if node.shared_collision and (collision_payload is None or
+                    node.lib.online_set_collision_snapshot(node.handle,ptr(collision_payload),len(collision_payload))):
+                    reason='shared_collision_binding_failed'
             if reason=='ok':
                 reason='local_validation_failed'
                 for rank,candidate in enumerate(candidates):
@@ -239,7 +283,14 @@ def run(node):
             elif not -.05<=final_time-stamp<=.35:reason='dynamic_stale'
             elif not -.05<=final_time-node.arm_stamp<=.2:reason='fixed_arm_invalid'
             if reason!='ok':result[:2]=0;validated_count=0
-            cmd=Twist();cmd.linear.x=result[0];cmd.angular.z=result[1];node.pub.publish(cmd)
+            cmd=Twist();cmd.linear.x=result[0];cmd.angular.z=result[1]
+            if capture_states:
+                command_publish_before_ros_time=rospy.get_time()
+                command_publish_before_monotonic=time.monotonic()
+            node.pub.publish(cmd)
+            if capture_states:
+                command_publish_after_monotonic=time.monotonic()
+                command_publish_after_ros_time=rospy.get_time()
             issued=TwistStamped();issued.header.frame_id='world';issued.header.stamp=rospy.Time.from_sec(published)
             issued.twist=cmd;node.local_cmd_pub.publish(issued)
             path=RosPath();path.header.frame_id='world';path.header.stamp=rospy.Time.from_sec(published)
@@ -250,6 +301,40 @@ def run(node):
                     pose.pose.orientation.z=math.sin(row[3]/2);pose.pose.orientation.w=math.cos(row[3]/2)
                     path.poses.append(pose)
             node.execution_pub.publish(path)
+        # Read-only identity/state linkage runs only AFTER publication and the
+        # unchanged 50ms deadline decision, outside the safety critical lock.
+        if capture_states:
+            reference_key=(generation,guide_epoch,guide_revision,tuple(guide_message_hashes))
+            first_kernel=online_step_invoked and reference_key not in kernel_reference_cycles
+            command_validated=reason=='ok' and bool(validated_count) and validation_code==0
+            first_validated=command_validated and reference_key not in validated_reference_cycles
+            if online_step_invoked:kernel_reference_cycles.add(reference_key)
+            if command_validated:validated_reference_cycles.add(reference_key)
+            state_capture.write({'schema_version':1,'event':'mppi_cycle','cycle_id':cycle_id,
+                'scope':'read-only actual solver/validation inputs and published command; not safety authorization',
+                'solve_ros_time':now,'validation_snapshot_ros_time':validation_snapshot_ros_time,
+                'validation_ros_time':published,'command_ros_time':final_time,
+                'checkpoint_semantics':'solve_ros_time is state-copy; command_ros_time is prepublication safety check',
+                'online_step_entry_ros_time':online_step_entry_ros_time,
+                'online_step_entry_monotonic':online_step_entry_monotonic,
+                'command_publish_before_ros_time':command_publish_before_ros_time,
+                'command_publish_before_monotonic':command_publish_before_monotonic,
+                'command_publish_after_ros_time':command_publish_after_ros_time,
+                'command_publish_after_monotonic':command_publish_after_monotonic,
+                'command_header_ros_time':published,'cycle_start_monotonic':wall,
+                'solve_state':state,'validation_state':current_state,
+                'solve_odom_stamp':solve_odom_stamp,'validation_odom_stamp':odom_stamp,
+                'solve_odom_identity':solve_odom_identity,'validation_odom_identity':validation_odom_identity,
+                'online_step_invoked':online_step_invoked,'online_step_succeeded':online_step_invoked and code==0,
+                'kernel_code':code,'validation_invoked':bool(validation_attempts),
+                'goal_generation':generation,'guide_epoch':guide_epoch,'guide_revision':guide_revision,
+                'message_hashes':guide_message_hashes,'reference_array_sha256':reference_hash,
+                'reference_hash_algorithm':'sha256_little_endian_float64_c_order',
+                'validation_goal_generation':validation_generation,'validation_revision':validation_revision,
+                'validation_code':validation_code,'validation_attempts':validation_attempts,
+                'validated_command_published':command_validated,'command_v':result[0],'command_w':result[1],
+                'reason':reason,'first_kernel_cycle_for_reference':first_kernel,
+                'first_validated_command_cycle_for_reference':first_validated})
         if reference is not None and last_reference!=(generation,guide.revision,reference_hash):
             node.reference_log.write(json.dumps({'t':now-1000,'revision':guide.revision,'epoch':guide.epoch,
                 'stamp':guide.start,'source':'/planning/trajectory','transport':'complete goal-keyed transaction',
@@ -279,6 +364,8 @@ def run(node):
             'guide_cancelled':cancelled,'execution_authority':'validated_local_rollout','authorized':bool(validated_count),
             'pending_reference_updates':len(node.pending_execution_transactions),
             'local_route':checked[:validated_count:10,1:3].tolist(),'local_phase':phase_debug,
+            'shared_collision_sequence':float(collision_payload[1]) if collision_payload is not None else None,
+            'solve_collision_sequence':solve_collision_sequence,
             'obstacle_tracks':len(obs),'cloud_age':published-cloud_stamp,'dynamic_age':published-stamp,
             'observed_obstacles':solve_obstacles.tolist(),'observed_obstacle_age':solve_age,
             'limit':node.safety,'limit_scope':'native reference advisory only in cooperative mode',
@@ -289,6 +376,7 @@ def run(node):
             'perception_mode':'classified_atomic','classification':classification,'classified_error':classified_error}
         node.diag.publish(String(json.dumps(row)))
         node.execution_log.write(json.dumps({'t':published-1000,'reason':reason,'goal_generation':generation,
+            'shared_collision_sequence':float(collision_payload[1]) if collision_payload is not None else None,
             'guide_revision':revision,'cloud_stamp':cloud_stamp,'odom_stamp':odom_stamp,
             'lease_s':.075,'command':result[:2].tolist(),'validation':validation.tolist(),
             'accepted_candidate':accepted_candidate,'validation_attempts':validation_attempts,
@@ -302,4 +390,5 @@ def run(node):
         try:rate.sleep()
         except rospy.ROSInterruptException:break
     if node.search_recorder is not None:node.search_recorder.close()
+    if state_capture is not None:state_capture.close()
     node.lib.online_destroy(node.handle)
