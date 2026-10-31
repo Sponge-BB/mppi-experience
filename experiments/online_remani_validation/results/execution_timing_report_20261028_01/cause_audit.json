@@ -1,0 +1,55 @@
+{
+  "scope": "Read-only audit of the completed matched timing trial; no solver replay, new simulation, or parameter change.",
+  "trial": "../execution_timing_pair_20261028_01/dynamic_head_on_center_matched_seed11",
+  "motion_and_execution": {
+    "collision_time_s": 24.103079137999885,
+    "collision_final_state_xy_yaw_v_w": [1.4292009900514768, 0.27510945122924113, -1.1429750630059476, -0.1297931054376606, -0.5185324433016982],
+    "after_23s_min_abs_measured_speed_mps": 0.07837464575881208,
+    "last_command_observed_in_plant": [-0.11719526573974234, -0.607593158163555],
+    "last_command_before_collision_publish_ros_time_minus_1000": 23.959697768999945,
+    "last_command_validation": [1.0, 0.036339858438124706, 0.03097405051684235, 181.0, 0.0, 1.0],
+    "diagnostics_after_12s_reasons": {"ok": 106, "local_validation_failed": 4, "native3d_unhealthy": 2},
+    "critical_tail_is_not_deadline_or_freshness_stop": true,
+    "important_endpoint_censoring": "Cycle 344 published another ok command at the collision clock value, but state.csv shows it did not act before collision. Cycle 345 occurred after the simulator clock stopped and reports deadline_miss; exclude it from pre-collision causal counts."
+  },
+  "verified_shape_discrepancy": {
+    "collision_body_sample_index_zero_based": 120,
+    "sample_body_xyz": [0.17, 0.17, 0.56],
+    "sample_world_xyz_at_collision": [1.654410404433651, 0.19096243896119808, 0.56],
+    "physical_radius_m": 0.08,
+    "native_check_radius_m": 0.13,
+    "truth_actor_center_xy_at_collision": [1.85874276, 0.0],
+    "truth_actor_radius_m": 0.2,
+    "analytic_physical_sample_gap_m": -0.0003245333826772251,
+    "snapshot_sequence": 476,
+    "snapshot_dynamic_observation_time_s": 23.959697768999945,
+    "snapshot_dynamic_points": 153,
+    "predicted_point_min_gap_over_all_native_body_samples_at_collision_pose_m": 0.05346764017001526,
+    "predicted_point_gap_of_colliding_sample_120_m": 0.06940849527600829,
+    "nearest_point_to_sample_120_xyz": [1.6593138656172115, -0.0081450792310763, 0.5502071323925893],
+    "point_cloud_global_z_range_m": [0.1502071860367696, 1.350207203918163],
+    "points_within_8cm_xy_of_true_nearest_surface_count": 14,
+    "their_z_range_m": [0.7502071800763052, 1.350207203918163],
+    "interpretation": "The missing lower near-side surface is local, not a global minimum-height truncation. Real sampled-body contact coexists with positive predicted point-cloud clearance."
+  },
+  "crop_box_evidence": {
+    "parameter_source": "trial parameters.yaml lines 1-8; /crop_box_filter uses negative=true on lidar-frame points",
+    "lidar_frame_removed_box_min_xyz": [-0.8, -0.9, -0.01],
+    "lidar_frame_removed_box_max_xyz": [0.05, 0.4, 0.7],
+    "construction_source": "trial runtime/simulator.py cloud() generates the full actor cylinder at azimuth step 0.12 and height step 0.10, then transforms world points to lidar with the recorded pose and offset [0.28,0,0.002]",
+    "observation_time_s": 23.959697769,
+    "sample_120_world_xyz_at_observation": [1.6682936634113594, 0.18807555659946268, 0.56],
+    "reconstructed_nearest_generated_actor_point_world_xyz": [1.7370726680316606, 0.1350926361102302, 0.55],
+    "its_lidar_xyz": [-0.03076853869486959, 0.20549812501501138, 0.548],
+    "inside_removed_box": true,
+    "nearest_generated_point_distance_minus_native_hard_radius_before_crop_m": -0.042605827767935575,
+    "after_crop_m": 0.054750102505482956,
+    "qualification": "This is deterministic reconstruction from the recorded pose/actor truth and the frozen synthetic sensor source, not a saved raw-cloud point-identity trace. It proves that this generated external obstacle point falls in the configured removed box. Voxelization, range gating and subsequent point reduction may create further error; this audit does not apportion every missing point among stages."
+  },
+  "velocity_check": {
+    "truth_velocity_xyz_mps": [-0.18, 0.0, 0.0],
+    "snapshot_476_all_dynamic_points_velocity_xyz_mps": [-0.17955420911312103, -0.003342961659654975, 0.0014449581503868103],
+    "conclusion": "No evidence here that a reversed or grossly incorrect CV direction is the direct collision cause. The observed geometric hole is much larger than the short-term velocity error."
+  },
+  "conclusion": "The matched timing configuration enabled real retreat/turning instead of continuous deadline-zero parking, but avoidance still failed. The next narrow issue is perception/check geometry consistency: the configured self-removal box cuts an actual external obstacle's near lower surface, while collision checking treats the remaining sparse points as the obstacle geometry. Do not describe this collision as proof that another 50ms alone made avoidance impossible."
+}
