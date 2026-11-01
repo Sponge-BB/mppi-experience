@@ -1,0 +1,24 @@
+REMANI / 后台 MPPI / 接入 MPPI 计算资源实验
+日期：2026-10-15（Asia/Shanghai）
+
+范围：固定机械臂、原生 ROS 在线数值仿真；三组使用同一份带计时探针的 V12 原生二进制、同一 MPPI 库和感知配置。
+A：REMANI + 原控制器；B：A + 只观察的 V12 MPPI（全部输出隔离）；C：V12 协同执行。
+B 的计算包含同一 MPPI 内核与发布前候选/制动复核；原生取消后保留旧参考供后台计算，运动和规划反馈仍由原控制器负责。
+CPU 每200ms采样，100%代表一个逻辑CPU；REMANI进程CPU包含地图线程。墙钟和CPU时间采用实际时钟，不用ROS模拟时间。
+
+逐次在线结果：
+empty / REMANI＋后台 MPPI / 01：goal，REMANI CPU均值 164.0%，MPPI CPU均值 59.5%，优化调用 1，超时 0，优化墙钟均值 416.8ms，线程CPU均值 415.7ms，运行队列等待均值 0.00ms。
+empty / REMANI＋接入 MPPI / 01：goal，REMANI CPU均值 154.0%，MPPI CPU均值 62.9%，优化调用 1，超时 0，优化墙钟均值 416.3ms，线程CPU均值 415.1ms，运行队列等待均值 0.04ms。
+empty / REMANI / 01：goal，REMANI CPU均值 167.2%，MPPI CPU均值 0.0%，优化调用 1，超时 0，优化墙钟均值 415.6ms，线程CPU均值 414.6ms，运行队列等待均值 0.09ms。
+
+相同请求的独立诊断：
+
+解释边界：
+1. A/B参数完全一致并核对了背景发布隔离；但闭环微小时序差异会改变后续请求，不能只比较任务总用时判断CPU竞争。
+2. 配对诊断在同一次静态地图、同一序列化规划回调内，重新初始化相同优化数组，按暂停/运行/运行/暂停顺序切换本次MPPI进程；输入指纹必须一致。
+3. 配对诊断的额外重复求解会改变在线运动时序，单独归档，不纳入三组在线性能。
+4. 空种子、起点碰撞与优化超时分别统计；任务运行超时与优化器预算超时不是一个指标。
+5. 程序运行的CPU负载和调度等待可以证明资源压力；层间状态、参考接续和不同规划入口还需结合每次请求与轨迹日志解释。
+
+图：01_cpu_timeline.png、02_resource_comparison.png、03_paired_solver.png。
+原始数据：各试验cpu_samples.jsonl、solver_trace.jsonl、publisher_audit.json、shadow_diagnostics.jsonl/执行日志。

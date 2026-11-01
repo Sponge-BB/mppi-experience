@@ -1,0 +1,69 @@
+{
+  "created": "2026-10-27T14:21:08.778803+00:00",
+  "stage": "precheck",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/native_realtime_20261027_01",
+  "build_manifest_sha256": "9e69773898781ad1f866721550fcf9ba8850971be17bbeeeca670e84ac3d3824",
+  "groups": [
+    "original",
+    "demand"
+  ],
+  "scenes": [
+    "empty"
+  ],
+  "seed": 11,
+  "duration_s": 12.0,
+  "common_native_collision_3d": true,
+  "native_export": true,
+  "collision_geometry_unchanged": true,
+  "same_child_binary": true,
+  "full_online_native_planner": true,
+  "coupling_weights": [
+    0.0,
+    0.0
+  ],
+  "state_policy": {
+    "diagnostic_capture": true,
+    "state_contract": true,
+    "domain_recovery": true,
+    "signed_low_speed": true,
+    "clearance_recovery": false
+  },
+  "demand_switch": "NATIVE_REALTIME_DEMAND",
+  "diagnostic_profile": false,
+  "paused_replay": false,
+  "original_branch": "native3D original full-sampling free-path branch",
+  "demand_branch": "existing bounded candidates when native3D free path; conflicts/dynamic unchanged",
+  "common_early_stop": {
+    "reason": "deadline_zero_deadlock",
+    "continuous_s": 5.0,
+    "minimum_sim_s": 17.0,
+    "measured_motion_during_window_max_m": 0.001,
+    "requires": "reference, nonzero nominal, successful rollout and brake validation, deadline zero command",
+    "early_stop_is_success": false
+  },
+  "actual_obstacle_exposure_required_for_dynamic_claims": true,
+  "predeclared_formal": {
+    "scenes": [
+      "static",
+      "crossing",
+      "dynamic_head_on_center"
+    ],
+    "groups": [
+      "original",
+      "demand"
+    ],
+    "seed": 11,
+    "duration_s": 55.0
+  },
+  "precheck": null,
+  "unchanged": [
+    "native3D geometry/hard/soft kernels",
+    "50ms command deadline",
+    "75ms command lease",
+    "native iteration cap 300",
+    "native solver budget",
+    "physical wheel limits",
+    "actor motion"
+  ],
+  "scope": "fixed-arm differential-drive ROS numerical SIL; not Gazebo or hardware; not a statistical success-rate experiment"
+}

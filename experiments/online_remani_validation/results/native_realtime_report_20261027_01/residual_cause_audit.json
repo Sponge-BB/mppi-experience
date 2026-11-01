@@ -1,0 +1,193 @@
+{
+  "static": {
+    "trial": "results/native_realtime_formal_20261027_01/static_demand_seed11",
+    "final_reference_endpoint": [
+      2.9999999999999996,
+      -5.828670879282072e-16,
+      -1.0547118733939019e-14,
+      0.04999999999999985
+    ],
+    "final_state": [
+      2.360437505621937,
+      -0.599792563136648,
+      0.2878428660814839,
+      0.011041310866792418,
+      0.08356973180972097
+    ],
+    "final_endpoint_error_m": 0.8768074492208188,
+    "nearest_reference_index": 323,
+    "nearest_reference_pose": [
+      2.355758150378346,
+      -0.5883424566654603,
+      2.1450923145973504,
+      0.05
+    ],
+    "nearest_reference_distance_m": 0.012369369575578867,
+    "last20s_cycles": 400,
+    "all_authorized": true,
+    "all_validation_passed": true,
+    "deadline_misses": 0,
+    "reasons": {
+      "ok": 400
+    },
+    "projection_index_counts": {
+      "323": 156,
+      "321": 244
+    },
+    "projection_index_switches": 40,
+    "projection_distance_vs_logged_max_error_m": 1.734723475976807e-18,
+    "net_displacement_m": 0.002202768298289237,
+    "command_sign_counts": {
+      "forward": 150,
+      "reverse": 134,
+      "zero_linear": 116
+    },
+    "direction_switch_points": [
+      {
+        "index": 322,
+        "reference": [
+          2.3557581503783465,
+          -0.58834245666546,
+          2.145092314597348,
+          -0.04999999999999991
+        ],
+        "next_reference": [
+          2.355758150378346,
+          -0.5883424566654603,
+          2.1450923145973504,
+          0.05
+        ]
+      }
+    ],
+    "conclusion": "near-duplicate reverse/forward cusp; global nearest-space association switches motion phase and checked REJOIN outputs counteracting actions; not deadline or missing global endpoint"
+  },
+  "head_on": {
+    "trial": "results/native_realtime_formal_20261027_01/dynamic_head_on_center_demand_seed11",
+    "termination": "native3d_sample_collision",
+    "collision_time_s": 22.3230256320021,
+    "physical_sample_gap_m": -0.0010677954573983656,
+    "last_authorized": {
+      "t": 17.383402637000017,
+      "reason": "ok",
+      "nominal_v": 0.19516,
+      "nominal_w": 0.0,
+      "applied_v": 0.19516,
+      "applied_w": 0.0,
+      "kernel_ms": 12.794215,
+      "callback_ms": 34.708850998868,
+      "validation_code": 0,
+      "validation": [
+        1.0,
+        0.25490929638891263,
+        0.65,
+        181.0,
+        0.0,
+        1.0
+      ],
+      "local_phase": {
+        "decision": [
+          0.0,
+          -1.0,
+          1.8,
+          0.24928701306056628,
+          0.0,
+          4.0,
+          0.0,
+          0.0,
+          0.18867160214085396,
+          -4.0381328508187755,
+          0.0,
+          0.0
+        ],
+        "recovery": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "strategy": [
+          1.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "decision_index2": "rollout_s"
+      }
+    },
+    "first_deadline": {
+      "t": 17.423589988000003,
+      "reason": "deadline_miss",
+      "nominal_v": 0.2012370620742258,
+      "nominal_w": -0.09136359752605402,
+      "applied_v": 0.0,
+      "applied_w": 0.0,
+      "kernel_ms": 146.571873,
+      "callback_ms": 165.0459709999268,
+      "validation_code": 0,
+      "validation": [
+        1.0,
+        0.1771357497370647,
+        0.6301735955077634,
+        181.0,
+        0.0,
+        1.0
+      ],
+      "local_phase": {
+        "decision": [
+          2.0,
+          -1.0,
+          1.9000000000000001,
+          0.19287089520106598,
+          0.0,
+          44.0,
+          1.0,
+          0.0,
+          0.18532592968075895,
+          -2.51236051114136,
+          0.0,
+          -0.03341872146355883
+        ],
+        "recovery": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "strategy": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "decision_index2": "rollout_s"
+      }
+    },
+    "consecutive_deadline_cycles": 35,
+    "deadline_block_validation_passed": 33,
+    "deadline_block_kernel_p50_ms": 98.733147,
+    "deadline_block_kernel_max_ms": 166.02863,
+    "deadline_block_callback_p50_ms": 110.88378700151225,
+    "later_reason_counts": {
+      "deadline_miss": 36,
+      "local_validation_failed": 2,
+      "no_feasible_candidate": 10
+    },
+    "after20s_max_abs_linear_speed": 8.611926035195398e-10,
+    "after20s_net_displacement_m": 1.0148859530545451e-10,
+    "conclusion": "intervention candidates initially pass finite rollout/brake checks but miss deadline; robot stops while incoming actor continues, later all candidates become infeasible; no claim that removing timeout alone guarantees avoidance"
+  },
+  "script_sha256": "92f62b88f6e84de3095dc735cf951439f512d6d151f251a9cd15a9014856b512",
+  "scope": "read-only recorded-input geometric association and event arithmetic; not a new closed-loop run"
+}

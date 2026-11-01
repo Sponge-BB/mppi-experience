@@ -1,0 +1,58 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": false,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 1,
+  "consumed_versions": 1,
+  "live_kernel_calls": 105,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 4,
+    "native3d_unhealthy": 53,
+    "native_hard_stop": 80,
+    "waiting_native_trajectory": 16,
+    "deadline_miss": 105
+  },
+  "trial_result": {
+    "reason": "deadline_zero_deadlock",
+    "goal_sent": 7.000260471999354,
+    "motion_anchor": null,
+    "scenario_start": "motion",
+    "trajectory_bundles": 1,
+    "min_clearance": 1.0954915028125263,
+    "collision_conservative_projection": false,
+    "arm_max_error": 0.0,
+    "final_state": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "elapsed": 17.013998223999806,
+    "scene": "empty",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": false,
+      "min_physical_sample_gap": 1.2325774396290916,
+      "checks": 4082,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": null,
+      "first_observed_moving_t": null,
+      "deadline_zero_window_start": 7.84985765600004,
+      "deadline_zero_window_end": 16.849073728999997,
+      "deadline_zero_cycles": 104,
+      "deadline_zero_deadlock": true,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter",
+      "early_stop_t": 17.013998223999806
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}
