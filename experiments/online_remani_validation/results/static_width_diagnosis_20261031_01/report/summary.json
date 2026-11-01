@@ -1,0 +1,854 @@
+{
+  "trials": [
+    {
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/static_width_diagnosis_20261031_01/static_disabled_repeat01",
+      "label": "关闭提前绕行与范围修正",
+      "scene": "sphere_timing_static",
+      "reached_goal": true,
+      "termination": "goal",
+      "interface_audit_valid": true,
+      "minimum_physical_sample_gap_m": 0.0610392231958848,
+      "physical_sample_collision": false,
+      "actual_path_length_m": 6.406639999264332,
+      "motion_duration_s": 33.31361432700214,
+      "motion_anchor_t": 8.252958657998533,
+      "end_t": 41.566572985000676,
+      "first_truth_actor_t": 10.26388821799992,
+      "metric_window_start_t": 10.26388821799992,
+      "first_measured_speed_below_022_t": 14.841656558000977,
+      "first_measured_sustained_turn": {
+        "t": 17.425365790997603,
+        "confirmed_at_t": 17.626405858998623,
+        "sign": 1,
+        "direction": "左转"
+      },
+      "first_published_sustained_turn": {
+        "t": 17.134498931000053,
+        "confirmed_at_t": 17.35975822299997,
+        "sign": 1,
+        "direction": "左转"
+      },
+      "brake_to_measured_turn_s": 2.5837092329966254,
+      "brake_to_published_turn_s": 2.2928423729990755,
+      "non_goal_low_speed": {
+        "total_s": 0.0,
+        "longest_s": 0.0,
+        "intervals": [],
+        "definition": "Measured |v|<.02 m/s, |w|<.05 rad/s, goal distance>.1 m."
+      },
+      "kernel": {
+        "count": 536,
+        "p95_ms": 76.66380625000001,
+        "max_ms": 125.799072
+      },
+      "callback": {
+        "count": 536,
+        "p95_ms": 84.87936074925528,
+        "max_ms": 133.46558199918945
+      },
+      "reason_counts": {
+        "ok": 536
+      },
+      "diagnostic_alignment": {
+        "excluded_contact_or_later_rows": 0,
+        "missing_diagnostics": 0,
+        "missing_precontact_diagnostics": 0,
+        "unmatched_diagnostics": 0,
+        "matched_by": "solve timestamp, reason, validation code, ordered within duplicate keys; cycle publication controls cutoff"
+      },
+      "reference_adoptions": [
+        {
+          "t": 18.019436809000013,
+          "after_actor_s": 7.7555485910000925,
+          "epoch": 2,
+          "revision": 2,
+          "sha256": "714338c1975439b06f5eeaee783a3d517e19a661ef715f13f309be1bc737bc05",
+          "crossing_y_at_x3_m": [
+            -0.655530756482132
+          ]
+        }
+      ],
+      "actual_crossing_y_at_x3_m": [
+        -0.6138396659324121
+      ],
+      "actual_y_range_near_x3_m": [
+        -0.6454988560630752,
+        -0.564118345736643
+      ],
+      "side_convention": "World +x forward; +y left, -y right. x=3 crossings are geometric, not a shared passing-side decision.",
+      "remani": {
+        "total_requests_started": 2,
+        "refresh_requests_started": 1,
+        "completed_requests": 2,
+        "accepted_completed_requests": 2,
+        "refresh_outcomes": {
+          "accepted": 1
+        },
+        "optimizer_calls": 2,
+        "consumed_references": 2,
+        "new_references_after_actor": 1,
+        "first_new_reference_after_actor_t": 18.019436809000013,
+        "requests": [
+          {
+            "request_id": 1,
+            "start_sim_s": 7.063280790000022,
+            "end_sim_s": 7.405575803000033,
+            "start_mono": 19494.386754427,
+            "end_mono": 19494.721830082,
+            "request_wall_ms": 335.07565499894554,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 0,
+            "start_y": 0,
+            "start_yaw": 0,
+            "stage_wall_ms": {
+              "search": 121.09135300124763,
+              "initialization": 121.24735800171038,
+              "optimizer": 158.34348699718248,
+              "manager_replan": 283.15506700164406,
+              "live_acceptance": 47.406027999386424
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 8.078782000666251,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 2,
+                "wall_ms": 157.8955670011055,
+                "thread_cpu_ms": 157.5761280000001,
+                "runqueue_wait_ms": 0,
+                "budget_s": 1.2,
+                "iterations": 7,
+                "input_hash": "8775951166031383002",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.154137892786751,
+                "max_right_omega": 4.154137892786751
+              }
+            ],
+            "outcome_class": "accepted"
+          },
+          {
+            "request_id": 2,
+            "start_sim_s": 17.485618544999966,
+            "end_sim_s": 17.927801251000005,
+            "start_mono": 19504.792518765,
+            "end_mono": 19505.244799331,
+            "request_wall_ms": 452.2805660017184,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 2.0807636409813304,
+            "start_y": -0.00044360222567000143,
+            "start_yaw": 0.025051600034085242,
+            "stage_wall_ms": {
+              "search": 139.4030080009543,
+              "initialization": 139.55731799796922,
+              "optimizer": 125.49224499889533,
+              "manager_replan": 400.5236960001639,
+              "live_acceptance": 45.393925000098534
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 141.8370780047553,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 4,
+                "wall_ms": 125.2642680010467,
+                "thread_cpu_ms": 123.1832640000001,
+                "runqueue_wait_ms": 1.684255999999995,
+                "budget_s": 1.2,
+                "iterations": 8,
+                "input_hash": "6641181397751105928",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.0233587851731345,
+                "max_right_omega": 4.029934720726627
+              }
+            ],
+            "outcome_class": "accepted"
+          }
+        ]
+      },
+      "input_sha256": {
+        "manifest.json": "1268c73192888c9e29097ab01e570270eccd65735380410e381b82153aa89623",
+        "coupling_parameters.json": "58941fa98e1e435a9a10dca1033daa2612d32f34abbc3a3939556f976058230c",
+        "result.json": "5fb27d5f344331a64d7dd595407d11adbf7270f0dad05a6879d4ffa7022f4f0b",
+        "run_status.json": "8af143b7b24b4b6b13dc086305a38781b057d27cb989b3afed6c2a3c9d631be8",
+        "trial_audit.json": "8847103484d6de242878609d8cf35272ebe5b2cd5ac24805a34e5b6c5b95c396",
+        "state.csv": "f39936f540551b08fcb243cf578fcadbb9de285ff7a69e57a3b583d172ebd01b",
+        "native_collision_3d_body.json": "4c759738b1098fac0c5465eba637e3fc52d723d536a8388dfa93781ead10b0f6",
+        "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+        "consumed_references.jsonl": "4aed8d031e04baa168a84163795f54a57a140def4fe7e99de211e6d03372d819",
+        "reference_events.jsonl": "2a684be8f3f059e16fe9c7151099d1278d6efa65418501556f44e77cff80c011",
+        "execution_rollouts.jsonl.gz": "d1abfd4e3120f22ea09ada8659522702b7d7d2624335369fcfc4d55123402e29",
+        "mppi_diagnostics.json.gz": "155861330601d8d4252f82ea9ce744a35720f006f4c3adc90d6a6c4aba9f5220",
+        "obstacles.csv": "bf27dacf3aa8e2d06de5b68bbeca471d5b410a3a6ce264147e50a0671cd324f0",
+        "state_mppi_cycles.jsonl": "d5652630a80864d8a381460ee4cd3e450320387e223ac275ea86d4c5050122a3",
+        "analysis/summary.json": "e85448a73caa9aaf252d84e469591390e8cf9d1508d7e1c5b1a0f6daa572bebb",
+        "limits.json": "ad2dd3664eab3d90d12bfe1be0cd3cd3d154b9246c0a2b80fa42e7b7568037a6",
+        "static_width_trace.jsonl": "73f258cdadb3dc2a2c454ce57b6ac56b0f050abaec3cd0b9f514254d02a6428b",
+        "dual_timeline.jsonl": "f8a6719db9c15e375dde2eb11373a5b64b08aacd3ca4dd23d57ecfdc626ade1e"
+      },
+      "scope": "Fixed-arm differential-drive REMANI+MPPI ROS numerical SIL, not Gazebo/hardware.",
+      "width_diagnosis": {
+        "attempts": [
+          {
+            "request_id": 1,
+            "resource_replan_id": 1,
+            "optimizer_success": true,
+            "actually_consumed": true,
+            "capture_sim": 1007.344534669,
+            "search_status": 2,
+            "stages": {
+              "native_search_raw": {
+                "points": 12,
+                "max_abs_y_m": 0.0,
+                "peak_x_m": 0.0,
+                "peak_y_m": 0.0,
+                "path_length_m": 5.975788234243696,
+                "start_xy": [
+                  0.0,
+                  0.0
+                ],
+                "end_xy": [
+                  5.975788234243696,
+                  0.0
+                ],
+                "y_at_obstacle_x_m": [
+                  0.0
+                ],
+                "obstacle_to_goal_length_m": 2.975788234243696
+              },
+              "minco_before_optimizer": {
+                "points": 2244,
+                "max_abs_y_m": 0.0,
+                "peak_x_m": 0.0,
+                "peak_y_m": 0.0,
+                "path_length_m": 6.0,
+                "start_xy": [
+                  0.0,
+                  0.0
+                ],
+                "end_xy": [
+                  6.0,
+                  0.0
+                ],
+                "y_at_obstacle_x_m": [
+                  0.0
+                ],
+                "obstacle_to_goal_length_m": 3.0
+              },
+              "optimizer_return": {
+                "points": 2747,
+                "max_abs_y_m": 0.0,
+                "peak_x_m": 0.0,
+                "peak_y_m": 0.0,
+                "path_length_m": 6.0,
+                "start_xy": [
+                  0.0,
+                  0.0
+                ],
+                "end_xy": [
+                  6.0,
+                  0.0
+                ],
+                "y_at_obstacle_x_m": [
+                  0.0
+                ],
+                "obstacle_to_goal_length_m": 3.0
+              }
+            },
+            "start_state": {
+              "applied_x": 0,
+              "applied_y": 0,
+              "applied_yaw": 0,
+              "applied_body_vx": 0,
+              "applied_w": 0,
+              "processed_vx": 0.05,
+              "processed_vy": 0
+            },
+            "rejection_reasons": [],
+            "planned_curve_duration_s": {
+              "minco_before_optimizer": 22.28407460545195,
+              "optimizer_return": 27.30377598876502
+            },
+            "native_request_wall_ms": 335.07565499894554,
+            "search_initial_constant_heading": {
+              "points": 12,
+              "yaw_rad": 0.0,
+              "start_xy": [
+                0.0,
+                0.0
+              ],
+              "end_xy": [
+                5.975788234243696,
+                0.0
+              ],
+              "polyline_length_m": 5.975788234243696
+            },
+            "reference_stamp": 1007.344534669,
+            "consumed_t": 7.425929483000004,
+            "reference_sha256": "e56a688c8e77f7744cf97cb2d248fed207b01f9db2fafca402543332e181b04b",
+            "polynomial_reference_max_error_m": 1.1546319456101628e-14,
+            "published_sim": 1007.405575803
+          },
+          {
+            "request_id": 2,
+            "resource_replan_id": 3,
+            "optimizer_success": true,
+            "actually_consumed": true,
+            "capture_sim": 1017.746991018,
+            "search_status": 2,
+            "stages": {
+              "native_search_raw": {
+                "points": 9,
+                "max_abs_y_m": 0.7127358620992027,
+                "peak_x_m": 3.3181535723662723,
+                "peak_y_m": -0.7127358620992027,
+                "path_length_m": 4.33988317230123,
+                "start_xy": [
+                  2.0807636409813304,
+                  -0.00044360222567000143
+                ],
+                "end_xy": [
+                  5.99032206905873,
+                  -0.000196731129201667
+                ],
+                "y_at_obstacle_x_m": [
+                  -0.7033435853477693
+                ],
+                "obstacle_to_goal_length_m": 3.1042372783813628
+              },
+              "minco_before_optimizer": {
+                "points": 1696,
+                "max_abs_y_m": 0.7586516826801167,
+                "peak_x_m": 2.9971969090794377,
+                "peak_y_m": -0.7586516826801167,
+                "path_length_m": 4.397514080113871,
+                "start_xy": [
+                  2.0807636409813304,
+                  -0.00044360222567000143
+                ],
+                "end_xy": [
+                  6.0,
+                  2.42861286636753e-16
+                ],
+                "y_at_obstacle_x_m": [
+                  -0.7586482299051938
+                ],
+                "obstacle_to_goal_length_m": 3.1205377706560204
+              },
+              "optimizer_return": {
+                "points": 2141,
+                "max_abs_y_m": 0.6611030659608292,
+                "peak_x_m": 3.116541592519173,
+                "peak_y_m": -0.6611030659608292,
+                "path_length_m": 4.29248547001578,
+                "start_xy": [
+                  2.0807636409813304,
+                  -0.00044360222567000143
+                ],
+                "end_xy": [
+                  6.0,
+                  1.5265566588595902e-16
+                ],
+                "y_at_obstacle_x_m": [
+                  -0.6555348509653943
+                ],
+                "obstacle_to_goal_length_m": 3.093557232109325
+              }
+            },
+            "start_state": {
+              "applied_x": 2.0807636409813304,
+              "applied_y": -0.00044360222567000143,
+              "applied_yaw": 0.025051600034085242,
+              "applied_body_vx": 0.13446730086423772,
+              "applied_w": 0.24802548427230928,
+              "processed_vx": 0.13442510839744537,
+              "processed_vy": 0.003368268701942347
+            },
+            "rejection_reasons": [],
+            "planned_curve_duration_s": {
+              "minco_before_optimizer": 16.808990212422284,
+              "optimizer_return": 21.29162574171074
+            },
+            "native_request_wall_ms": 452.2805660017184,
+            "search_initial_constant_heading": {
+              "points": 1,
+              "yaw_rad": 0.025051600034085242,
+              "start_xy": [
+                2.0807636409813304,
+                -0.00044360222567000143
+              ],
+              "end_xy": [
+                2.0807636409813304,
+                -0.00044360222567000143
+              ],
+              "polyline_length_m": 0.0
+            },
+            "reference_stamp": 1017.885618545,
+            "consumed_t": 18.019436809000013,
+            "reference_sha256": "714338c1975439b06f5eeaee783a3d517e19a661ef715f13f309be1bc737bc05",
+            "polynomial_reference_max_error_m": 8.0443420317889e-15,
+            "published_sim": 1017.927801251
+          }
+        ],
+        "adopted_refresh_request_ids": [
+          2
+        ],
+        "obstacle_x_m": 3.0,
+        "curve_sample_step_upper_s": 0.01,
+        "association": "request_id + resource_replan_id; reference_publish.guide_start == consumed_reference.stamp; polynomial checked at every consumed reference time"
+      }
+    },
+    {
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/static_width_diagnosis_20261031_01/static_enabled_repeat01",
+      "label": "提前绕行＋局部范围修正",
+      "scene": "sphere_timing_static",
+      "reached_goal": true,
+      "termination": "goal",
+      "interface_audit_valid": true,
+      "minimum_physical_sample_gap_m": 0.14856880025077246,
+      "physical_sample_collision": false,
+      "actual_path_length_m": 6.976022762319707,
+      "motion_duration_s": 34.23262921800051,
+      "motion_anchor_t": 8.32156700500127,
+      "end_t": 42.55419622300178,
+      "first_truth_actor_t": 10.325571551002213,
+      "metric_window_start_t": 10.325571551002213,
+      "first_measured_speed_below_022_t": 14.917859925000812,
+      "first_measured_sustained_turn": {
+        "t": 15.40817601100207,
+        "confirmed_at_t": 15.617673082000692,
+        "sign": -1,
+        "direction": "右转"
+      },
+      "first_published_sustained_turn": {
+        "t": 15.180333554999947,
+        "confirmed_at_t": 15.429831433000004,
+        "sign": -1,
+        "direction": "右转"
+      },
+      "brake_to_measured_turn_s": 0.49031608600125764,
+      "brake_to_published_turn_s": 0.2624736299991355,
+      "non_goal_low_speed": {
+        "total_s": 0.0,
+        "longest_s": 0.0,
+        "intervals": [],
+        "definition": "Measured |v|<.02 m/s, |w|<.05 rad/s, goal distance>.1 m."
+      },
+      "kernel": {
+        "count": 619,
+        "p95_ms": 44.95372710000003,
+        "max_ms": 87.479892
+      },
+      "callback": {
+        "count": 619,
+        "p95_ms": 52.20868390133548,
+        "max_ms": 92.45994099910604
+      },
+      "reason_counts": {
+        "ok": 619
+      },
+      "diagnostic_alignment": {
+        "excluded_contact_or_later_rows": 1,
+        "missing_diagnostics": 0,
+        "missing_precontact_diagnostics": 0,
+        "unmatched_diagnostics": 0,
+        "matched_by": "solve timestamp, reason, validation code, ordered within duplicate keys; cycle publication controls cutoff"
+      },
+      "reference_adoptions": [
+        {
+          "t": 18.171890681000036,
+          "after_actor_s": 7.846319129997823,
+          "epoch": 2,
+          "revision": 2,
+          "sha256": "5f189f6a2abfba635a54e8603d7e444f129da702f16344ecd516c3d60d6ea789",
+          "crossing_y_at_x3_m": [
+            -1.0347065965405151
+          ]
+        }
+      ],
+      "actual_crossing_y_at_x3_m": [
+        -1.0335368136257885
+      ],
+      "actual_y_range_near_x3_m": [
+        -1.267958240606754,
+        -0.7363436000666631
+      ],
+      "side_convention": "World +x forward; +y left, -y right. x=3 crossings are geometric, not a shared passing-side decision.",
+      "remani": {
+        "total_requests_started": 2,
+        "refresh_requests_started": 1,
+        "completed_requests": 2,
+        "accepted_completed_requests": 2,
+        "refresh_outcomes": {
+          "accepted": 1
+        },
+        "optimizer_calls": 2,
+        "consumed_references": 2,
+        "new_references_after_actor": 1,
+        "first_new_reference_after_actor_t": 18.171890681000036,
+        "requests": [
+          {
+            "request_id": 1,
+            "start_sim_s": 7.068374443000039,
+            "end_sim_s": 7.411607985000046,
+            "start_mono": 19418.793732569,
+            "end_mono": 19419.13616538,
+            "request_wall_ms": 342.4328110013448,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 0,
+            "start_y": 0,
+            "start_yaw": 0,
+            "stage_wall_ms": {
+              "search": 128.87249299819814,
+              "initialization": 129.38361399938003,
+              "optimizer": 157.56749100182788,
+              "manager_replan": 290.61545800141175,
+              "live_acceptance": 47.288839999964694
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 8.192866000172216,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 2,
+                "wall_ms": 157.2916090008221,
+                "thread_cpu_ms": 156.869696,
+                "runqueue_wait_ms": 0.1333760000000739,
+                "budget_s": 1.2,
+                "iterations": 7,
+                "input_hash": "8775951166031383002",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.154137892786751,
+                "max_right_omega": 4.154137892786751
+              }
+            ],
+            "outcome_class": "accepted"
+          },
+          {
+            "request_id": 2,
+            "start_sim_s": 17.68856306400005,
+            "end_sim_s": 18.131162009000036,
+            "start_mono": 19429.413088042,
+            "end_mono": 19429.853518557,
+            "request_wall_ms": 440.43051499829744,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 2.074189075559549,
+            "start_y": -0.1777818935863487,
+            "start_yaw": -0.7357927178872239,
+            "stage_wall_ms": {
+              "search": 109.82388300180901,
+              "initialization": 110.02997000105097,
+              "optimizer": 146.08330899864086,
+              "manager_replan": 391.7333380013588,
+              "live_acceptance": 44.36547200020868
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 139.95176399839693,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 4,
+                "wall_ms": 145.8410279992677,
+                "thread_cpu_ms": 139.270464,
+                "runqueue_wait_ms": 5.585503999999908,
+                "budget_s": 1.2,
+                "iterations": 8,
+                "input_hash": "867145198738417099",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.269833651542633,
+                "max_right_omega": 3.9323912799723972
+              }
+            ],
+            "outcome_class": "accepted"
+          }
+        ]
+      },
+      "input_sha256": {
+        "manifest.json": "25433ac55156d00d3f030a54be2ed514f9921c44b1c0789f93e492a35f36988f",
+        "coupling_parameters.json": "a0fccb6497cb835278bde1827673b95376455b3097e067c7ae4ab1c537e4d4fe",
+        "result.json": "17206ad199ade9ce30939e3cb083c652c3ff70ee3bff671f9f26dbfd659af694",
+        "run_status.json": "f41d65dacaf7bac0466c4b3364bd9bac9d63369ce76c24657a313043ad44bf51",
+        "trial_audit.json": "e159e5b0715b0dc6f4325fbbb7d9333f9f0569f0bd4c4d943b70b75698ddd9aa",
+        "state.csv": "5a804ec8305f31d8e32c1edbbc859bd34968b3cef4bbba3be3f4170203315340",
+        "native_collision_3d_body.json": "00fbe0d4609c9f7bab499e7cb574e0ba7287c31e39f694d1e31ac7fd5589a485",
+        "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+        "consumed_references.jsonl": "6c80458f2154a91d0575c78f69f2f131ec21cb76eb97364c745622f3024d83c1",
+        "reference_events.jsonl": "ef4981800036fb9b17a63a89faf304173610be569d44a976ca91da4efa38250c",
+        "execution_rollouts.jsonl.gz": "90953ba0599de76d2f1001c0d74147ce2116fa84c7505803f2e9055fe87b58f5",
+        "mppi_diagnostics.json.gz": "1cbf292b3ceb678396f36c0203b4ab4b033442fe55b5987f6be215ffe8a6fb5d",
+        "obstacles.csv": "83f2d3e3a092f86c72083e71063d3961c25c5c16d7f83102ba8b81ea0256da26",
+        "state_mppi_cycles.jsonl": "43d11e6ad779dc5f0450ab515a93fc669f9a65351e5f0c54618bab67cc489dc0",
+        "analysis/summary.json": "ef9e6e275fe3957788de040821519d06e731f53476e2c060051b2662c8250f8a",
+        "limits.json": "ad2dd3664eab3d90d12bfe1be0cd3cd3d154b9246c0a2b80fa42e7b7568037a6",
+        "static_width_trace.jsonl": "c7096d37fb8e39a8a88b43967e5d199d4fa7ee9a78896a5f288e472af171bb5b",
+        "dual_timeline.jsonl": "12ca462d88a36786efedec8a6a68cc815bedcb546f7ebc51c2b06fe7361c6ea3"
+      },
+      "scope": "Fixed-arm differential-drive REMANI+MPPI ROS numerical SIL, not Gazebo/hardware.",
+      "width_diagnosis": {
+        "attempts": [
+          {
+            "request_id": 1,
+            "resource_replan_id": 1,
+            "optimizer_success": true,
+            "actually_consumed": true,
+            "capture_sim": 1007.351360095,
+            "search_status": 2,
+            "stages": {
+              "native_search_raw": {
+                "points": 12,
+                "max_abs_y_m": 0.0,
+                "peak_x_m": 0.0,
+                "peak_y_m": 0.0,
+                "path_length_m": 5.975788234243696,
+                "start_xy": [
+                  0.0,
+                  0.0
+                ],
+                "end_xy": [
+                  5.975788234243696,
+                  0.0
+                ],
+                "y_at_obstacle_x_m": [
+                  0.0
+                ],
+                "obstacle_to_goal_length_m": 2.975788234243696
+              },
+              "minco_before_optimizer": {
+                "points": 2244,
+                "max_abs_y_m": 0.0,
+                "peak_x_m": 0.0,
+                "peak_y_m": 0.0,
+                "path_length_m": 6.0,
+                "start_xy": [
+                  0.0,
+                  0.0
+                ],
+                "end_xy": [
+                  6.0,
+                  0.0
+                ],
+                "y_at_obstacle_x_m": [
+                  0.0
+                ],
+                "obstacle_to_goal_length_m": 3.0
+              },
+              "optimizer_return": {
+                "points": 2747,
+                "max_abs_y_m": 0.0,
+                "peak_x_m": 0.0,
+                "peak_y_m": 0.0,
+                "path_length_m": 6.0,
+                "start_xy": [
+                  0.0,
+                  0.0
+                ],
+                "end_xy": [
+                  6.0,
+                  0.0
+                ],
+                "y_at_obstacle_x_m": [
+                  0.0
+                ],
+                "obstacle_to_goal_length_m": 3.0
+              }
+            },
+            "start_state": {
+              "applied_x": 0,
+              "applied_y": 0,
+              "applied_yaw": 0,
+              "applied_body_vx": 0,
+              "applied_w": 0,
+              "processed_vx": 0.05,
+              "processed_vy": 0
+            },
+            "rejection_reasons": [],
+            "planned_curve_duration_s": {
+              "minco_before_optimizer": 22.28407460545195,
+              "optimizer_return": 27.30377598876502
+            },
+            "native_request_wall_ms": 342.4328110013448,
+            "search_initial_constant_heading": {
+              "points": 12,
+              "yaw_rad": 0.0,
+              "start_xy": [
+                0.0,
+                0.0
+              ],
+              "end_xy": [
+                5.975788234243696,
+                0.0
+              ],
+              "polyline_length_m": 5.975788234243696
+            },
+            "reference_stamp": 1007.371450598,
+            "consumed_t": 7.472283187000016,
+            "reference_sha256": "e56a688c8e77f7744cf97cb2d248fed207b01f9db2fafca402543332e181b04b",
+            "polynomial_reference_max_error_m": 1.1546319456101628e-14,
+            "published_sim": 1007.411607985
+          },
+          {
+            "request_id": 2,
+            "resource_replan_id": 3,
+            "optimizer_success": true,
+            "actually_consumed": true,
+            "capture_sim": 1017.950062134,
+            "search_status": 2,
+            "stages": {
+              "native_search_raw": {
+                "points": 10,
+                "max_abs_y_m": 1.5796380546684536,
+                "peak_x_m": 3.879778364509754,
+                "peak_y_m": -1.5796380546684536,
+                "path_length_m": 4.985531582186715,
+                "start_xy": [
+                  2.074189075559549,
+                  -0.1777818935863487
+                ],
+                "end_xy": [
+                  5.993198696795927,
+                  -9.643193174098742e-05
+                ],
+                "y_at_obstacle_x_m": [
+                  -1.0160147920808933
+                ],
+                "obstacle_to_goal_length_m": 3.7366279590308493
+              },
+              "minco_before_optimizer": {
+                "points": 1845,
+                "max_abs_y_m": 1.5809003106262038,
+                "peak_x_m": 3.8455698205671287,
+                "peak_y_m": -1.5809003106262038,
+                "path_length_m": 5.023801963280443,
+                "start_xy": [
+                  2.074189075559549,
+                  -0.1777818935863487
+                ],
+                "end_xy": [
+                  6.0,
+                  3.885780586188048e-16
+                ],
+                "y_at_obstacle_x_m": [
+                  -1.0157514649891703
+                ],
+                "obstacle_to_goal_length_m": 3.7750733425847844
+              },
+              "optimizer_return": {
+                "points": 2323,
+                "max_abs_y_m": 1.5257672430640643,
+                "peak_x_m": 3.8467767596073332,
+                "peak_y_m": -1.5257672430640643,
+                "path_length_m": 4.951543128312576,
+                "start_xy": [
+                  2.074189075559549,
+                  -0.1777818935863487
+                ],
+                "end_xy": [
+                  6.0,
+                  4.85722573273506e-16
+                ],
+                "y_at_obstacle_x_m": [
+                  -1.0347088182399782
+                ],
+                "obstacle_to_goal_length_m": 3.6894452570408336
+              }
+            },
+            "start_state": {
+              "applied_x": 2.074189075559549,
+              "applied_y": -0.1777818935863487,
+              "applied_yaw": -0.7357927178872239,
+              "applied_body_vx": 0.20441361376927097,
+              "applied_w": 0.4031385087819287,
+              "processed_vx": 0.1515315939701806,
+              "processed_vy": -0.13719730873114463
+            },
+            "rejection_reasons": [],
+            "planned_curve_duration_s": {
+              "minco_before_optimizer": 18.311295807337732,
+              "optimizer_return": 23.093576096929528
+            },
+            "native_request_wall_ms": 440.43051499829744,
+            "search_initial_constant_heading": {
+              "points": 4,
+              "yaw_rad": -0.7357927178872239,
+              "start_xy": [
+                2.074189075559549,
+                -0.1777818935863487
+              ],
+              "end_xy": [
+                3.364284648423825,
+                -1.3458395637100706
+              ],
+              "polyline_length_m": 1.74031758821741
+            },
+            "reference_stamp": 1018.088563064,
+            "consumed_t": 18.171890681000036,
+            "reference_sha256": "5f189f6a2abfba635a54e8603d7e444f129da702f16344ecd516c3d60d6ea789",
+            "polynomial_reference_max_error_m": 1.970606775961879e-14,
+            "published_sim": 1018.131162009
+          }
+        ],
+        "adopted_refresh_request_ids": [
+          2
+        ],
+        "obstacle_x_m": 3.0,
+        "curve_sample_step_upper_s": 0.01,
+        "association": "request_id + resource_replan_id; reference_publish.guide_start == consumed_reference.stamp; polynomial checked at every consumed reference time"
+      }
+    }
+  ],
+  "rendering": {
+    "frames": 87,
+    "playback_speedup": 2.0,
+    "sha256": "b4eadaf90ddef4f1d83e107d24237f5f8f42c6e7edea66f55ef0b7b53f5c86a9",
+    "actual_records_only": true,
+    "full_search_recorded": false,
+    "green_semantics": "Execution-authorized local rollout, not full MPPI search."
+  }
+}

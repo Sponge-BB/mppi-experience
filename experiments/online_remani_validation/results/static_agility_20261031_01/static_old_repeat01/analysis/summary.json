@@ -1,0 +1,704 @@
+{
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/static_agility_20261031_01/static_old_repeat01",
+  "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+  "scene": "sphere_timing_static",
+  "result": "goal",
+  "anchor_sim_s": 8.441333558999759,
+  "end_sim_s": 43.3923860470004,
+  "clock_origin_ros_s": 1000.0,
+  "latency": {
+    "actor_truth_appearance_sim_s": 10.453084302000207,
+    "actor_note": "first recorded simulator actor sample; NOT perception identification",
+    "first_native_blocked_sim_s": 17.565472605999958,
+    "first_refresh_trigger_sim_s": 17.565472605999958,
+    "first_refresh_publish_sim_s": 19.50149968599999,
+    "first_refresh_consume_sim_s": 19.593047049999996,
+    "first_refresh_control_sim_s": 19.593047049999996,
+    "appearance_to_first_native_blocked_sim_s": 7.112388303999751,
+    "appearance_to_first_refresh_trigger_sim_s": 7.112388303999751,
+    "appearance_to_first_refresh_publish_sim_s": 9.048415383999782,
+    "appearance_to_first_refresh_consume_sim_s": 9.139962747999789,
+    "appearance_to_first_refresh_control_sim_s": 9.139962747999789
+  },
+  "native_wall_accounting": {
+    "window": "first native blocked check to first later native reference publication",
+    "total_wall_s": 1.943642168000224,
+    "request_union_wall_s": 0.877143656998669,
+    "closed_explicit_wait_union_wall_s": 1.0548038540000562,
+    "request_and_wait_overlap_wall_s": 0.0,
+    "unattributed_wall_s": 0.011694657001498854,
+    "wait_by_key_union_wall_s": {
+      "cooperative_retry": 0.7563797630009503,
+      "esdf:GEN_NEW_TRAJ": 0.0,
+      "esdf:LOCAL_EXECUTION_REFRESH": 0.29842409099910583
+    },
+    "interpretation": "closed measured intervals only; wait keys can overlap; unattributed is not assumed CPU contention"
+  },
+  "requests": [
+    {
+      "request_id": 1,
+      "start_sim_s": 7.209926025999948,
+      "end_sim_s": 7.551514215999987,
+      "start_mono": 10566.545634284,
+      "end_mono": 10566.88477746,
+      "request_wall_ms": 339.1431759991974,
+      "success": true,
+      "local_execution_owner": true,
+      "start_x": 0,
+      "start_y": 0,
+      "start_yaw": 0,
+      "stage_wall_ms": {
+        "search": 122.98192600064795,
+        "initialization": 123.15578800007643,
+        "optimizer": 162.57975500047905,
+        "manager_replan": 289.41823300010583,
+        "live_acceptance": 47.32063300070877
+      },
+      "search_results": [
+        {
+          "status": 2,
+          "success": true,
+          "status_name": "REACH_END"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [],
+      "other_request_wall_ms": 6.086999997933162,
+      "search_inside_initialization": true,
+      "optimizer_calls": [
+        {
+          "resource_optimizer_id": 2,
+          "wall_ms": 162.3466579985688,
+          "thread_cpu_ms": 158.961216,
+          "runqueue_wait_ms": 2.899007999999981,
+          "budget_s": 1.2,
+          "iterations": 7,
+          "input_hash": "8775951166031383002",
+          "success": true,
+          "failure_trace_matched": true,
+          "reason": "ok",
+          "rejection_value": 0,
+          "max_left_omega": 4.154137892786751,
+          "max_right_omega": 4.154137892786751
+        }
+      ],
+      "outcome_class": "accepted"
+    },
+    {
+      "request_id": 2,
+      "start_sim_s": 17.777867482000033,
+      "end_sim_s": 18.18136421899999,
+      "start_mono": 10577.097070896,
+      "end_mono": 10577.518090274,
+      "request_wall_ms": 421.0193779999827,
+      "success": false,
+      "local_execution_owner": true,
+      "start_x": 2.1056815607108157,
+      "start_y": 0.003407846019129559,
+      "start_yaw": 0.1442999301830079,
+      "stage_wall_ms": {
+        "search": 142.87185200009844,
+        "initialization": 143.10168299925863,
+        "optimizer": 263.58086300024297,
+        "manager_replan": 410.0387939997745,
+        "live_acceptance": 9.076259999346803
+      },
+      "search_results": [
+        {
+          "status": 2,
+          "success": true,
+          "status_name": "REACH_END"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [
+        "live_occupancy_collision"
+      ],
+      "other_request_wall_ms": 5.260572001134278,
+      "search_inside_initialization": true,
+      "optimizer_calls": [
+        {
+          "resource_optimizer_id": 4,
+          "wall_ms": 263.3552870011044,
+          "thread_cpu_ms": 255.448576,
+          "runqueue_wait_ms": 6.472319999999865,
+          "budget_s": 1.2,
+          "iterations": 28,
+          "input_hash": "2146453190424117637",
+          "success": true,
+          "failure_trace_matched": true,
+          "reason": "ok",
+          "rejection_value": 0,
+          "max_left_omega": 4.104785267975593,
+          "max_right_omega": 3.7964940287586066
+        }
+      ],
+      "outcome_class": "live_acceptance_reject"
+    },
+    {
+      "request_id": 3,
+      "start_sim_s": 19.05929657599995,
+      "end_sim_s": 19.50149968599999,
+      "start_mono": 10578.38057056,
+      "end_mono": 10578.837795934,
+      "request_wall_ms": 457.22537399888097,
+      "success": true,
+      "local_execution_owner": true,
+      "start_x": 2.2674956271805833,
+      "start_y": 0.09622916691176085,
+      "start_yaw": 0.924197046587109,
+      "stage_wall_ms": {
+        "search": 136.7762740010221,
+        "initialization": 136.97087299988198,
+        "optimizer": 132.13674799953878,
+        "manager_replan": 403.7775150009111,
+        "live_acceptance": 50.3944070005673
+      },
+      "search_results": [
+        {
+          "status": 2,
+          "success": true,
+          "status_name": "REACH_END"
+        }
+      ],
+      "target_selection_reject_source_ros": [],
+      "acceptance_rejections": [],
+      "other_request_wall_ms": 137.7233459988929,
+      "search_inside_initialization": true,
+      "optimizer_calls": [
+        {
+          "resource_optimizer_id": 6,
+          "wall_ms": 131.9097959985811,
+          "thread_cpu_ms": 130.3150720000002,
+          "runqueue_wait_ms": 1.216863999999873,
+          "budget_s": 1.2,
+          "iterations": 7,
+          "input_hash": "5997262266384785420",
+          "success": true,
+          "failure_trace_matched": true,
+          "reason": "ok",
+          "rejection_value": 0,
+          "max_left_omega": 3.6746786118219137,
+          "max_right_omega": 3.481516875738859
+        }
+      ],
+      "outcome_class": "accepted"
+    }
+  ],
+  "request_count_until_first_refresh": 2,
+  "request_outcomes_until_first_refresh": {
+    "live_acceptance_reject": 1,
+    "accepted": 1
+  },
+  "optimizer_reasons_until_first_refresh": {
+    "ok": 2
+  },
+  "reference_chains": [
+    {
+      "transaction_fnv64": "8808944486395485914",
+      "publish_sim_s": 7.551514215999987,
+      "publish_mono": 10566.883767472,
+      "request_id": 1,
+      "observer_receipt_matched": true,
+      "receipt_time_is_transport_observation": true,
+      "observer_receipt_sim_s": 7.551514215999987,
+      "message_hashes": [
+        "d68f23e0b20b238c33dc8ef43aa7e2737940e6ca74a8b1f5b53fc9e046f8762b"
+      ],
+      "commit_matched": true,
+      "consumption_matched": true,
+      "commit_sim_s": 7.590238797999973,
+      "commit_revision": 1,
+      "consume_sim_s": 7.610363164999967,
+      "consume_revision": 1,
+      "reference_sha256": "e56a688c8e77f7744cf97cb2d248fed207b01f9db2fafca402543332e181b04b",
+      "publish_to_consume_sim_s": 0.058848948999980166,
+      "first_control_sim_s": 7.610363164999967,
+      "first_control_reason": "ok",
+      "first_control_v": 0.2276125723066143,
+      "first_control_w": 0.0,
+      "publish_to_first_control_sim_s": 0.058848948999980166,
+      "first_control_matched": true,
+      "complete_exact_chain": true
+    },
+    {
+      "transaction_fnv64": "5544762245817180593",
+      "publish_sim_s": 19.50149968599999,
+      "publish_mono": 10578.836694839,
+      "request_id": 3,
+      "observer_receipt_matched": true,
+      "receipt_time_is_transport_observation": true,
+      "observer_receipt_sim_s": 19.50149968599999,
+      "message_hashes": [
+        "a548f0d761e12b2ca780c62f346f193fbc72506a50bd67f7933019426931c72c"
+      ],
+      "commit_matched": true,
+      "consumption_matched": true,
+      "commit_sim_s": 19.52158293100001,
+      "commit_revision": 2,
+      "consume_sim_s": 19.593047049999996,
+      "consume_revision": 2,
+      "reference_sha256": "2da80ad48813ca44861b38524e22bbcb5d30b91b13ef09b39f9b22e55aa8524a",
+      "publish_to_consume_sim_s": 0.09154736400000729,
+      "first_control_sim_s": 19.593047049999996,
+      "first_control_reason": "ok",
+      "first_control_v": 0.20480958877854263,
+      "first_control_w": -0.15607700077186898,
+      "publish_to_first_control_sim_s": 0.09154736400000729,
+      "first_control_matched": true,
+      "complete_exact_chain": true
+    }
+  ],
+  "stop_analysis": {
+    "reason_duration_s": {
+      "ok": 34.95105248800064
+    },
+    "zero_command_duration_s": {
+      "ok": 0.08052149800050756
+    },
+    "low_linear_command_duration_s": {
+      "ok": 1.7575651920003565
+    },
+    "longest_both_zero_command_s": 0.08052149800050756,
+    "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+    "low_linear_note": "includes in-place turning; not automatically a stop",
+    "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation",
+    "measured_nearly_zero_motion_s": 0.22141577399997914,
+    "measured_thresholds": {
+      "v_abs_m_s": 0.01,
+      "w_abs_rad_s": 0.03
+    },
+    "native_clock_freeze_used_as_stop_evidence": false
+  },
+  "stop_by_phase": {
+    "terminal_settling_start_sim_s": null,
+    "navigation_end_sim_s": 43.3923860470004,
+    "phases": {
+      "before_obstacle": {
+        "start_sim_s": 8.441333558999759,
+        "end_sim_s": 10.453084302000207,
+        "duration_sim_s": 2.011750743000448,
+        "measured_nearly_zero_motion_s": 0.0,
+        "reason_duration_s": {
+          "ok": 2.011750743000448
+        },
+        "zero_command_duration_s": {},
+        "low_linear_command_duration_s": {},
+        "longest_both_zero_command_s": 0.0,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation"
+      },
+      "obstacle_until_new_reference": {
+        "start_sim_s": 10.453084302000207,
+        "end_sim_s": 19.593047049999996,
+        "duration_sim_s": 9.139962747999789,
+        "measured_nearly_zero_motion_s": 0.0,
+        "reason_duration_s": {
+          "ok": 9.139962747999789
+        },
+        "zero_command_duration_s": {},
+        "low_linear_command_duration_s": {
+          "ok": 0.14074137500006145
+        },
+        "longest_both_zero_command_s": 0.0,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation"
+      },
+      "after_new_reference_before_goal": {
+        "start_sim_s": 19.593047049999996,
+        "end_sim_s": 43.3923860470004,
+        "duration_sim_s": 23.799338997000405,
+        "measured_nearly_zero_motion_s": 0.22141577399997914,
+        "reason_duration_s": {
+          "ok": 23.799338997000405
+        },
+        "zero_command_duration_s": {
+          "ok": 0.08052149800050756
+        },
+        "low_linear_command_duration_s": {
+          "ok": 1.616823817000295
+        },
+        "longest_both_zero_command_s": 0.08052149800050756,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation"
+      },
+      "terminal_settling": {
+        "start_sim_s": 43.3923860470004,
+        "end_sim_s": 43.3923860470004,
+        "duration_sim_s": 0.0,
+        "measured_nearly_zero_motion_s": 0.0,
+        "reason_duration_s": {},
+        "zero_command_duration_s": {},
+        "low_linear_command_duration_s": {},
+        "longest_both_zero_command_s": 0.0,
+        "zero_definition": "abs(applied_v)<1e-6 and abs(applied_w)<1e-6; includes terminal settling",
+        "low_linear_note": "includes in-place turning; not automatically a stop",
+        "integration": "piecewise held diagnostic output; does not prove exact motor-controller actuation"
+      }
+    },
+    "terminal_condition": {
+      "goal_xy": [
+        3.0,
+        0.0
+      ],
+      "distance_strict_lt_m": 0.05,
+      "raw_abs_yaw_strict_lt_rad": 0.1,
+      "abs_v_strict_lt_m_s": 0.05,
+      "angular_speed_not_part_of_goal_condition": true
+    },
+    "boundary_method": "backtracked final contiguous recorded at_goal samples, same Simulator.run predicate; one-sample resolution",
+    "no_new_reference_rule": "obstacle phase continues to navigation_end; initial reference consumption is never used as a refresh"
+  },
+  "unmatched": {
+    "requests": [],
+    "stages": [],
+    "waits": []
+  },
+  "run_status": {
+    "returncode": 0,
+    "result_written": true,
+    "graph_audited": true,
+    "required_process_failed": false,
+    "monitored_node_pids": {
+      "/dynamic_obstacle_tracker": 24172,
+      "/mm_controller_node": 24165,
+      "/passthrough_z": 24167,
+      "/pcl_manager_filter": 24166,
+      "/rosout": 24156,
+      "/sim_lidar_tf": 24186,
+      "/sim_map_to_odom": 24180,
+      "/sim_world_to_map": 24174,
+      "/algorithm_simulator": 24188,
+      "/base_mppi": 24198,
+      "/dual_timescale_observer": 24217,
+      "/filter_joint_states": 24163,
+      "/remani_planner_node": 24164,
+      "/shared_collision_model": 24214
+    },
+    "runner_error": null,
+    "stop_errors": [],
+    "elapsed_wall_s": 48.768724424999164,
+    "production_hashes_unchanged": true,
+    "build_manifest_unchanged": true,
+    "coupling_group": "engineering",
+    "free_bytes_after_run": 3336708096
+  },
+  "publisher_audit": {
+    "publishers": {
+      "/rosout_agg": [
+        "/rosout"
+      ],
+      "/rosout": [
+        "/mm_controller_node",
+        "/passthrough_z",
+        "/sim_world_to_map",
+        "/pcl_manager_filter",
+        "/sim_map_to_odom",
+        "/sim_lidar_tf",
+        "/dynamic_obstacle_tracker",
+        "/remani_planner_node",
+        "/filter_joint_states",
+        "/shared_collision_model",
+        "/dual_timescale_observer",
+        "/base_mppi",
+        "/algorithm_simulator"
+      ],
+      "/tf_static": [
+        "/sim_world_to_map",
+        "/sim_map_to_odom",
+        "/sim_lidar_tf"
+      ],
+      "/passthrough_z/parameter_descriptions": [
+        "/pcl_manager_filter"
+      ],
+      "/passthrough_z/parameter_updates": [
+        "/pcl_manager_filter"
+      ],
+      "/velodyne_points": [
+        "/pcl_manager_filter"
+      ],
+      "/pcl_manager_filter/bond": [
+        "/pcl_manager_filter",
+        "/passthrough_z"
+      ],
+      "/sim/classified_cloud": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_points": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/confirmed_track_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/motion_qualified_track_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/stationary_confirmed_track_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/stationary_background_anchor_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/cluster_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/processing_ms": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/input_age": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/residual_point_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/maximum_confirmed_speed": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/maximum_motion_qualified_speed": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/perception_healthy": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/perception_health_state": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/dynamic_obstacle_tracker/suppressed_motion_track_count": [
+        "/dynamic_obstacle_tracker"
+      ],
+      "/remani_planner_node/goal_point": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/global_traj": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/init_ctrl_pts": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/optmizing_traj": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/init_waypoints": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/optimal_ctrl_pts": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/optimal_waypoints": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/failed_list": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/a_star_list": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/init_debug_list": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/pt0_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grad0_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/pt1_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grad1_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/smoo_grad_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/dist_grad_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/feas_grad_dur_opt": [
+        "/remani_planner_node"
+      ],
+      "/mm_controller_node/destory_cmd": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/occupancy": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/occupancy_inflate": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/esdf": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/dynamic_point_swept": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/dynamic_prediction_nominal": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/grid_map/dynamic_prediction_markers": [
+        "/remani_planner_node"
+      ],
+      "/mm/joint_states": [
+        "/filter_joint_states"
+      ],
+      "/sim/unified_collision": [
+        "/shared_collision_model"
+      ],
+      "/sim/native_collision_3d": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/kinoastar/path": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/kinoastar/local_start_goal": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/kinoastar/search_nodes": [
+        "/remani_planner_node"
+      ],
+      "/sim/cmd_vel": [
+        "/base_mppi"
+      ],
+      "/remani_planner_node/traj_pt_vis": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/traj_init_pt_vis": [
+        "/remani_planner_node"
+      ],
+      "/remani_planner_node/front_end_mm_mesh_vis": [
+        "/remani_planner_node"
+      ],
+      "/sim/mppi_diagnostics": [
+        "/base_mppi"
+      ],
+      "/remani_planner_node/back_end_mm_mesh_vis": [
+        "/remani_planner_node"
+      ],
+      "/sim/mppi/native_reference": [
+        "/base_mppi"
+      ],
+      "/tracking_fault": [
+        "/base_mppi"
+      ],
+      "/mm_controller_node/trajectory_progress": [
+        "/base_mppi"
+      ],
+      "/planning/trajectory": [
+        "/remani_planner_node"
+      ],
+      "/planning/data_display": [
+        "/remani_planner_node"
+      ],
+      "/mm_controller_node/gripper_cmd": [
+        "/remani_planner_node",
+        "/mm_controller_node"
+      ],
+      "/map_generator/map_state": [
+        "/remani_planner_node"
+      ],
+      "/planning/start": [
+        "/remani_planner_node"
+      ],
+      "/planning/finish": [
+        "/remani_planner_node"
+      ],
+      "/planning/safety_speed_limit": [
+        "/remani_planner_node"
+      ],
+      "/odom": [
+        "/algorithm_simulator"
+      ],
+      "/planning/execution_state": [
+        "/remani_planner_node"
+      ],
+      "/planning/execution_reference": [
+        "/remani_planner_node"
+      ],
+      "/gazebo/joint_states": [
+        "/algorithm_simulator"
+      ],
+      "/mm/mani/gripper_state": [
+        "/algorithm_simulator"
+      ],
+      "/planning/dynamic_point_flow_state": [
+        "/remani_planner_node"
+      ],
+      "/clock": [
+        "/algorithm_simulator"
+      ],
+      "/planning/dynamic_point_flow_ttc": [
+        "/remani_planner_node"
+      ],
+      "/sim/raw_cloud": [
+        "/algorithm_simulator"
+      ],
+      "/map_generator/global_cloud": [
+        "/algorithm_simulator"
+      ],
+      "/move_base_simple/goal": [
+        "/algorithm_simulator"
+      ],
+      "/tf": [
+        "/algorithm_simulator"
+      ],
+      "/planning/local_execution_rollout": [
+        "/base_mppi"
+      ],
+      "/sim/local_execution_cmd": [
+        "/base_mppi"
+      ],
+      "/sim/mppi_seed_states": [
+        "/base_mppi"
+      ],
+      "/sim/mppi_target_field": [
+        "/base_mppi"
+      ],
+      "/mm_controller_node/car_cmd": [
+        "/mm_controller_node"
+      ],
+      "/mm_controller_node/joint_cmd": [
+        "/mm_controller_node"
+      ],
+      "/traj_start_trigger": [
+        "/mm_controller_node"
+      ],
+      "/sim/native_controller_progress": [
+        "/mm_controller_node"
+      ],
+      "/mm_controller_node/arm_tracking_error": [
+        "/mm_controller_node"
+      ],
+      "/mm_controller_node/base_tracking_error": [
+        "/mm_controller_node"
+      ]
+    },
+    "errors": [],
+    "verified": true
+  },
+  "source_sha256": {
+    "dual_timeline.jsonl": "6a6915b3d4edeb3534e578bbf3fe2d22737decf81d430d9a8bafcf6b48053c82",
+    "observer_events.jsonl": "d07c2d7bb1317b2272a5708bb60b99e94ff34ea0e48371b2004521acb02587b5",
+    "solver_trace.jsonl": "8a9d89e7fc0f0140299ae5d103f06178f0a11a0146ee7bd20cb66c32b7506030",
+    "failure_trace.jsonl": "d4a12c328080dad4fa8974a8297350f2baae24b429695f5c13647bd7c772c6f2",
+    "state.csv": "8aa67bd0e9f8a93107f1426d35e141e4bd9b8fabb8f8f2a8668c5c239652a013",
+    "obstacles.csv": "57bc7a667d77a85dfbdc631915edaec3019166031ce779b1248ca0d601567926",
+    "result.json": "728c7d6f7faf6772cfaba8588f11260dc1a4585bf14835c1d567c5753c81a8ca",
+    "run_status.json": "69e394009ca961839c2c59a3004e9e85426cb85d8fb6ac1ae3c850c0392c041d",
+    "mppi_diagnostics.json": "9e2e691bdf4c551addf15e45c317194b299a1bce3dc802f7e504910522f39054",
+    "consumed_references.jsonl": "afd3483bdc876314cffd3c5d746dca3d64b4d334287865071db7ca513d9b5e57",
+    "reference_events.jsonl": "b67b1e841188f62bfb739401d7fad616416249ba5a5bfa54cbf992d3cc754bd2",
+    "limits.json": "ad2dd3664eab3d90d12bfe1be0cd3cd3d154b9246c0a2b80fa42e7b7568037a6",
+    "launch_stdout.log": "bf32b9f655afce99c99d4f4d30dcede2c3d35590b1295835967fb1c3ad276c93"
+  },
+  "reporter_sha256": "46daf5a702280dbdee42f63750c2886fc9fefa27679994ea98a702136615ddc4",
+  "limitations": [
+    "No Tracker-freeze explanation applied to MPPI-owned execution.",
+    "Small repeated closed loops; native random search not identical-input causal pairs.",
+    "Simulator appearance is not detector identification; observer receipt is not publisher time.",
+    "Unclosed waits excluded from attributed duration; not silently extended to run end.",
+    "Clock fractions and wall delays are not mixed; profiler overhead not subtracted."
+  ]
+}

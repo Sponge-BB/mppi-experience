@@ -1,0 +1,46 @@
+本轮针对静态绕行过宽的最小修改
+
+实际在线改动只有前端搜索的两项评分：
+search/traj_steer_penalty：4.0 改为 1.0。
+search/traj_steer_change_penalty：1.5 改为 0.375。
+目的：避免搜索过分偏好保持当前向外的朝向，让它更愿意转回目标方向。
+
+朝向分辨率仍为3.15 rad，没有采用0.3 rad候选。同输入比较中，单独细化朝向没有改变路线；同时修改两项也没有比只改评分更好。
+MPPI及提前绕行/局部范围修正保持原样。碰撞球、安全距离、轮速/加速度、后端预算、轨迹验收均未放宽。
+
+实现范围
+隔离构建：experiments/online_remani_validation/builds/frontend_rejoin_20261031_02。
+FRONTEND_REJOIN_MODE=penalty在读取ROS参数后，把两项转向评分乘以0.25。
+因此ROS参数快照仍显示覆盖前值；每次实验manifest.json中的frontend_rejoin.resolved_online_parameters记录实际生效值。
+未改src、devel和实车启动配置，没有上传GitHub。
+
+正常闭环复现（工作目录/home/l/remani_ws）
+source /opt/ros/noetic/setup.bash
+source /home/l/remani_ws/devel/setup.bash
+python3 experiments/online_remani_validation/run_frontend_rejoin.py online --mode penalty --scene static --tag 新的未使用目录名
+迎面场景把--scene static换成--scene headon。
+只连接独立数值仿真ROS，不连接实车。这不是Gazebo实验。
+
+回退
+把--mode penalty改为--mode baseline，即恢复两项原评分；仍保留之前的提前绕行与局部范围修正。
+也可使用上一轮static_width_diagnosis_20261031_01隔离构建。原构建和原实验记录都未覆盖。
+这轮没有给实车默认启用，因此实车端不需要执行回退命令。
+
+已执行记录
+same_input_static：首次冻结完整前端未返回，已中断。记录保留，不作为有效结果。
+same_input_astar：冻结同一起点和地图，原评分/降低评分/细化朝向/两者/原评分重复；仅比较原生底盘A*。
+static_baseline、static_penalty：两次正常完整REMANI+MPPI静态闭环。
+headon_baseline、headon_penalty：两次正常完整REMANI+MPPI迎面障碍对照。
+
+诊断计时说明
+底盘A*同输入诊断期间用墙钟维持原搜索预算，避免冻结ROS时钟使预算失效。
+正常闭环不启用该诊断分支，仍走原生底盘搜索、机械臂采样、后端优化及安全验收。
+同输入几何改善不能代替在线验收，本轮已另行完成完整闭环。
+
+最终结论及图见report_final目录；report为加入迎面原评分对照前的中间报告，保留供追溯。
+静态实走路程7.104米降到6.211米，运动时间37.679秒降到29.633秒；采用的REMANI参考最大侧偏1.520米降到0.697米。
+静态请求到采用约0.49/0.50秒，未观察到本轮提高交付速度；降速到持续转向约0.47/0.53秒，也不是反应速度提升。
+静态最小物理球采样间隙0.145米降到0.099米：路线更紧凑，同时贴近障碍了一些，碰撞约束本身未放宽。
+迎面两组均前两次重规划失败、第三次交付，首次重规划到采用分别约4.027秒和3.637秒；这轮没有解决动态交付重试。
+迎面两组均到达目标，未发现采样碰撞或非目标停顿；最小采样间隙分别0.085米和0.069米。
+上述为有限次数的ROS数值闭环，不是统计成功率或实车结论。保留评分修正作为仿真候选，不直接提升为实车默认参数。

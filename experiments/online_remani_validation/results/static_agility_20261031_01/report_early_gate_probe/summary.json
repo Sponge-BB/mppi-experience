@@ -1,0 +1,475 @@
+{
+  "trials": [
+    {
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/static_agility_20261031_01/static_old_repeat01",
+      "label": "原启用条件",
+      "scene": "sphere_timing_static",
+      "reached_goal": true,
+      "termination": "goal",
+      "interface_audit_valid": true,
+      "minimum_physical_sample_gap_m": 0.1249420457567091,
+      "physical_sample_collision": false,
+      "actual_path_length_m": 6.583116484427167,
+      "motion_duration_s": 34.95105248800064,
+      "motion_anchor_t": 8.441333558999759,
+      "end_t": 43.3923860470004,
+      "first_truth_actor_t": 10.453084302000207,
+      "metric_window_start_t": 10.453084302000207,
+      "first_measured_speed_below_022_t": 15.004781311999977,
+      "first_measured_sustained_turn": {
+        "t": 17.373642047999965,
+        "confirmed_at_t": 17.589543097999922,
+        "sign": 1,
+        "direction": "左转"
+      },
+      "first_published_sustained_turn": {
+        "t": 17.16886712300004,
+        "confirmed_at_t": 17.444938191999995,
+        "sign": 1,
+        "direction": "左转"
+      },
+      "brake_to_measured_turn_s": 2.368860735999988,
+      "brake_to_published_turn_s": 2.1640858110000636,
+      "non_goal_low_speed": {
+        "total_s": 0.0,
+        "longest_s": 0.0,
+        "intervals": [],
+        "definition": "Measured |v|<.02 m/s, |w|<.05 rad/s, goal distance>.1 m."
+      },
+      "kernel": {
+        "count": 631,
+        "p95_ms": 9.093685,
+        "max_ms": 128.812725
+      },
+      "callback": {
+        "count": 631,
+        "p95_ms": 20.63697650009999,
+        "max_ms": 134.67536700045457
+      },
+      "reason_counts": {
+        "ok": 631
+      },
+      "diagnostic_alignment": {
+        "excluded_contact_or_later_rows": 0,
+        "missing_diagnostics": 1,
+        "missing_precontact_diagnostics": 1,
+        "unmatched_diagnostics": 0,
+        "matched_by": "solve timestamp, reason, validation code, ordered within duplicate keys; cycle publication controls cutoff"
+      },
+      "reference_adoptions": [
+        {
+          "t": 19.593047049999996,
+          "after_actor_s": 9.139962747999789,
+          "epoch": 2,
+          "revision": 2,
+          "sha256": "2da80ad48813ca44861b38524e22bbcb5d30b91b13ef09b39f9b22e55aa8524a",
+          "crossing_y_at_x3_m": [
+            0.9647261978188715
+          ]
+        }
+      ],
+      "actual_crossing_y_at_x3_m": [
+        0.9587320092030294
+      ],
+      "actual_y_range_near_x3_m": [
+        0.6823814390095219,
+        1.0676251178507123
+      ],
+      "side_convention": "World +x forward; +y left, -y right. x=3 crossings are geometric, not a shared passing-side decision.",
+      "remani": {
+        "total_requests_started": 3,
+        "refresh_requests_started": 2,
+        "completed_requests": 3,
+        "accepted_completed_requests": 2,
+        "refresh_outcomes": {
+          "live_acceptance_reject": 1,
+          "accepted": 1
+        },
+        "optimizer_calls": 3,
+        "consumed_references": 2,
+        "new_references_after_actor": 1,
+        "first_new_reference_after_actor_t": 19.593047049999996,
+        "requests": [
+          {
+            "request_id": 1,
+            "start_sim_s": 7.209926025999948,
+            "end_sim_s": 7.551514215999987,
+            "start_mono": 10566.545634284,
+            "end_mono": 10566.88477746,
+            "request_wall_ms": 339.1431759991974,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 0,
+            "start_y": 0,
+            "start_yaw": 0,
+            "stage_wall_ms": {
+              "search": 122.98192600064795,
+              "initialization": 123.15578800007643,
+              "optimizer": 162.57975500047905,
+              "manager_replan": 289.41823300010583,
+              "live_acceptance": 47.32063300070877
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 6.086999997933162,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 2,
+                "wall_ms": 162.3466579985688,
+                "thread_cpu_ms": 158.961216,
+                "runqueue_wait_ms": 2.899007999999981,
+                "budget_s": 1.2,
+                "iterations": 7,
+                "input_hash": "8775951166031383002",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.154137892786751,
+                "max_right_omega": 4.154137892786751
+              }
+            ],
+            "outcome_class": "accepted"
+          },
+          {
+            "request_id": 2,
+            "start_sim_s": 17.777867482000033,
+            "end_sim_s": 18.18136421899999,
+            "start_mono": 10577.097070896,
+            "end_mono": 10577.518090274,
+            "request_wall_ms": 421.0193779999827,
+            "success": false,
+            "local_execution_owner": true,
+            "start_x": 2.1056815607108157,
+            "start_y": 0.003407846019129559,
+            "start_yaw": 0.1442999301830079,
+            "stage_wall_ms": {
+              "search": 142.87185200009844,
+              "initialization": 143.10168299925863,
+              "optimizer": 263.58086300024297,
+              "manager_replan": 410.0387939997745,
+              "live_acceptance": 9.076259999346803
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [
+              "live_occupancy_collision"
+            ],
+            "other_request_wall_ms": 5.260572001134278,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 4,
+                "wall_ms": 263.3552870011044,
+                "thread_cpu_ms": 255.448576,
+                "runqueue_wait_ms": 6.472319999999865,
+                "budget_s": 1.2,
+                "iterations": 28,
+                "input_hash": "2146453190424117637",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.104785267975593,
+                "max_right_omega": 3.7964940287586066
+              }
+            ],
+            "outcome_class": "live_acceptance_reject"
+          },
+          {
+            "request_id": 3,
+            "start_sim_s": 19.05929657599995,
+            "end_sim_s": 19.50149968599999,
+            "start_mono": 10578.38057056,
+            "end_mono": 10578.837795934,
+            "request_wall_ms": 457.22537399888097,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 2.2674956271805833,
+            "start_y": 0.09622916691176085,
+            "start_yaw": 0.924197046587109,
+            "stage_wall_ms": {
+              "search": 136.7762740010221,
+              "initialization": 136.97087299988198,
+              "optimizer": 132.13674799953878,
+              "manager_replan": 403.7775150009111,
+              "live_acceptance": 50.3944070005673
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 137.7233459988929,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 6,
+                "wall_ms": 131.9097959985811,
+                "thread_cpu_ms": 130.3150720000002,
+                "runqueue_wait_ms": 1.216863999999873,
+                "budget_s": 1.2,
+                "iterations": 7,
+                "input_hash": "5997262266384785420",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 3.6746786118219137,
+                "max_right_omega": 3.481516875738859
+              }
+            ],
+            "outcome_class": "accepted"
+          }
+        ]
+      },
+      "input_sha256": {
+        "manifest.json": "df1f03e6c9530147a0d496ca6a60eb3e28d7f78359420cdbdb5bd709ed837180",
+        "coupling_parameters.json": "667f8b791d8d9a194930bf4a967fec486560fbcf74135c69b4a73176deec6a1a",
+        "result.json": "728c7d6f7faf6772cfaba8588f11260dc1a4585bf14835c1d567c5753c81a8ca",
+        "run_status.json": "69e394009ca961839c2c59a3004e9e85426cb85d8fb6ac1ae3c850c0392c041d",
+        "trial_audit.json": "78097c9d10a561b653c74c2eb5e48d90175d5a7e0ff42ce0b648ce2dd6fb0b49",
+        "state.csv": "8aa67bd0e9f8a93107f1426d35e141e4bd9b8fabb8f8f2a8668c5c239652a013",
+        "native_collision_3d_body.json": "58b3f3e414aa9c6c89baf4a761126adb0247ecf38841a458ffb8e47b0be545be",
+        "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+        "consumed_references.jsonl": "afd3483bdc876314cffd3c5d746dca3d64b4d334287865071db7ca513d9b5e57",
+        "reference_events.jsonl": "b67b1e841188f62bfb739401d7fad616416249ba5a5bfa54cbf992d3cc754bd2",
+        "execution_rollouts.jsonl.gz": "4565b4857b28aca23dab474487f85509355c478cde79abca6ec87767b3278802",
+        "mppi_diagnostics.json.gz": "6b6616f23485418a3f64798288d85c5ee56887aea4cfdb13cfa7451a77022bfc",
+        "obstacles.csv": "57bc7a667d77a85dfbdc631915edaec3019166031ce779b1248ca0d601567926",
+        "state_mppi_cycles.jsonl": "4e532c95defed8f3a5ebb99d4787b96842b73c53e2738dc3d8a486073377607e",
+        "analysis/summary.json": "b6a03d439a0349407a06eaae690fbc12ee449882b424c518ef80a01d6daeab63",
+        "limits.json": "ad2dd3664eab3d90d12bfe1be0cd3cd3d154b9246c0a2b80fa42e7b7568037a6"
+      },
+      "scope": "Fixed-arm differential-drive REMANI+MPPI ROS numerical SIL, not Gazebo/hardware."
+    },
+    {
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/static_agility_20261031_01/static_early_repeat01",
+      "label": "提前比较侧绕方案",
+      "scene": "sphere_timing_static",
+      "reached_goal": true,
+      "termination": "goal",
+      "interface_audit_valid": true,
+      "minimum_physical_sample_gap_m": 0.07261500473930603,
+      "physical_sample_collision": false,
+      "actual_path_length_m": 6.551910596644365,
+      "motion_duration_s": 32.138013308000154,
+      "motion_anchor_t": 8.446149506000438,
+      "end_t": 40.58416281400059,
+      "first_truth_actor_t": 10.453893769999922,
+      "metric_window_start_t": 10.453893769999922,
+      "first_measured_speed_below_022_t": 15.023175824000646,
+      "first_measured_sustained_turn": {
+        "t": 16.469628951999766,
+        "confirmed_at_t": 16.671056557001066,
+        "sign": -1,
+        "direction": "右转"
+      },
+      "first_published_sustained_turn": {
+        "t": 16.178468608000003,
+        "confirmed_at_t": 16.429083601000002,
+        "sign": -1,
+        "direction": "右转"
+      },
+      "brake_to_measured_turn_s": 1.4464531279991206,
+      "brake_to_published_turn_s": 1.1552927839993572,
+      "non_goal_low_speed": {
+        "total_s": 0.0,
+        "longest_s": 0.0,
+        "intervals": [],
+        "definition": "Measured |v|<.02 m/s, |w|<.05 rad/s, goal distance>.1 m."
+      },
+      "kernel": {
+        "count": 555,
+        "p95_ms": 69.7184812,
+        "max_ms": 157.046597
+      },
+      "callback": {
+        "count": 555,
+        "p95_ms": 75.31309160040107,
+        "max_ms": 164.40743600105634
+      },
+      "reason_counts": {
+        "ok": 555
+      },
+      "diagnostic_alignment": {
+        "excluded_contact_or_later_rows": 0,
+        "missing_diagnostics": 0,
+        "missing_precontact_diagnostics": 0,
+        "unmatched_diagnostics": 0,
+        "matched_by": "solve timestamp, reason, validation code, ordered within duplicate keys; cycle publication controls cutoff"
+      },
+      "reference_adoptions": [
+        {
+          "t": 17.523671081999964,
+          "after_actor_s": 7.069777312000042,
+          "epoch": 2,
+          "revision": 2,
+          "sha256": "0e071b8183e547d998c4bb2ce777c0e656e9562b1ff1e00bb1a75ce74445e135",
+          "crossing_y_at_x3_m": [
+            0.8320538618234008
+          ]
+        }
+      ],
+      "actual_crossing_y_at_x3_m": [
+        0.825438217796376
+      ],
+      "actual_y_range_near_x3_m": [
+        0.5850104209196716,
+        0.917442794597411
+      ],
+      "side_convention": "World +x forward; +y left, -y right. x=3 crossings are geometric, not a shared passing-side decision.",
+      "remani": {
+        "total_requests_started": 2,
+        "refresh_requests_started": 1,
+        "completed_requests": 2,
+        "accepted_completed_requests": 2,
+        "refresh_outcomes": {
+          "accepted": 1
+        },
+        "optimizer_calls": 2,
+        "consumed_references": 2,
+        "new_references_after_actor": 1,
+        "first_new_reference_after_actor_t": 17.523671081999964,
+        "requests": [
+          {
+            "request_id": 1,
+            "start_sim_s": 7.178775793999989,
+            "end_sim_s": 7.522521117999986,
+            "start_mono": 10489.607154627,
+            "end_mono": 10489.961606253,
+            "request_wall_ms": 354.4516260008095,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 0,
+            "start_y": 0,
+            "start_yaw": 0,
+            "stage_wall_ms": {
+              "search": 135.960404000798,
+              "initialization": 136.1490830004186,
+              "optimizer": 163.39677600080904,
+              "manager_replan": 303.29940099909436,
+              "live_acceptance": 47.94907099858392
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 6.956696000997908,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 2,
+                "wall_ms": 163.1742400004441,
+                "thread_cpu_ms": 159.5503679999999,
+                "runqueue_wait_ms": 1.708896000000015,
+                "budget_s": 1.2,
+                "iterations": 7,
+                "input_hash": "8775951166031383002",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.154137892786751,
+                "max_right_omega": 4.154137892786751
+              }
+            ],
+            "outcome_class": "accepted"
+          },
+          {
+            "request_id": 2,
+            "start_sim_s": 17.030012951999993,
+            "end_sim_s": 17.475376365999978,
+            "start_mono": 10499.453034217,
+            "end_mono": 10499.903987336,
+            "request_wall_ms": 450.9531189996778,
+            "success": true,
+            "local_execution_owner": true,
+            "start_x": 2.0736087981220517,
+            "start_y": -0.00871242210671109,
+            "start_yaw": -0.23218047789066754,
+            "stage_wall_ms": {
+              "search": 142.3352239999076,
+              "initialization": 142.51366299868096,
+              "optimizer": 255.6579559986858,
+              "manager_replan": 402.48217299995304,
+              "live_acceptance": 45.46104700057185
+            },
+            "search_results": [
+              {
+                "status": 2,
+                "success": true,
+                "status_name": "REACH_END"
+              }
+            ],
+            "target_selection_reject_source_ros": [],
+            "acceptance_rejections": [],
+            "other_request_wall_ms": 7.320453001739224,
+            "search_inside_initialization": true,
+            "optimizer_calls": [
+              {
+                "resource_optimizer_id": 4,
+                "wall_ms": 255.4129549989739,
+                "thread_cpu_ms": 243.1734080000001,
+                "runqueue_wait_ms": 11.46393600000017,
+                "budget_s": 1.2,
+                "iterations": 30,
+                "input_hash": "5296557546650694761",
+                "success": true,
+                "failure_trace_matched": true,
+                "reason": "ok",
+                "rejection_value": 0,
+                "max_left_omega": 4.095337615338817,
+                "max_right_omega": 4.121674152453732
+              }
+            ],
+            "outcome_class": "accepted"
+          }
+        ]
+      },
+      "input_sha256": {
+        "manifest.json": "8cda747764517b74c295768558a7fb30fed74ae6a4fcc72eb96a896075ae6369",
+        "coupling_parameters.json": "9be03c90f0c097927ae468cb4709baa1aef6a0c51615431b6dacc9e1b2a2fc4b",
+        "result.json": "51c2e432c2509df3d503bd27b6c200098cf846ab97f62713a8f58d3e5f53530b",
+        "run_status.json": "c11891d29ca94b50db95731321cfc31faae2a458ba3f12915c33bd04f5fc0546",
+        "trial_audit.json": "e1fa903b1c9896385cb76542ee474e3aab2e742837945ac840de599dc6b541af",
+        "state.csv": "bc79a60d14fe1391293178f3e6ba32f02b83e5049b6f4c145f828c5a6cfe19f1",
+        "native_collision_3d_body.json": "6e14ec3391606fe373cf347e6eca6b7dee873f85a00b0f8076f213970abbe41d",
+        "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+        "consumed_references.jsonl": "4be5730b6cdd316f15be34fb2817ca1f41e21d916bad64635a8bad708806db3a",
+        "reference_events.jsonl": "107d854c9efe18c5628b970be4a8151df9c257c47ae46b77fe80277a8a2b000a",
+        "execution_rollouts.jsonl.gz": "6a3e5fc29ac6c213971dc55c9732f2a96cdd655b7140844d3872aad6596c4e85",
+        "mppi_diagnostics.json.gz": "f494f0a0fd1788087bf804fb2f0c90d2879df3ee0306d3e7f778591d033d8fa3",
+        "obstacles.csv": "b4b45ff28094bb3c24caaa30d83bfcbe718bc6f06a20d1ca1ca72382099098ac",
+        "state_mppi_cycles.jsonl": "dd0377423bf55bc7c95b8be66b7d8e5ec4c94c7343859ba7775a69b42f8876ea",
+        "analysis/summary.json": "f29591651b9589c2578e7a32344662af0a2791a2d270b1a9065f85a038bb5ae9",
+        "limits.json": "ad2dd3664eab3d90d12bfe1be0cd3cd3d154b9246c0a2b80fa42e7b7568037a6"
+      },
+      "scope": "Fixed-arm differential-drive REMANI+MPPI ROS numerical SIL, not Gazebo/hardware."
+    }
+  ],
+  "rendering": null
+}

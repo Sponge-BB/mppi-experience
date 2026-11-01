@@ -1,0 +1,57 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": true,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 2,
+  "consumed_versions": 2,
+  "live_kernel_calls": 556,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 7,
+    "native3d_unhealthy": 31,
+    "native_hard_stop": 102,
+    "waiting_native_trajectory": 12,
+    "ok": 556
+  },
+  "trial_result": {
+    "reason": "goal",
+    "goal_sent": 7.017299074999755,
+    "motion_anchor": 8.521310006999556,
+    "scenario_start": "motion",
+    "trajectory_bundles": 2,
+    "min_clearance": 0.03727457524213701,
+    "collision_conservative_projection": false,
+    "arm_max_error": 0.0,
+    "final_state": [
+      5.989557354097616,
+      0.004081091276584951,
+      0.0003197839505841622,
+      6.540642516138371e-08,
+      0.005496098772428986
+    ],
+    "elapsed": 39.066071733999706,
+    "scene": "sphere_timing_headon",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": false,
+      "min_physical_sample_gap": 0.07334783173343394,
+      "checks": 9509,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 10.528331542998785,
+      "first_observed_moving_t": 11.038638179000031,
+      "deadline_zero_window_start": null,
+      "deadline_zero_window_end": null,
+      "deadline_zero_cycles": 0,
+      "deadline_zero_deadlock": false,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter"
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}
