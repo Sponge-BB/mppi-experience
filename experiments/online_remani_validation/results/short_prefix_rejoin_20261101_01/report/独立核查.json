@@ -1,0 +1,96 @@
+{
+  "schema": "short_prefix_rejoin_independent_audit_v1",
+  "scope": "Read-only checks of actual branch, selected native search nodes, resampled output and delivery records; no solver or controller replay.",
+  "primary_conclusion": "The B treatment never activated. The observed A/B motion difference cannot establish either benefit or harm from zeroing the switch penalty.",
+  "A": {
+    "scope_records": 3,
+    "active_scope_count": 0,
+    "zeroed_switch_penalty_evaluations": 0,
+    "refresh_outcomes": [
+      {"request": 2, "native_result": "planning_collision", "published": false},
+      {"request": 3, "native_result": "ok", "latest_rejected": false, "adopted_revision": 2},
+      {"request": 4, "native_result": "ok", "latest_rejected": false, "adopted_revision": 3}
+    ],
+    "ordinary_fallback_request_4_first_selected_nodes": [
+      {"xy": [2.298971631231665, 0.4353497075507594], "input": [0, 0], "singul": 1, "g": 0},
+      {"xy": [2.2953266538586377, 0.48521667196559143], "input": [0, 0.05], "singul": 0, "g": 0.15000000000000002},
+      {"xy": [2.4457339452785107, 0.30590728097862757], "input": [-1.075244653309068, -0.25], "singul": -1, "g": 1.5720279083181676}
+    ],
+    "ordinary_fallback_request_4_resampled_gears": [1, -1, 1]
+  },
+  "B": {
+    "scope_records": 3,
+    "active_scope_count": 0,
+    "zeroed_switch_penalty_evaluations": 0,
+    "scope_request_3_reason": "short_prefix_no_reverse_hint",
+    "scope_request_5_reason": "short_prefix_no_reverse_hint",
+    "requests_2_and_4": "Prefix succeeded before ordinary fallback, so there was no short-prefix fallback scope.",
+    "refresh_outcomes": [
+      {"request": 2, "native_result": "left_wheel_speed", "published": false},
+      {"request": 3, "native_result": "ok", "latest_rejected": false, "adopted_revision": 2},
+      {"request": 4, "native_result": "planning_collision", "published": false},
+      {"request": 5, "native_result": "ok", "latest_rejected": false, "adopted_revision": 3}
+    ],
+    "ordinary_fallback_request_5_first_selected_nodes": [
+      {"xy": [2.322661204741978, 0.4160729408432822], "input": [0, 0], "singul": 1, "g": 0},
+      {"xy": [2.333312197856958, 0.4649253342919624], "input": [0, 0.05], "singul": 0, "g": 0.15000000000000002},
+      {"xy": [2.4266742486201625, 0.2503146670695072], "input": [-1.075244653309068, -0.25], "singul": -1, "g": 1.5720279083181676}
+    ],
+    "ordinary_fallback_request_5_resampled_gears": [1, -1, 1]
+  },
+  "neutral_node_observation": {
+    "observed_chain": [1, 0, -1],
+    "original_switch_penalty": 10,
+    "charged_on_the_two_recorded_transitions": false,
+    "code_reason": "Search calls getSingularity(input[1]) on the primitive arc; getSingularity compares against non_siguav. The +0.05 arc becomes neutral and each adjacent gear product equals zero, so the original product<0 switch-penalty condition does not fire.",
+    "interpretation": "The original penalty is not a uniform barrier to every reverse maneuver. This observation does not establish that changing the classification would improve navigation."
+  },
+  "previous_round_limit": "This round did not reproduce the previous midcross_B q5 all-forward loop reaching x about1.94m. The new records prove the current selected chains contain reversal, but cannot retroactively identify the unrecorded previous A-star chain.",
+  "duplicate_execution_key_audit": {
+    "trial": "midcross_B",
+    "original_unique_matches": 843,
+    "validated_publications": 845,
+    "shared_weak_key": {"command_header_ros_time": 1013.286739705, "guide_revision": 1, "reason": "ok", "command": [0.24394999999999997, 0.0]},
+    "original_weak_key_execution_count": 2,
+    "existing_field_used_to_disambiguate": "full validation_attempts array; no nearest-time substitution",
+    "records": [
+      {
+        "cycle_id": 262,
+        "unique_extended_key_matches": 1,
+        "execution_jsonl_line_1based": 262,
+        "validation_attempts": [{"candidate": 0, "code": 0, "wall_ms": 16.490368005179334, "thread_cpu_ms": 15.146527999999826}],
+        "retained_validation": [1.0, 0.5552533348853028, 0.65, 281.0, 0.0, 1.0],
+        "rollout_length": 281,
+        "validation_invoked": true,
+        "validation_code": 0,
+        "validated_command_published": true,
+        "selected_and_brake_approved": true,
+        "command_lease_s": 0.25
+      },
+      {
+        "cycle_id": 263,
+        "unique_extended_key_matches": 1,
+        "execution_jsonl_line_1based": 263,
+        "validation_attempts": [{"candidate": 0, "code": 0, "wall_ms": 21.060264996776823, "thread_cpu_ms": 15.254847999999654}],
+        "retained_validation": [1.0, 0.5561678937993858, 0.65, 281.0, 0.0, 1.0],
+        "rollout_length": 281,
+        "validation_invoked": true,
+        "validation_code": 0,
+        "validated_command_published": true,
+        "selected_and_brake_approved": true,
+        "command_lease_s": 0.25
+      }
+    ],
+    "result": "Both publications have individual approved selected/brake records. The original843/845 unique-key statistic is retained unchanged; this supplement resolves the two repeated keys."
+  },
+  "original_input_sha256": {
+    "midcross_A/dual_timeline.jsonl": "0f896484595d5044bc43dbd3d106319cbce862ce735adc34457ae21c34dc446d",
+    "midcross_A/static_width_trace.jsonl": "e09d433f0799480e12769f6fad6cad4a95bce354228e2b9ae41ebc4a3614a68f",
+    "midcross_A/analysis/requests.csv": "6b216b5a509e9b4e1953a50c0570012166c2295a3aa889a266122025026c28f5",
+    "midcross_B/dual_timeline.jsonl": "656512253b6ab6b481defceb7f736e48a0bd78e60334e4bc40c8ed966086169c",
+    "midcross_B/static_width_trace.jsonl": "dc18b2824ce52ac6fed062f561f866833d32e06353b02f326d835acd6a0946d7",
+    "midcross_B/analysis/requests.csv": "1916f92d54703e91c688962f763726220d183627a6e324b8f37925e69a248494",
+    "midcross_B/state_mppi_cycles.jsonl": "0c2911c6b785691cf2ca61423cc33f8d830af4c21187ed51beb817b2ef5016be",
+    "midcross_B/execution_rollouts.jsonl.gz": "01a65c9217a100c518b4fcfb056862631fabde88fb2a5f9ab56e535357268452"
+  }
+}

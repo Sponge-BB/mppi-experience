@@ -1,0 +1,38 @@
+{
+  "created_utc": "2026-10-31T13:41:55.803328+00:00",
+  "purpose": "Test whether fast-layer delivery-state feedback improves actual reference connection",
+  "planned_trials": [
+    "headon_A",
+    "headon_B"
+  ],
+  "baseline": "latest coverage-alignment B, not original REMANI",
+  "changed": "only delivery-state soft weight 0 versus 1",
+  "execution_weight": 0.0,
+  "delivery_target_delay_s": 1.1,
+  "delay_rationale": "preceding measured request-to-acceptance about 1.11s",
+  "same_binary": true,
+  "seed": 11,
+  "goal": [
+    6.0,
+    0.0
+  ],
+  "duration_s": 55.0,
+  "physical_spheres": 67,
+  "optimization_budget_s": 1.2,
+  "mppi_budget_ms": 200.0,
+  "command_lease_ms": 250.0,
+  "same_run_metrics": [
+    "feedback eligibility and nonzero cost/gradient",
+    "frozen predicted target versus actual state at its timestamp",
+    "actual reference adoption position/heading/speed residuals",
+    "motion and command changes for two seconds after adoption",
+    "request-to-first-new-reference-valid-control",
+    "all failed requests",
+    "goal/path/physical gaps",
+    "complete MPPI loop and solver times"
+  ],
+  "output": "one paired GIF, simple data plot, concise Chinese TXT",
+  "production_modified": false,
+  "github_upload_remains_paused": true,
+  "scope": "fixed-arm complete REMANI+MPPI numerical ROS SIL"
+}

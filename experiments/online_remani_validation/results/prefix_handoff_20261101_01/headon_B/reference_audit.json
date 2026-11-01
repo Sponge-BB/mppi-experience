@@ -1,0 +1,58 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": true,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 2,
+  "consumed_versions": 2,
+  "live_kernel_calls": 802,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 7,
+    "native3d_unhealthy": 31,
+    "native_hard_stop": 103,
+    "waiting_native_trajectory": 11,
+    "ok": 802,
+    "native3d_dynamic_stale": 1
+  },
+  "trial_result": {
+    "reason": "goal",
+    "goal_sent": 7.015009356000519,
+    "motion_anchor": 8.440956082999037,
+    "scenario_start": "motion",
+    "trajectory_bundles": 2,
+    "min_clearance": 0.2743370995447623,
+    "collision_conservative_projection": false,
+    "arm_max_error": 0.0,
+    "final_state": [
+      5.995150687904611,
+      0.006954698706080739,
+      0.005613220284581,
+      3.4273829045071664e-09,
+      -0.011764843086905835
+    ],
+    "elapsed": 51.09071716299877,
+    "scene": "sphere_timing_headon",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": false,
+      "min_physical_sample_gap": 0.2374053719677009,
+      "checks": 12483,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 10.458193217000371,
+      "first_observed_moving_t": 10.967529420000005,
+      "deadline_zero_window_start": null,
+      "deadline_zero_window_end": null,
+      "deadline_zero_cycles": 0,
+      "deadline_zero_deadlock": false,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter"
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}

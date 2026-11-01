@@ -1,0 +1,141 @@
+{
+  "schema": "delivery_handoff_old_rejection_audit_v1",
+  "date": "2026-10-31",
+  "scope": "Read-only audit of old original-exit midcross request 2; no ROS, no control, no source or historical evidence mutation",
+  "source_root": "/home/l/remani_ws/experiments/online_remani_validation",
+  "trial": "results/delivery_next_20261031_01/midcross_original_exit_seed11",
+  "request_id": 2,
+  "evidence": {
+    "acceptance_sim_time": 1018.680494446,
+    "rejection_branch": "trajectory_collision",
+    "query_valid": true,
+    "execution_scale": 1,
+    "candidate_local_t": 2.499999999999999,
+    "candidate_start": 1017.6725597249999,
+    "candidate_age_s": 1.0079347210000833,
+    "query_stamp": 1021.180494446,
+    "snapshot_sequence": 165,
+    "snapshot_stamp": 1018.599759725,
+    "snapshot_age_s": 0.0807347209999989,
+    "snapshot_points": 104,
+    "candidate_pose": [2.3971950718334565, 0.1213389145579706, 0.8776012914992571],
+    "planner_cached_odom_stamp": 1017.252484241,
+    "planner_cached_pose": [2.08810242827942, -0.04249460554958579, -0.29273211995711523],
+    "planner_cached_body_v": 0.09919929979338254,
+    "planner_cached_state_age_at_acceptance_s": 1.4280102049999641,
+    "independent_sil_state_stamp": 1018.6804944460018,
+    "independent_sil_pose": [2.1819618963402485, -0.06809117697097052, -0.0907463981083732],
+    "independent_sil_v": 0.06321787213056522,
+    "independent_sil_w": 0.2795643380341168,
+    "position_difference_m": 0.09728712254554417,
+    "yaw_difference_rad": 0.20198572184874203,
+    "state_contract_capture_sim": 1017.272559725,
+    "state_contract_deferred_flush_sim": 1018.680494446,
+    "numerical_geometry_reconstruction": {
+      "method": "Prior independent audit of same logged 104 CV points and fixed-arm 67-sphere geometry; not a native execution intervention",
+      "candidate_hard_gap_at_gate_clock_m": -0.005825827358585611,
+      "candidate_physical_sample_gap_at_gate_clock_m": 0.04417417264141439,
+      "alternate_candidate_start_clock": 1020.1725597249999,
+      "candidate_hard_gap_at_alternate_clock_m": 0.0973515252787058,
+      "meaning": "Shows sensitivity to time anchor only. Does not establish the actual MPPI execution time."
+    },
+    "saved_complete_native3d_event": {
+      "t_relative_s": 21.93638480100003,
+      "epoch": 2,
+      "revision": 2,
+      "event": "measured_phase_transition",
+      "belongs_to_rejected_q2": false,
+      "rng_and_sampler_history_recorded": false
+    }
+  },
+  "source_facts": [
+    {
+      "file": "builds/delivery_next_20261031_01/source/remani_planner_node.cpp",
+      "line": 13,
+      "fact": "ros::spin() services the default queue; no concurrent FSM odometry queue in this node main"
+    },
+    {
+      "file": "builds/delivery_next_20261031_01/source/remani_replan_fsm.cpp",
+      "lines": [392, 2168, 2169, 2170, 2596, 2597, 2664, 3167],
+      "fact": "FSM odometry uses nh subscription; callback directly updates mm_state and yaw. Reject diagnostic reads that cache, while collision checks candidate trajectory. Synchronous reboundReplan blocks the default queue."
+    },
+    {
+      "file": "builds/delivery_next_20261031_01/source/grid_map.cpp",
+      "lines": [281, 283, 284, 540, 541, 542],
+      "fact": "Dynamic prediction NodeHandle binds a separate callback queue and starts its own AsyncSpinner(1)."
+    },
+    {
+      "file": "results/delivery_next_20261031_01/midcross_original_exit_seed11/parameters.yaml",
+      "line": 348,
+      "fact": "Planner dynamic_point_flow/isolated_worker_enable=true"
+    },
+    {
+      "file": "results/delivery_next_20261031_01/midcross_original_exit_seed11/roslogs/10b9bd3c-d47e-11f1-aacc-50bbb5b84c3d/remani_planner_node-3-stdout.log",
+      "line": 3,
+      "fact": "Runtime confirms Dynamic prediction callbacks use an isolated worker queue."
+    },
+    {
+      "file": "builds/delivery_next_20261031_01/source/online_api.cpp",
+      "line": 25,
+      "fact": "Kernel reference consists of x,y,yaw,v samples; original polynomial timestamps are not part of this C ABI input."
+    },
+    {
+      "file": "builds/delivery_next_20261031_01/source/online_kernel.hpp",
+      "line": 217,
+      "fact": "Projection associates measured/rollout state with reference geometry under active gear-phase scope."
+    }
+  ],
+  "current_source_comparison": {
+    "scope": "Read-only comparison of current src; no deployed binary or live hardware run inspected",
+    "main_threading_same": true,
+    "main_source_byte_identical": true,
+    "current_node_source": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_planner_node.cpp",
+    "current_node_line": 13,
+    "current_node_mechanism": "ros::spin()",
+    "current_fsm_source": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+    "current_fsm_timer_lines": [321, 322],
+    "current_fsm_odom_subscription_line": 324,
+    "current_fsm_direct_state_update_lines": [2068, 2069, 2070],
+    "current_fsm_synchronous_replan_line": 2981,
+    "current_manager_synchronous_lbfgs_line": 504,
+    "current_dynamic_prediction_queue_lines": [282, 540],
+    "separate_fsm_odom_queue_or_async_planner_found": false,
+    "conclusion": "The mechanism can also occur in hardware software built from current src; not unique to the SIL harness. The measured 1.428 s lag and 9.73 cm displacement remain SIL-only evidence.",
+    "not_a_validated_fix": "Replacing spin with a multithread spinner alone was not implemented or validated; shared state ownership and handoff time assumptions require separate reasoning."
+  },
+  "limitations": [
+    "Cached state staleness is confirmed, but the rejection collision itself is computed from candidate pose; staleness alone does not prove a false positive.",
+    "Rejected q2 was never published, so there is no actual q2 MPPI adoption/execution record.",
+    "Complete q2 native3D and MPPI RNG/warm/sampler history were not recorded; no bitwise decision replay is claimed.",
+    "The complete event input saved at 21.936 s concerns a later adopted reference, not q2.",
+    "Positive short-horizon MPPI safety validation cannot certify the full slow trajectory.",
+    "Changing only obstacle query timestamps is a sensitivity check, not evidence that the modified execution clock is correct.",
+    "Historical report wording was corrected here without rewriting original evidence.",
+    "Current production src has the same blocking-queue mechanism, but the actually deployed binary, runtime parameters and real-vehicle lag were not inspected."
+  ],
+  "minimal_followup": [
+    "Keep the current B logic unchanged for two online midcross repeats.",
+    "For each request, use state_contract_desired_boundary.capture_sim/raw_odom_stamp and actual acceptance event sim to compute cached state age. Do not use deferred outer event clock as capture clock.",
+    "Join acceptance, publication, first kernel consumption and validated command events by candidate/reference hash and goal generation.",
+    "At handoff only, retain candidate coefficients/start timestamp, independent stamped odometry, prediction sequence/stamp, first consumption state/hash. Capture full CV/native3D payload on a relevant rejection when needed."
+  ],
+  "source_sha256": [
+    {"path": "results/delivery_next_20261031_01/midcross_original_exit_seed11/state.csv", "sha256": "dde761808c8c740e3550ef68fa2e42920b3f5b8e3301e30d329b71466b657bc0", "lines": [837, 907]},
+    {"path": "results/delivery_next_20261031_01/midcross_original_exit_seed11/dual_timeline.jsonl", "sha256": "3b007fcf60d88426deff7491847277e176a30725a0def126e005bf979c33dc05", "lines": [105, 106, 109]},
+    {"path": "results/delivery_next_20261031_01/midcross_original_exit_seed11/parameters.yaml", "sha256": "348d435f2ed6631bc496e1c651f6bb96c60502882d7c301fc5d28d9b99c588b7", "lines": [348]},
+    {"path": "results/delivery_next_20261031_01/midcross_original_exit_seed11/roslogs/10b9bd3c-d47e-11f1-aacc-50bbb5b84c3d/remani_planner_node-3-stdout.log", "sha256": "86a71dc642b91ee3f09295dd7beffded453b2046625110f5e9ff1e096e56c395", "lines": [3]},
+    {"path": "results/delivery_next_20261031_01/report/independent_audit.json", "sha256": "23f7245748ead9228d5654b611c2c0184030a9e2cb28d4880122d9bc5a96f908", "lines": [731, 750, 757, 770]},
+    {"path": "results/delivery_next_20261031_01/midcross_original_exit_seed11/native3d_event_input.json", "sha256": "9793de989b31f2998c26adad5234575f7373b5f7a182bae7aa9ae4e14ec52d6c"},
+    {"path": "results/delivery_next_20261031_01/midcross_original_exit_seed11/runtime/local_execution.py", "sha256": "e01aae570b9ca2c1d07f0ab7862fdfb6ca3928f042fccd3f79e26ddfb8359e25", "lines": [193, 211, 215, 230]},
+    {"path": "builds/delivery_next_20261031_01/source/remani_planner_node.cpp", "sha256": "a2014461ebd384320a003c48494fb9be6bd4d2c59384c3480d24d0d65e2e172f", "lines": [13]},
+    {"path": "builds/delivery_next_20261031_01/source/remani_replan_fsm.cpp", "sha256": "917f7ddab80b85ead5bfc469db10927cb3b88a488996c91e0066827fa37169ad", "lines": [392, 2168, 2596, 2664, 3167]},
+    {"path": "builds/delivery_next_20261031_01/source/grid_map.cpp", "sha256": "18d8fca3a9df7dfad236958bd74dbdba79c12308db854b6d45c17094f2c93980", "lines": [281, 540]},
+    {"path": "builds/delivery_next_20261031_01/source/online_api.cpp", "sha256": "1a09c87cd24249b86d27682d715b8237ea107c9fd2795ba4f144353c380d945a", "lines": [25]},
+    {"path": "builds/delivery_next_20261031_01/source/online_kernel.hpp", "sha256": "502155defdf0c4ceee62d3c76b2e2d73819545f4b80378cbfd7a6d45fc1b6f7d", "lines": [217]},
+    {"path": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_planner_node.cpp", "sha256": "a2014461ebd384320a003c48494fb9be6bd4d2c59384c3480d24d0d65e2e172f", "lines": [13]},
+    {"path": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp", "sha256": "943dc560bbf3073f233ec86be2758fb67c1e6793be79aa72e7b784b2225beb2c", "lines": [321, 322, 324, 2068, 2070, 2981, 3033]},
+    {"path": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h", "sha256": "0f3aac749d36efe4932d676f1034652d54bb6eb8f346384a21a4d8c8714ccf9b"},
+    {"path": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/planner_manager.cpp", "sha256": "2e731e156feceada81e52f67207dfe0c9d557cf5d9f323a69285766097e6b93e", "lines": [410, 504]},
+    {"path": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp", "sha256": "0a988e15b51567445b169cea66f941341fd85db7637137d0f4b1d074653fed9e", "lines": [249, 282, 540]}
+  ]
+}

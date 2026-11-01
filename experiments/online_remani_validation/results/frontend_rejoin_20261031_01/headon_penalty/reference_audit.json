@@ -1,0 +1,57 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": true,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 2,
+  "consumed_versions": 2,
+  "live_kernel_calls": 531,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 6,
+    "native3d_unhealthy": 31,
+    "native_hard_stop": 104,
+    "waiting_native_trajectory": 9,
+    "ok": 531
+  },
+  "trial_result": {
+    "reason": "goal",
+    "goal_sent": 7.010606953997922,
+    "motion_anchor": 8.344930919000035,
+    "scenario_start": "motion",
+    "trajectory_bundles": 2,
+    "min_clearance": 0.034868385838779214,
+    "collision_conservative_projection": false,
+    "arm_max_error": 0.0,
+    "final_state": [
+      5.985608374896682,
+      -0.0039028135463296185,
+      -0.00021706682411565573,
+      1.1423359119791592e-07,
+      -0.005623064725649946
+    ],
+    "elapsed": 38.037240727997414,
+    "scene": "sphere_timing_headon",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": false,
+      "min_physical_sample_gap": 0.06858278150652146,
+      "checks": 9262,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 10.351566451998224,
+      "first_observed_moving_t": 10.908646307000026,
+      "deadline_zero_window_start": null,
+      "deadline_zero_window_end": null,
+      "deadline_zero_cycles": 0,
+      "deadline_zero_deadlock": false,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter"
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}

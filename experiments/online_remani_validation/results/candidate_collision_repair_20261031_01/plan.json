@@ -1,0 +1,40 @@
+{
+  "created_utc": "2026-10-31T14:57:55.330021+00:00",
+  "purpose": "Test whether repairing a collision-rejected candidate within the original request improves usable trajectory delivery",
+  "planned_trials": [
+    "headon_A",
+    "headon_B"
+  ],
+  "baseline": "latest coverage-alignment model plus active delivery-state soft feedback",
+  "changed": "one failed-piece collision repair attempt off/on",
+  "repair_collision_penalty_factor": 10.0,
+  "maximum_repair_attempts": 1,
+  "repair_budget": "remaining original 1.2s optimizer budget; never reset",
+  "same_binary": true,
+  "seed": 11,
+  "goal": [
+    6.0,
+    0.0
+  ],
+  "duration_s": 55.0,
+  "execution_weight": 0.0,
+  "handover_weight": 1.0,
+  "delivery_delay_s": 1.1,
+  "physical_spheres": 67,
+  "mppi_budget_ms": 200.0,
+  "command_lease_ms": 250.0,
+  "same_run_metrics": [
+    "final pre-repair collision and solver stop reason",
+    "failed-piece soft collision cost and gradient",
+    "pre/post candidates against the same frozen CV",
+    "remaining budget and repair cost",
+    "all native/latest gate failures",
+    "actual new-reference consumption and validated control publication",
+    "physical contact, path, stops, full MPPI loop time"
+  ],
+  "output": "one recorded A/B GIF, simple data plot and concise Chinese TXT",
+  "additional_online_trials_planned": false,
+  "production_modified": false,
+  "github_upload_remains_paused": true,
+  "scope": "fixed-arm complete REMANI+MPPI numerical ROS SIL"
+}

@@ -1,0 +1,52 @@
+{
+  "experiment_status": "completed_inconclusive_for_repair_effect",
+  "planned_online_trials": ["headon_A", "headon_B"],
+  "completed_online_trials": ["headon_A", "headon_B"],
+  "additional_online_trials": [],
+  "scope": "fixed-arm complete REMANI+MPPI numerical ROS SIL",
+  "isolated_build": "candidate_collision_repair_20261031_01",
+  "planner_sha256": "175c7d087043571aa7c1f4ee3b45327194e7caedb29d52162995f85ffc61cecf",
+  "implementation": "one warm-start collision repair, fixed failed-piece environmental penalty factor 10, within remaining original 1.2s optimizer budget",
+  "repair_flag_A": 0,
+  "repair_flag_B": 1,
+  "repair_trigger_count_A": 0,
+  "repair_trigger_count_B": 0,
+  "repair_effect_validated": false,
+  "repair_effect": null,
+  "outcomes": {
+    "A": {
+      "termination": "goal",
+      "accepted_dynamic_replan_number": 2,
+      "first_request_to_first_new_validated_command_wall_s": 1.902,
+      "physical_sample_collision": false,
+      "minimum_physical_sample_gap_m": 0.07614923147129861,
+      "final_failure_before_delivery": "terminal_solver_failure -1009"
+    },
+    "B": {
+      "termination": "goal",
+      "accepted_dynamic_replan_number": 1,
+      "first_request_to_first_new_validated_command_wall_s": 0.750,
+      "physical_sample_collision": false,
+      "minimum_physical_sample_gap_m": 0.07727562123286418,
+      "repair_executed": false
+    }
+  },
+  "conclusion": "Both closed-loop trials finished, but no final planning collision invoked the repair; B's shorter delivery cannot be attributed to the inactive repair.",
+  "implementation_checks": {
+    "independent_static_review": "passed",
+    "local_weight_gradient_test": "passed; maximum absolute error about 1.904e-10",
+    "test_scope": "local collision position, orientation-velocity and explicit CV-time duration derivatives; not a proof of all native optimizer gradients"
+  },
+  "missing_for_historical_full_replay": "The previous failing requests lack their complete static ESDF and native optimization context; a later map must not be labeled equivalent original input.",
+  "production_modified": false,
+  "real_vehicle_commands_sent": false,
+  "github_upload_remains_paused": true,
+  "artifacts": [
+    "report/实验结果.txt",
+    "report/summary.json",
+    "report/碰撞修复与交付对照.png",
+    "report/迎面动态对照.gif",
+    "report/迎面动态关键帧.png",
+    "report/独立核验.txt"
+  ]
+}

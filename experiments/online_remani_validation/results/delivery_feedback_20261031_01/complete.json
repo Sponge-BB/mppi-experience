@@ -1,0 +1,48 @@
+{
+  "status": "complete",
+  "planned_online_trials": ["headon_A", "headon_B"],
+  "completed_online_trials": ["headon_A", "headon_B"],
+  "additional_online_trials": [],
+  "scope": "fixed-arm complete REMANI+MPPI numerical ROS SIL",
+  "build": "coverage_alignment_20261031_01",
+  "baseline": "completed coverage-alignment B with delivery feedback disabled",
+  "treatment": "delivery soft weight 0/1; execution soft weight 0; frozen target delay 1.1s",
+  "same_binary_verified": true,
+  "original_build_integrity_check_after_trials": "passed",
+  "production_modified": false,
+  "real_vehicle_commands_sent": false,
+  "github_upload_remains_paused": true,
+  "outcomes": {
+    "A": {
+      "interface_audit_valid": true,
+      "termination": "native3d_sample_collision",
+      "new_reference_delivered": false,
+      "minimum_physical_sample_gap_m": -0.00030147022329711504
+    },
+    "B": {
+      "interface_audit_valid": true,
+      "termination": "goal",
+      "accepted_dynamic_replan_number": 3,
+      "first_request_to_first_new_validated_command_wall_s": 3.509753,
+      "accepted_request_wall_s": 0.342207,
+      "nonzero_feedback_callbacks": 217,
+      "minimum_physical_sample_gap_m": 0.07257038343495921
+    }
+  },
+  "conclusion": "Soft delivery-state feedback was active, but this pair does not demonstrate stable delivery or improved connection; B's first two final candidates were rejected by half-speed dynamic collision checks.",
+  "limitations": [
+    "One run per group; asynchronous ROS inputs diverged before feedback took effect.",
+    "A had no adopted new reference, so paired adoption residual improvement is unmeasurable.",
+    "The soft match is spatial, not a fixed-time rendezvous.",
+    "The 1.1s predicted target does not coincide with actual delivery time."
+  ],
+  "artifacts": [
+    "report/实验结果.txt",
+    "report/summary.json",
+    "report/交付与衔接对照.png",
+    "report/迎面动态对照.gif",
+    "report/迎面动态关键帧.png",
+    "report/独立核验.txt",
+    "report/失败原因核对.txt"
+  ]
+}

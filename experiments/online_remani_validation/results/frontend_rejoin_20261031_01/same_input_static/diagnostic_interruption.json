@@ -1,0 +1,10 @@
+{
+  "complete": false,
+  "navigation_metrics_valid": false,
+  "diagnostic_results_valid": false,
+  "reason": "Frozen-clock full frontend diagnosis did not return its first variant; manually interrupted the owned runner.",
+  "evidence": "Only capture record exists. Native A-star and arm-sampling time limits use ROS time, which was paused. Exact blocking loop was not stack-verified because ptrace attach was denied.",
+  "cleanup": "Owned runner resumed its paused simulator/controller and stopped the isolated ROS group; port 11441 confirmed closed.",
+  "next": "Restrict frozen comparison to native base A-star, enforce its existing time budget using wall time only in diagnostic mode, then verify the selected change in the unpaused full online pipeline.",
+  "records_preserved": true
+}
