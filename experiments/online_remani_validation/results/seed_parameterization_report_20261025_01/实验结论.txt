@@ -1,0 +1,57 @@
+短倒车种子参数化：静态OFF/ON（描述性）
+先核查修正实际触发、前端空种子与后端进入，再描述完整参考交付；不把一次更快或最终到达当稳定交付证明。
+
+seed=11 OFF: static_seed11_fix_off
+interface valid=True；complete job valid=True；可用作描述性对比=True
+initial请求=1；replan请求=5；unknown phase=0
+replan前端成功/失败=4/1；A*成功后采样失败=1；进入后端=4
+replan种子事件/可信关联=5/5；修正尝试=0；修后非空正时长种子=0；A*成功但种子无效=1；空输出=1
+replan种子reason={"legacy_not_repaired": 5}
+replan后端结果={"budget_timeout": 3, "ok": 1}；unknown link=0；终验拒绝=0；发布/精确采用请求=1/1
+appearance→实际采用=7.7731863140001秒；右删失=False；删失下界=None秒（所有等待保留）
+world结果=goal；保守投影碰撞=False
+
+seed=11 ON: static_seed11_fix_on
+interface valid=True；complete job valid=True；可用作描述性对比=True
+initial请求=1；replan请求=4；unknown phase=0
+replan前端成功/失败=4/0；A*成功后采样失败=0；进入后端=4
+replan种子事件/可信关联=4/4；修正尝试=4；修后非空正时长种子=4；A*成功但种子无效=0；空输出=0
+replan种子reason={"ok": 4}
+replan后端结果={"budget_timeout": 2, "left_wheel_acceleration": 1, "ok": 1}；unknown link=0；终验拒绝=0；发布/精确采用请求=1/1
+appearance→实际采用=6.086940179000067秒；右删失=False；删失下界=None秒（所有等待保留）
+world结果=goal；保守投影碰撞=False
+
+seed=12 OFF: static_seed12_fix_off
+interface valid=True；complete job valid=True；可用作描述性对比=True
+initial请求=1；replan请求=4；unknown phase=0
+replan前端成功/失败=3/1；A*成功后采样失败=1；进入后端=3
+replan种子事件/可信关联=4/4；修正尝试=0；修后非空正时长种子=0；A*成功但种子无效=1；空输出=1
+replan种子reason={"legacy_not_repaired": 4}
+replan后端结果={"left_wheel_acceleration": 1, "ok": 2}；unknown link=0；终验拒绝=1；发布/精确采用请求=1/1
+appearance→实际采用=5.53118505600014秒；右删失=False；删失下界=None秒（所有等待保留）
+world结果=goal；保守投影碰撞=False
+
+seed=12 ON: static_seed12_fix_on
+interface valid=True；complete job valid=True；可用作描述性对比=True
+initial请求=1；replan请求=4；unknown phase=0
+replan前端成功/失败=4/0；A*成功后采样失败=0；进入后端=4
+replan种子事件/可信关联=4/4；修正尝试=4；修后非空正时长种子=4；A*成功但种子无效=0；空输出=0
+replan种子reason={"ok": 4}
+replan后端结果={"left_wheel_acceleration": 1, "budget_timeout": 2, "ok": 1}；unknown link=0；终验拒绝=0；发布/精确采用请求=1/1
+appearance→实际采用=6.383629887999859秒；右删失=False；删失下界=None秒（所有等待保留）
+world结果=goal；保守投影碰撞=False
+
+本批描述性对比契约有效=True
+配对检查={"11": {"runtime_full_hash_equal": true, "build_identity_equal": true, "treatment_only_recorded_flag": true, "runtime_python_snapshots_verified": true, "shared_safety_runtime_configuration_equal": true, "scope_checks_passed": true}, "12": {"runtime_full_hash_equal": true, "build_identity_equal": true, "treatment_only_recorded_flag": true, "runtime_python_snapshots_verified": true, "shared_safety_runtime_configuration_equal": true, "scope_checks_passed": true}}
+构建完整性={"isolated_source_verified": true, "native_binaries_verified": true}
+
+解释边界：
+两个seed的静态原生ROS数值SIL，固定机械臂；不是Gazebo、实车或统计显著性证明。
+两臂同binary、同runtime和相同记录参数；实时闭环会分叉，不声称每个native规划请求输入相同。
+initial按原生FSM GEN_NEW_TRAJ=2识别并单列；REPLAN_TRAJ=3才计入重规划分母，不按request_id=1猜测。
+A*成功不等于最终前端成功；flat种子、机械臂采样/RRT和后端求解是不同环节。
+种子事件没有公开wrapper probe id，只能在同pid/request恰有一个wrapper和一个事件时关联；多wrapper一律歧义。valid只表示记录的非空段和有限正总时长，不是碰撞/轮速可行性证明。
+后端失败仅在唯一input_hash和完整backend scope关联成立时归因；重复或缺日志记未知。
+发布、MPPI实际online_step采用、验证命令是不同层级，采用不等于持续推进或安全认证。
+端到端为scene appearance=result.motion_anchor+4至首条其后新参考的实际kernel entry，包含全部失败/重试等待；不是精确感知发布时刻。
+只修种子参数化，不放宽外形、余量、轮速、求解预算或最终硬检查；单次速度变化不能证明因果收益。

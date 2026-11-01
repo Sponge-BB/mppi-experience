@@ -1,0 +1,98 @@
+{
+  "created": "2026-10-25T04:49:04.772423+00:00",
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/builds/delivery_stability_20261024_02/source/kino_astar.cpp",
+  "source_sha256": "1072bb6c603e719663c0521390020c6b85da4b373dd944cf84f51bb6df2d13dd",
+  "exact_off_projection": true,
+  "functions": [
+    {
+      "name": "getTrajsWithTime",
+      "text": "void KinoAstar::getTrajsWithTime(){\n  if(seed_parameterization::enabled()) {\n\n  // Transactional: no stale or partial seed may survive a failed parameterization.\n  flat_trajs_.clear(); shot_lengthList.clear(); shot_timeList.clear();\n  shotindex.clear(); shot_SList.clear(); totalTrajTime=0.;\n  auto& seed_status=seed_parameterization::status();\n  seed_status=seed_parameterization::Status();seed_status.applied=true;\n  seed_status.input_points=sample_trajs_.size();seed_status.reason=\"invalid_geometry_or_time_profile\";\n  if(start_state_.size()<4||end_state_.size()<4||!start_state_.allFinite()||!end_state_.allFinite()) return;\n  seed_status.signed_start_speed=start_state_(3);\n  const auto result=seed_parameterization::build<CarFlatTrajData>(sample_trajs_,\n    std::abs(start_state_(3)),std::abs(end_state_(3)),start_ctrl_,non_siguav_,sample_time_,\n    max_vel_,max_acc_,min_turning_radius_,curvatureDisCoe_,\n    [this](const Eigen::Vector4d& state,const Eigen::Vector2d& control,int gear,Eigen::MatrixXd& flat){\n      getFlatState(state,control,gear,flat);\n    });\n  if(!result.valid) return;\n  if(start_state_(3)!=0. && result.gears.front()*(start_state_(3))<0.) {\n    seed_status.reason=\"initial_gear_conflict\";return;\n  }\n  if(end_state_(3)!=0. && result.gears.back()*(end_state_(3))<0.) {\n    seed_status.reason=\"final_gear_conflict\";return;\n  }\n  sample_trajs_=result.path; shot_lengthList=result.lengths; shot_timeList=result.times;\n  shotindex=result.indices; shot_SList=result.gears; flat_trajs_=result.flats;\n  totalTrajTime=result.total;\n  seed_status.valid=true;seed_status.reason=\"ok\";seed_status.output_segments=result.flats.size();\n  seed_status.first_gear=result.gears.front();\n  return;\n\n  }\n\n  double startvel = fabs(start_state_(3));\n  double endvel = fabs(end_state_(3));\n  std::vector<Eigen::Vector3d> traj_pts;\n  std::vector<double> thetas;\n  shot_lengthList.clear();\n  shot_timeList.clear();\n  shotindex.clear();\n  shot_SList.clear();\n  double tmpl = 0;\n  int lastS = (sample_trajs_[1] - sample_trajs_[0]).head(2).dot(Eigen::Vector2d(cos(sample_trajs_[0][2]), sin(sample_trajs_[0][2]))) >= 0 ? 1 : -1;\n  shotindex.push_back(0);\n\n  for(unsigned int i = 0; i < sample_trajs_.size() - 1; i++){\n    Eigen::Vector3d state1 = sample_trajs_[i];\n    Eigen::Vector3d state2 = sample_trajs_[i + 1];\n    int curS;\n    if((state2 - state1).head(2).norm() < 1e-4){\n      curS = lastS;\n    }\n    else{\n      curS = (state2 - state1).head(2).dot(Eigen::Vector2d(cos(state1[2]), sin(state1[2]))) >=0 ? 1 : -1;\n    }\n    if(curS * lastS >= 0){\n      tmpl += evaluateCurvatureWeightedDistance(state1.head(2), state2.head(2), state1[2], state2[2]); // change\n    }else{\n      shotindex.push_back(i);\n      shot_SList.push_back(lastS);\n      shot_lengthList.push_back(tmpl);\n      if(tmpl == inf) return;\n      shot_timeList.push_back(evaluateDuration(tmpl, non_siguav_, non_siguav_));\n      tmpl = evaluateCurvatureWeightedDistance(state1.head(2), state2.head(2), state1[2], state2[2]);\n    }\n    lastS = curS;\n  }\n  shot_SList.push_back(lastS);\n  shot_lengthList.push_back(tmpl);\n  shot_timeList.push_back(evaluateDuration(tmpl, non_siguav_, non_siguav_));\n  shotindex.push_back(sample_trajs_.size() - 1);\n\n  if((int)shot_timeList.size() >= 2){\n    shot_timeList[0] = evaluateDuration(shot_lengthList[0], startvel, non_siguav_);\n    shot_timeList[shot_timeList.size() - 1] = evaluateDuration(shot_lengthList.back(), non_siguav_, endvel);\n  }\n  else{\n    shot_timeList[0] = evaluateDuration(shot_lengthList[0], startvel, endvel);\n  }\n  // \n  for(unsigned int i = 0; i < shot_lengthList.size(); i++){\n    double initv = non_siguav_, finv = non_siguav_;\n    Eigen::Vector2d Initctrlinput, Finctrlinput;\n    Initctrlinput<<0,0;Finctrlinput<<0,0;\n    if(i == 0){\n      initv = startvel; \n      Initctrlinput = start_ctrl_;\n    }\n    if(i == shot_lengthList.size() - 1)\n      finv = endvel;\n\n    double locallength = shot_lengthList[i];\n    int sig = shot_SList[i];\n    std::vector<Eigen::Vector3d> localTraj;\n    localTraj.assign(sample_trajs_.begin() + shotindex[i], sample_trajs_.begin() + shotindex[i + 1] + 1);\n    traj_pts.clear();\n    thetas.clear();        \n    double samplet;\n    double tmparc = 0;\n    int index = 0;\n    double sample_time = sample_time_;\n    if(shot_timeList[i] <= sample_time){\n      sample_time = shot_timeList[i] / 2.0;\n    }\n    for(samplet = sample_time; samplet < shot_timeList[i]; samplet += sample_time){\n      double arc = evaluateLength(samplet, locallength, shot_timeList[i], initv, finv);\n      for(unsigned int k = index; k < localTraj.size() - 1; k++){\n        tmparc += evaluateCurvatureWeightedDistance(localTraj[k].head(2),localTraj[k+1].head(2),localTraj[k][2],localTraj[k+1][2]); //change\n        if(tmparc>=arc){\n          index = k;\n          double l1 = tmparc-arc;\n          // double l = (localTraj[k+1]-localTraj[k]).head(2).norm();\n          double l = evaluateCurvatureWeightedDistance(localTraj[k].head(2),localTraj[k+1].head(2),localTraj[k][2],localTraj[k+1][2]); //change\n          \n          double l2 = l-l1;//l2\n          double px = (l1/l*localTraj[k]+l2/l*localTraj[k+1])[0]; // FIXME l == 0\n          double py = (l1/l*localTraj[k]+l2/l*localTraj[k+1])[1];\n          double yaw= (l1/l*localTraj[k]+l2/l*localTraj[k+1])[2];\n\n          if(fabs(localTraj[k + 1][2] - localTraj[k][2]) >= M_PI){   \n            double normalize_yaw = 0;\n            if(localTraj[k + 1][2] <= 0){\n              normalize_yaw = l1 / l * localTraj[k][2] + l2 / l * (localTraj[k + 1][2] + 2 * M_PI);\n            }else if(localTraj[k][2] <=0){\n              normalize_yaw = l1 / l * (localTraj[k][2] + 2 * M_PI) + l2 / l * localTraj[k + 1][2];\n            }\n            yaw = normalize_yaw;\n          }\n\n          traj_pts.emplace_back(px, py, sample_time);\n          thetas.push_back(yaw);\n          // tmparc -=(localTraj[k+1]-localTraj[k]).head(2).norm();\n          tmparc -= evaluateCurvatureWeightedDistance(localTraj[k].head(2),localTraj[k+1].head(2),localTraj[k][2],localTraj[k+1][2]); //change\n          break;\n        }\n      }\n    }\n    traj_pts.emplace_back(localTraj.back()[0], localTraj.back()[1], shot_timeList[i] - (samplet - sample_time_));\n    thetas.push_back(localTraj.back()[2]);\n    // flat_trajs_\n    Eigen::MatrixXd startS;\n    Eigen::MatrixXd endS;\n    getFlatState(Eigen::Vector4d(localTraj.front()[0],localTraj.front()[1],localTraj.front()[2], initv), Initctrlinput, sig, startS);\n    getFlatState(Eigen::Vector4d(localTraj.back()[0],localTraj.back()[1],localTraj.back()[2], finv), Finctrlinput, sig, endS);\n    \n    CarFlatTrajData flat_traj;\n    flat_traj.traj_pts = traj_pts;\n    flat_traj.thetas = thetas;\n    flat_traj.start_state = startS;\n    flat_traj.final_state = endS;\n    flat_traj.singul = sig;\n    flat_trajs_.push_back(flat_traj);\n  }\n  totalTrajTime = 0;\n  for(unsigned int i = 0; i < shot_timeList.size(); i++){\n    totalTrajTime += shot_timeList[i];\n  }\n}",
+      "start_byte": 39025,
+      "end_byte": 45964,
+      "first_line": 1001,
+      "last_line": 1158,
+      "sha256": "53db7c510af80fd5e6ed1ddcd6165256fe168835e2f31f93eddec28861135a4e"
+    },
+    {
+      "name": "evaluateCurvatureWeightedDistance",
+      "text": "double KinoAstar::evaluateCurvatureWeightedDistance(const Eigen::Vector2d &state1, const Eigen::Vector2d &state2, const double &yaw1, const double &yaw2){\n  if(seed_parameterization::enabled()) {\n\n  return seed_parameterization::distance(state1,state2,yaw1,yaw2,min_turning_radius_,curvatureDisCoe_);\n\n  }\n\n  Eigen::Vector2d diff = state2 - state1;\n  double EuDis = diff.norm();\n  double siny = sin(yaw1), cosy = cos(yaw1);\n  if( (Eigen::Vector2d(state1 + EuDis*Eigen::Vector2d(cos(yaw1),sin(yaw1)))-state2).norm()/EuDis < 0.01 ){\n    return EuDis;\n  }\n  \n  Eigen::Matrix2d A;\n  Eigen::Vector2d b;\n\n  A << cosy,siny,2*diff[0],2*diff[1];\n  b << state1[0]*cosy+state1[1]*siny,diff.dot(state1+state2);\n  b = A.colPivHouseholderQr().solve(b);\n  double radius = (b-state1).norm();\n  // std::cout<<\"state1:\"<<state1.transpose()<<\"  \"<<yaw1<<\"  state2:\"<<state2.transpose()<<\"  \"<<yaw2<<\"   radius\"<<radius<<std::endl;\n  if(radius < min_turning_radius_){\n    // std::cout<<\"radius<min_turning_radius:\"<<curvatureDisCoe_ * std::min(std::min(fabs(yaw2-yaw1),fabs(yaw2-yaw1+M_PI*2)),fabs(yaw2-yaw1-M_PI*2))<<std::endl;\n    return curvatureDisCoe_ * std::min(std::min(fabs(yaw2-yaw1),fabs(yaw2-yaw1+M_PI*2)),fabs(yaw2-yaw1-M_PI*2));\n  }\n  // std::cout<<\"noline EuDis:\"<<EuDis<<std::endl;\n  return EuDis;\n}",
+      "start_byte": 45966,
+      "end_byte": 47260,
+      "first_line": 1160,
+      "last_line": 1188,
+      "sha256": "75f8ed0db214f444b94ffc262ae4cefc1d381ec973ae14f9de09e4777aada605"
+    },
+    {
+      "name": "evaluateDuration",
+      "text": "double KinoAstar::evaluateDuration(const double &length, const double &startV, const double &endV){\n  if(seed_parameterization::enabled()) {\n\n  return seed_parameterization::duration(length,startV,endV,max_vel_,max_acc_);\n\n  }\n\n  double critical_len; \n  if(startV > max_vel_ || endV > max_vel_){\n    ROS_ERROR(\"kinoAstar:evaluateDuration:start or end vel is larger that the limit!\");\n  }\n  double temp_max_acc = max_acc_ * 0.7;\n  double temp_max_vel = max_vel_ * 1.0;\n  double startv2 = pow(startV, 2);\n  double endv2   = pow(endV, 2);\n  double maxv2   = pow(temp_max_vel, 2);\n  critical_len = (maxv2 - startv2) /(2 * temp_max_acc) + (maxv2 - endv2) / (2 * temp_max_acc);\n  if(length >= critical_len){\n    return (temp_max_vel - startV) / temp_max_acc + (temp_max_vel - endV) / temp_max_acc + (length - critical_len) / temp_max_vel;\n  }\n  else{\n    double tmpv = sqrt(0.5 * (startv2 + endv2 + 2 * temp_max_acc * length));\n    return (tmpv - startV) / temp_max_acc + (tmpv - endV) / temp_max_acc;\n  }\n}",
+      "start_byte": 47262,
+      "end_byte": 48263,
+      "first_line": 1190,
+      "last_line": 1214,
+      "sha256": "5adea420987f3520b0912bc3e8896e6dbbb2fcb79ba62a38b0afc5c11a5bb0f9"
+    },
+    {
+      "name": "evaluateLength",
+      "text": "double KinoAstar::evaluateLength(const double &curt, const double &locallength, const double &localtime, const double &startV, const double &endV){\n  if(seed_parameterization::enabled()) {\n\n  return seed_parameterization::lengthAt(curt,locallength,localtime,startV,endV,max_vel_,max_acc_);\n\n  }\n\n  double critical_len; \n  if(startV > max_vel_ || endV > max_vel_){\n    // std::cout << startV << \", \" << endV << \", \" << max_vel_ << std::endl;\n    // ROS_ERROR(\"kinoAstar:evaluateLength:start or end vel is larger that the limit!\");\n  }\n  double startv2 = pow(startV, 2);\n  double endv2 = pow(endV, 2);\n  double maxv2 = pow(max_vel_, 2);\n  critical_len = (maxv2 - startv2) / (2 * max_acc_) + (maxv2 - endv2) / (2 * max_acc_);\n  if(locallength >= critical_len){// \u5982\u679clocallength\u8ddd\u79bb\u6bd4critical_len\u5927\uff0c\u5219\u4e3a\u52a0\u901f\u5230\u5230\u6700\u5927\u901f\u5ea6\u518d\u51cf\u901f\n    double t1 = (max_vel_-startV)/max_acc_;\n    double t2 = t1+(locallength-critical_len)/max_vel_;\n    if(curt<=t1){\n      return startV*curt + 0.5*max_acc_*pow(curt,2);\n    }else if(curt<=t2){\n      return startV*t1 + 0.5*max_acc_*pow(t1,2)+(curt-t1)*max_vel_;\n    }else{\n      return startV*t1 + 0.5*max_acc_*pow(t1,2) + (t2-t1)*max_vel_ + max_vel_*(curt-t2)-0.5*max_acc_*pow(curt-t2,2);\n    }\n  }else{\n    double tmpv = sqrt(0.5*(startv2+endv2+2*max_acc_*locallength));\n    double tmpt = (tmpv-startV)/max_acc_;\n    if(curt<=tmpt){\n      return startV*curt+0.5*max_acc_*pow(curt,2);\n    }\n    else{\n      return startV*tmpt+0.5*max_acc_*pow(tmpt,2) + tmpv*(curt-tmpt)-0.5*max_acc_*pow(curt-tmpt,2);\n    }\n  }\n}",
+      "start_byte": 48265,
+      "end_byte": 49783,
+      "first_line": 1216,
+      "last_line": 1252,
+      "sha256": "1a6dadb1d7796ec9b663cce43f146dd4f39f07b0a445bd5d7f429455059a7471"
+    },
+    {
+      "name": "getFlatState",
+      "text": "void KinoAstar::getFlatState(const Eigen::Vector4d &state, const Eigen::Vector2d &control_input,const int &singul, \n                             Eigen::MatrixXd &flat_state){\n\n    flat_state.resize(2, 3);\n\n    double angle = state(2);\n    double vel   = state(3); // vel > 0 \n\n    Eigen::Matrix2d init_R;\n    init_R << cos(angle),  -sin(angle),\n              sin(angle),   cos(angle);\n\n    if (abs(vel) <= non_siguav_){\n      vel = singul * non_siguav_;\n    }\n    else{\n      vel = singul * vel;\n    }\n    flat_state << state.head(2), init_R * Eigen::Vector2d(vel, 0.0),\n                  init_R * Eigen::Vector2d(control_input(1), std::tan(control_input(0)) / mobile_base_wheel_base_ * std::pow(vel, 2));\n}",
+      "start_byte": 49785,
+      "end_byte": 50492,
+      "first_line": 1254,
+      "last_line": 1274,
+      "sha256": "9a7756ea13e27f81b807614eabf0297353b4802e469749ac4b2a7a6afdd9c497"
+    },
+    {
+      "name": "evaluatePos",
+      "text": "Eigen::Vector3d KinoAstar::evaluatePos(const double &input_t){\n  if(seed_parameterization::enabled()) {\n\n  if(start_state_.size()<4||end_state_.size()<4) return Eigen::Vector3d::Constant(seed_parameterization::invalid());\n  return seed_parameterization::position(sample_trajs_,shot_lengthList,shot_timeList,shotindex,\n    input_t,std::abs(start_state_(3)),std::abs(end_state_(3)),non_siguav_,max_vel_,max_acc_,\n    min_turning_radius_,curvatureDisCoe_);\n\n  }\n\n  double t = input_t;\n  if(t < 0 || t > totalTrajTime){\n    // ROS_ERROR(\"In evaluatePos, t<0 || t>totalTrajTime\");\n    // std::cout << \"t: \" << t << \", totol: \" << totalTrajTime << std::endl;\n    t = std::min<double>(std::max<double>(0, t), totalTrajTime);\n  }\n  double startvel = fabs(start_state_(3));\n  double endvel = fabs(end_state_(3));\n  int index = -1;\n  double tmpT = 0;\n  double CutTime;\n  for(unsigned int i = 0; i < shot_timeList.size(); i++){\n    tmpT += shot_timeList[i];\n    if(tmpT >= t) {\n      index = i; \n      CutTime = t - tmpT + shot_timeList[i];\n      break;\n    }\n  }\n\n  double initv = non_siguav_, finv = non_siguav_;\n  if(index==0) {initv = startvel;}\n  if(index == (int)shot_lengthList.size() - 1) finv = endvel;\n  double localtime = shot_timeList[index];\n  double locallength = shot_lengthList[index];\n  int front = shotindex[index];\n  int back  = shotindex[index+1];\n  std::vector<Eigen::Vector3d> localTraj;\n  localTraj.assign(sample_trajs_.begin() + front, sample_trajs_.begin() + back + 1);\n  double arclength = evaluateLength(CutTime, locallength, localtime, initv, finv);\n  double tmparc = 0;\n  for(unsigned int i = 0; i < localTraj.size() - 1; i++){\n    // tmparc += (localTraj[i+1]-localTraj[i]).head(2).norm();// change\n    tmparc += evaluateCurvatureWeightedDistance(localTraj[i].head(2), localTraj[i + 1].head(2), localTraj[i][2], localTraj[i + 1][2]); //change\n    if(tmparc >= arclength){\n      double l1 = tmparc - arclength;\n      // double l = (localTraj[i+1]-localTraj[i]).head(2).norm();// change\n      // FIXME l = 0\n      double l = evaluateCurvatureWeightedDistance(localTraj[i].head(2), localTraj[i + 1].head(2), localTraj[i][2], localTraj[i + 1][2]); //change\n      if(l < 1e-3) return localTraj[i];\n      double l2 = l - l1;//l2\n      Eigen::Vector3d state = l1 / l * localTraj[i] + l2 / l * localTraj[i + 1];\n      if(fabs(localTraj[i + 1][2]-localTraj[i][2]) >= M_PI){   \n        double normalize_yaw = 0;\n        if(localTraj[i + 1][2] <= 0){\n          normalize_yaw = l1 / l * localTraj[i][2] + l2 / l * (localTraj[i + 1][2] + 2 * M_PI);\n        }else if(localTraj[i][2] <= 0){\n          normalize_yaw = l1 / l * (localTraj[i][2] + 2 * M_PI) + l2 / l * localTraj[i + 1][2];\n        }\n        state[2] = normalize_yaw;\n      }\n      return state;\n    }\n  }\n  return localTraj.back();\n}",
+      "first_line": 1276,
+      "last_line": 1341,
+      "sha256": "ece217622d7bf81793897e61f569b4d81b52056ad339ff3d04fb4771d28ef180"
+    }
+  ],
+  "native_macro": "#define inf 1 >> 30",
+  "parameters": {
+    "max_vel_": 0.2296,
+    "max_acc_": 0.29750000000000004,
+    "non_siguav_": 0.05,
+    "mobile_base_wheel_base_": 0.37,
+    "min_turning_radius_": 0.2,
+    "curvatureDisCoe_": 0.4,
+    "sample_time_": 0.1
+  },
+  "parameter_source": "/home/l/remani_ws/experiments/online_remani_validation/results/delivery_stability_20261024_01/static_capture_seed11/parameters.yaml",
+  "parameter_source_sha256": "0de8df9f07b4409cc3ad83e1677f7eaeaadce1d5be9f5b28b0f4b4a92e617223",
+  "compile_returncode": 0,
+  "test_returncode": 0,
+  "compiler_command": [
+    "/usr/bin/c++",
+    "-std=c++17",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-pedantic",
+    "-DSEED_NATIVE_EXTRACTED",
+    "-I/usr/include/eigen3",
+    "-I/home/l/remani_ws/experiments/online_remani_validation/results/seed_parameterization_geometry_20261025_01",
+    "-I/home/l/remani_ws/experiments/online_remani_validation",
+    "/home/l/remani_ws/experiments/online_remani_validation/test_seed_parameterization.cpp",
+    "-o",
+    "results/seed_parameterization_geometry_20261025_01/test_seed_parameterization"
+  ],
+  "binary_sha256": "db3ae08af5650ce701de16be956281a327afe3d10f1952efc8fa36795de5cf17",
+  "verifier_sha256": "5e64350326fb5eab2b44d10056960a0d50bf3053d825454d38893d14d34473fe",
+  "harness_sha256": "3d2efed655dbb7d0acd3fb9bcef8bfd33980c2da685bbc333f33c05b1c7479b7",
+  "helper_sha256": "648e39d415f4f485a8d9dfab8894ea53d8484a60751eb05801bc7cff33f0274e",
+  "generated_functions_sha256": "d7c148415c6f50b20e2a1d65d98b2a9dd4d1095ade7e926087cf5a645c94c414",
+  "generated_fixture_sha256": "ce46961834eb12595e01b94275f8ec1384480a252b02af0907e0796cbd77bd56",
+  "ros_started": false,
+  "production_modified": false,
+  "scope": "Six exact transformed native function texts; minimal class excludes search/map/ROS, not a complete planner test"
+}

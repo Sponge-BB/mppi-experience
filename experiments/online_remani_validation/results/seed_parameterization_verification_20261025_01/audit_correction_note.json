@@ -1,0 +1,16 @@
+{
+  "schema": "independent_audit_correction_notice_v1",
+  "superseded_audit": "independent_audit.json",
+  "authoritative_audit": "independent_audit_runtime_aware.json",
+  "superseded_interpretation": "The initial root_sources_still_frozen failure is a checker false negative, not measured source drift or an invalid experiment.",
+  "reason": "local_execution.py, mppi_node.py and search_recording.py are deliberately transformed by run_collab_factorial.patch_runtime in each new trial. The first extra check incorrectly required runtime bytes to equal untransformed root bytes. The corrected audit independently reconstructs these exact deterministic transforms and verifies all four captured runtimes and their manifest hashes.",
+  "preservation": "The initial audit, corrected audit, experiment records, builds and all failed planning requests are retained without alteration.",
+  "corrected_all_checks_passed": true,
+  "correction_does_not_change": [
+    "recorded solver outcomes",
+    "runtime or native source files",
+    "binary files",
+    "collision or wheel constraints",
+    "request or failure denominators"
+  ]
+}
