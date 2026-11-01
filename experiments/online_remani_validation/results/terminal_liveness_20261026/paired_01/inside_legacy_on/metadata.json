@@ -1,0 +1,79 @@
+{
+  "case": "inside_legacy",
+  "enabled": true,
+  "seed": 4,
+  "criteria": {
+    "distance_m": 0.05,
+    "yaw_rad": 0.1,
+    "linear_speed_mps": 0.05,
+    "angular_speed_rps": 0.05,
+    "dwell_s": 1.0,
+    "duration_s": 20.0,
+    "dt_s": 0.05,
+    "substep_s": 0.005,
+    "decision_deadline_ms": 50.0,
+    "margin_m": 0.1,
+    "prime_state_advanced": false
+  },
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/formal_extra_01/dynamic_head_on_center_D_seed04",
+  "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/mppi_terminal_liveness_20261026_01",
+  "source_record_hash": "ab8826c4615619b596c804c2dc6ee42c2f5c08ae877856f1f832d09d152bc9e6",
+  "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+  "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+  "initial_state": [
+    2.9360721587625247,
+    0.24,
+    -1.215433517796205,
+    1.8353484764571938e-96,
+    -1.574528813785563e-96
+  ],
+  "geometry": [
+    [
+      -0.125,
+      0.0,
+      0.2795084971874737
+    ],
+    [
+      0.125,
+      0.0,
+      0.2795084971874737
+    ],
+    [
+      -0.03129818717009099,
+      -2.9897146904104456e-06,
+      0.33612437322292854
+    ]
+  ],
+  "geometry_sha256": "a45248b81779c84316d8429b587e2adfa109dc7f3ef46fc421024f8f5db66f50",
+  "limits": {
+    "vmax": 0.3,
+    "wmax": 0.8,
+    "accel": 0.35,
+    "angular_accel": 1.0,
+    "track": 0.37,
+    "wheel_v": 0.2296,
+    "wheel_a": 0.29750000000000004,
+    "margin": 0.1,
+    "max_age": 0.35,
+    "max_prediction": 3.0,
+    "pos_unc": 0.0,
+    "vel_unc": 0.0,
+    "acc_unc": 0.0,
+    "goal_pos": 0.05,
+    "goal_yaw": 0.1,
+    "goal_speed": 0.05
+  },
+  "plant_method_sha256": "c3dde2efb9886ab24265e46a5ebfca2e2319c75eeb7daca88fa5a2c46eeacc31",
+  "runner_sha256": "996a7a59eea23ed1c1a9038b8b40a36bfe444d5493c2255830bb5533acc0ec5e",
+  "inputs_sha256": {
+    "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/formal_extra_01/dynamic_head_on_center_D_seed04/result.json": "91f941ee85ea45daa3331e4a4f7200ce7c6977d3fa9fae3bf1929b4dd52d7ab3",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/collab_factorial_20261022/formal_extra_01/dynamic_head_on_center_D_seed04/limits.json": "1270d92d9a77adee78c89ec8e0ca33a82cac6c4e52b2a4c4848a8fc01bbe79aa",
+    "/home/l/remani_ws/experiments/online_remani_validation/run_mppi_rejoin_diagnosis.py": "c834282f25381d372757c11d682d6f4792155acb65ffdee4adedd4c27cf64c9f",
+    "/home/l/remani_ws/experiments/online_remani_validation/simulator.py": "8901dee1b46fdfdc17d3a23045b219075304fc6ee110331537f2af5005f48c04",
+    "/home/l/remani_ws/experiments/online_remani_validation/dynamic_scenarios.py": "e091a72d0ca8d70243c14da400d80086fbd6d1d41fa499dc52812659cab4bdd0"
+  },
+  "duration_s": 20.0,
+  "branch_priming": false,
+  "scope": "Fixed-reference MPPI endpoint liveness experiment; no ROS or robot I/O.\n\nRuns the actual kernel AND execution/braking validator with projected body\ndisks. Ideal free field and synchronous state are deliberate counterfactuals,\nnot a replay of the original sensor stream or an online REMANI experiment.\n",
+  "collision_contract": "Unchanged actual kernel clearance and publication/braking validator; constant 10m field, full projected disks and original limits; no shared-objective claim."
+}
