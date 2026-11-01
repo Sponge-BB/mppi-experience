@@ -1,0 +1,110 @@
+{
+  "old": {
+    "result": "collision",
+    "motion_to_end_s": 49.66108791300212,
+    "min_clearance_m": -0.01405056975508237,
+    "measured_motion_started": true,
+    "metrics_time_origin": "measured_motion",
+    "stop_definition": "measured abs(v)<0.02 m/s AND abs(w)<0.06 rad/s, goal distance>0.35 m; recorded-state intervals",
+    "path_length_m": 1.1795420725676087,
+    "full_stop_away_goal_s": 44.11709224800143,
+    "longest_full_stop_s": 44.11709224800143,
+    "native_bundles": 1,
+    "first_post_appearance_reference_s": null,
+    "nearest_reference_p95_m": 0.0,
+    "ordered_reference_p95_m": 0.0,
+    "reference_error_samples": 314,
+    "ordered_reference_valid_samples": 314,
+    "after_new_reference_p95_m": null,
+    "after_new_reference_max_m": null,
+    "after_new_reference_samples": 0,
+    "after_new_reference_ordered_p95_m": null,
+    "after_new_reference_ordered_valid_samples": 0,
+    "safe_nominal_after_new_reference_p95_m": null,
+    "safe_nominal_after_new_reference_samples": 0,
+    "static_new_reference_clearance": [],
+    "kernel_p95_ms": null,
+    "callback_p95_ms": null,
+    "reasons": {},
+    "required_process_failed": false
+  },
+  "new": {
+    "result": "timeout",
+    "motion_to_end_s": 50.61052788700181,
+    "min_clearance_m": 0.12195781993019336,
+    "measured_motion_started": true,
+    "metrics_time_origin": "measured_motion",
+    "stop_definition": "measured abs(v)<0.02 m/s AND abs(w)<0.06 rad/s, goal distance>0.35 m; recorded-state intervals",
+    "path_length_m": 3.8772812898049973,
+    "full_stop_away_goal_s": 2.050020469003357,
+    "longest_full_stop_s": 1.083855732002121,
+    "native_bundles": 2,
+    "first_post_appearance_reference_s": 4.710001391998958,
+    "nearest_reference_p95_m": 0.03021225332943602,
+    "ordered_reference_p95_m": 0.03021225332943602,
+    "reference_error_samples": 2542,
+    "ordered_reference_valid_samples": 2542,
+    "after_new_reference_p95_m": 0.03505873098685146,
+    "after_new_reference_max_m": 0.03576052740283972,
+    "after_new_reference_samples": 780,
+    "after_new_reference_ordered_p95_m": 0.03505873098685146,
+    "after_new_reference_ordered_valid_samples": 780,
+    "safe_nominal_after_new_reference_p95_m": 0.03520658858208207,
+    "safe_nominal_after_new_reference_samples": 344,
+    "static_new_reference_clearance": [
+      {
+        "epoch": 2,
+        "t": 8.608884913000793,
+        "min_physical_projection_clearance_m": 0.16665029951421625
+      }
+    ],
+    "kernel_p95_ms": 45.657037,
+    "callback_p95_ms": 47.9633404956985,
+    "reasons": {
+      "perception_unhealthy": 34,
+      "native_hard_stop": 105,
+      "waiting_native_trajectory": 9,
+      "ok": 980,
+      "no_feasible_candidate": 17,
+      "deadline_miss": 27,
+      "local_validation_failed": 1
+    },
+    "required_process_failed": false
+  },
+  "labels": [
+    "REMANI（统一碰撞，无MPPI）",
+    "V12（统一碰撞＋回接）"
+  ],
+  "alignment": "measured motion anchor; fallback to goal only if no measured motion, explicitly marked in metrics",
+  "metrics_source": "report_shared_collision.trial_metrics; measured state stop definition shared by all variants",
+  "baseline_scope": "current workspace native REMANI/controller/Tracker, MPPI disabled; NOT unmodified upstream REMANI-Planner",
+  "attribution": "V12 shared combines common collision model and reference reacquisition changes; no collision-cost-only causality claim",
+  "sources": {
+    "/home/l/remani_ws/experiments/online_remani_validation/results/shared_collision/validation_05/static/remani_shared": {
+      "result.json": "e19d8bc2c200d06bb0b24f032d3e66e8eddfe7ba7c90d19cdb29687855b36f65",
+      "run_status.json": "25b21ce9d14a2f387c11a89014c204e1f089c451388c3c80cec8e556441f850d",
+      "state.csv": "08eab6e011926dd47d069a0823e75f84fca1ac9732e97d481ea9311226aaf7ca",
+      "obstacles.csv": "d6d9d0ff96027f5cd2e45bf027097be6ecce59e1f4a0991afbab7a3df0ae9cdd",
+      "geometry.csv": "a45248b81779c84316d8429b587e2adfa109dc7f3ef46fc421024f8f5db66f50",
+      "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+      "mppi_diagnostics.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "consumed_references.jsonl": "dbdf17568efba5b63bdb013220832ac1d8547e9daecf72c7358a98247fd16230",
+      "reference_events.jsonl": "131fcff030141099e94714edb06f4af847f4f7de15e835342d924521ac9e5a6e",
+      "manifest.json": "58c2a26ddf0d53cc9fc38252fce1db6ace5e9bf67493d13c3d4ef2e8417ea1d1"
+    },
+    "/home/l/remani_ws/experiments/online_remani_validation/results/shared_collision/validation_05/static/v12_shared": {
+      "result.json": "60affb7b129b3a539a848a26816fede089048e16487d8a91df7b594b20c39c90",
+      "run_status.json": "25b21ce9d14a2f387c11a89014c204e1f089c451388c3c80cec8e556441f850d",
+      "state.csv": "3adac4f6ca2dcb8c6feba97a8b1d5e7cef5f83a63876a82697772e74ab5bf9e3",
+      "obstacles.csv": "b64a27578274e9e4e0539b0ff6a81e013078bba5a1377978e9c1a3c499bff284",
+      "geometry.csv": "a45248b81779c84316d8429b587e2adfa109dc7f3ef46fc421024f8f5db66f50",
+      "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+      "mppi_diagnostics.json": "ae696cb52ee99e9da95743793aeccec4ceca6e245aaccb822a05eaadc1583596",
+      "consumed_references.jsonl": "1ae314bc750b84acdaab5f832a7d807de2df1499d855e01f7fbdaff706bb59d9",
+      "reference_events.jsonl": "3b8785015df966676c91d2627af8a199c9212fcfc91cf615bd0df92777698ef5",
+      "manifest.json": "0257cfa007a7c3328a582d835680875d99d2d9aac396029a4ba8471f52a85c06"
+    }
+  },
+  "source_unchanged": true,
+  "visualization_only": true
+}
