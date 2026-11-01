@@ -1,0 +1,1218 @@
+{
+  "schema_version": 1,
+  "scope": "Two key visuals and an auditable summary for terminal MPPI liveness.\n\nRead-only with respect to measurement inputs. Run only after every measured\ntrial has ended. The GIF uses a shared 20-second SIMULATION timeline, not wall\ntime; completed trials hold their final measured pose without extending their\nsearch trajectories. Neither figure is a ROS/sensor replay or a safety proof.\n",
+  "paired": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01",
+  "baseline": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/baseline_01",
+  "predeclared_cases": [
+    "recorded_history",
+    "inside_history",
+    "mirrored_history",
+    "outside_legacy",
+    "inside_legacy",
+    "far_live",
+    "overshoot_history",
+    "alignment_history",
+    "blocked_history"
+  ],
+  "common_library": true,
+  "common_runner": true,
+  "baseline_vs_new_off": {
+    "first": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/baseline_01/recorded_history_off/state.csv",
+    "second": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_off/state.csv",
+    "first_rows": 400,
+    "second_rows": 400,
+    "comparable": true,
+    "ignored_columns": [
+      "callback_ms",
+      "kernel_ms"
+    ],
+    "non_timing_exact_equal": true,
+    "non_timing_equal_within_1e_12": true,
+    "fields": {
+      "t": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "x": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "y": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "yaw": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "v": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "w": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "cmd_v": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "cmd_w": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "goal_distance": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "goal_yaw_error": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "reason": {
+        "exact_equal": true
+      },
+      "active_zero": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "dynamic_using": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "dynamic_active": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "lateral_needed": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "had_dynamic": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      },
+      "bound_ratio": {
+        "exact_numeric_equal": true,
+        "max_absolute_difference": 0.0,
+        "equal_within_1e_12": true
+      }
+    },
+    "scope": "Recorded state, applied command, phase and stop-reason columns; not a byte-identical binary or timing-equivalence claim."
+  },
+  "legacy_off_on": {
+    "outside_legacy": {
+      "first": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_off/state.csv",
+      "second": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_on/state.csv",
+      "first_rows": 165,
+      "second_rows": 165,
+      "comparable": true,
+      "ignored_columns": [
+        "callback_ms",
+        "kernel_ms"
+      ],
+      "non_timing_exact_equal": true,
+      "non_timing_equal_within_1e_12": true,
+      "fields": {
+        "t": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "x": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "y": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "yaw": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "v": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "w": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "cmd_v": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "cmd_w": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "goal_distance": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "goal_yaw_error": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "reason": {
+          "exact_equal": true
+        },
+        "active_zero": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "dynamic_using": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "dynamic_active": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "lateral_needed": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "had_dynamic": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "bound_ratio": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        }
+      },
+      "scope": "Recorded state, applied command, phase and stop-reason columns; not a byte-identical binary or timing-equivalence claim."
+    },
+    "inside_legacy": {
+      "first": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_off/state.csv",
+      "second": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_on/state.csv",
+      "first_rows": 157,
+      "second_rows": 157,
+      "comparable": true,
+      "ignored_columns": [
+        "callback_ms",
+        "kernel_ms"
+      ],
+      "non_timing_exact_equal": true,
+      "non_timing_equal_within_1e_12": true,
+      "fields": {
+        "t": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "x": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "y": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "yaw": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "v": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "w": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "cmd_v": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "cmd_w": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "goal_distance": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "goal_yaw_error": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "reason": {
+          "exact_equal": true
+        },
+        "active_zero": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "dynamic_using": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "dynamic_active": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "lateral_needed": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "had_dynamic": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        },
+        "bound_ratio": {
+          "exact_numeric_equal": true,
+          "max_absolute_difference": 0.0,
+          "equal_within_1e_12": true
+        }
+      },
+      "scope": "Recorded state, applied command, phase and stop-reason columns; not a byte-identical binary or timing-equivalence claim."
+    }
+  },
+  "aggregates": {
+    "off": {
+      "free_passed": 4,
+      "free_total": 8,
+      "free_failed_cases": [
+        "recorded_history",
+        "mirrored_history",
+        "far_live",
+        "overshoot_history"
+      ],
+      "blocked_passed": true,
+      "blocked_safety_rejection_valid": true,
+      "collisions": 0,
+      "deadline_misses": 0
+    },
+    "on": {
+      "free_passed": 8,
+      "free_total": 8,
+      "free_failed_cases": [],
+      "blocked_passed": true,
+      "blocked_safety_rejection_valid": true,
+      "collisions": 0,
+      "deadline_misses": 0
+    }
+  },
+  "trials": [
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_off",
+      "case": "recorded_history",
+      "enabled": false,
+      "seed": 4,
+      "reached": false,
+      "settled_start_s": null,
+      "duration_s": 20.0,
+      "initial_gap_m": 1.2386958657496216,
+      "min_physical_gap_m": 1.2386958657496216,
+      "final_state": [
+        2.9360721587625247,
+        0.26178406694245504,
+        -1.215433517796205,
+        2.138433550553403e-170,
+        -1.8345427502746097e-170
+      ],
+      "initial_goal_distance_m": 0.2694766531449724,
+      "final_goal_distance_m": 0.2694766531449724,
+      "final_yaw_error_rad": 1.215433517796205,
+      "active_zero_count": 400,
+      "reason_counts": {
+        "ok": 400,
+        "active_zero": 400
+      },
+      "validator_counts": {
+        "0": 400
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 0.0,
+      "callback_p95_ms": 1.3305522510563603,
+      "kernel_p95_ms": 0.825252,
+      "max_command_magnitude": 0.0,
+      "collision": false,
+      "actual_wall_s": 1.1525016889991093,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": false,
+      "negative_safety_rejection_valid": false,
+      "passed": false
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_on",
+      "case": "recorded_history",
+      "enabled": true,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 6.06,
+      "duration_s": 7.1000000000000005,
+      "initial_gap_m": 1.2386958657496216,
+      "min_physical_gap_m": 1.0963107782092765,
+      "final_state": [
+        2.999180724708831,
+        0.008659071451496912,
+        0.0007393527881006197,
+        1.0101131037240419e-13,
+        -0.002436096118285716
+      ],
+      "initial_goal_distance_m": 0.2694766531449724,
+      "final_goal_distance_m": 0.008697742833910999,
+      "final_yaw_error_rad": 0.0007393527881006197,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 142,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 142
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 1.2305411992201698,
+      "kernel_p95_ms": 0.76842375,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.40935522799918544,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_off",
+      "case": "inside_history",
+      "enabled": false,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 5.739999999999999,
+      "duration_s": 6.75,
+      "initial_gap_m": 1.2386958657496216,
+      "min_physical_gap_m": 1.0967261725827044,
+      "final_state": [
+        2.99876533044328,
+        0.008609507359228077,
+        0.0007628628617914881,
+        2.4725080616889515e-13,
+        -0.002384357304912791
+      ],
+      "initial_goal_distance_m": 0.24836821230842718,
+      "final_goal_distance_m": 0.008697587359888709,
+      "final_yaw_error_rad": 0.0007628628617914881,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 135,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 135
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 1.2112477004848188,
+      "kernel_p95_ms": 0.7597156,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.3754740040003526,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_on",
+      "case": "inside_history",
+      "enabled": true,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 5.739999999999999,
+      "duration_s": 6.75,
+      "initial_gap_m": 1.2386958657496216,
+      "min_physical_gap_m": 1.0967261725827044,
+      "final_state": [
+        2.99876533044328,
+        0.008609507359228077,
+        0.0007628628617914881,
+        2.4725080616889515e-13,
+        -0.002384357304912791
+      ],
+      "initial_goal_distance_m": 0.24836821230842718,
+      "final_goal_distance_m": 0.008697587359888709,
+      "final_yaw_error_rad": 0.0007628628617914881,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 135,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 135
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 1.2018298000839422,
+      "kernel_p95_ms": 0.7638414,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.3736656540004333,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_off",
+      "case": "mirrored_history",
+      "enabled": false,
+      "seed": 4,
+      "reached": false,
+      "settled_start_s": null,
+      "duration_s": 20.0,
+      "initial_gap_m": 1.2386902599130858,
+      "min_physical_gap_m": 1.2386902599130858,
+      "final_state": [
+        2.9360721587625247,
+        -0.26178406694245504,
+        1.215433517796205,
+        2.138433550553403e-170,
+        1.8345427502746097e-170
+      ],
+      "initial_goal_distance_m": 0.2694766531449724,
+      "final_goal_distance_m": 0.2694766531449724,
+      "final_yaw_error_rad": 1.215433517796205,
+      "active_zero_count": 400,
+      "reason_counts": {
+        "ok": 400,
+        "active_zero": 400
+      },
+      "validator_counts": {
+        "0": 400
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 0.0,
+      "callback_p95_ms": 1.263562998792622,
+      "kernel_p95_ms": 0.8224296000000001,
+      "max_command_magnitude": 0.0,
+      "collision": false,
+      "actual_wall_s": 1.1383606609997514,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "9e291e7d90b633d2ddf4e42e613c1c2fd7a0e36791b6969a9237a6e7585c93c5",
+      "final_endpoint_valid": false,
+      "negative_safety_rejection_valid": false,
+      "passed": false
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_on",
+      "case": "mirrored_history",
+      "enabled": true,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 6.06,
+      "duration_s": 7.1000000000000005,
+      "initial_gap_m": 1.2386902599130858,
+      "min_physical_gap_m": 1.0963107782092765,
+      "final_state": [
+        2.999180724708831,
+        -0.008659071451496912,
+        -0.0007393527881006197,
+        1.0101131037240419e-13,
+        0.002436096118285716
+      ],
+      "initial_goal_distance_m": 0.2694766531449724,
+      "final_goal_distance_m": 0.008697742833910999,
+      "final_yaw_error_rad": 0.0007393527881006197,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 142,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 142
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 1.214823448935931,
+      "kernel_p95_ms": 0.7768733499999999,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.39407585699882475,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "9e291e7d90b633d2ddf4e42e613c1c2fd7a0e36791b6969a9237a6e7585c93c5",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_off",
+      "case": "outside_legacy",
+      "enabled": false,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 7.250000000000001,
+      "duration_s": 8.25,
+      "initial_gap_m": 1.2386958657496216,
+      "min_physical_gap_m": 1.0946518842718218,
+      "final_state": [
+        3.000321269354493,
+        0.014308534655296691,
+        -0.01758304395676977,
+        -0.0011864586842057054,
+        0.018184548137192516
+      ],
+      "initial_goal_distance_m": 0.2694766531449724,
+      "final_goal_distance_m": 0.014312140929293638,
+      "final_yaw_error_rad": 0.01758304395676977,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 165,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 165
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 12.637193601040053,
+      "kernel_p95_ms": 12.2126674,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.782237270999758,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_on",
+      "case": "outside_legacy",
+      "enabled": true,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 7.250000000000001,
+      "duration_s": 8.25,
+      "initial_gap_m": 1.2386958657496216,
+      "min_physical_gap_m": 1.0946518842718218,
+      "final_state": [
+        3.000321269354493,
+        0.014308534655296691,
+        -0.01758304395676977,
+        -0.0011864586842057054,
+        0.018184548137192516
+      ],
+      "initial_goal_distance_m": 0.2694766531449724,
+      "final_goal_distance_m": 0.014312140929293638,
+      "final_yaw_error_rad": 0.01758304395676977,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 165,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 165
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 12.669317001200397,
+      "kernel_p95_ms": 12.2130324,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.7973010179994162,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_off",
+      "case": "inside_legacy",
+      "enabled": false,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 6.805,
+      "duration_s": 7.8500000000000005,
+      "initial_gap_m": 1.2386958657496216,
+      "min_physical_gap_m": 1.0952860975839442,
+      "final_state": [
+        2.99963415038495,
+        0.014090690723374493,
+        -0.017116581468361772,
+        -0.0012577915849580426,
+        0.013213351301212428
+      ],
+      "initial_goal_distance_m": 0.24836821230842718,
+      "final_goal_distance_m": 0.014095439368910242,
+      "final_yaw_error_rad": 0.017116581468361772,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 157,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 157
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 12.717299399446347,
+      "kernel_p95_ms": 12.250691,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.777042788999097,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_on",
+      "case": "inside_legacy",
+      "enabled": true,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 6.805,
+      "duration_s": 7.8500000000000005,
+      "initial_gap_m": 1.2386958657496216,
+      "min_physical_gap_m": 1.0952860975839442,
+      "final_state": [
+        2.99963415038495,
+        0.014090690723374493,
+        -0.017116581468361772,
+        -0.0012577915849580426,
+        0.013213351301212428
+      ],
+      "initial_goal_distance_m": 0.24836821230842718,
+      "final_goal_distance_m": 0.014095439368910242,
+      "final_yaw_error_rad": 0.017116581468361772,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 157,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 157
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 12.64719140053785,
+      "kernel_p95_ms": 12.2327454,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.7754259980010829,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_off",
+      "case": "far_live",
+      "enabled": false,
+      "seed": 4,
+      "reached": false,
+      "settled_start_s": null,
+      "duration_s": 20.0,
+      "initial_gap_m": 1.2386958657496216,
+      "min_physical_gap_m": 1.2386958657496216,
+      "final_state": [
+        2.9360721587625247,
+        0.26178406694245504,
+        -1.215433517796205,
+        2.138433550553403e-170,
+        -1.8345427502746097e-170
+      ],
+      "initial_goal_distance_m": 0.2694766531449724,
+      "final_goal_distance_m": 0.2694766531449724,
+      "final_yaw_error_rad": 1.215433517796205,
+      "active_zero_count": 400,
+      "reason_counts": {
+        "ok": 400,
+        "active_zero": 400
+      },
+      "validator_counts": {
+        "0": 400
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 0.0,
+      "callback_p95_ms": 1.3657980511197816,
+      "kernel_p95_ms": 0.85664345,
+      "max_command_magnitude": 0.0,
+      "collision": false,
+      "actual_wall_s": 1.3883744020004087,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": false,
+      "negative_safety_rejection_valid": false,
+      "passed": false
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_on",
+      "case": "far_live",
+      "enabled": true,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 6.06,
+      "duration_s": 7.1000000000000005,
+      "initial_gap_m": 1.2386958657496216,
+      "min_physical_gap_m": 1.0963107782092765,
+      "final_state": [
+        2.999180724708831,
+        0.008659071451496912,
+        0.0007393527881006197,
+        1.0101131037240419e-13,
+        -0.002436096118285716
+      ],
+      "initial_goal_distance_m": 0.2694766531449724,
+      "final_goal_distance_m": 0.008697742833910999,
+      "final_yaw_error_rad": 0.0007393527881006197,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 142,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 142
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 1.334635399689432,
+      "kernel_p95_ms": 0.80451115,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.47597178000069107,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_off",
+      "case": "overshoot_history",
+      "enabled": false,
+      "seed": 4,
+      "reached": false,
+      "settled_start_s": null,
+      "duration_s": 20.0,
+      "initial_gap_m": 0.8254915028125254,
+      "min_physical_gap_m": 0.8254915028125254,
+      "final_state": [
+        3.270000000000001,
+        0.0,
+        2.4783619753785966,
+        0.0,
+        1.315264447904429e-61
+      ],
+      "initial_goal_distance_m": 0.27,
+      "final_goal_distance_m": 0.27,
+      "final_yaw_error_rad": 2.4783619753785966,
+      "active_zero_count": 338,
+      "reason_counts": {
+        "ok": 400,
+        "active_zero": 338
+      },
+      "validator_counts": {
+        "0": 400
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 0.9999999880406637,
+      "callback_p95_ms": 1.2255235996235567,
+      "kernel_p95_ms": 0.7793742,
+      "max_command_magnitude": 0.799999990432531,
+      "collision": false,
+      "actual_wall_s": 1.1333391450007184,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": false,
+      "negative_safety_rejection_valid": false,
+      "passed": false
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_on",
+      "case": "overshoot_history",
+      "enabled": true,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 12.305000000000001,
+      "duration_s": 13.350000000000001,
+      "initial_gap_m": 0.8254915028125254,
+      "min_physical_gap_m": 0.8254915028125254,
+      "final_state": [
+        3.008932462971812,
+        0.0015062249095631713,
+        0.0006323669000161045,
+        8.219568518355262e-21,
+        -0.001963380195028873
+      ],
+      "initial_goal_distance_m": 0.27,
+      "final_goal_distance_m": 0.00905856546153794,
+      "final_yaw_error_rad": 0.0006323669000161045,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 267,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 267
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 1.2397229991620407,
+      "kernel_p95_ms": 0.7876174,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.7493078879997483,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_off",
+      "case": "alignment_history",
+      "enabled": false,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 2.8499999999999996,
+      "duration_s": 3.85,
+      "initial_gap_m": 1.17387263706238,
+      "min_physical_gap_m": 1.1054915028395946,
+      "final_state": [
+        2.990000000000001,
+        0.0,
+        -0.0007542819389822996,
+        0.0,
+        0.0023148068751223812
+      ],
+      "initial_goal_distance_m": 0.009999999999999787,
+      "final_goal_distance_m": 0.009999999999999787,
+      "final_yaw_error_rad": 0.0007542819389822996,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 77,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 77
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 1.1148670007969486,
+      "kernel_p95_ms": 0.658518,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.21502028800023254,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_on",
+      "case": "alignment_history",
+      "enabled": true,
+      "seed": 4,
+      "reached": true,
+      "settled_start_s": 2.8499999999999996,
+      "duration_s": 3.85,
+      "initial_gap_m": 1.17387263706238,
+      "min_physical_gap_m": 1.1054915028395946,
+      "final_state": [
+        2.990000000000001,
+        0.0,
+        -0.0007542819389822996,
+        0.0,
+        0.0023148068751223812
+      ],
+      "initial_goal_distance_m": 0.009999999999999787,
+      "final_goal_distance_m": 0.009999999999999787,
+      "final_yaw_error_rad": 0.0007542819389822996,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "ok": 77,
+        "active_zero": 0
+      },
+      "validator_counts": {
+        "0": 77
+      },
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 1.0,
+      "callback_p95_ms": 1.1010043999704067,
+      "kernel_p95_ms": 0.6602205999999999,
+      "max_command_magnitude": 0.8,
+      "collision": false,
+      "actual_wall_s": 0.21383666300062032,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": true,
+      "negative_safety_rejection_valid": false,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_off",
+      "case": "blocked_history",
+      "enabled": false,
+      "seed": 4,
+      "reached": false,
+      "settled_start_s": null,
+      "duration_s": 20.0,
+      "initial_gap_m": 0.0500000000000001,
+      "min_physical_gap_m": 0.0500000000000001,
+      "final_state": [
+        2.9360721587625247,
+        0.26178406694245504,
+        -1.215433517796205,
+        2.138433550553403e-170,
+        -1.8345427502746097e-170
+      ],
+      "initial_goal_distance_m": 0.2694766531449724,
+      "final_goal_distance_m": 0.2694766531449724,
+      "final_yaw_error_rad": 1.215433517796205,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "no_feasible_candidate": 400,
+        "active_zero": 0
+      },
+      "validator_counts": {},
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 0.0,
+      "callback_p95_ms": 1.8910074008090305,
+      "kernel_p95_ms": 1.7954994,
+      "max_command_magnitude": 0.0,
+      "collision": false,
+      "actual_wall_s": 1.94226916900152,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": false,
+      "negative_safety_rejection_valid": true,
+      "passed": true
+    },
+    {
+      "path": "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_on",
+      "case": "blocked_history",
+      "enabled": true,
+      "seed": 4,
+      "reached": false,
+      "settled_start_s": null,
+      "duration_s": 20.0,
+      "initial_gap_m": 0.0500000000000001,
+      "min_physical_gap_m": 0.0500000000000001,
+      "final_state": [
+        2.9360721587625247,
+        0.26178406694245504,
+        -1.215433517796205,
+        2.138433550553403e-170,
+        -1.8345427502746097e-170
+      ],
+      "initial_goal_distance_m": 0.2694766531449724,
+      "final_goal_distance_m": 0.2694766531449724,
+      "final_yaw_error_rad": 1.215433517796205,
+      "active_zero_count": 0,
+      "reason_counts": {
+        "no_feasible_candidate": 400,
+        "active_zero": 0
+      },
+      "validator_counts": {},
+      "deadline_misses": 0,
+      "max_command_bound_ratio": 0.0,
+      "callback_p95_ms": 1.901971551160386,
+      "kernel_p95_ms": 1.8096716000000002,
+      "max_command_magnitude": 0.0,
+      "collision": false,
+      "actual_wall_s": 1.9296686739999132,
+      "library_sha256": "3c77711da601588f7524b9682ad9f9e59a5421604cfb81a94ce5d374a2f352af",
+      "reference_sha256": "a620ddf98deb70448a2efe6f493b7b96ad2b77dc8a3789ec6059ee6ae358899f",
+      "final_endpoint_valid": false,
+      "negative_safety_rejection_valid": true,
+      "passed": true
+    }
+  ],
+  "inputs_sha256": {
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_off/result.json": "fc1261ebeeb4b8834f58fbe26fcdb73d44ec200021c904f089f4a1fe5c9c129d",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_off/metadata.json": "9cdff23cbdc8f09319af6de6bc1588a13d641c5631a18caab5ed8f92dc783495",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_off/state.csv": "1e4fa3bc3ad401e6f261e05e1e115157d39394b62148a9cc913686a3916878ce",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_off/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_off/search.jsonl": "d24669769335580d3a82a90f002d87dd2c70cb024ed326b8384171c795b3f62e",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_off/decisions.jsonl": "f6060263885bc554d17d12fe20ef64846d9e83d8b68921f2275f79f83c786e2f",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_on/result.json": "2ab14e0661fdb14f2f3039f98447cbb5ac7ed672c24ed0eac89323ba4aabd94a",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_on/metadata.json": "fe72eb4a6a044ac5883984df9b7c92bb7ba8e444ce1d56e7a3cbf4ae7e6cc0d1",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_on/state.csv": "e421434f95a6567f5e56528e974c5fb5755a5a71b2e7657d06c51e7942a530bf",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_on/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_on/search.jsonl": "44da3acc70a6d2510f529673854c9616d7806ed2869cae2bfe3048e3bf19fd38",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/recorded_history_on/decisions.jsonl": "f921fe5309bc6b4b2c070cdfba1facef1f53603c12400be2c4f4bca42bfe5ad2",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_off/result.json": "27734c3c3a16f0f8ab7bed7d2998b7fe18e940fc2143f544b0ae5aa27f038a00",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_off/metadata.json": "3ca9b996df2ffe7aa25c3de41b535a4fb52663deece873a5d443a26fd15697fa",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_off/state.csv": "7308871eb4ce66967327942f0702b0dce018516cac9185d410c115b24cfb7c6c",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_off/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_off/search.jsonl": "b7c17aca8679c95a5a684b41f5c690c1357a84ef4ffa17af2fa63b10c458f537",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_off/decisions.jsonl": "237786c84e63d797639c41594b77d074417403446a7e05c9ea907fee66fc3915",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_on/result.json": "ca447f02889421e446806fac0554cb85ca235c00cd54e6db0d69661c3cf1b88c",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_on/metadata.json": "200b6ce7119630e14399832d8fe6a94b07ee007d5d33c5321f953f88d5ad42f8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_on/state.csv": "d15298ac3893c84e9ab22e96da7e0937814d7cd5953b674f3fa32e072c93532c",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_on/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_on/search.jsonl": "beb61238a85d49c865c1ffd046fc70a7ddacd4f27444c5c3a9588f180a6f2269",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_history_on/decisions.jsonl": "ff0e90dd2264ae4556184ba9786fa7720b22306273676066d6c6e1348ea0d37a",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_off/result.json": "e8f965fbc35390e2bec628a6a470f336c15c8478c633e4f38eede44c6f0e483e",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_off/metadata.json": "3e7049428d5cfdb6852e8979a20f26e4e3317438aa4fd7a3c1ca03f94020982a",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_off/state.csv": "42288a2fa8bba3a952c4f1a54ee7d031bc1e3b7314d3cb6c654584f1368bdb72",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_off/reference.csv": "0564180fadb9c0324c323075d52a89f9e2ae482f9b3b8ca3cadaf64c710e607b",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_off/search.jsonl": "ff92ca92d9cb2430b80c1add7c0c14e59e64e6f177531977142c69f28f39cec4",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_off/decisions.jsonl": "47d53b5f861d1df96da2a38c8fb2206a3fac9b9f4e4e2fb31037df6de38487e9",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_on/result.json": "ff53762ea56e789cc6c9f201fd794c8996c22fd8222e9c688fe651db9e129a67",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_on/metadata.json": "3fccbf08dfeb3751b774609b7039417e72efdb2acfb316e161631dba0171072d",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_on/state.csv": "49f4199e43a2d1fa2a1454272fbbb558686eb8af79a214860ae19c45281f08c7",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_on/reference.csv": "0564180fadb9c0324c323075d52a89f9e2ae482f9b3b8ca3cadaf64c710e607b",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_on/search.jsonl": "b0303b4ba3e4715799eb35b8844d3060d6400db0b3e1d39cdf21244e44418d50",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/mirrored_history_on/decisions.jsonl": "f58839bde8d891acb89349e32d6a8bb79c590c257f9d745b1dcd9308752cefc1",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_off/result.json": "27e86b9d28b2cd290609ad63baa87b67cd318b9280073ff4659db7537d9873fd",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_off/metadata.json": "0c359b79d7350c649bf3c4fd48e02cf110ee7a3ec64f0abde43d01cfc720cd55",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_off/state.csv": "19df6763aaaafea23a5a02bd718b618834a6b4ae12bc2afa821f1944116e3cbc",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_off/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_off/search.jsonl": "a6bc12c83f4695ed4d6fd19feed57cc5702605315b335d6350847a2e65946606",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_off/decisions.jsonl": "de93450c72dfbb72261a99ab073467e991c75b94049e01db17117f8a7a262b22",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_on/result.json": "22162cf3b5eed5631b4bb54688fcccbdc9f670778ca5afaf40e44f18442d28e4",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_on/metadata.json": "9dc851a81a0f747d1953f5efba26c0b46e9cb2998b282cb68a11ca1d4b495ab1",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_on/state.csv": "4435c64d3056a923b643282440fb7afee455059d2015f22850e7513996a30f38",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_on/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_on/search.jsonl": "b9ecc8714891137f394f053cbf0772706d4eb110a90f274c781a297c15c698d5",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/outside_legacy_on/decisions.jsonl": "b7f568257b7b54a50fadff31775fe63bf917586e0c24da068e2c9301f8b50270",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_off/result.json": "4446960d35c8e95db923d64a62f5b60777aa779bd754114e2703ac6cc6184799",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_off/metadata.json": "a2e1ddbc96f3b31827348822970bcf0cad61dbcf7dc107dedf915cbbedf54536",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_off/state.csv": "6478a204d94b1858aed594c58fe47a9ecf7dc9e3a72c06df30681652be88602a",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_off/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_off/search.jsonl": "cf23739b9a1df6790f5bd86d78226245b6e6c2e9221235592ee27194c1e36f27",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_off/decisions.jsonl": "ee4d0665eb5b0e489bb8e4436bfa0a0d380b52b9b8f09d417b65ae7a65edd546",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_on/result.json": "d229afb74850f449da36df75288ac22f9496f8ca61c500f2006d7077126bbc8b",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_on/metadata.json": "67d514458c9df6df35e20fefad416f3b0ae867f83d79bf8f0377eeac1088b7fa",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_on/state.csv": "829b9f3a667a29a39c2f0c08412cf32db0e22a49f0bfffea35f7021a49bfba76",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_on/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_on/search.jsonl": "4332206914b8fb29d39b64a7bd486fa6e83c5e164a8bd87e9f4bc045c59b44ad",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/inside_legacy_on/decisions.jsonl": "c4dd9cab85ea96578250a45fc918169b1531b1a0b97024d001937e50d4afc607",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_off/result.json": "019402deb204f47cfb310b0f719f413df1bb27ffb8a0836243a9fa605093fd0e",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_off/metadata.json": "a10ef624fde152b21b17176298a7ee59d9b28fdab5bc92e48ace983ab88978fb",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_off/state.csv": "30f0cbaf289381ebb9319098d5710db8bb407ad2c332e774b6f5019bcee6a475",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_off/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_off/search.jsonl": "820a90c81ff3d0e65539da773443bf4a8477a63cd68c7883b0590f598c6b4fdf",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_off/decisions.jsonl": "566655a75d1cd1ded6b6309bd95ccd2a0eda10e2c35bcea6c281f3dac75707d3",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_on/result.json": "49e8fef153bf109404d7066554d8e688fd4193c642f86269b5a86bef10d59854",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_on/metadata.json": "e3547fb014d3ad6b36fa5a46f32079106b250651f284012bdd7b6531adad004a",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_on/state.csv": "a326e92814bb613bb686d5e5aa670fee2d473c95599ffeecf246115e0dab9fe1",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_on/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_on/search.jsonl": "c52e5697ceaa9eb9966e681ea46d097b9415339c807bcdd25c3b7a8609cea059",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/far_live_on/decisions.jsonl": "9d4c58155fd2abc7951100260260ad7debe57847518614fe81597598c327eb20",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_off/result.json": "ff1ceb1378a126d5b5ebdc86a588696fe7fcd2ee1174cc66fc65ff437771d25a",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_off/metadata.json": "e1ada2d3dea768a991336e088bc91239eb3a22e602768324ad0c72df90aa3630",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_off/state.csv": "8536be211288144d83cc3735ff37d1abe9c83b09f662d2eb619ade7b0ad0530d",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_off/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_off/search.jsonl": "0eed2e77aff24abfa959f035f12432d0150f7db042dfcda413b154705f7fda69",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_off/decisions.jsonl": "6717823aa08dc3dc7c86f549a466250850d851dd7a7421a5da75e28e50bbb705",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_on/result.json": "ec43d5dda1de3e83937cebe252bd276be2388d86c7bdc138926576104348d3c7",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_on/metadata.json": "8cda489aedc479f96a7e0ac747014879c4d1f5261c709a5133c71229f5f19ac7",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_on/state.csv": "1dc9d5c7e7cf0ca091121a6be666b025d3b6387e1431b0207a1e913175f864b6",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_on/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_on/search.jsonl": "d48cca3464d5fb9ebb328e3f987608fcba903e6274e72ab8d7a1329d19f45cd7",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/overshoot_history_on/decisions.jsonl": "bf7ca55deec6c8c2d6edd0a33f899b66c501ade536ea6fa7c3c2cd042a46928b",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_off/result.json": "c6447bd558d82c17b75487c147b4e286439f82ad65fed8ec01298b6681598718",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_off/metadata.json": "b1b088193e46d5d8f97745aef591f43eaaf0036ee4cca18216ef5fcc6fdf8010",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_off/state.csv": "4d0abc34eb1e6232fc24437d6d59bab20a7a74fc560e4fd950360d1b3e4ac434",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_off/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_off/search.jsonl": "d8794198e565af1c11af78ce3776f50d796fc0df9e5bb8d4151a335f5aad24e4",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_off/decisions.jsonl": "7933d56cc9fac7eb6fa434c1164f99c5490232bf8455636e43ef08a6419f2dcf",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_on/result.json": "93539313c425c4f1fc765e0e17a91ec38ab217bf985132d169aad54b7076f5c9",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_on/metadata.json": "141e634861d8627a002b896ccbec2db55724c6845f944f4bee69db8c744f5ea1",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_on/state.csv": "942c87e96e742067d680b1aa1f760b901bd62751a133bf66282285ac0701f4f7",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_on/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_on/search.jsonl": "f04a2665ec7bf3bc2b11837f91975dfbe178f0f55039da87b9d07b6434751f18",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/alignment_history_on/decisions.jsonl": "e40c2116511c3e36316ce0ff877403e031b8231c8fa2eaf278f05b122d3eba33",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_off/result.json": "bdf85aaaf9dd22b5aa513340668ec516a8e585064997be52c38e94b40559b126",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_off/metadata.json": "619a44aa89a5ad19fc6a0953e3560ba841e4cc45849b09d70b30f7f3858f3f22",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_off/state.csv": "6a956d5f280513c061cc1fb51d685c5e828221e1d48e93b39b9c28a104a9921a",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_off/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_off/search.jsonl": "3926df6b1c1b69e83d8021b0dfa828bfeaa49272634b3a597c17af5e0b7e6f60",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_off/decisions.jsonl": "ed921bc4bee84196ac9949065c704ad923c895046738ee294c97f9db47c637cb",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_on/result.json": "22984eb25495733d63740be37facd18a19dfba1580d8a1fd6f696b4026745b04",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_on/metadata.json": "206c83e5ed3a8786ad61f551a2d6a4824df1130598a542ec92684886add48039",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_on/state.csv": "50124c7e14faf1b138a83987dc0be8b73f7bcead252c044b15550d266718caf9",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_on/reference.csv": "62fb3af87a333ece775f64565d6b07db992feb4cfa2523af8f91e6703e1cd5b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_on/search.jsonl": "28ffb3a53a4af482d2583aa559be35116472dd6214eaa1b1a98f86ad6b591e4b",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/blocked_history_on/decisions.jsonl": "02304599ead0897ed292f13be31f699a85ce38b0157b7c8fc228d1aa0e9c955a",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/paired_01/protocol.json": "c3698d27cca7fe938f09de02b19cdd8cee4e630582292d6c92372fc2808cf50c",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/baseline_01/recorded_history_off/state.csv": "cfd742843b53646311f95f1d6b53d21beb971afc5450df5f75e93f6786960acc",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/baseline_01/recorded_history_off/result.json": "a34ffbc64eb9ff94e9f8aaeced5da2b3ca14f0a5af5689faa1e5fd466a8ee977",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/terminal_liveness_20261026/baseline_01/recorded_history_off/metadata.json": "d95000345162cbe4c773ddf41b8718a4c2216337045aff8f188246b8b33a247d"
+  },
+  "report_source_sha256": "ad86cc465736bf14f1c889c190d0b9401c04a34b7f78be8b4bd5eea1244a7cdd",
+  "visuals": {
+    "case": "recorded_history",
+    "shared_simulation_duration_s": 20.0,
+    "gif_fps": 10,
+    "playback_duration_s": 20.0,
+    "completed_trial_display": "Hold final measured pose; hide stale search",
+    "body": "All original projected disks, not a point or one enlarged circle",
+    "search": "At most five stored actual candidates, selected included; not every sample",
+    "trace_max_age_s": 0.3,
+    "figures_are_measured_wall_time": false,
+    "wider_regression_included": false
+  },
+  "limitations": [
+    "Ideal synchronous-state free-field fixture, not original sensor replay.",
+    "Original history priming has no physical advance.",
+    "No ROS, native online REMANI, Gazebo or real robot is executed by this report.",
+    "Kernel clearance and publication/braking validation are retained; this report does not claim the newer shared-objective implementation is used.",
+    "Fixed-step simulation and host callback deadlines are distinct measurements.",
+    "Finite test success is not a proof of global liveness or continuous-time safety."
+  ],
+  "visuals_sha256": {
+    "terminal_liveness.png": "4e2bcd493e75f7e47293592cb4de0aba087d7495871293dfa6a185155eb33df1",
+    "terminal_liveness.gif": "66920efedcccd9b75e7f64e2643d0a1bf7e635a155153d11a12ccba1a36c1505"
+  }
+}
