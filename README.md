@@ -3,6 +3,37 @@
 当前 REMANI 移动机械臂工程，以及固定机械臂、底盘 MPPI / CBF-QP 的历次算法实验归档。
 这是工作空间当前文件快照，不是原版 REMANI 仓库，也不表示所有历史版本都通过验收。
 
+## 2026-11-01 更新
+
+补充轨迹交付窗口、中段横穿和短前缀回接等后续实验，保留脚本、隔离源码快照、原始数值记录、报告和 GIF。
+
+- [交付窗口：结论](experiments/online_remani_validation/results/delivery_window_20261101_01/report/本轮结论.txt) · [迎面对照 GIF](experiments/online_remani_validation/results/delivery_window_20261101_01/report/迎面对照.gif)
+- [中段横穿：结论](experiments/online_remani_validation/results/delivery_midcross_20261101_01/report/本轮结论.txt) · [对照 GIF](experiments/online_remani_validation/results/delivery_midcross_20261101_01/report/中段横穿对照.gif)
+- [短前缀回接：结论](experiments/online_remani_validation/results/short_prefix_rejoin_20261101_01/report/本轮结论.txt) · [独立核查](experiments/online_remani_validation/results/short_prefix_rejoin_20261101_01/report/独立核查.txt) · [对照 GIF](experiments/online_remani_validation/results/short_prefix_rejoin_20261101_01/report/短前缀衔接对照.gif)
+
+迎面单次对照中，仅延长慢层冻结预测窗口后，首次反馈到实际有效新控制为 4.406→1.910 s。
+中段横穿为 6.057→4.271 s，但实际路程和运动时间增加，仍不能认为协同问题已经解决。
+最新短前缀实验的新策略两组均未触发，不能据此宣称策略有效；核查结果和失败记录一并保留。
+以上是固定机械臂的隔离 ROS 数值闭环，不是 Gazebo 或实车验收，也不是总体成功率结论。
+本次未替换实车代码或生产二进制。私人会话导出和 Windows 开题材料包不在公开上传范围。
+
+## 2026-10-31 更新
+
+本次同步当前工程源码，以及上次归档后新增的轨迹交付、碰撞球简化、计算耗时和 MPPI 协同实验。
+实车默认入口与隔离实验版本分别保留，历史 V12 结果仍可查阅。
+
+- [最新一轮实验总结（TXT）](experiments/online_remani_validation/results/delivery_next_20261031_01/本轮实验总结.txt)
+- [静态挡路对照 GIF](experiments/online_remani_validation/results/delivery_next_20261031_01/report/静态挡路.gif)
+- [中段横穿对照 GIF](experiments/online_remani_validation/results/delivery_next_20261031_01/report/中段横穿.gif)
+- [轨迹交付时间对照图](experiments/online_remani_validation/results/delivery_next_20261031_01/report/轨迹交付对照.png)
+- [最新隔离构建与运行入口](experiments/online_remani_validation/build_delivery_next.py)
+- [在线对照实验脚本](experiments/online_remani_validation/run_delivery_next_online.py)
+
+本轮在两组均修正 MPPI 换向段关联的条件下，对比优化器原退出方式与合格候选提前退出。
+重规划触发至 MPPI 实际采用新参考，静态为 1.53→0.66 s，横穿为 4.60→1.04 s。
+四次 ROS 数值闭环均到达目标，球体采样检查未发现碰撞；每场景每组只有一次运行，
+改进组动态场景仍有最长约 0.8 s 的低速爬行。它不是 Gazebo 或实车验收，完整限制见本轮总结。
+
 ## 快速入口
 
 - [完整在线实验与版本索引](experiments/online_remani_validation/README.md)
