@@ -1,0 +1,57 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": true,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 3,
+  "consumed_versions": 3,
+  "live_kernel_calls": 873,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 4,
+    "native3d_unhealthy": 31,
+    "native_hard_stop": 103,
+    "waiting_native_trajectory": 8,
+    "ok": 873
+  },
+  "trial_result": {
+    "reason": "goal",
+    "goal_sent": 7.018800506004482,
+    "motion_anchor": 8.29059221600619,
+    "scenario_start": "motion",
+    "trajectory_bundles": 3,
+    "min_clearance": 0.19495192273984827,
+    "collision_conservative_projection": false,
+    "arm_max_error": 0.0,
+    "final_state": [
+      5.986472762576622,
+      -0.0035149092164812787,
+      8.993682117130993e-05,
+      1.3227486250090142e-07,
+      -0.007288091366220963
+    ],
+    "elapsed": 57.97701974800293,
+    "scene": "sphere_timing_midcross",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": false,
+      "min_physical_sample_gap": 0.16168397838331539,
+      "checks": 14162,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 10.310284726001555,
+      "first_observed_moving_t": 10.865508698999975,
+      "deadline_zero_window_start": null,
+      "deadline_zero_window_end": null,
+      "deadline_zero_cycles": 0,
+      "deadline_zero_deadlock": false,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter"
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}

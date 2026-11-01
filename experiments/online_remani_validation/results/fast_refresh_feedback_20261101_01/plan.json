@@ -1,0 +1,33 @@
+{
+  "created_utc": "2026-11-01T06:25:54.185931+00:00",
+  "purpose": "Can already-approved MPPI dynamic intervention trigger slow reference delivery before old-guide blockage?",
+  "groups": "A previous nominal-only gate plus old trigger; B same plus episode feedback",
+  "planned_trials": [
+    "headon_A",
+    "headon_B"
+  ],
+  "seed": 11,
+  "goal": [
+    6.0,
+    0.0
+  ],
+  "duration_s": 55.0,
+  "physical_spheres": 67,
+  "slow_nominal_only": true,
+  "optimization_budget_s": 1.2,
+  "mppi_deadline_ms": 200.0,
+  "command_lease_ms": 250.0,
+  "no_new_delay_error_speed_or_cost_threshold": true,
+  "no_new_retry_state_machine": true,
+  "runtime_and_binary_identical_between_groups": true,
+  "metrics": [
+    "first actual validated avoidance to trigger/request/new effective control",
+    "feedback consumed count and original guide blockage timing",
+    "all request outcomes, reference adoption and physical gaps",
+    "actual command validator and lease-brake evidence, stops and MPPI wall time"
+  ],
+  "scope": "fixed-arm complete REMANI+MPPI numerical ROS SIL, not Gazebo/hardware",
+  "single_async_pair_not_statistical_causal_performance_estimate": true,
+  "production_modified": false,
+  "github_upload_remains_paused": true
+}

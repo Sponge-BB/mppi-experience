@@ -1,0 +1,36 @@
+{
+  "schema": "candidate_exit_dynamic_independent_check_v1",
+  "request_id": 2,
+  "candidate_stage": "exit_accepted_candidate",
+  "candidate_geometry_sha256": "65f6444622d3b72e4bf6572f5ab2620151e0f8b164c7b0b5fe3ce97182b6350b",
+  "source_sha256": "3934b2360809e7f69adbe1e2745450ec024b18115ec0405db296b1cdfd800f5a",
+  "planning_source_equals_exit_source": true,
+  "requested_epoch": 1017.538811439,
+  "source_stamp": 1017.679624272,
+  "cv_end_epoch": 1020.679624272,
+  "sample_begin_s": 0.05,
+  "sample_step_s": 0.01,
+  "body_spheres": 67,
+  "arm_max_deviation": 0.0,
+  "uncertainty_radius_m": 0.0,
+  "native_rejection_time_s": 0.9700000000000006,
+  "native_collision_reproduced": true,
+  "checks": [
+    {
+      "execution_scale": 1.0,
+      "valid_sample_count": 300,
+      "first_collision": {"local_t_s": 1.9700000000000015, "minimum_model_gap_m": -0.0009302496881969657},
+      "minimum": {"local_t_s": 2.249999999999996, "minimum_model_gap_m": -0.03011535626148712},
+      "gap_at_native_rejection_m": 0.13000407352612256
+    },
+    {
+      "execution_scale": 0.5,
+      "valid_sample_count": 150,
+      "first_collision": {"local_t_s": 0.9700000000000006, "minimum_model_gap_m": -0.0014579157484239103},
+      "minimum": {"local_t_s": 1.500000000000001, "minimum_model_gap_m": -0.09649173236117684},
+      "gap_at_native_rejection_m": -0.0014579157484239103
+    }
+  ],
+  "conclusion": "半速分支在0.97秒先触发原生拒绝；常速分支在1.97秒也会碰撞。因此本次不是仅半速检查造成拒绝。",
+  "scope": "Independent arithmetic on recorded accepted polynomial, all native fixed-arm spheres and the same frozen CV, using the native requested epoch and hard sample sequence. Dynamic model component only; does not replay native static/self/wheel/latest gates, actual execution or physical truth. Invalid future samples are omitted, never certified safe."
+}

@@ -1,0 +1,46 @@
+{
+  "created_utc": "2026-11-01T04:11:11.937953+00:00",
+  "core_problem": "slow-layer cost stopping with dynamic infeasibility delays a usable reference for moving MPPI",
+  "hypothesis": "existing native checks can transfer the accepted colliding iterate to feasibility repair earlier, leaving meaningful time under the same deadline",
+  "comparison": "A late repair enabled / B early repair enabled; same repair factor10 and original 1.2s deadline",
+  "experiment": [
+    "one complete saved-input old/new continuation pair within .831149821s remaining",
+    "one unpaused headon_A/headon_B closed-loop pair"
+  ],
+  "no_fixed_time_split": true,
+  "no_additional_budget": true,
+  "repair_attempt_limit": 1,
+  "original_budget_s": 1.2,
+  "physical_spheres": 67,
+  "prediction_window_s": 3.0,
+  "seed": 11,
+  "goal": [
+    6.0,
+    0.0
+  ],
+  "duration_s": 55.0,
+  "unchanged": [
+    "fixed-window dynamic objective",
+    "native hard checks",
+    "MPPI algorithm",
+    "frontend",
+    "wheel limits",
+    "delivery feedback weight1",
+    "repair factor10"
+  ],
+  "early_collision_is_not_proof_normal_phase_would_fail": true,
+  "half_speed_contract_necessity_not_demonstrated": true,
+  "online_seed_does_not_ensure_identical_asynchronous_inputs": true,
+  "primary_metrics": [
+    "same-input native pass within deadline",
+    "repair trigger and elapsed budget",
+    "first request to validated new-reference control",
+    "failed requests",
+    "adoption residual and following stops",
+    "actual path and physical gap"
+  ],
+  "production_modified": false,
+  "hardware": false,
+  "gazebo": false,
+  "github_upload_remains_paused": true
+}

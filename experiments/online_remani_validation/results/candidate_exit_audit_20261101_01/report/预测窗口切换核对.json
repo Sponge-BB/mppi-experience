@@ -1,0 +1,59 @@
+{
+  "schema": "prediction_window_boundary_check_v1",
+  "source_trial": "headon_capture",
+  "request_id": 2,
+  "new_ros_runs": 0,
+  "planner_recompiled": false,
+  "code_ownership": "Experimental time-indexed dynamic objective introduced in this workspace; not the original REMANI optimization logic and not a CPU finding",
+  "source_locations": {
+    "experimental_branch": "builds/candidate_exit_audit_20261101_01/source/coverage_collision.hpp:135",
+    "prediction_validity_hard_switch": "builds/candidate_exit_audit_20261101_01/source/coverage_collision.hpp:142",
+    "invalid_branch_skipped_without_full_coverage_fallback": "builds/candidate_exit_audit_20261101_01/source/coverage_collision.hpp:181",
+    "original_baseline_base_static_edt": "REMANI-Planner/remani_planner/traj_opt/src/poly_traj_optimizer.cpp:868",
+    "original_baseline_arm_static_edt": "REMANI-Planner/remani_planner/traj_opt/src/poly_traj_optimizer.cpp:931"
+  },
+  "quadrature_K": 16,
+  "pieces": 8,
+  "execution_time_multipliers": [1, 2],
+  "checked_branch_samples": 272,
+  "validity_mask_changes": 1,
+  "maximum_prediction_s": 3,
+  "validity_tolerance_s": 0.000001,
+  "critical_branch": {
+    "piece_zero_based": 0,
+    "sample_index_zero_based": 10,
+    "execution_time_multiplier": 2,
+    "accepted_T_s": 2.5140705613816574,
+    "last_trial_T_s": 2.5126510663999846,
+    "accepted_raw_dt_s": 3.0017753687271806,
+    "last_trial_raw_dt_s": 3.0000009999999975,
+    "accepted_valid": false,
+    "last_trial_valid": true,
+    "calculation_order": "s=0; add T/K ten times; raw_dt=(requested_epoch+2*s)-source_stamp; valid if raw_dt<=max_prediction+1e-6"
+  },
+  "accepted_total_cost": 173.23938787215073,
+  "last_trial_total_cost": 229.75110317968117,
+  "total_cost_delta": 56.51171530753044,
+  "x_delta_l2": 0.003518987350641646,
+  "accepted_gradient_dot_delta": -0.4635157108263184,
+  "last_trial_gradient_dot_delta": -0.5144898796822036,
+  "accepted_gradient_l2": 539.93457435249,
+  "first_virtual_time_gradient": 521.1453255918607,
+  "first_virtual_time_gradient_squared_fraction": 0.9316127361943672,
+  "all_virtual_time_gradient_squared_fraction": 0.9333391719759746,
+  "approximate_reintroduced_sample_penalty_integral": 57.02690570518908,
+  "approximation_scope": "Fixed accepted polynomial sample geometry and recorded body/CV; native cubic environmental weights and soft radii; no exact last-trial MINCO or full static ESDF objective reconstruction",
+  "confirmed": [
+    "Exactly one quadrature branch validity changes between recorded accepted and final line-search trial",
+    "That half-speed sample crosses the maximum CV prediction validity boundary",
+    "Current source directly skips or restores dynamic penalty at that boundary",
+    "Recorded total objective increases despite a negative local directional prediction"
+  ],
+  "not_confirmed": [
+    "Full original 64-trial line-search history was not recorded",
+    "All final-trial objective components have not been exactly recomputed",
+    "No claim that all objective gradients are incorrect",
+    "No repair benefit or overall delivery-rate gain has been measured"
+  ],
+  "next_priority": "Use this complete frozen input to check and repair prediction-window objective continuity, then verify accepted descent and native feasibility with the original weights"
+}

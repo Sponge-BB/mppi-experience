@@ -1,0 +1,59 @@
+{
+  "schema": "delivery_window_duplicate_publication_key_audit_v1",
+  "trial": "headon_B",
+  "scope": "Read-only association of existing compact cycle and retained execution-validation records; no controller or solver replay.",
+  "original_summary_unique_matches": 507,
+  "validated_publications": 509,
+  "original_ambiguous_cycles": [243, 244],
+  "original_key_fields": ["command_header_ros_time minus 1000 equals execution.t", "guide_revision", "reason", "command_v", "command_w"],
+  "shared_original_key": {
+    "command_header_ros_time": 1012.212678364,
+    "execution_t": 12.212678363999999,
+    "guide_revision": 1,
+    "reason": "ok",
+    "command": [0.24394999999999997, 0.0]
+  },
+  "original_key_cycle_count": 2,
+  "original_key_execution_count": 2,
+  "added_existing_field_for_exact_disambiguation": "validation_attempts; compare the complete recorded array including candidate, code, wall_ms and thread_cpu_ms",
+  "records": [
+    {
+      "cycle_id": 243,
+      "unique_extended_key_matches": 1,
+      "execution_jsonl_line_1based": 243,
+      "validation_attempts": [{"candidate": 0, "code": 0, "wall_ms": 7.8319640015251935, "thread_cpu_ms": 7.3760639999997935}],
+      "odom_stamp": 1012.192072752,
+      "validation_invoked": true,
+      "validation_code": 0,
+      "validated_command_published": true,
+      "retained_validation": [1.0, 0.65, 0.65, 281.0, 0.0, 1.0],
+      "rollout_length": 281,
+      "selected_approved": true,
+      "brake_approved": true,
+      "command_lease_s": 0.25
+    },
+    {
+      "cycle_id": 244,
+      "unique_extended_key_matches": 1,
+      "execution_jsonl_line_1based": 244,
+      "validation_attempts": [{"candidate": 0, "code": 0, "wall_ms": 7.752057001198409, "thread_cpu_ms": 7.36102400000016}],
+      "odom_stamp": 1012.212678364,
+      "validation_invoked": true,
+      "validation_code": 0,
+      "validated_command_published": true,
+      "retained_validation": [1.0, 0.65, 0.65, 281.0, 0.0, 1.0],
+      "rollout_length": 281,
+      "selected_approved": true,
+      "brake_approved": true,
+      "command_lease_s": 0.25
+    }
+  ],
+  "result": "Both formerly ambiguous publications have one exact retained execution record once their existing validation_attempts are included. Both selected-control and brake checks passed. This is a repeated-key reporting ambiguity, not an observed invalid-control publication.",
+  "qualification": "Approval concerns the recorded selected-control rollout and command-lease braking model. It does not guarantee safety after the checked horizon or replace physical sampled-contact evidence.",
+  "original_input_sha256": {
+    "headon_B/state_mppi_cycles.jsonl": "5dc051f3af96706bb340850173037d965870cefa403e11bf9fb583c9855e4bae",
+    "headon_B/execution_rollouts.jsonl.gz": "da756f6b70f243c3a14f0a5785cc58357dd2e27616ccc3484bcbc452a619dbf4",
+    "headon_B/native_collision_cycles.jsonl": "69f4b461cf27d49107ef7ddf79bd84b5f7027503f9c71aef4a02d25f516e93fd"
+  },
+  "execution_gzip_sha256_semantics": "SHA256 of original compressed bytes; line numbers refer to decompressed JSONL content."
+}

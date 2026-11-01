@@ -1,0 +1,2785 @@
+{
+  "schema": "feasible_quality_partial_cost_v1",
+  "source_sha256": {
+    "experiments/online_remani_validation/inspect_feasible_quality.py": "118bc4145d078e00a74430a1ce3c27ae843f0b0244a912f4eabd9d3fc0233583",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/prefix_handoff_20261101_01/headon_B/static_width_trace.jsonl": "40732d650d35038897f4aeb6081c94f331300cf2a695e774e112da78d5e03f7f",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/prefix_handoff_20261101_01/headon_B/parameters.yaml": "348d435f2ed6631bc496e1c651f6bb96c60502882d7c301fc5d28d9b99c588b7",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/prefix_handoff_20261101_01/headon_B/temporal_collision.jsonl": "b8d9aac3db559816cdb9abd08f91ab36d0bdac9313bdd3691a5d59c5a7dda73f",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/prefix_handoff_20261101_01/headon_B/effective_real_params.json": "52dc01c26e133e9388cd4741c08df26737edce2997528c1d0ef2c5d435f5ee82",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/prefix_handoff_20261101_01/headon_B/manifest.json": "e26ee390466c018939a8edb247805612194d186aaaec90580dd3e6772e1742e2",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/prefix_handoff_20261101_01/headon_B/dual_timeline.jsonl": "50b67c70e9a93ecde25e4604d0a68a1c9fb1c50300f1dddb77a1d7e693bf387e",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/prefix_handoff_20261101_01/headon_B/failure_trace.jsonl": "bfb68048aa5e16d9e4157d1b3ea7a8cd516446f714f1b23b04a8b7436b65a0c9",
+    "/home/l/remani_ws/experiments/online_remani_validation/backend_base_feasibility_breakdown.py": "9626f40880455a6092540021b037098484cf0276187e5515a46c22e1451e3bd8",
+    "/home/l/remani_ws/experiments/online_remani_validation/audit_backend_kinematics.py": "d004f9126a0df6e947846fed40ff0752b50883dd26e2eee812563eee64e97e7f"
+  },
+  "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/prefix_handoff_20261101_01/headon_B",
+  "request_id": 2,
+  "parameters": {
+    "loaded": {
+      "/remani_planner_node/mm/mobile_base_wheel_base": 0.37,
+      "/remani_planner_node/mm/mobile_base_wheel_radius": 0.07,
+      "/remani_planner_node/mm/mobile_base_max_wheel_omega": 4.1,
+      "/remani_planner_node/mm/mobile_base_max_wheel_alpha": 4.25,
+      "/remani_planner_node/mm/mobile_base_non_singul_vel": 0.05,
+      "/remani_planner_node/optimization/weight_base_feasibility": 100.0,
+      "/remani_planner_node/optimization/weight_time": 1.0,
+      "/remani_planner_node/optimization/constrain_points_perPiece": 16,
+      "/remani_planner_node/optimization/dense_sample_resolution": 16
+    },
+    "baseline": {
+      "/remani_planner_node/mm/mobile_base_wheel_base": 0.37,
+      "/remani_planner_node/mm/mobile_base_wheel_radius": 0.07,
+      "/remani_planner_node/mm/mobile_base_max_wheel_omega": 3.28,
+      "/remani_planner_node/mm/mobile_base_max_wheel_alpha": 4.25,
+      "/remani_planner_node/mm/mobile_base_non_singul_vel": 0.05,
+      "/remani_planner_node/optimization/weight_base_feasibility": 100.0,
+      "/remani_planner_node/optimization/weight_time": 1.0,
+      "/remani_planner_node/optimization/constrain_points_perPiece": 16,
+      "/remani_planner_node/optimization/dense_sample_resolution": 16
+    },
+    "manifest_overrides": {
+      "/remani_planner_node/mm/mobile_base_max_wheel_omega": 4.1
+    },
+    "interpretation": "parameters.yaml is the loaded trial configuration; effective_real_params is the original deployment baseline, with recorded trial overrides applied."
+  },
+  "source_contract": {
+    "attested_sources": {
+      "build": "/home/l/remani_ws/experiments/online_remani_validation/builds/fast_refresh_feedback_20261101_01",
+      "build_manifest_sha256": "2b8c5d6c7522e5bcb5db84bababa19ee35a53f1269d2b99bb40da1c7e8a1dad4",
+      "sources_sha256": {
+        "poly_traj_optimizer.cpp": "4879ff3f49bbd3e1398411f818482e82d3ffd2714893b4e3eb2ef5c4e011809a",
+        "coupling_collision.hpp": "8136744e68d19ce6c47c8dce41e7aab0ae9085645a42fbf885681ff3138eb126",
+        "shared_collision.hpp": "76b3bed1fc7716ddb0b182c5ee6882ffff29b9f84586fede71fab6f024bb5282",
+        "coupling_geometry_ros.hpp": "e750a24ec16756d56a3309d69060cc653efeeac2fc830e3e19467600d6e2bf6a",
+        "coupling_native_integration.hpp": "172d390ae082d63a8493ec532c2ca90b609f093cb21adf5115bceedb3ca968de",
+        "poly_traj_utils.hpp": "534aefad32addb5aa9c300bbdeac50bdf8354635ab5deecbec8f0b8c6e60f117",
+        "root_finder.hpp": "4794908ec18e8af75a0dd9f1b393561cb5c4a73eb57f78b6566556c460211326",
+        "mm_config.hpp": "1521be3b641e7140a8608827154e38b07f817edf38f395f37199ca60abb218bd"
+      }
+    },
+    "functions_sha256": {
+      "feasibilityGradCostCar": "6175652c8818614bc34b1e90345e07183f5442070923ac90ab741856e4a80091",
+      "addPVAJGradCost2CT": "3aa426c95ce54913dcedbc8a5cd76521598fafad20a202a650da666a097e0da5",
+      "smoothedL1": "34973d6373c451c34ed2fdcb150fa1b5538883edaba72d283adb31a1ad74b8d3",
+      "smoothedLog": "67804a498dadcce1c9ed7c7b31ecd74273a1ed2a7db9f7b489609a0f3860dffd"
+    },
+    "branch_formula_guards": {
+      "dense_min_speed": [
+        "pen = non_singul_v_ * non_singul_v_ - vel.squaredNorm();",
+        "cost_mm_feasible += wei_feas_ * 1e6 * f;"
+      ],
+      "linear_speed": [
+        "pen = vel.squaredNorm() - max_vel_ * max_vel_;"
+      ],
+      "wheel_speed_left": [
+        "double wheel_omega_left = (2.0 * singul_container_[trajid] * v_norm - mobile_base_wheel_base_ * omega) / (2.0 * mobile_base_wheel_radius_);",
+        "pen = wheel_omega_left * wheel_omega_left - max_wheel_omega_ * max_wheel_omega_;"
+      ],
+      "wheel_speed_right": [
+        "double wheel_omega_right = (2.0 * singul_container_[trajid] * v_norm + mobile_base_wheel_base_ * omega) / (2 * mobile_base_wheel_radius_);",
+        "pen = wheel_omega_right * wheel_omega_right - max_wheel_omega_ * max_wheel_omega_;"
+      ],
+      "wheel_accel_left": [
+        "double wheel_alpha_left = (2.0 * singul_container_[trajid] * aTv / v_norm - mobile_base_wheel_base_ * alpha) / (2.0 * mobile_base_wheel_radius_);",
+        "pen = wheel_alpha_left * wheel_alpha_left - max_wheel_alpha_ * max_wheel_alpha_;"
+      ],
+      "wheel_accel_right": [
+        "double wheel_alpha_right = (2.0 * singul_container_[trajid] * aTv / v_norm + mobile_base_wheel_base_ * alpha) / (2.0 * mobile_base_wheel_radius_);",
+        "pen =  wheel_alpha_right * wheel_alpha_right - max_wheel_alpha_ * max_wheel_alpha_;"
+      ],
+      "native_kinematics": [
+        "if (vTv < 1e-8) { vTv = 1e-8; }",
+        "if (v_norm < 1e-4) { v_norm = 1e-4; }",
+        "const double aTv = acc.transpose() * vel;",
+        "const double aTBv = acc.transpose() * B_h_ * vel;",
+        "const double jTBv = jer.transpose() * B_h_ * vel;",
+        "double omega = aTBv * vTv_inv;",
+        "double alpha = jTBv * vTv_inv - 2.0 * aTBv * aTv * vTv_inv2;"
+      ]
+    },
+    "sampling_guards": [
+      "step = SnapOpt_container_[trajid].get_T1()(i) / K;",
+      "omg = (j == 0 || j == K) ? 0.5 : 1.0;",
+      "costs(3) += omg * step * cost_mm_feasible;",
+      "double min_dense_vel = 0.1;",
+      "double pen_min_vel = min_dense_vel * min_dense_vel - vel.head(2).squaredNorm();",
+      "if(smoothedLog(pen_min_vel, 0.001, pen_min_vel_log, grad_pen_min_vel_log))",
+      "double special_step = step / dense_sample_resolution_;",
+      "disQuantity = dense_sample_resolution_ / 2;",
+      "special_s1 = special_s1 - step / 2.0;",
+      "disQuantity = dense_sample_resolution_;",
+      "for(int l = 0; l <= disQuantity; l++)",
+      "special_s1 += special_step;",
+      "dense_omg = (l == 0 || l == disQuantity) ? 0.5 : 1.0;",
+      "double cost_dense_log = pen_min_vel_log * cost_mm_feasible;",
+      "costs(3) += dense_omg * special_step * cost_dense_log;",
+      "s1 += step;"
+    ],
+    "native_3d_replayed": false,
+    "scope": "cost-only six subbranches of original costs(3); not a hard feasibility verdict"
+  },
+  "quadrature": {
+    "primary_intervals_per_piece": 16,
+    "dense_resolution": 16
+  },
+  "curves": [
+    {
+      "stage": "minco_before_optimizer",
+      "capture_sim": 1015.60216199,
+      "duration_s": 17.466831176122753,
+      "length_m": 4.68251144177105,
+      "native_smooth_snap_cost": 36.33127965795141,
+      "native_time_cost": 17.466831176122753,
+      "native_base_feasibility_costs": {
+        "dense_min_speed": 2.0990485908534157e-38,
+        "linear_speed": 28.84812653911419,
+        "wheel_speed_left": 9392.06920384655,
+        "wheel_speed_right": 6013.60067277525,
+        "wheel_accel_left": 7229.830245476721,
+        "wheel_accel_right": 9566.183910149259
+      },
+      "native_base_feasibility_sum": 32230.532158786893,
+      "native_grid": {
+        "samples": 1741,
+        "peaks": {
+          "left_speed": {
+            "value": 7.4711512437338605,
+            "abs_value": 7.4711512437338605,
+            "ratio_to_final_limit": 1.7354590577779003,
+            "squared_native_penalty": 37.28507590674601,
+            "t": 2.99999999999998,
+            "part": 0,
+            "piece": 2,
+            "local_t": 1.9999999999999791
+          },
+          "right_speed": {
+            "value": 6.77119766374172,
+            "abs_value": 6.77119766374172,
+            "ratio_to_final_limit": 1.572868214574151,
+            "squared_native_penalty": 27.31609280146133,
+            "t": 2.9199999999999817,
+            "part": 0,
+            "piece": 2,
+            "local_t": 1.9199999999999808
+          },
+          "left_acceleration": {
+            "value": -13.23094083354254,
+            "abs_value": 13.23094083354254,
+            "ratio_to_final_limit": 2.9649167133988885,
+            "squared_native_penalty": 155.14388909070337,
+            "t": 0.11999999999999998,
+            "part": 0,
+            "piece": 0,
+            "local_t": 0.11999999999999998
+          },
+          "right_acceleration": {
+            "value": 14.106889694303439,
+            "abs_value": 14.106889694303439,
+            "ratio_to_final_limit": 3.1612077746338234,
+            "squared_native_penalty": 179.09043059724456,
+            "t": 0.12999999999999998,
+            "part": 0,
+            "piece": 0,
+            "local_t": 0.12999999999999998
+          }
+        },
+        "violating_samples": {
+          "left_speed": 794,
+          "right_speed": 569,
+          "left_acceleration": 211,
+          "right_acceleration": 306
+        },
+        "first_violation": {
+          "left_speed": {
+            "value": 4.331529601036173,
+            "abs_value": 4.331529601036173,
+            "ratio_to_final_limit": 1.006162508951492,
+            "squared_native_penalty": 0.22912368465258126,
+            "t": 2.0400000000000005,
+            "part": 0,
+            "piece": 2,
+            "local_t": 1.0399999999999996
+          },
+          "right_speed": {
+            "value": 4.3756912186552706,
+            "abs_value": 4.3756912186552706,
+            "ratio_to_final_limit": 1.0164207244263115,
+            "squared_native_penalty": 0.6136486410168445,
+            "t": 0.16,
+            "part": 0,
+            "piece": 0,
+            "local_t": 0.16
+          },
+          "left_acceleration": {
+            "value": -9.187331996887519,
+            "abs_value": 9.187331996887519,
+            "ratio_to_final_limit": 2.0587858816554663,
+            "squared_native_penalty": 64.4931629710332,
+            "t": 0.05,
+            "part": 0,
+            "piece": 0,
+            "local_t": 0.05
+          },
+          "right_acceleration": {
+            "value": 9.396175387225012,
+            "abs_value": 9.396175387225012,
+            "ratio_to_final_limit": 2.1055855209467813,
+            "squared_native_penalty": 68.37420565749312,
+            "t": 0.05,
+            "part": 0,
+            "piece": 0,
+            "local_t": 0.05
+          }
+        },
+        "all_wheels_sampled_pass": false,
+        "continuous_extrema_proven": false,
+        "does_not_early_exit_at_native_first_failure": true
+      },
+      "pieces": [
+        {
+          "block": 0,
+          "piece_index_1based": 1,
+          "global_begin_s": 0.0,
+          "global_end_s": 0.6000000000000004,
+          "duration_s": 0.6000000000000004,
+          "length_m": 0.11871773417367502,
+          "average_geometric_speed_mps": 0.19786289028945822,
+          "start_xy": [
+            1.7684803162593434,
+            0.0034284926945190863
+          ],
+          "end_xy": [
+            1.88090609565156,
+            0.03739463897436223
+          ],
+          "wheel_native_grid": {
+            "samples": 56,
+            "peaks": {
+              "left_speed": {
+                "value": 2.433046674618666,
+                "abs_value": 2.433046674618666,
+                "ratio_to_final_limit": 0.5651676363806425,
+                "squared_native_penalty": -12.613308879127054,
+                "t": 0.05,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.05
+              },
+              "right_speed": {
+                "value": 5.6898566618940425,
+                "abs_value": 5.6898566618940425,
+                "ratio_to_final_limit": 1.3216856357477451,
+                "squared_native_penalty": 13.841443832900012,
+                "t": 0.35000000000000014,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.35000000000000014
+              },
+              "left_acceleration": {
+                "value": -13.23094083354254,
+                "abs_value": 13.23094083354254,
+                "ratio_to_final_limit": 2.9649167133988885,
+                "squared_native_penalty": 155.14388909070337,
+                "t": 0.11999999999999998,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.11999999999999998
+              },
+              "right_acceleration": {
+                "value": 14.106889694303439,
+                "abs_value": 14.106889694303439,
+                "ratio_to_final_limit": 3.1612077746338234,
+                "squared_native_penalty": 179.09043059724456,
+                "t": 0.12999999999999998,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.12999999999999998
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 45,
+              "left_acceleration": 22,
+              "right_acceleration": 37
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": {
+                "value": 4.3756912186552706,
+                "abs_value": 4.3756912186552706,
+                "ratio_to_final_limit": 1.0164207244263115,
+                "squared_native_penalty": 0.6136486410168445,
+                "t": 0.16,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.16
+              },
+              "left_acceleration": {
+                "value": -9.187331996887519,
+                "abs_value": 9.187331996887519,
+                "ratio_to_final_limit": 2.0587858816554663,
+                "squared_native_penalty": 64.4931629710332,
+                "t": 0.05,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.05
+              },
+              "right_acceleration": {
+                "value": 9.396175387225012,
+                "abs_value": 9.396175387225012,
+                "ratio_to_final_limit": 2.1055855209467813,
+                "squared_native_penalty": 68.37420565749312,
+                "t": 0.05,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.05
+              }
+            },
+            "all_wheels_sampled_pass": false,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 0.05,
+            "local_t_s": 0.05,
+            "speed_mps": 0.18827967857118294
+          },
+          "native_smooth_snap_cost": 26.15618150491383,
+          "native_time_cost": 0.6000000000000004,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 496.3193744259327,
+            "wheel_accel_left": 2198.8014436549206,
+            "wheel_accel_right": 2859.0128426512215
+          },
+          "native_base_feasibility_sum": 5554.133660732075,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 2,
+          "global_begin_s": 0.6000000000000004,
+          "global_end_s": 1.0000000000000009,
+          "duration_s": 0.40000000000000047,
+          "length_m": 0.06346082925105902,
+          "average_geometric_speed_mps": 0.15865207312764737,
+          "start_xy": [
+            1.88090609565156,
+            0.037394638974362224
+          ],
+          "end_xy": [
+            1.9308382474755688,
+            0.07631862664682525
+          ],
+          "wheel_native_grid": {
+            "samples": 40,
+            "peaks": {
+              "left_speed": {
+                "value": 1.0109048269328527,
+                "abs_value": 1.0109048269328527,
+                "ratio_to_final_limit": 0.23482109800995418,
+                "squared_native_penalty": -17.51109643088386,
+                "t": 0.6600000000000004,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.05999999999999994
+              },
+              "right_speed": {
+                "value": 4.661457005979553,
+                "abs_value": 4.661457005979553,
+                "ratio_to_final_limit": 1.0828006982530902,
+                "squared_native_penalty": 3.1961564185958586,
+                "t": 0.6100000000000003,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.009999999999999898
+              },
+              "left_acceleration": {
+                "value": -5.489269280040676,
+                "abs_value": 5.489269280040676,
+                "ratio_to_final_limit": 1.2300883540707397,
+                "squared_native_penalty": 10.218170978798284,
+                "t": 0.9500000000000006,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.3500000000000002
+              },
+              "right_acceleration": {
+                "value": -5.233305424046918,
+                "abs_value": 5.233305424046918,
+                "ratio_to_final_limit": 1.1727295067892252,
+                "squared_native_penalty": 7.4735794113588945,
+                "t": 0.6100000000000003,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.009999999999999898
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 8,
+              "left_acceleration": 16,
+              "right_acceleration": 11
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": {
+                "value": 4.661457005979553,
+                "abs_value": 4.661457005979553,
+                "ratio_to_final_limit": 1.0828006982530902,
+                "squared_native_penalty": 3.1961564185958586,
+                "t": 0.6100000000000003,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.009999999999999898
+              },
+              "left_acceleration": {
+                "value": -4.497071826493602,
+                "abs_value": 4.497071826493602,
+                "ratio_to_final_limit": 1.0077471880097706,
+                "squared_native_penalty": 0.3097487626424993,
+                "t": 0.8500000000000005,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.2500000000000001
+              },
+              "right_acceleration": {
+                "value": -5.233305424046918,
+                "abs_value": 5.233305424046918,
+                "ratio_to_final_limit": 1.1727295067892252,
+                "squared_native_penalty": 7.4735794113588945,
+                "t": 0.6100000000000003,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.009999999999999898
+              }
+            },
+            "all_wheels_sampled_pass": false,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 1.0000000000000007,
+            "local_t_s": 0.40000000000000024,
+            "speed_mps": 0.11308538172288977
+          },
+          "native_smooth_snap_cost": 5.659615689333169,
+          "native_time_cost": 0.40000000000000047,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 32.25858100807634,
+            "wheel_accel_left": 140.26440853911194,
+            "wheel_accel_right": 72.54210396148964
+          },
+          "native_base_feasibility_sum": 245.06509350867793,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 3,
+          "global_begin_s": 1.0000000000000009,
+          "global_end_s": 3.0583538970153445,
+          "duration_s": 2.0583538970153437,
+          "length_m": 0.5690502903590406,
+          "average_geometric_speed_mps": 0.2764589175768926,
+          "start_xy": [
+            1.9308382474755685,
+            0.07631862664682522
+          ],
+          "end_xy": [
+            2.328262941679984,
+            0.4812481843586976
+          ],
+          "wheel_native_grid": {
+            "samples": 205,
+            "peaks": {
+              "left_speed": {
+                "value": 7.4711512437338605,
+                "abs_value": 7.4711512437338605,
+                "ratio_to_final_limit": 1.7354590577779003,
+                "squared_native_penalty": 37.28507590674601,
+                "t": 2.99999999999998,
+                "part": 0,
+                "piece": 2,
+                "local_t": 1.9999999999999791
+              },
+              "right_speed": {
+                "value": 6.77119766374172,
+                "abs_value": 6.77119766374172,
+                "ratio_to_final_limit": 1.572868214574151,
+                "squared_native_penalty": 27.31609280146133,
+                "t": 2.9199999999999817,
+                "part": 0,
+                "piece": 2,
+                "local_t": 1.9199999999999808
+              },
+              "left_acceleration": {
+                "value": 10.934277272756914,
+                "abs_value": 10.934277272756914,
+                "ratio_to_final_limit": 2.4502582123825016,
+                "squared_native_penalty": 99.64451322752838,
+                "t": 1.350000000000001,
+                "part": 0,
+                "piece": 2,
+                "local_t": 0.3500000000000001
+              },
+              "right_acceleration": {
+                "value": -9.953182140530382,
+                "abs_value": 9.953182140530382,
+                "ratio_to_final_limit": 2.2304049614633907,
+                "squared_native_penalty": 79.15192847257296,
+                "t": 1.320000000000001,
+                "part": 0,
+                "piece": 2,
+                "local_t": 0.32000000000000006
+              }
+            },
+            "violating_samples": {
+              "left_speed": 102,
+              "right_speed": 86,
+              "left_acceleration": 84,
+              "right_acceleration": 109
+            },
+            "first_violation": {
+              "left_speed": {
+                "value": 4.331529601036173,
+                "abs_value": 4.331529601036173,
+                "ratio_to_final_limit": 1.006162508951492,
+                "squared_native_penalty": 0.22912368465258126,
+                "t": 2.0400000000000005,
+                "part": 0,
+                "piece": 2,
+                "local_t": 1.0399999999999996
+              },
+              "right_speed": {
+                "value": 4.339620636848496,
+                "abs_value": 4.339620636848496,
+                "ratio_to_final_limit": 1.008041959778977,
+                "squared_native_penalty": 0.29928227176134214,
+                "t": 2.199999999999997,
+                "part": 0,
+                "piece": 2,
+                "local_t": 1.1999999999999962
+              },
+              "left_acceleration": {
+                "value": -5.095117183197815,
+                "abs_value": 5.095117183197815,
+                "ratio_to_final_limit": 1.1417629542179977,
+                "squared_native_penalty": 6.046312860517638,
+                "t": 1.0100000000000007,
+                "part": 0,
+                "piece": 2,
+                "local_t": 0.009999999999999787
+              },
+              "right_acceleration": {
+                "value": -4.848349007774976,
+                "abs_value": 4.848349007774976,
+                "ratio_to_final_limit": 1.0864647636470535,
+                "squared_native_penalty": 3.5925818511925947,
+                "t": 1.1700000000000008,
+                "part": 0,
+                "piece": 2,
+                "local_t": 0.16999999999999993
+              }
+            },
+            "all_wheels_sampled_pass": false,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 1.290000000000001,
+            "local_t_s": 0.29000000000000004,
+            "speed_mps": 0.08061109057954047
+          },
+          "native_smooth_snap_cost": 2.5959309677248115,
+          "native_time_cost": 2.0583538970153437,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 10.216287237135095,
+            "wheel_speed_left": 2558.0812381925143,
+            "wheel_speed_right": 1753.4641829223597,
+            "wheel_accel_left": 4276.059969301086,
+            "wheel_accel_right": 4360.059453971982
+          },
+          "native_base_feasibility_sum": 12957.881131625078,
+          "primary_samples": 17,
+          "dense_samples": 68
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 4,
+          "global_begin_s": 3.0583538970153445,
+          "global_end_s": 5.116707794030688,
+          "duration_s": 2.0583538970153437,
+          "length_m": 0.6044643338353518,
+          "average_geometric_speed_mps": 0.29366394899916765,
+          "start_xy": [
+            2.3282629416799825,
+            0.4812481843586913
+          ],
+          "end_xy": [
+            2.8589806813127616,
+            0.6897512272567585
+          ],
+          "wheel_native_grid": {
+            "samples": 206,
+            "peaks": {
+              "left_speed": {
+                "value": 7.455459146896136,
+                "abs_value": 7.455459146896136,
+                "ratio_to_final_limit": 1.7318139714044454,
+                "squared_native_penalty": 37.050846091037265,
+                "t": 3.0599999999999787,
+                "part": 0,
+                "piece": 3,
+                "local_t": 0.0016461029846341901
+              },
+              "right_speed": {
+                "value": 6.671758642005004,
+                "abs_value": 6.671758642005004,
+                "ratio_to_final_limit": 1.5497697193972138,
+                "squared_native_penalty": 25.97933837716846,
+                "t": 3.0599999999999787,
+                "part": 0,
+                "piece": 3,
+                "local_t": 0.0016461029846341901
+              },
+              "left_acceleration": {
+                "value": -4.977199435171713,
+                "abs_value": 4.977199435171713,
+                "ratio_to_final_limit": 1.1153388090020644,
+                "squared_native_penalty": 4.858607967473613,
+                "t": 4.7799999999999425,
+                "part": 0,
+                "piece": 3,
+                "local_t": 1.721646102984598
+              },
+              "right_acceleration": {
+                "value": -6.525505270015001,
+                "abs_value": 6.525505270015001,
+                "ratio_to_final_limit": 1.4622980997232495,
+                "squared_native_penalty": 22.668312778993556,
+                "t": 3.93999999999996,
+                "part": 0,
+                "piece": 3,
+                "local_t": 0.8816461029846154
+              }
+            },
+            "violating_samples": {
+              "left_speed": 165,
+              "right_speed": 62,
+              "left_acceleration": 29,
+              "right_acceleration": 123
+            },
+            "first_violation": {
+              "left_speed": {
+                "value": 7.455459146896136,
+                "abs_value": 7.455459146896136,
+                "ratio_to_final_limit": 1.7318139714044454,
+                "squared_native_penalty": 37.050846091037265,
+                "t": 3.0599999999999787,
+                "part": 0,
+                "piece": 3,
+                "local_t": 0.0016461029846341901
+              },
+              "right_speed": {
+                "value": 6.671758642005004,
+                "abs_value": 6.671758642005004,
+                "ratio_to_final_limit": 1.5497697193972138,
+                "squared_native_penalty": 25.97933837716846,
+                "t": 3.0599999999999787,
+                "part": 0,
+                "piece": 3,
+                "local_t": 0.0016461029846341901
+              },
+              "left_acceleration": {
+                "value": -4.497143715576045,
+                "abs_value": 4.497143715576045,
+                "ratio_to_final_limit": 1.0077632976080773,
+                "squared_native_penalty": 0.3103953485451143,
+                "t": 4.649999999999945,
+                "part": 0,
+                "piece": 3,
+                "local_t": 1.5916461029846007
+              },
+              "right_acceleration": {
+                "value": -4.521388020738212,
+                "abs_value": 4.521388020738212,
+                "ratio_to_final_limit": 1.0131961951234087,
+                "squared_native_penalty": 0.5290433840750062,
+                "t": 3.4399999999999706,
+                "part": 0,
+                "piece": 3,
+                "local_t": 0.3816461029846261
+              }
+            },
+            "all_wheels_sampled_pass": false,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 4.749999999999943,
+            "local_t_s": 1.6916461029845986,
+            "speed_mps": 0.1794704933703265
+          },
+          "native_smooth_snap_cost": 0.7089084267559809,
+          "native_time_cost": 2.0583538970153437,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 7.673978463657487,
+            "wheel_speed_left": 3374.865198490194,
+            "wheel_speed_right": 1004.2490410425585,
+            "wheel_accel_left": 145.40909100001556,
+            "wheel_accel_right": 1716.3304380107184
+          },
+          "native_base_feasibility_sum": 6248.527747007144,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 5,
+          "global_begin_s": 5.116707794030688,
+          "global_end_s": 7.175061691046032,
+          "duration_s": 2.0583538970153437,
+          "length_m": 0.5961346798778422,
+          "average_geometric_speed_mps": 0.2896171939831387,
+          "start_xy": [
+            2.8589806813127714,
+            0.6897512272567639
+          ],
+          "end_xy": [
+            3.449692981287703,
+            0.6832961300370546
+          ],
+          "wheel_native_grid": {
+            "samples": 206,
+            "peaks": {
+              "left_speed": {
+                "value": 5.178812351658297,
+                "abs_value": 5.178812351658297,
+                "ratio_to_final_limit": 1.2029761560181875,
+                "squared_native_penalty": 8.287072373688538,
+                "t": 7.169999999999892,
+                "part": 0,
+                "piece": 4,
+                "local_t": 2.053292205969204
+              },
+              "right_speed": {
+                "value": 5.120865753422599,
+                "abs_value": 5.120865753422599,
+                "ratio_to_final_limit": 1.1895158544535656,
+                "squared_native_penalty": 7.690241064576401,
+                "t": 6.589999999999904,
+                "part": 0,
+                "piece": 4,
+                "local_t": 1.4732922059692157
+              },
+              "left_acceleration": {
+                "value": -2.8922898021084786,
+                "abs_value": 2.8922898021084786,
+                "ratio_to_final_limit": 0.648132168539715,
+                "squared_native_penalty": -11.548565950619297,
+                "t": 5.119999999999935,
+                "part": 0,
+                "piece": 4,
+                "local_t": 0.003292205969247064
+              },
+              "right_acceleration": {
+                "value": 4.618227270048859,
+                "abs_value": 4.618227270048859,
+                "ratio_to_final_limit": 1.0348968672378394,
+                "squared_native_penalty": 1.414116867822937,
+                "t": 5.119999999999935,
+                "part": 0,
+                "piece": 4,
+                "local_t": 0.003292205969247064
+              }
+            },
+            "violating_samples": {
+              "left_speed": 75,
+              "right_speed": 164,
+              "left_acceleration": 0,
+              "right_acceleration": 3
+            },
+            "first_violation": {
+              "left_speed": {
+                "value": 4.324014033495727,
+                "abs_value": 4.324014033495727,
+                "ratio_to_final_limit": 1.0044167325193327,
+                "squared_native_penalty": 0.16407236186798357,
+                "t": 6.429999999999907,
+                "part": 0,
+                "piece": 4,
+                "local_t": 1.3132922059692191
+              },
+              "right_speed": {
+                "value": 4.3176551144606234,
+                "abs_value": 4.3176551144606234,
+                "ratio_to_final_limit": 1.0029396316981705,
+                "squared_native_penalty": 0.10912068742797842,
+                "t": 5.539999999999926,
+                "part": 0,
+                "piece": 4,
+                "local_t": 0.4232922059692381
+              },
+              "left_acceleration": null,
+              "right_acceleration": {
+                "value": 4.618227270048859,
+                "abs_value": 4.618227270048859,
+                "ratio_to_final_limit": 1.0348968672378394,
+                "squared_native_penalty": 1.414116867822937,
+                "t": 5.119999999999935,
+                "part": 0,
+                "piece": 4,
+                "local_t": 0.003292205969247064
+              }
+            },
+            "all_wheels_sampled_pass": false,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 5.119999999999935,
+            "local_t_s": 0.003292205969247064,
+            "speed_mps": 0.19200404298066454
+          },
+          "native_smooth_snap_cost": 0.1937904073561726,
+          "native_time_cost": 2.0583538970153437,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 3.1137202778641835,
+            "wheel_speed_left": 538.8722082235721,
+            "wheel_speed_right": 1219.5588495437992,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 22.249834728144492
+          },
+          "native_base_feasibility_sum": 1783.7946127733799,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 6,
+          "global_begin_s": 7.175061691046032,
+          "global_end_s": 9.233415588061376,
+          "duration_s": 2.0583538970153437,
+          "length_m": 0.5918622213229183,
+          "average_geometric_speed_mps": 0.2875415263532335,
+          "start_xy": [
+            3.4496929812877077,
+            0.6832961300370481
+          ],
+          "end_xy": [
+            4.040405281262646,
+            0.6768410328173384
+          ],
+          "wheel_native_grid": {
+            "samples": 206,
+            "peaks": {
+              "left_speed": {
+                "value": 5.1828824814563355,
+                "abs_value": 5.1828824814563355,
+                "ratio_to_final_limit": 1.2039215984799851,
+                "squared_native_penalty": 8.32924581658698,
+                "t": 7.22999999999989,
+                "part": 0,
+                "piece": 5,
+                "local_t": 0.05493830895385887
+              },
+              "right_speed": {
+                "value": 4.812414810800771,
+                "abs_value": 4.812414810800771,
+                "ratio_to_final_limit": 1.117866390429912,
+                "squared_native_penalty": 4.626311311214618,
+                "t": 7.179999999999891,
+                "part": 0,
+                "piece": 5,
+                "local_t": 0.004938308953859938
+              },
+              "left_acceleration": {
+                "value": -1.443323162156609,
+                "abs_value": 1.443323162156609,
+                "ratio_to_final_limit": 0.32343376182781153,
+                "squared_native_penalty": -17.830724499582246,
+                "t": 8.419999999999865,
+                "part": 0,
+                "piece": 5,
+                "local_t": 1.2449383089538335
+              },
+              "right_acceleration": {
+                "value": -1.293333974900939,
+                "abs_value": 1.293333974900939,
+                "ratio_to_final_limit": 0.2898227394735997,
+                "squared_native_penalty": -18.241193479366938,
+                "t": 7.579999999999883,
+                "part": 0,
+                "piece": 5,
+                "local_t": 0.4049383089538514
+              }
+            },
+            "violating_samples": {
+              "left_speed": 108,
+              "right_speed": 43,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": {
+                "value": 5.180092267486565,
+                "abs_value": 5.180092267486565,
+                "ratio_to_final_limit": 1.2032734651536736,
+                "squared_native_penalty": 8.300330899674098,
+                "t": 7.179999999999891,
+                "part": 0,
+                "piece": 5,
+                "local_t": 0.004938308953859938
+              },
+              "right_speed": {
+                "value": 4.812414810800771,
+                "abs_value": 4.812414810800771,
+                "ratio_to_final_limit": 1.117866390429912,
+                "squared_native_penalty": 4.626311311214618,
+                "t": 7.179999999999891,
+                "part": 0,
+                "piece": 5,
+                "local_t": 0.004938308953859938
+              },
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": false,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 9.13999999999985,
+            "local_t_s": 1.9649383089538177,
+            "speed_mps": 0.24455688679441914
+          },
+          "native_smooth_snap_cost": 0.05568226380214972,
+          "native_time_cost": 2.0583538970153437,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 1.8241005249028797,
+            "wheel_speed_left": 774.3153101981933,
+            "wheel_speed_right": 191.20345496597216,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 967.3428656890683,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 7,
+          "global_begin_s": 9.233415588061376,
+          "global_end_s": 11.29176948507672,
+          "duration_s": 2.0583538970153437,
+          "length_m": 0.5910201884078197,
+          "average_geometric_speed_mps": 0.28713244562308327,
+          "start_xy": [
+            4.040405281262641,
+            0.6768410328173329
+          ],
+          "end_xy": [
+            4.631117581237576,
+            0.6703859355976136
+          ],
+          "wheel_native_grid": {
+            "samples": 206,
+            "peaks": {
+              "left_speed": {
+                "value": 5.13260870092242,
+                "abs_value": 5.13260870092242,
+                "ratio_to_final_limit": 1.1922436006788433,
+                "squared_native_penalty": 7.81064707678453,
+                "t": 11.289999999999804,
+                "part": 0,
+                "piece": 6,
+                "local_t": 2.056584411938428
+              },
+              "right_speed": {
+                "value": 4.206314235797682,
+                "abs_value": 4.206314235797682,
+                "ratio_to_final_limit": 0.9770764775372084,
+                "squared_native_penalty": -0.8399455497257655,
+                "t": 10.929999999999811,
+                "part": 0,
+                "piece": 6,
+                "local_t": 1.696584411938436
+              },
+              "left_acceleration": {
+                "value": 1.4121550714949331,
+                "abs_value": 1.4121550714949331,
+                "ratio_to_final_limit": 0.3164493157411615,
+                "squared_native_penalty": -17.91972430405114,
+                "t": 10.199999999999827,
+                "part": 0,
+                "piece": 6,
+                "local_t": 0.9665844119384515
+              },
+              "right_acceleration": {
+                "value": 0.4520617187104235,
+                "abs_value": 0.4520617187104235,
+                "ratio_to_final_limit": 0.10130234592950665,
+                "squared_native_penalty": -19.709546452476577,
+                "t": 9.239999999999847,
+                "part": 0,
+                "piece": 6,
+                "local_t": 0.0065844119384719235
+              }
+            },
+            "violating_samples": {
+              "left_speed": 92,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": {
+                "value": 4.3064761337731925,
+                "abs_value": 4.3064761337731925,
+                "ratio_to_final_limit": 1.0003428882167695,
+                "squared_native_penalty": 0.012711690758102634,
+                "t": 10.379999999999823,
+                "part": 0,
+                "piece": 6,
+                "local_t": 1.1465844119384476
+              },
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": false,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 9.239999999999847,
+            "local_t_s": 0.0065844119384719235,
+            "speed_mps": 0.24502951603514017
+          },
+          "native_smooth_snap_cost": 0.029687393296900996,
+          "native_time_cost": 2.0583538970153437,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 1.2969975764933528,
+            "wheel_speed_left": 589.1573590518303,
+            "wheel_speed_right": 62.80459254675373,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 653.2589491750774,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 8,
+          "global_begin_s": 11.29176948507672,
+          "global_end_s": 13.350123382092065,
+          "duration_s": 2.0583538970153437,
+          "length_m": 0.5784459120888275,
+          "average_geometric_speed_mps": 0.28102354649877564,
+          "start_xy": [
+            4.631117581237575,
+            0.6703859355976172
+          ],
+          "end_xy": [
+            5.173972434015226,
+            0.4919636350769662
+          ],
+          "wheel_native_grid": {
+            "samples": 206,
+            "peaks": {
+              "left_speed": {
+                "value": 5.165210156486953,
+                "abs_value": 5.165210156486953,
+                "ratio_to_final_limit": 1.1998165288006861,
+                "squared_native_penalty": 8.146370960675974,
+                "t": 11.4999999999998,
+                "part": 0,
+                "piece": 7,
+                "local_t": 0.20823051492307965
+              },
+              "right_speed": {
+                "value": 4.152559480166873,
+                "abs_value": 4.152559480166873,
+                "ratio_to_final_limit": 0.9645898908633851,
+                "squared_native_penalty": -1.2892747636762358,
+                "t": 11.299999999999804,
+                "part": 0,
+                "piece": 7,
+                "local_t": 0.00823051492308391
+              },
+              "left_acceleration": {
+                "value": -1.0054613171504816,
+                "abs_value": 1.0054613171504816,
+                "ratio_to_final_limit": 0.22531346042587821,
+                "squared_native_penalty": -18.90295378971402,
+                "t": 13.199999999999763,
+                "part": 0,
+                "piece": 7,
+                "local_t": 1.9082305149230434
+              },
+              "right_acceleration": {
+                "value": -1.190429870208192,
+                "abs_value": 1.190429870208192,
+                "ratio_to_final_limit": 0.26676299612508503,
+                "squared_native_penalty": -18.49678297411611,
+                "t": 12.359999999999781,
+                "part": 0,
+                "piece": 7,
+                "local_t": 1.0682305149230613
+              }
+            },
+            "violating_samples": {
+              "left_speed": 157,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": {
+                "value": 5.135608020076498,
+                "abs_value": 5.135608020076498,
+                "ratio_to_final_limit": 1.1929403066379787,
+                "squared_native_penalty": 7.841444735874049,
+                "t": 11.299999999999804,
+                "part": 0,
+                "piece": 7,
+                "local_t": 0.00823051492308391
+              },
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": false,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 13.34999999999976,
+            "local_t_s": 2.0582305149230398,
+            "speed_mps": 0.2294237485988507
+          },
+          "native_smooth_snap_cost": 0.04143195273617753,
+          "native_time_cost": 2.0583538970153437,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 1.2377495680209043,
+            "wheel_speed_left": 1134.9609599551773,
+            "wheel_speed_right": 3.706287087465788,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 1139.904996610664,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 9,
+          "global_begin_s": 13.350123382092065,
+          "global_end_s": 15.408477279107409,
+          "duration_s": 2.0583538970153437,
+          "length_m": 0.591386785129659,
+          "average_geometric_speed_mps": 0.28731054751429397,
+          "start_xy": [
+            5.173972434015232,
+            0.4919636350769654
+          ],
+          "end_xy": [
+            5.657166560635761,
+            0.15210171367178232
+          ],
+          "wheel_native_grid": {
+            "samples": 205,
+            "peaks": {
+              "left_speed": {
+                "value": 4.726278788424413,
+                "abs_value": 4.726278788424413,
+                "ratio_to_final_limit": 1.0978580228628136,
+                "squared_native_penalty": 3.80468618591053,
+                "t": 15.289999999999718,
+                "part": 0,
+                "piece": 8,
+                "local_t": 1.9398766179076548
+              },
+              "right_speed": {
+                "value": 5.284137491412198,
+                "abs_value": 5.284137491412198,
+                "ratio_to_final_limit": 1.2274419259958649,
+                "squared_native_penalty": 9.389084028147998,
+                "t": 15.24999999999972,
+                "part": 0,
+                "piece": 8,
+                "local_t": 1.8998766179076556
+              },
+              "left_acceleration": {
+                "value": 1.4007860748050465,
+                "abs_value": 1.4007860748050465,
+                "ratio_to_final_limit": 0.31390164141289556,
+                "squared_native_penalty": -17.95170462263227,
+                "t": 14.639999999999732,
+                "part": 0,
+                "piece": 8,
+                "local_t": 1.2898766179076686
+              },
+              "right_acceleration": {
+                "value": 1.8422357145413009,
+                "abs_value": 1.8422357145413009,
+                "ratio_to_final_limit": 0.4128259304294231,
+                "squared_native_penalty": -16.520073822068504,
+                "t": 14.079999999999744,
+                "part": 0,
+                "piece": 8,
+                "local_t": 0.7298766179076805
+              }
+            },
+            "violating_samples": {
+              "left_speed": 63,
+              "right_speed": 104,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": {
+                "value": 4.31686624634464,
+                "abs_value": 4.31686624634464,
+                "ratio_to_final_limit": 1.0027563870719256,
+                "squared_native_penalty": 0.10230918882965767,
+                "t": 14.77999999999973,
+                "part": 0,
+                "piece": 8,
+                "local_t": 1.4298766179076656
+              },
+              "right_speed": {
+                "value": 4.321868589548053,
+                "abs_value": 4.321868589548053,
+                "ratio_to_final_limit": 1.0039183715558777,
+                "squared_native_penalty": 0.14552310532207713,
+                "t": 14.369999999999738,
+                "part": 0,
+                "piece": 8,
+                "local_t": 1.0198766179076744
+              },
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": false,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 13.429999999999758,
+            "local_t_s": 0.0798766179076944,
+            "speed_mps": 0.22900335228492483
+          },
+          "native_smooth_snap_cost": 0.1363263664818215,
+          "native_time_cost": 2.0583538970153437,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 2.398862523692025,
+            "wheel_speed_left": 289.69971129312825,
+            "wheel_speed_right": 848.2021275253676,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 1140.300701342188,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 10,
+          "global_begin_s": 15.408477279107409,
+          "global_end_s": 17.466831176122753,
+          "duration_s": 2.0583538970153437,
+          "length_m": 0.37796846732485745,
+          "average_geometric_speed_mps": 0.1836265706654816,
+          "start_xy": [
+            5.657166560635761,
+            0.15210171367178804
+          ],
+          "end_xy": [
+            5.999999999999997,
+            3.608224830031759e-16
+          ],
+          "wheel_native_grid": {
+            "samples": 205,
+            "peaks": {
+              "left_speed": {
+                "value": 4.698351942399769,
+                "abs_value": 4.698351942399769,
+                "ratio_to_final_limit": 1.0913709506155096,
+                "squared_native_penalty": 3.5414859746516782,
+                "t": 15.409999999999716,
+                "part": 0,
+                "piece": 9,
+                "local_t": 0.0015227208923080937
+              },
+              "right_speed": {
+                "value": 5.239216613097541,
+                "abs_value": 5.239216613097541,
+                "ratio_to_final_limit": 1.2170073433443764,
+                "squared_native_penalty": 8.916365718957262,
+                "t": 15.409999999999716,
+                "part": 0,
+                "piece": 9,
+                "local_t": 0.0015227208923080937
+              },
+              "left_acceleration": {
+                "value": 5.19878083764479,
+                "abs_value": 5.19878083764479,
+                "ratio_to_final_limit": 1.1649929047943506,
+                "squared_native_penalty": 7.113415947862666,
+                "t": 17.2699999999999,
+                "part": 0,
+                "piece": 9,
+                "local_t": 1.8615227208924887
+              },
+              "right_acceleration": {
+                "value": -5.991259047649661,
+                "abs_value": 5.991259047649661,
+                "ratio_to_final_limit": 1.3425790582968429,
+                "squared_native_penalty": 15.981278726043929,
+                "t": 17.239999999999895,
+                "part": 0,
+                "piece": 9,
+                "local_t": 1.831522720892484
+              }
+            },
+            "violating_samples": {
+              "left_speed": 32,
+              "right_speed": 57,
+              "left_acceleration": 60,
+              "right_acceleration": 23
+            },
+            "first_violation": {
+              "left_speed": {
+                "value": 4.698351942399769,
+                "abs_value": 4.698351942399769,
+                "ratio_to_final_limit": 1.0913709506155096,
+                "squared_native_penalty": 3.5414859746516782,
+                "t": 15.409999999999716,
+                "part": 0,
+                "piece": 9,
+                "local_t": 0.0015227208923080937
+              },
+              "right_speed": {
+                "value": 5.239216613097541,
+                "abs_value": 5.239216613097541,
+                "ratio_to_final_limit": 1.2170073433443764,
+                "squared_native_penalty": 8.916365718957262,
+                "t": 15.409999999999716,
+                "part": 0,
+                "piece": 9,
+                "local_t": 0.0015227208923080937
+              },
+              "left_acceleration": {
+                "value": -4.485812325404942,
+                "abs_value": 4.485812325404942,
+                "ratio_to_final_limit": 1.0052240505109113,
+                "squared_native_penalty": 0.20860596875489534,
+                "t": 16.37999999999976,
+                "part": 0,
+                "piece": 9,
+                "local_t": 0.9715227208923531
+              },
+              "right_acceleration": {
+                "value": -4.499412494631683,
+                "abs_value": 4.499412494631683,
+                "ratio_to_final_limit": 1.008271707480489,
+                "squared_native_penalty": 0.3308065468477004,
+                "t": 17.129999999999878,
+                "part": 0,
+                "piece": 9,
+                "local_t": 1.7215227208924668
+              }
+            },
+            "all_wheels_sampled_pass": false,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 17.44999999999993,
+            "local_t_s": 2.0415227208925164,
+            "speed_mps": 0.05000123341760391
+          },
+          "native_smooth_snap_cost": 0.7537246855503934,
+          "native_time_cost": 2.0583538970153437,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 2.0990485908534157e-38,
+            "linear_speed": 1.0864303673482645,
+            "wheel_speed_left": 132.1172184419413,
+            "wheel_speed_right": 401.83418170696444,
+            "wheel_accel_left": 469.2953329815854,
+            "wheel_accel_right": 535.9892368256999
+          },
+          "native_base_feasibility_sum": 1540.3224003235391,
+          "primary_samples": 17,
+          "dense_samples": 94
+        }
+      ],
+      "map_related_cost": null,
+      "map_related_gradient": null,
+      "full_objective": null,
+      "full_gradient": null,
+      "scope": "Same recorded polynomial. Native 10ms hard-wheel grid and source-guarded primary+dense feasibility soft quadrature. Smooth/time are cost-only; no MINCO reverse pass or complete native map objective replay."
+    },
+    {
+      "stage": "optimizer_return",
+      "capture_sim": 1016.44580989,
+      "duration_s": 36.67521023902146,
+      "length_m": 5.575104543743554,
+      "native_smooth_snap_cost": 0.8917983564306448,
+      "native_time_cost": 36.67521023902146,
+      "native_base_feasibility_costs": {
+        "dense_min_speed": 45.597235044082524,
+        "linear_speed": 0.0,
+        "wheel_speed_left": 0.0,
+        "wheel_speed_right": 41.794020983538275,
+        "wheel_accel_left": 0.0,
+        "wheel_accel_right": 0.0
+      },
+      "native_base_feasibility_sum": 87.3912560276208,
+      "native_grid": {
+        "samples": 3662,
+        "peaks": {
+          "left_speed": {
+            "value": 3.8824778697740507,
+            "abs_value": 3.8824778697740507,
+            "ratio_to_final_limit": 0.901853163710581,
+            "squared_native_penalty": -3.459390590714751,
+            "t": 3.799999999999963,
+            "part": 0,
+            "piece": 3,
+            "local_t": 0.47290567301516395
+          },
+          "right_speed": {
+            "value": 4.174460282391494,
+            "abs_value": 4.174460282391494,
+            "ratio_to_final_limit": 0.9696771852245051,
+            "squared_native_penalty": -1.1069063507359296,
+            "t": 2.809999999999984,
+            "part": 0,
+            "piece": 2,
+            "local_t": 1.817652198932372
+          },
+          "left_acceleration": {
+            "value": -3.9994145880781673,
+            "abs_value": 3.9994145880781673,
+            "ratio_to_final_limit": 0.8962273586729786,
+            "squared_native_penalty": -3.918589202667544,
+            "t": 0.24000000000000007,
+            "part": 0,
+            "piece": 0,
+            "local_t": 0.24000000000000007
+          },
+          "right_acceleration": {
+            "value": 3.3079477930303285,
+            "abs_value": 3.3079477930303285,
+            "ratio_to_final_limit": 0.7412768163653397,
+            "squared_native_penalty": -8.971387648585779,
+            "t": 0.20000000000000004,
+            "part": 0,
+            "piece": 0,
+            "local_t": 0.20000000000000004
+          }
+        },
+        "violating_samples": {
+          "left_speed": 0,
+          "right_speed": 0,
+          "left_acceleration": 0,
+          "right_acceleration": 0
+        },
+        "first_violation": {
+          "left_speed": null,
+          "right_speed": null,
+          "left_acceleration": null,
+          "right_acceleration": null
+        },
+        "all_wheels_sampled_pass": true,
+        "continuous_extrema_proven": false,
+        "does_not_early_exit_at_native_first_failure": true
+      },
+      "pieces": [
+        {
+          "block": 0,
+          "piece_index_1based": 1,
+          "global_begin_s": 0.0,
+          "global_end_s": 0.6225914710474062,
+          "duration_s": 0.6225914710474062,
+          "length_m": 0.11342976942299815,
+          "average_geometric_speed_mps": 0.18218972584409404,
+          "start_xy": [
+            1.7684803162593434,
+            0.0034284926945190863
+          ],
+          "end_xy": [
+            1.8801140170877169,
+            0.022385597442252398
+          ],
+          "wheel_native_grid": {
+            "samples": 58,
+            "peaks": {
+              "left_speed": {
+                "value": 2.640676300073622,
+                "abs_value": 2.640676300073622,
+                "ratio_to_final_limit": 0.6133975145351038,
+                "squared_native_penalty": -11.559853678229487,
+                "t": 0.05,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.05
+              },
+              "right_speed": {
+                "value": 3.98613138003176,
+                "abs_value": 3.98613138003176,
+                "ratio_to_final_limit": 0.925930634153719,
+                "squared_native_penalty": -2.643781621126097,
+                "t": 0.6200000000000003,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.6200000000000003
+              },
+              "left_acceleration": {
+                "value": -3.9994145880781673,
+                "abs_value": 3.9994145880781673,
+                "ratio_to_final_limit": 0.8962273586729786,
+                "squared_native_penalty": -3.918589202667544,
+                "t": 0.24000000000000007,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.24000000000000007
+              },
+              "right_acceleration": {
+                "value": 3.3079477930303285,
+                "abs_value": 3.3079477930303285,
+                "ratio_to_final_limit": 0.7412768163653397,
+                "squared_native_penalty": -8.971387648585779,
+                "t": 0.20000000000000004,
+                "part": 0,
+                "piece": 0,
+                "local_t": 0.20000000000000004
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": true,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 0.6200000000000003,
+            "local_t_s": 0.6200000000000003,
+            "speed_mps": 0.17291118225957208
+          },
+          "native_smooth_snap_cost": 0.8698671265411306,
+          "native_time_cost": 0.6225914710474062,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 0.0,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 0.0,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 2,
+          "global_begin_s": 0.6225914710474062,
+          "global_end_s": 0.992347801067612,
+          "duration_s": 0.3697563300202058,
+          "length_m": 0.06325165250816879,
+          "average_geometric_speed_mps": 0.1710630687639947,
+          "start_xy": [
+            1.8801140170877169,
+            0.022385597442252395
+          ],
+          "end_xy": [
+            1.9379811979884813,
+            0.047598228540495946
+          ],
+          "wheel_native_grid": {
+            "samples": 37,
+            "peaks": {
+              "left_speed": {
+                "value": 0.9429456029221772,
+                "abs_value": 0.9429456029221772,
+                "ratio_to_final_limit": 0.21903498325718404,
+                "squared_native_penalty": -17.643878589929734,
+                "t": 0.6300000000000003,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.00740852895259414
+              },
+              "right_speed": {
+                "value": 4.043670833426037,
+                "abs_value": 4.043670833426037,
+                "ratio_to_final_limit": 0.9392963608422851,
+                "squared_native_penalty": -2.181751190899579,
+                "t": 0.9900000000000007,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.36740852895259446
+              },
+              "left_acceleration": {
+                "value": -1.0895958479947607,
+                "abs_value": 1.0895958479947607,
+                "ratio_to_final_limit": 0.2441671368055486,
+                "squared_native_penalty": -18.726687138032577,
+                "t": 0.6300000000000003,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.00740852895259414
+              },
+              "right_acceleration": {
+                "value": 0.45192035959483007,
+                "abs_value": 0.45192035959483007,
+                "ratio_to_final_limit": 0.10127066881676863,
+                "squared_native_penalty": -19.70967423858368,
+                "t": 0.6300000000000003,
+                "part": 0,
+                "piece": 1,
+                "local_t": 0.00740852895259414
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": true,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 0.8300000000000005,
+            "local_t_s": 0.20740852895259432,
+            "speed_mps": 0.1704078018223021
+          },
+          "native_smooth_snap_cost": 0.0036496695106797566,
+          "native_time_cost": 0.3697563300202058,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 0.0,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 0.0,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 3,
+          "global_begin_s": 0.992347801067612,
+          "global_end_s": 3.3270943269847986,
+          "duration_s": 2.3347465259171867,
+          "length_m": 0.5345474970648674,
+          "average_geometric_speed_mps": 0.2289531180927123,
+          "start_xy": [
+            1.9379811979884816,
+            0.047598228540495946
+          ],
+          "end_xy": [
+            2.205207600470391,
+            0.4980232339881496
+          ],
+          "wheel_native_grid": {
+            "samples": 233,
+            "peaks": {
+              "left_speed": {
+                "value": 3.787515255517272,
+                "abs_value": 3.787515255517272,
+                "ratio_to_final_limit": 0.8797944844407137,
+                "squared_native_penalty": -4.187753189223935,
+                "t": 3.319999999999973,
+                "part": 0,
+                "piece": 2,
+                "local_t": 2.327652198932361
+              },
+              "right_speed": {
+                "value": 4.174460282391494,
+                "abs_value": 4.174460282391494,
+                "ratio_to_final_limit": 0.9696771852245051,
+                "squared_native_penalty": -1.1069063507359296,
+                "t": 2.809999999999984,
+                "part": 0,
+                "piece": 2,
+                "local_t": 1.817652198932372
+              },
+              "left_acceleration": {
+                "value": 1.7748753827621242,
+                "abs_value": 1.7748753827621242,
+                "ratio_to_final_limit": 0.3977311782099998,
+                "squared_native_penalty": -16.763723625665,
+                "t": 1.8300000000000014,
+                "part": 0,
+                "piece": 2,
+                "local_t": 0.8376521989323893
+              },
+              "right_acceleration": {
+                "value": -0.38671900277375115,
+                "abs_value": 0.38671900277375115,
+                "ratio_to_final_limit": 0.08665972050952406,
+                "squared_native_penalty": -19.764354662893677,
+                "t": 3.319999999999973,
+                "part": 0,
+                "piece": 2,
+                "local_t": 2.327652198932361
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": true,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 1.0000000000000007,
+            "local_t_s": 0.007652198932388665,
+            "speed_mps": 0.17186628657230063
+          },
+          "native_smooth_snap_cost": 0.007523250416064241,
+          "native_time_cost": 2.3347465259171867,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 41.794020983538275,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 41.794020983538275,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 4,
+          "global_begin_s": 3.3270943269847986,
+          "global_end_s": 5.903428529230961,
+          "duration_s": 2.576334202246163,
+          "length_m": 0.593638622782132,
+          "average_geometric_speed_mps": 0.23041988196429306,
+          "start_xy": [
+            2.2052076004703904,
+            0.4980232339881494
+          ],
+          "end_xy": [
+            2.4415553320588206,
+            1.0378339019093594
+          ],
+          "wheel_native_grid": {
+            "samples": 258,
+            "peaks": {
+              "left_speed": {
+                "value": 3.8824778697740507,
+                "abs_value": 3.8824778697740507,
+                "ratio_to_final_limit": 0.901853163710581,
+                "squared_native_penalty": -3.459390590714751,
+                "t": 3.799999999999963,
+                "part": 0,
+                "piece": 3,
+                "local_t": 0.47290567301516395
+              },
+              "right_speed": {
+                "value": 4.077163699498576,
+                "abs_value": 4.077163699498576,
+                "ratio_to_final_limit": 0.9470763529613417,
+                "squared_native_penalty": -1.9097611674910873,
+                "t": 3.329999999999973,
+                "part": 0,
+                "piece": 3,
+                "local_t": 0.0029056730151739707
+              },
+              "left_acceleration": {
+                "value": 0.4112045996558886,
+                "abs_value": 0.4112045996558886,
+                "ratio_to_final_limit": 0.09214668899851845,
+                "squared_native_penalty": -19.744817027221842,
+                "t": 3.329999999999973,
+                "part": 0,
+                "piece": 3,
+                "local_t": 0.0029056730151739707
+              },
+              "right_acceleration": {
+                "value": -1.342400377460019,
+                "abs_value": 1.342400377460019,
+                "ratio_to_final_limit": 0.3008180117557465,
+                "squared_native_penalty": -18.111867476595197,
+                "t": 4.979999999999938,
+                "part": 0,
+                "piece": 3,
+                "local_t": 1.6529056730151397
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": true,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 5.899999999999919,
+            "local_t_s": 2.57290567301512,
+            "speed_mps": 0.17344027042644378
+          },
+          "native_smooth_snap_cost": 0.0032616711802849084,
+          "native_time_cost": 2.576334202246163,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 0.0,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 0.0,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 5,
+          "global_begin_s": 5.903428529230961,
+          "global_end_s": 10.59182412734997,
+          "duration_s": 4.6883955981190075,
+          "length_m": 0.9326893409973264,
+          "average_geometric_speed_mps": 0.19893571723587553,
+          "start_xy": [
+            2.4415553320588206,
+            1.0378339019093603
+          ],
+          "end_xy": [
+            3.3202473371186256,
+            1.0484721105012371
+          ],
+          "wheel_native_grid": {
+            "samples": 469,
+            "peaks": {
+              "left_speed": {
+                "value": 3.7294047950292035,
+                "abs_value": 3.7294047950292035,
+                "ratio_to_final_limit": 0.8662961196351229,
+                "squared_native_penalty": -4.624564874813187,
+                "t": 10.289999999999825,
+                "part": 0,
+                "piece": 4,
+                "local_t": 4.386571470768865
+              },
+              "right_speed": {
+                "value": 3.0305589255046406,
+                "abs_value": 3.0305589255046406,
+                "ratio_to_final_limit": 0.7039625843216355,
+                "squared_native_penalty": -9.34873759904416,
+                "t": 10.589999999999819,
+                "part": 0,
+                "piece": 4,
+                "local_t": 4.686571470768858
+              },
+              "left_acceleration": {
+                "value": 0.19720291082967786,
+                "abs_value": 0.19720291082967786,
+                "ratio_to_final_limit": 0.04419112847723873,
+                "squared_native_penalty": -19.875017261960302,
+                "t": 8.799999999999857,
+                "part": 0,
+                "piece": 4,
+                "local_t": 2.8965714707688965
+              },
+              "right_acceleration": {
+                "value": -0.7394726623864646,
+                "abs_value": 0.7394726623864646,
+                "ratio_to_final_limit": 0.16570815963842342,
+                "squared_native_penalty": -19.367086431583076,
+                "t": 5.909999999999918,
+                "part": 0,
+                "piece": 4,
+                "local_t": 0.006571470768956811
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": true,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 6.539999999999905,
+            "local_t_s": 0.6365714707689434,
+            "speed_mps": 0.16466513091918114
+          },
+          "native_smooth_snap_cost": 0.0003889546376574602,
+          "native_time_cost": 4.6883955981190075,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 0.0,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 0.0,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 6,
+          "global_begin_s": 10.59182412734997,
+          "global_end_s": 13.282295114524246,
+          "duration_s": 2.6904709871742765,
+          "length_m": 0.5923948991215022,
+          "average_geometric_speed_mps": 0.2201826007213991,
+          "start_xy": [
+            3.3202473371186265,
+            1.0484721105012356
+          ],
+          "end_xy": [
+            3.8301364334551593,
+            0.7485728733413377
+          ],
+          "wheel_native_grid": {
+            "samples": 269,
+            "peaks": {
+              "left_speed": {
+                "value": 3.7184181002384737,
+                "abs_value": 3.7184181002384737,
+                "ratio_to_final_limit": 0.8637440418672413,
+                "squared_native_penalty": -4.706391831818902,
+                "t": 10.599999999999818,
+                "part": 0,
+                "piece": 5,
+                "local_t": 0.008175872649850646
+              },
+              "right_speed": {
+                "value": 3.0662912256215487,
+                "abs_value": 3.0662912256215487,
+                "ratio_to_final_limit": 0.7122627701792216,
+                "squared_native_penalty": -9.130883119676303,
+                "t": 11.239999999999805,
+                "part": 0,
+                "piece": 5,
+                "local_t": 0.648175872649837
+              },
+              "left_acceleration": {
+                "value": -0.6969425592896946,
+                "abs_value": 0.6969425592896946,
+                "ratio_to_final_limit": 0.15617760432262062,
+                "squared_native_penalty": -19.428177319050732,
+                "t": 13.279999999999761,
+                "part": 0,
+                "piece": 5,
+                "local_t": 2.6881758726497935
+              },
+              "right_acceleration": {
+                "value": -0.2690746109282979,
+                "abs_value": 0.2690746109282979,
+                "ratio_to_final_limit": 0.06029683158057095,
+                "squared_native_penalty": -19.841505103753786,
+                "t": 13.279999999999761,
+                "part": 0,
+                "piece": 5,
+                "local_t": 2.6881758726497935
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": true,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 13.279999999999761,
+            "local_t_s": 2.6881758726497935,
+            "speed_mps": 0.1876274059846406
+          },
+          "native_smooth_snap_cost": 0.00020475807484435875,
+          "native_time_cost": 2.6904709871742765,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 0.0,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 0.0,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 7,
+          "global_begin_s": 13.282295114524246,
+          "global_end_s": 19.147941368941417,
+          "duration_s": 5.865646254417171,
+          "length_m": 0.765048587337326,
+          "average_geometric_speed_mps": 0.13042869517765415,
+          "start_xy": [
+            3.830136433455159,
+            0.7485728733413358
+          ],
+          "end_xy": [
+            4.545262543165981,
+            0.5076201592469733
+          ],
+          "wheel_native_grid": {
+            "samples": 586,
+            "peaks": {
+              "left_speed": {
+                "value": 2.607544764768438,
+                "abs_value": 2.607544764768438,
+                "ratio_to_final_limit": 0.6057014552307639,
+                "squared_native_penalty": -11.733735299728712,
+                "t": 13.289999999999761,
+                "part": 0,
+                "piece": 6,
+                "local_t": 0.007704885475516843
+              },
+              "right_speed": {
+                "value": 2.743570529720635,
+                "abs_value": 2.743570529720635,
+                "ratio_to_final_limit": 0.637298613175525,
+                "squared_native_penalty": -11.005845748448436,
+                "t": 13.289999999999761,
+                "part": 0,
+                "piece": 6,
+                "local_t": 0.007704885475516843
+              },
+              "left_acceleration": {
+                "value": -0.7289251330641991,
+                "abs_value": 0.7289251330641991,
+                "ratio_to_final_limit": 0.16334456763343397,
+                "squared_native_penalty": -19.38257440038734,
+                "t": 13.79999999999975,
+                "part": 0,
+                "piece": 6,
+                "local_t": 0.517704885475506
+              },
+              "right_acceleration": {
+                "value": -0.3376810637441906,
+                "abs_value": 0.3376810637441906,
+                "ratio_to_final_limit": 0.07567082660934242,
+                "squared_native_penalty": -19.799877749188592,
+                "t": 16.399999999999764,
+                "part": 0,
+                "piece": 6,
+                "local_t": 3.117704885475519
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": true,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 16.719999999999814,
+            "local_t_s": 3.437704885475569,
+            "speed_mps": 0.11080906355251724
+          },
+          "native_smooth_snap_cost": 0.0004995880503783556,
+          "native_time_cost": 5.865646254417171,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 0.0,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 0.0,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 8,
+          "global_begin_s": 19.147941368941417,
+          "global_end_s": 23.17437850308012,
+          "duration_s": 4.026437134138704,
+          "length_m": 0.6117992048985295,
+          "average_geometric_speed_mps": 0.15194555000283136,
+          "start_xy": [
+            4.545262543165982,
+            0.5076201592469786
+          ],
+          "end_xy": [
+            5.142100460210272,
+            0.3834550434264447
+          ],
+          "wheel_native_grid": {
+            "samples": 403,
+            "peaks": {
+              "left_speed": {
+                "value": 2.1864653442620816,
+                "abs_value": 2.1864653442620816,
+                "ratio_to_final_limit": 0.5078897431503093,
+                "squared_native_penalty": -13.7523942983409,
+                "t": 20.15000000000035,
+                "part": 0,
+                "piece": 7,
+                "local_t": 1.002058631058934
+              },
+              "right_speed": {
+                "value": 2.6893195241781016,
+                "abs_value": 2.6893195241781016,
+                "ratio_to_final_limit": 0.6246967535837635,
+                "squared_native_penalty": -11.300585496874472,
+                "t": 23.170000000000822,
+                "part": 0,
+                "piece": 7,
+                "local_t": 4.022058631059406
+              },
+              "left_acceleration": {
+                "value": -0.31790228005116006,
+                "abs_value": 0.31790228005116006,
+                "ratio_to_final_limit": 0.07123860617392942,
+                "squared_native_penalty": -19.812844390338274,
+                "t": 22.58000000000073,
+                "part": 0,
+                "piece": 7,
+                "local_t": 3.4320586310593137
+              },
+              "right_acceleration": {
+                "value": 0.35616126891768657,
+                "abs_value": 0.35616126891768657,
+                "ratio_to_final_limit": 0.07981204905718466,
+                "squared_native_penalty": -19.787055400522945,
+                "t": 19.910000000000313,
+                "part": 0,
+                "piece": 7,
+                "local_t": 0.7620586310588964
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": true,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 19.150000000000194,
+            "local_t_s": 0.0020586310587775714,
+            "speed_mps": 0.13509788369937303
+          },
+          "native_smooth_snap_cost": 0.00022289397015438537,
+          "native_time_cost": 4.026437134138704,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.0,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 0.0,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 0.0,
+          "primary_samples": 17,
+          "dense_samples": 0
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 9,
+          "global_begin_s": 23.17437850308012,
+          "global_end_s": 33.71615066456111,
+          "duration_s": 10.541772161480994,
+          "length_m": 1.1688083541805316,
+          "average_geometric_speed_mps": 0.11087399122998386,
+          "start_xy": [
+            5.14210046021027,
+            0.38345504342644876
+          ],
+          "end_xy": [
+            5.862153000574009,
+            0.11670734681989775
+          ],
+          "wheel_native_grid": {
+            "samples": 1054,
+            "peaks": {
+              "left_speed": {
+                "value": 3.744633087806694,
+                "abs_value": 3.744633087806694,
+                "ratio_to_final_limit": 0.8698334698737965,
+                "squared_native_penalty": -4.5107480377033085,
+                "t": 28.890000000001717,
+                "part": 0,
+                "piece": 8,
+                "local_t": 5.715621496921595
+              },
+              "right_speed": {
+                "value": 2.6906565458234946,
+                "abs_value": 2.6906565458234946,
+                "ratio_to_final_limit": 0.6250073277174204,
+                "squared_native_penalty": -11.293392352417182,
+                "t": 23.310000000000844,
+                "part": 0,
+                "piece": 8,
+                "local_t": 0.13562149692072367
+              },
+              "left_acceleration": {
+                "value": 2.4408231683484067,
+                "abs_value": 2.4408231683484067,
+                "ratio_to_final_limit": 0.5469631749800351,
+                "squared_native_penalty": -13.956288510853646,
+                "t": 28.450000000001648,
+                "part": 0,
+                "piece": 8,
+                "local_t": 5.275621496921526
+              },
+              "right_acceleration": {
+                "value": -3.139707780592548,
+                "abs_value": 3.139707780592548,
+                "ratio_to_final_limit": 0.7035759732420275,
+                "squared_native_penalty": -10.056141302486617,
+                "t": 28.40000000000164,
+                "part": 0,
+                "piece": 8,
+                "local_t": 5.2256214969215184
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": true,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 28.85000000000171,
+            "local_t_s": 5.675621496921589,
+            "speed_mps": 0.0464653590735012
+          },
+          "native_smooth_snap_cost": 0.0011555846927938512,
+          "native_time_cost": 10.541772161480994,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 45.5958457958352,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 0.0,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 45.5958457958352,
+          "primary_samples": 17,
+          "dense_samples": 102
+        },
+        {
+          "block": 0,
+          "piece_index_1based": 10,
+          "global_begin_s": 33.71615066456111,
+          "global_end_s": 36.67521023902146,
+          "duration_s": 2.9590595744603507,
+          "length_m": 0.19949661543017191,
+          "average_geometric_speed_mps": 0.06741892496927998,
+          "start_xy": [
+            5.862153000574002,
+            0.11670734682002681
+          ],
+          "end_xy": [
+            5.999999999999998,
+            7.91033905045424e-16
+          ],
+          "wheel_native_grid": {
+            "samples": 295,
+            "peaks": {
+              "left_speed": {
+                "value": -1.159271686436088,
+                "abs_value": 1.159271686436088,
+                "ratio_to_final_limit": 0.2692849445844571,
+                "squared_native_penalty": -17.189114157027632,
+                "t": 35.32000000000154,
+                "part": 0,
+                "piece": 9,
+                "local_t": 1.6038493354404242
+              },
+              "right_speed": {
+                "value": 2.7361605431409837,
+                "abs_value": 2.7361605431409837,
+                "ratio_to_final_limit": 0.6355773619375108,
+                "squared_native_penalty": -11.04645048215844,
+                "t": 35.200000000001566,
+                "part": 0,
+                "piece": 9,
+                "local_t": 1.483849335440448
+              },
+              "left_acceleration": {
+                "value": 2.0993842254490294,
+                "abs_value": 2.0993842254490294,
+                "ratio_to_final_limit": 0.47045024659922224,
+                "squared_native_penalty": -15.506492123935779,
+                "t": 35.960000000001415,
+                "part": 0,
+                "piece": 9,
+                "local_t": 2.2438493354402933
+              },
+              "right_acceleration": {
+                "value": -2.1191423162239684,
+                "abs_value": 2.1191423162239684,
+                "ratio_to_final_limit": 0.47487782996615535,
+                "squared_native_penalty": -15.423142093588915,
+                "t": 35.93000000000142,
+                "part": 0,
+                "piece": 9,
+                "local_t": 2.2138493354402993
+              }
+            },
+            "violating_samples": {
+              "left_speed": 0,
+              "right_speed": 0,
+              "left_acceleration": 0,
+              "right_acceleration": 0
+            },
+            "first_violation": {
+              "left_speed": null,
+              "right_speed": null,
+              "left_acceleration": null,
+              "right_acceleration": null
+            },
+            "all_wheels_sampled_pass": true,
+            "continuous_extrema_proven": false,
+            "does_not_early_exit_at_native_first_failure": true
+          },
+          "minimum_native_grid_speed": {
+            "global_t_s": 36.0500000000014,
+            "local_t_s": 2.3338493354402754,
+            "speed_mps": 0.04988417834902728
+          },
+          "native_smooth_snap_cost": 0.005024859356656815,
+          "native_time_cost": 2.9590595744603507,
+          "native_base_feasibility_costs": {
+            "dense_min_speed": 0.00138924824731886,
+            "linear_speed": 0.0,
+            "wheel_speed_left": 0.0,
+            "wheel_speed_right": 0.0,
+            "wheel_accel_left": 0.0,
+            "wheel_accel_right": 0.0
+          },
+          "native_base_feasibility_sum": 0.00138924824731886,
+          "primary_samples": 17,
+          "dense_samples": 247
+        }
+      ],
+      "map_related_cost": null,
+      "map_related_gradient": null,
+      "full_objective": null,
+      "full_gradient": null,
+      "scope": "Same recorded polynomial. Native 10ms hard-wheel grid and source-guarded primary+dense feasibility soft quadrature. Smooth/time are cost-only; no MINCO reverse pass or complete native map objective replay."
+    }
+  ],
+  "recorded_events": [
+    {
+      "event": "cheap_scaling_summary",
+      "mono": 17273.224836704,
+      "sim": 1016.305144284,
+      "pid": 24647,
+      "request_id": 2,
+      "enabled": true,
+      "prepare_ms": 15.845708,
+      "proxy_evaluations": 56,
+      "prepare_plus_solver_ms": 704.2915230000001,
+      "shared_budget_s": 1.2
+    },
+    {
+      "event": "domain_solver_status",
+      "mono": 17273.224950148,
+      "sim": 1016.305144284,
+      "pid": 24647,
+      "request_id": 2,
+      "enabled": 1,
+      "rejected_trials": 0,
+      "accepted_steps_after_rejection": 0,
+      "lbfgs_result": 2
+    },
+    {
+      "event": "early_delivery_summary",
+      "mono": 17273.226745347,
+      "sim": 1016.305144284,
+      "pid": 24647,
+      "request_id": 2,
+      "enabled": 1,
+      "selected": 1,
+      "selected_hash": "7510818824712121263",
+      "check_count": 27,
+      "native_check_count": 1,
+      "wheel_wall_ms": 0.8083159918896854,
+      "native_wall_ms": 138.55772399983834,
+      "elapsed_ms": 706.203782,
+      "budget_s": 1.2
+    }
+  ],
+  "recorded_totals": [
+    {
+      "kind": "solve",
+      "label": "normal",
+      "input_hash": "8781000654451286203",
+      "budget_s": 1.2,
+      "wheel_limit": 4.1,
+      "sim": 1015.60216199,
+      "sim_end": 1016.44580989,
+      "raw_seq": 83,
+      "esdf_seq": 82,
+      "wall_ms": 849.690703998931,
+      "thread_cpu_ms": 843.996384,
+      "runqueue_wait_ms": 0.7288320000000681,
+      "first_cost": 32326.075600004293,
+      "first_gradient_hash": "13031070918154447399",
+      "reason": "ok",
+      "rejection_value": 0,
+      "rejection_time": 0,
+      "success": true,
+      "diagnostic_only": false,
+      "profile_enabled": false,
+      "profile": {
+        "cost_callback": {
+          "ms": 0,
+          "calls": 0
+        },
+        "integral_cost": {
+          "ms": 0,
+          "calls": 0
+        },
+        "obstacle_cost": {
+          "ms": 0,
+          "calls": 0
+        },
+        "base_feasibility": {
+          "ms": 0,
+          "calls": 0
+        },
+        "joint_feasibility": {
+          "ms": 0,
+          "calls": 0
+        },
+        "edt_query": {
+          "ms": 0,
+          "calls": 0
+        },
+        "smoothness": {
+          "ms": 0,
+          "calls": 0
+        },
+        "gradient_propagation": {
+          "ms": 0,
+          "calls": 0
+        }
+      },
+      "iterations": 38,
+      "lbfgs_result": 2,
+      "force_stop": 0,
+      "final_cost": 212.56567894407365,
+      "lbfgs_wall_ms": 706.2853530000001,
+      "max_left_omega": 3.8824793878238757,
+      "max_right_omega": 4.174460282391493,
+      "max_left_alpha": 3.999829125717223,
+      "max_right_alpha": 3.3087189996772697,
+      "candidate_hash": 18001273076126442293,
+      "candidate_duration_s": 36.67521023902146
+    }
+  ],
+  "full_native_objective_replayed": false,
+  "gradients_replayed": false,
+  "fixed_arm_self_penalty": {
+    "fixed_q": [
+      0.0,
+      0.5209807817203074,
+      -1.048907973863552,
+      -3.490658503988659e-05,
+      0.9472949048124424,
+      5.235987755982989e-05
+    ],
+    "exactly_fixed_in_both_recorded_polynomials": true,
+    "link_point_counts": [
+      3,
+      5,
+      2,
+      5,
+      1,
+      4
+    ],
+    "base_sphere_count": 47,
+    "arm_sphere_count": 20,
+    "thickness_m": 0.034,
+    "self_margin_m": 0.1,
+    "self_weight": 1000.0,
+    "formula": "sum_{i>=2,j,m<=i-2,n} (weight/n_m)*max(2*thickness+self_margin-distance(p_ij,p_mn),0)^3",
+    "base_arm_cost_per_s": 0.0,
+    "arm_arm_cost_per_s": 2.385254175855813,
+    "positive_arm_arm_pairs": [
+      {
+        "link_i_0based": 3,
+        "point_j_0based": 2,
+        "link_m_0based": 1,
+        "point_n_0based": 0,
+        "distance_m": 0.13258528861076566,
+        "soft_penetration_m": 0.035414711389234355,
+        "cost_per_s": 0.008883438832222968
+      },
+      {
+        "link_i_0based": 3,
+        "point_j_0based": 2,
+        "link_m_0based": 1,
+        "point_n_0based": 1,
+        "distance_m": 0.14153122235360666,
+        "soft_penetration_m": 0.026468777646393354,
+        "cost_per_s": 0.003708784955102808
+      },
+      {
+        "link_i_0based": 3,
+        "point_j_0based": 3,
+        "link_m_0based": 1,
+        "point_n_0based": 0,
+        "distance_m": 0.0740868325412823,
+        "soft_penetration_m": 0.09391316745871771,
+        "cost_per_s": 0.16565687371800497
+      },
+      {
+        "link_i_0based": 3,
+        "point_j_0based": 3,
+        "link_m_0based": 1,
+        "point_n_0based": 1,
+        "distance_m": 0.10204953814371791,
+        "soft_penetration_m": 0.0659504618562821,
+        "cost_per_s": 0.057369824262761555
+      },
+      {
+        "link_i_0based": 3,
+        "point_j_0based": 3,
+        "link_m_0based": 1,
+        "point_n_0based": 2,
+        "distance_m": 0.15855395836967376,
+        "soft_penetration_m": 0.009446041630326252,
+        "cost_per_s": 0.00016856971844439656
+      },
+      {
+        "link_i_0based": 3,
+        "point_j_0based": 4,
+        "link_m_0based": 1,
+        "point_n_0based": 0,
+        "distance_m": 0.021996789674859452,
+        "soft_penetration_m": 0.14600321032514055,
+        "cost_per_s": 0.6224682596772462
+      },
+      {
+        "link_i_0based": 3,
+        "point_j_0based": 4,
+        "link_m_0based": 1,
+        "point_n_0based": 1,
+        "distance_m": 0.09107304646377506,
+        "soft_penetration_m": 0.07692695353622495,
+        "cost_per_s": 0.09104699094512175
+      },
+      {
+        "link_i_0based": 3,
+        "point_j_0based": 4,
+        "link_m_0based": 1,
+        "point_n_0based": 2,
+        "distance_m": 0.16094949775748243,
+        "soft_penetration_m": 0.007050502242517576,
+        "cost_per_s": 7.009550369227033e-05
+      },
+      {
+        "link_i_0based": 5,
+        "point_j_0based": 1,
+        "link_m_0based": 3,
+        "point_n_0based": 0,
+        "distance_m": 0.141,
+        "soft_penetration_m": 0.027000000000000024,
+        "cost_per_s": 0.003936600000000011
+      },
+      {
+        "link_i_0based": 5,
+        "point_j_0based": 2,
+        "link_m_0based": 3,
+        "point_n_0based": 0,
+        "distance_m": 0.07100000000000002,
+        "soft_penetration_m": 0.09699999999999999,
+        "cost_per_s": 0.18253459999999994
+      },
+      {
+        "link_i_0based": 5,
+        "point_j_0based": 2,
+        "link_m_0based": 3,
+        "point_n_0based": 1,
+        "distance_m": 0.11668619836204416,
+        "soft_penetration_m": 0.05131380163795585,
+        "cost_per_s": 0.027022938243215784
+      },
+      {
+        "link_i_0based": 5,
+        "point_j_0based": 3,
+        "link_m_0based": 3,
+        "point_n_0based": 0,
+        "distance_m": 1.0059329593943643e-22,
+        "soft_penetration_m": 0.168,
+        "cost_per_s": 0.9483264000000001
+      },
+      {
+        "link_i_0based": 5,
+        "point_j_0based": 3,
+        "link_m_0based": 3,
+        "point_n_0based": 1,
+        "distance_m": 0.060000000000000046,
+        "soft_penetration_m": 0.10799999999999996,
+        "cost_per_s": 0.25194239999999973
+      },
+      {
+        "link_i_0based": 5,
+        "point_j_0based": 3,
+        "link_m_0based": 3,
+        "point_n_0based": 2,
+        "distance_m": 0.11999999999999997,
+        "soft_penetration_m": 0.04800000000000004,
+        "cost_per_s": 0.02211840000000006
+      }
+    ],
+    "ground_minimum_arm_center_z_m": 0.68,
+    "ground_outer_activation_z_m": 0.14400000000000002,
+    "joint_position_velocity_acceleration_and_hold_cost_for_fixed_q": 0.0,
+    "scalar_balance": [
+      {
+        "stage": "minco_before_optimizer",
+        "recorded_total": 32326.075600004293,
+        "coupling_cost": 0.0824983810351582,
+        "leftover_after_other_recomputed_terms": 41.66283200228931,
+        "leftover_per_s": 2.385254175882951,
+        "recomputed_fixed_arm_self_cost": 41.662832001815296,
+        "unexplained_scalar_balance": 4.74017269880278e-10
+      },
+      {
+        "stage": "optimizer_return",
+        "recorded_total": 212.56567894407365,
+        "coupling_cost": 0.12771594798525723,
+        "leftover_after_other_recomputed_terms": 87.4796983730155,
+        "leftover_per_s": 2.3852541758558043,
+        "recomputed_fixed_arm_self_cost": 87.4796983730158,
+        "unexplained_scalar_balance": -2.984279490192421e-13
+      }
+    ],
+    "source_lines": {
+      "/home/l/remani_ws/experiments/online_remani_validation/builds/fast_refresh_feedback_20261101_01/source/poly_traj_optimizer.cpp": {
+        "arm_arm_formula": 2174,
+        "arm_arm_weight": 2180,
+        "base_arm_start": 2123,
+        "time_integral": 1786,
+        "joint_feasibility": 2293
+      },
+      "/home/l/remani_ws/experiments/online_remani_validation/builds/fast_refresh_feedback_20261101_01/source/mm_config.cpp": {
+        "piper_spheres": 1413,
+        "hard_arm_arm_disabled": 1036
+      }
+    },
+    "source_sha256": {
+      "/home/l/remani_ws/experiments/online_remani_validation/builds/fast_refresh_feedback_20261101_01/source/mm_config.cpp": "247129edfbfc89c7d2bb8f6e268ee20a40e50285ba7b6b545addb54afd873771",
+      "/home/l/remani_ws/experiments/online_remani_validation/builds/fast_refresh_feedback_20261101_01/source/poly_traj_optimizer.cpp": "4879ff3f49bbd3e1398411f818482e82d3ffd2714893b4e3eb2ef5c4e011809a",
+      "/home/l/remani_ws/experiments/online_remani_validation/results/prefix_handoff_20261101_01/headon_B/temporal_collision.jsonl": "b8d9aac3db559816cdb9abd08f91ab36d0bdac9313bdd3691a5d59c5a7dda73f",
+      "/home/l/remani_ws/experiments/online_remani_validation/results/prefix_handoff_20261101_01/headon_B/parameters.yaml": "348d435f2ed6631bc496e1c651f6bb96c60502882d7c301fc5d28d9b99c588b7"
+    },
+    "soft_hard_distinction": "Piper native hard arm-arm test returns false, while optimizer soft arm-arm loop still runs. Positive sphere-pair penalty, including shared joint points, is not proof of physical robot self-contact.",
+    "interpretation": "Along these exactly fixed-arm curves this term is 2.385254175855813 times total duration. It increases the positive time penalty; it cannot explain a preference for extending duration. This scalar accounting does not reconstruct complete map costs or gradients; no weights or collision gates are changed."
+  }
+}

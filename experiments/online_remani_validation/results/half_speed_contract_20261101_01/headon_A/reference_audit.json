@@ -1,0 +1,59 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": false,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 1,
+  "consumed_versions": 1,
+  "live_kernel_calls": 211,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 9,
+    "native3d_unhealthy": 29,
+    "native_hard_stop": 103,
+    "waiting_native_trajectory": 9,
+    "ok": 190,
+    "local_validation_failed": 7,
+    "no_feasible_candidate": 14
+  },
+  "trial_result": {
+    "reason": "native3d_sample_collision",
+    "goal_sent": 7.018056117000015,
+    "motion_anchor": 8.374961839001116,
+    "scenario_start": "motion",
+    "trajectory_bundles": 1,
+    "min_clearance": -0.006647890919978361,
+    "collision_conservative_projection": true,
+    "arm_max_error": 0.0,
+    "final_state": [
+      2.384908055903262,
+      0.5285882452803551,
+      0.6471662191546962,
+      0.00019982244142291024,
+      -5.759498931567296e-05
+    ],
+    "elapsed": 20.356945360999816,
+    "scene": "sphere_timing_headon",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": true,
+      "min_physical_sample_gap": -0.0008482362021513118,
+      "checks": 4877,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 10.380621747999612,
+      "first_observed_moving_t": 10.83089819700001,
+      "deadline_zero_window_start": null,
+      "deadline_zero_window_end": null,
+      "deadline_zero_cycles": 0,
+      "deadline_zero_deadlock": false,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter"
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}

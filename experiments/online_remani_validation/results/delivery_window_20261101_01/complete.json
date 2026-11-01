@@ -1,0 +1,57 @@
+{
+  "schema": "delivery_window_completion_v1",
+  "completed_local_date": "2026-11-01",
+  "status": "completed",
+  "scope": "fixed-arm full REMANI+MPPI ROS numerical SIL, one head-on A/B pair",
+  "scene": "sphere_timing_headon",
+  "seed": 11,
+  "groups": {
+    "A": {
+      "slow_cv_horizon_s": 3.0,
+      "first_feedback_to_valid_adopted_control_s_rounded": 4.406,
+      "refresh_requests": 2,
+      "latest_dynamic_rejections": 1,
+      "adopted_references": 1,
+      "first_phase_corrected_coverage_margin_s_rounded": -1.000,
+      "goal_reached": true,
+      "physical_sampled_contact_detected": false
+    },
+    "B": {
+      "slow_cv_horizon_s": 4.5,
+      "first_feedback_to_valid_adopted_control_s_rounded": 1.910,
+      "refresh_requests": 1,
+      "latest_dynamic_rejections": 0,
+      "adopted_references": 1,
+      "first_phase_corrected_coverage_margin_s_rounded": 0.300,
+      "goal_reached": true,
+      "physical_sampled_contact_detected": false
+    }
+  },
+  "latest_and_mppi_horizon_s": 3.0,
+  "initial_reference_polynomial_identical": true,
+  "initial_reference_polynomial_sha256": "84c3a75a950b74c4d67138830b4953e9efa916e69cc31c35128ede58bb8f591f",
+  "extended_cv_is_explicit_model_assumption": true,
+  "branch_and_boundary_tests_passed": true,
+  "final_build_hash_check_passed": true,
+  "production_modified": false,
+  "hardware_commands_sent": false,
+  "gazebo_used": false,
+  "experiment_processes_cleaned_up": true,
+  "github_upload_remains_paused": true,
+  "shutdown_scheduled_this_turn": false,
+  "artifacts": {
+    "plain_conclusion": "report/本轮结论.txt",
+    "detailed_report": "report/实验结果.txt",
+    "data": "report/summary.json",
+    "chart": "report/对照数据.png",
+    "gif": "report/迎面对照.gif",
+    "execution_identity_supplement": "report/执行记录重名核对.json",
+    "old_input_replay": "replay/旧候选覆盖核对.json"
+  },
+  "limitations": [
+    "one online pair, no population success-rate claim",
+    "constant-velocity source extrapolation is not a real-hardware prediction guarantee",
+    "A had an MPPI timing outlier, so full travel time is not attributed solely to the slow-window change",
+    "this does not establish that all trajectory-delivery or dual-timescale coordination issues are solved"
+  ]
+}

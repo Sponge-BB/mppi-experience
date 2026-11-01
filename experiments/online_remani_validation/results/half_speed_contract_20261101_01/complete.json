@@ -1,0 +1,51 @@
+{
+  "schema": "half_speed_contract_completion_v1",
+  "status": "experiment_complete_not_production_adopted",
+  "scope": "fixed-arm differential-drive REMANI+MPPI numerical ROS SIL; not Gazebo or hardware",
+  "historical_replay_complete": true,
+  "normal_online_trials": ["headon_A", "headon_B"],
+  "diagnostic_pause": false,
+  "same_binary_switch": "SLOW_REFERENCE_NOMINAL_ONLY",
+  "only_ablation": "slow candidate half-speed hard dynamic rejection; full/half soft objective and actual local execution checks retained",
+  "build_integrity_check_passed": true,
+  "independent_scope_review_passed": true,
+  "experiment_ros_processes_exited": true,
+  "production_modified": false,
+  "hardware_commands_sent": false,
+  "github_uploaded": false,
+  "results": {
+    "A": {
+      "new_reference_delivered": false,
+      "termination": "native3d_sample_collision",
+      "minimum_physical_sphere_sample_gap_m": -0.0008482362021513118,
+      "collision_after_near_stop": true,
+      "validated_publications_exactly_matched": "132/132"
+    },
+    "B": {
+      "termination": "goal",
+      "request_to_effective_new_control_wall_s": 0.644897,
+      "request_to_reference_publication_wall_s": 0.529882,
+      "reference_publication_to_effective_new_control_wall_s": 0.115015,
+      "minimum_physical_sphere_sample_gap_m": 0.09219422803674844,
+      "physical_sphere_sample_collision": false,
+      "same_candidate_native_passed_and_old_half_branch_would_reject": true,
+      "counterfactual_nominal_model_gap_cm_rounded": 6.75,
+      "counterfactual_half_model_gap_cm_rounded": -4.10,
+      "actually_adopted_reference_revision": 2,
+      "validated_publications_exactly_matched": "516/516"
+    }
+  },
+  "limitations": [
+    "One asynchronous A/B pair is not a controlled statistical performance estimate; pre-request states and passing sides differ.",
+    "Same-candidate frozen-input counterfactual identifies the extra half-speed gate, not all causes of A failure.",
+    "0.645 seconds starts at the planning request, not initial obstacle observation.",
+    "Slow refresh is still triggered by old-guide blockage rather than MPPI avoidance feedback.",
+    "Brake validation ends after stopping stability and does not guarantee safety against subsequent continued obstacle approach.",
+    "Relaxed reference admission does not establish stronger optimization, universal dynamic safety, or solved dual-timescale coupling."
+  ],
+  "report": "report/实验结果.txt",
+  "data_plot": "report/对照数据.png",
+  "gif": "report/迎面对照.gif",
+  "detailed_summary": "report/summary.json",
+  "failure_evidence": "report/A触发与执行核对.json"
+}
