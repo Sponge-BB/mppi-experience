@@ -1,0 +1,40 @@
+{
+  "scope": "independent read-only audit of recorded fixed-arm ROS SIL runs",
+  "initial_q1_input_hash_both": "8775951166031383002",
+  "initial_q1_candidate_hash_both": "18320163270269332855",
+  "q2_boundary_y_m": {"A": 0.3622270968654706, "B": -0.3131625367474442},
+  "callback_measurement": "1000*(sleep_enter.mono-cycle_start.mono), complete cycles after truth actor starts; no reference_points filter",
+  "A": {
+    "callback_n": 531,
+    "callback_p95_ms": 106.09073849991546,
+    "callback_max_ms": 152.39904099871637,
+    "callback_above_200_ms": 0,
+    "refresh_start_to_new_reference_kernel_entry_wall_ms": 4016.948393,
+    "successful_q4_request_wall_ms": 430.16581700067036,
+    "sample_collision": false
+  },
+  "B": {
+    "callback_n": 154,
+    "callback_p95_ms": 123.19599735201334,
+    "callback_max_ms": 155.9857620013645,
+    "callback_above_200_ms": 0,
+    "maximum_publication_interval_after_sim_1017_ms": 155.32647399959387,
+    "lease_ms": 250,
+    "local_validation_failed_cycles": 5,
+    "validation_attempt_codes": {"5": 35, "3": 5},
+    "no_feasible_candidate_cycles": 17,
+    "no_feasible_candidate_first_sim": 1019.858577907,
+    "no_feasible_candidate_last_sim": 1020.663991537,
+    "new_reference_delivered": false,
+    "sample_collision": true,
+    "minimum_physical_sample_gap_m": -0.00006563918062167662,
+    "q2_optimizer": {"wall_ms": 453.01601399842184, "thread_cpu_ms": 451.07164799999964, "runqueue_wait_ms": 0.8704639999999042, "budget_stop": false},
+    "q3_optimizer": {"wall_ms": 650.0266090006335, "thread_cpu_ms": 635.114176, "runqueue_wait_ms": 11.26368000000011, "budget_stop": false}
+  },
+  "causal_limits": [
+    "Different-side MPPI motion already existed before the first changed backend solve.",
+    "B delivered no changed reference; its physical sample contact cannot be attributed to following a changed reference.",
+    "Recorded control failures support feasibility and braking-validation failure, not a missed 200ms deadline or 250ms publication lease.",
+    "No general CPU sufficiency or overall algorithm superiority is established by these two fresh runs."
+  ]
+}
