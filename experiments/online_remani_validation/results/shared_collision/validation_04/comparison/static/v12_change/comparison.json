@@ -1,0 +1,124 @@
+{
+  "old": {
+    "result": "goal",
+    "motion_to_end_s": 25.829014943999937,
+    "min_clearance_m": 0.16998172257901398,
+    "measured_motion_started": true,
+    "metrics_time_origin": "measured_motion",
+    "stop_definition": "measured abs(v)<0.02 m/s AND abs(w)<0.06 rad/s, goal distance>0.35 m; recorded-state intervals",
+    "path_length_m": 3.816533735721496,
+    "full_stop_away_goal_s": 0.4027226930047618,
+    "longest_full_stop_s": 0.4027226930047618,
+    "native_bundles": 2,
+    "first_post_appearance_reference_s": 3.731550847995095,
+    "nearest_reference_p95_m": 0.21859788973182853,
+    "ordered_reference_p95_m": 0.21859788973182853,
+    "reference_error_samples": 1322,
+    "ordered_reference_valid_samples": 1322,
+    "after_new_reference_p95_m": 0.22440733788006673,
+    "after_new_reference_max_m": 0.22654177865169217,
+    "after_new_reference_samples": 618,
+    "after_new_reference_ordered_p95_m": 0.22440733788006673,
+    "after_new_reference_ordered_valid_samples": 618,
+    "safe_nominal_after_new_reference_p95_m": 0.031383223640846294,
+    "safe_nominal_after_new_reference_samples": 33,
+    "static_new_reference_clearance": [
+      {
+        "epoch": 2,
+        "t": 7.645483539998395,
+        "min_physical_projection_clearance_m": 0.016128859063960083
+      }
+    ],
+    "kernel_p95_ms": 30.2980195,
+    "callback_p95_ms": 32.820071748574264,
+    "reasons": {
+      "perception_unhealthy": 32,
+      "native_hard_stop": 108,
+      "waiting_native_trajectory": 16,
+      "ok": 514,
+      "no_feasible_candidate": 18,
+      "local_validation_failed": 2,
+      "deadline_miss": 2
+    },
+    "required_process_failed": false
+  },
+  "new": {
+    "result": "timeout",
+    "motion_to_end_s": 50.48002184100187,
+    "min_clearance_m": 0.12784721173530886,
+    "measured_motion_started": true,
+    "metrics_time_origin": "measured_motion",
+    "stop_definition": "measured abs(v)<0.02 m/s AND abs(w)<0.06 rad/s, goal distance>0.35 m; recorded-state intervals",
+    "path_length_m": 2.8505605343049862,
+    "full_stop_away_goal_s": 31.028945029996976,
+    "longest_full_stop_s": 29.689076982002007,
+    "native_bundles": 2,
+    "first_post_appearance_reference_s": 3.037067577999551,
+    "nearest_reference_p95_m": 0.02511533446278526,
+    "ordered_reference_p95_m": 0.02511533446278526,
+    "reference_error_samples": 2532,
+    "ordered_reference_valid_samples": 2532,
+    "after_new_reference_p95_m": 0.02788008565392928,
+    "after_new_reference_max_m": 0.036316708181831636,
+    "after_new_reference_samples": 2121,
+    "after_new_reference_ordered_p95_m": 0.02788008565392928,
+    "after_new_reference_ordered_valid_samples": 2121,
+    "safe_nominal_after_new_reference_p95_m": 0.011693139348477965,
+    "safe_nominal_after_new_reference_samples": 1840,
+    "static_new_reference_clearance": [
+      {
+        "epoch": 2,
+        "t": 6.994302741998467,
+        "min_physical_projection_clearance_m": 0.1973528550860065
+      }
+    ],
+    "kernel_p95_ms": 36.45698999999999,
+    "callback_p95_ms": 39.41753859544402,
+    "reasons": {
+      "perception_unhealthy": 33,
+      "native_hard_stop": 107,
+      "waiting_native_trajectory": 11,
+      "ok": 992,
+      "no_feasible_candidate": 17,
+      "local_validation_failed": 1,
+      "deadline_miss": 15
+    },
+    "required_process_failed": false
+  },
+  "labels": [
+    "V12 原版",
+    "V12 统一版"
+  ],
+  "alignment": "measured motion anchor; fallback to goal only if no measured motion, explicitly marked in metrics",
+  "metrics_source": "report_shared_collision.trial_metrics; measured state stop definition shared by all variants",
+  "baseline_scope": "current workspace native REMANI/controller/Tracker, MPPI disabled; NOT unmodified upstream REMANI-Planner",
+  "attribution": "V12 shared combines common collision model and reference reacquisition changes; no collision-cost-only causality claim",
+  "sources": {
+    "/home/l/remani_ws/experiments/online_remani_validation/results/shared_collision/validation_04/static/v12": {
+      "result.json": "f204002567bd072e77d42cc64682c89c246c792c9c8f48687a47561579c72372",
+      "run_status.json": "25b21ce9d14a2f387c11a89014c204e1f089c451388c3c80cec8e556441f850d",
+      "state.csv": "724e67007d80fe5f6f8fd8cc4e5657700b8b2052740d98ef83b7ffc1da9f6d37",
+      "obstacles.csv": "48a70d8b25c98abfb62534e24f067e6b46da95e946702e23b04a9753983d9488",
+      "geometry.csv": "a45248b81779c84316d8429b587e2adfa109dc7f3ef46fc421024f8f5db66f50",
+      "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+      "mppi_diagnostics.json": "f2d19ae12ea43ff6ee6626ca8bb584ec8ae6f6dfbeef3fb3cdf2db9a7babc967",
+      "consumed_references.jsonl": "72749550fd9724df3b63b18426d598fe10042fa6f18dab809f3c363c124478ae",
+      "reference_events.jsonl": "bca7f7e0c5fa92f79755d04b5e7795e954eecdbb761092f550dfacb6b5f7e247",
+      "manifest.json": "03a44475d50f41c3c836ed54f1ea0a022deb1169c78e926860413884da5315a4"
+    },
+    "/home/l/remani_ws/experiments/online_remani_validation/results/shared_collision/validation_04/static/v12_shared": {
+      "result.json": "09d63aef41f5f15a6aeb33cd195b0c1d380efb37606de42b1aed89f26b5e11f3",
+      "run_status.json": "25b21ce9d14a2f387c11a89014c204e1f089c451388c3c80cec8e556441f850d",
+      "state.csv": "6868881d74ae033e71e141025581861ba229cde5d346aa95f0d857c282988ee0",
+      "obstacles.csv": "709038a3fe777a345a04ac11bf96637fb05bc8cacdd59f6ec25cfa6be019b481",
+      "geometry.csv": "a45248b81779c84316d8429b587e2adfa109dc7f3ef46fc421024f8f5db66f50",
+      "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+      "mppi_diagnostics.json": "5a63c75050b4a73f6ef5848d173934b818dc40553020839595c23b622b3be12f",
+      "consumed_references.jsonl": "7de0c577b7bde712ae0cab50f79497f9fa2632bc090ee2b0f783ba33a60b90f9",
+      "reference_events.jsonl": "662cebb62cabf6a57077aa5c13e7ad15c513d9f7b304fde5f3d09ffb8681a01e",
+      "manifest.json": "257455ca6cfd0c2dd15f256982deef201772d6cde8f73a09caa25029efa3e49b"
+    }
+  },
+  "source_unchanged": true,
+  "visualization_only": true
+}
