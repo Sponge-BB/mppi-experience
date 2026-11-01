@@ -1,0 +1,61 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": false,
+  "required_process_failed": false,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 1,
+  "consumed_versions": 1,
+  "live_kernel_calls": 153,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 2,
+    "native3d_unhealthy": 31,
+    "native_hard_stop": 103,
+    "waiting_native_trajectory": 17,
+    "ok": 122,
+    "native3d_snapshot_binding_failed": 3,
+    "deadline_miss": 23,
+    "local_validation_failed": 5,
+    "no_feasible_candidate": 3
+  },
+  "trial_result": {
+    "reason": "native3d_sample_collision",
+    "goal_sent": 7.012256480011274,
+    "motion_anchor": 8.993068859010236,
+    "scenario_start": "motion",
+    "trajectory_bundles": 1,
+    "min_clearance": 0.012435926961594651,
+    "collision_conservative_projection": false,
+    "arm_max_error": 0.0,
+    "final_state": [
+      0.9273718064066666,
+      -0.0021259634806101383,
+      -0.12902903052782277,
+      -0.0009658332251137898,
+      0.004498150585370164
+    ],
+    "elapsed": 26.920410878010443,
+    "scene": "sphere_timing_multi",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": true,
+      "min_physical_sample_gap": -0.0006443091078070645,
+      "checks": 6314,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 11.002019507010118,
+      "first_observed_moving_t": 11.477012829000046,
+      "deadline_zero_window_start": null,
+      "deadline_zero_window_end": null,
+      "deadline_zero_cycles": 0,
+      "deadline_zero_deadlock": false,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter"
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}

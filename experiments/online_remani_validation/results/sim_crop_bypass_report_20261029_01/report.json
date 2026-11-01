@@ -1,0 +1,1261 @@
+{
+  "trials": [
+    {
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/execution_timing_diagnosis_20261028_01/online_probe",
+      "group": "baseline",
+      "termination": "native3d_sample_collision",
+      "reached_goal": false,
+      "motion_duration_s": 14.037226809999993,
+      "started_moving": true,
+      "motion_triggered_scene_activated": true,
+      "native3d_independent_sample_collision": true,
+      "native3d_physical_sample_collision": true,
+      "native3d_monitor_ready": true,
+      "native3d_independent_min_physical_sample_gap_m": -0.0007896398508227404,
+      "native3d_state_samples": 1088,
+      "native3d_online_substep_monitor": {
+        "sample_collision": true,
+        "min_physical_sample_gap": -0.0007896398508227404,
+        "checks": 5428,
+        "error": null,
+        "geometry_available": true,
+        "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+      },
+      "projection_2d_overlap": true,
+      "projection_2d_min_gap_m": -0.12461562838731316,
+      "projection_is_not_native3d_contact": true,
+      "interface_audit_valid": true,
+      "scope": "analytic native physical sphere samples vs finite cylinder/wall truth; discrete state sample audit, not mesh contact or continuous certificate",
+      "minimum_recorded_3d_sample_gap_m": -0.0007896398508227404,
+      "label": "原自车过滤",
+      "execution_timing": {
+        "group": "matched",
+        "callback_deadline_s": 0.2,
+        "deadline_ms": 200.0,
+        "command_lease_s": 0.25,
+        "validation_reserve_ms": 5.0,
+        "native_solver_budgets_unchanged": true,
+        "same_runtime_sources": true,
+        "cpp_execution_lease_matches_simulator": true,
+        "unchanged": "native geometry, search, prediction, speed, latest-state validation and braking checks",
+        "scope": "paired head-on numerical ROS closed loop; not Gazebo or hardware"
+      },
+      "measured_stop": {
+        "available": true,
+        "window_start_s": 10.80660855500173,
+        "window_end_s": 22.823887307000405,
+        "total_s": 0.4310110450023785,
+        "longest_s": 0.36646576000202913,
+        "intervals": [
+          {
+            "start_s": 19.173403744000098,
+            "end_s": 19.237949029000447,
+            "duration_s": 0.0645452850003494
+          },
+          {
+            "start_s": 22.457421546998376,
+            "end_s": 22.823887307000405,
+            "duration_s": 0.36646576000202913
+          }
+        ],
+        "definition": "measured |v| < 0.01 m/s and |w| < 0.03 rad/s; left-sample intervals",
+        "zero_command_is_not_measured_stop": true
+      },
+      "maneuver_events": {
+        "actor_first_truth_t": 10.80660855500173,
+        "actor_baseline_y_m": 0.0,
+        "first_actual_sideways_t": 21.538448647999758,
+        "first_refresh_consumed_t": null,
+        "sideways_after_actor_s": 10.731840092998027,
+        "sideways_minus_refresh_s": null,
+        "sideways_before_refresh": null,
+        "sideways_without_refresh": true,
+        "observation_definition": "first measured |y - y_at_actor_appearance| > 0.05 m; not a new controller threshold or causal MPPI attribution"
+      },
+      "remani_delivery": {
+        "available": true,
+        "completed_refresh_requests": 4,
+        "accepted_refresh_requests": 0,
+        "consumed_refresh_references": 0,
+        "first_blocked_to_consumed_s": null,
+        "request_wall_ms": {
+          "min": 1.8188159992860164,
+          "p50": 2.697055000680848,
+          "p95": 729.6915551005437,
+          "max": 857.8602140005387
+        },
+        "optimizer_wall_ms": {
+          "min": 644.0910099991015,
+          "p50": 644.0910099991015,
+          "p95": 644.0910099991015,
+          "max": 644.0910099991015
+        },
+        "unfinished_requests": [],
+        "initial_plan_excluded": true,
+        "source": "analysis/summary.json"
+      },
+      "first_truth_actor_t": 10.80660855500173,
+      "input_sha256": {
+        "manifest.json": "7a2f64bbe15fe68072748e49030021fd3ed999d1642b1ed83b0d4db1934fcd8c",
+        "coupling_parameters.json": "dc4c56343f3715a62725295463b023b31d925bd51350c9678eb865000377ae15",
+        "result.json": "22a0c403c0cbb40caf19b6efa5f583595a18fb4eff26eb25e08cb17c0f8867fd",
+        "run_status.json": "393241e3487019b27361e970636fa09f02817c9650129a525f14cee4f152caf8",
+        "trial_audit.json": "e3c80c25b6403d725bfe72c6899482c26acd44ac3495bccbf95416a75753eed8",
+        "state.csv": "3e62f18cbfa57d0da80d4f47e168a27010bb3ccf24f0e79583231ade3be93233",
+        "native_collision_3d_body.json": "360582e5f32f213e316134a643f064ac38c58df59036d160acfc2a1d994eb0ff",
+        "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+        "consumed_references.jsonl": "e4bfa89874cad14bd9d1a87e8d4434c611201c8bc32cf8157ea17d3400696593",
+        "reference_events.jsonl": "a4d4c1f8b9d0bedf54adb4e10bc55fbdf17634e2f3b1a5bc36dccded533093be",
+        "execution_rollouts.jsonl.gz": "57b5842918f410342495bcc5b0f95be4781373ccafdc35b5007066723ae6b191",
+        "mppi_diagnostics.json.gz": "c697970d7066edeabad8049fbb894f52ec16c5f584ac1125d45231cab706eba5",
+        "search/000000.npz": "ddcf8f025b994c7469d84acf2bd230694ba740b762a66ce72ad61a00d2152002",
+        "search/000001.npz": "603865ae2946237bbbe4e3647911ebc4e33d804008e98a4eccc78b57ed6c26cc",
+        "search/000002.npz": "15f224304d7fa06c1f790c3496dd84d53c3442ce107ed6ea6fcc5f40635a5329",
+        "search/000003.npz": "ec1d9d46cfd33a698d99790edab939e2c5b26a7d3dc0676ad6f850e793badfdb",
+        "search/000004.npz": "79480ee851f7f7dc646024f9cecaf72abc3a4292f6a5fa3f31b07020a340e1d9",
+        "search/000005.npz": "0bd1336ced91a94e63f1021dc7d702a012adaf5e2cb3103db82ef50d3d3f496d",
+        "search/000006.npz": "a88de58fa7f293a367be41737358efd5acc67214e2fbf27e6f34baf857705a53",
+        "search/000007.npz": "5252f4a7c1dd8687782245f0a613fd743f4d613bd0c61a9a545a47e982cabf87",
+        "search/000008.npz": "37d663807fc932f6c3679f8e069a3432c5400bd51ebe00e1a05ab26e690b6873",
+        "search/000009.npz": "c695f4664ef0cfdb95db42076dc9eb1516ad96d5eec2d5bce285fb36d8a091a5",
+        "search/000010.npz": "d2db13bb0632be5c4a54f939ecd35e7729b03890f11858452d308c859deba89b",
+        "search/000011.npz": "49f679c14b8eca8ff3c4b7a9bf9647e86e4ab0aa997d2bbd1c70220f8a7436fe",
+        "search/000012.npz": "863dac0e5590eff0c5628c573ad91d2190657f0619f5e27a4073df7e535dfee4",
+        "search/000013.npz": "f5b3fec1286f7c80e71235a42d0096dffd86bebb0716dfa39851a9cd4d126b66",
+        "search/000014.npz": "fd6e19e39ea2f748c753a9b8f1b18dc1f42469ba63fed8548c6eef3f315361b3",
+        "search/000015.npz": "b6c4e5edf4c2ecda8019c7dc1128974be0d14727adfa6e0ab5291b60f211aad1",
+        "search/000016.npz": "961001217a630eb7a60e0b531ad3d1e62900352e9374e5ed50e476407cb002c9",
+        "search/000017.npz": "e3e8861b75c69b33f32d9729b39b76a6116a3202cc947790e106ec224fd0ab8e",
+        "search/000018.npz": "e3f48f2348a7f3b5a75d5de35eedae1f49f9839248327eac796c4cd97d470995",
+        "search/000019.npz": "c0125e66b74263867fc69214ae38a64ed34a56f31270fd70cdf65fa1d5a590c6",
+        "search/000020.npz": "fbbfb1343193cc41b93e124e8ee863c6e79b7094ee8d0d5e20bc85a8cbf4da47",
+        "search/000021.npz": "72599d66dbb14067bcdbd265ccef4f6266003e042976b078b0cbf844bc368886",
+        "search/000022.npz": "3b1d8b3a340a6981d553be460893f54164a9d7f871a3e206c46c889aa8bb8cf7",
+        "search/000023.npz": "206b094766d00aa87edc71bf9d006fbc230a52e16ff8aadbc1b8ef3dbfa91cc9",
+        "search/000024.npz": "527b7a9581ae1863ca6bad6ff7f8115a8fce88deb19ef5fa8aa16884a0c01caf",
+        "search/000025.npz": "b605d5ccc9ae4fccb8ab04b4705d031c6f50a7e24ab443f883b0714e629505c6",
+        "search/000026.npz": "a66865aa7905aba9f894992fd29ad0b7998251d0c0bcd77c2dba48cab75b0779",
+        "search/000027.npz": "7a2c1d9097d112ad0d7f6669f37e5b07f822069104f97323e08c9e696906c086",
+        "search/000028.npz": "1296c3359e779d5f457a60834a890e633e92ae6637d21a2d09db800f30700211",
+        "search/000029.npz": "6eb2d55cfc4f5c7aeb70b9004066c319fba2d452196d779d2f4422768f716caf",
+        "search/000030.npz": "ca456cc215eb3c9be43bb3e51b463688b34b0b7103ddf4ad4439182fa6d977fa",
+        "search/000031.npz": "207afb1179535735de223da897c77b056ff42c4dec2f2ced4b670cd52887402b",
+        "search/000032.npz": "3d3b24d23c959872fb44588b7f8d905cda21ce2ff7eb6dda3c1960a5d60cac58",
+        "search/000033.npz": "4ad12b280ad10e56236a4d6b55a0383534c9ea8bb7f76fbe67382dde005b57da",
+        "search/000034.npz": "ee6dd67739401fb5535994b84bf2dbe984db584b5bebb877021612fb3fa8e3d9",
+        "search/000035.npz": "d2691fb540e88508fa021d612fb36e8955226f2a0e869ca0f7b25542603693c5",
+        "search/000036.npz": "0791e5e1da504980f371b8442bc43a6c0863b88b00c0d952ba1663e16e10a10b",
+        "search/000037.npz": "5401cb7d496c55943de5773fb0418562fae10dca9e508308a754676930a052b3",
+        "search/000038.npz": "e88785c9cd0f7fd080c1b856fc7a8c12a9549c1d6abb6e1a515ca8c42512e0a3",
+        "search/000039.npz": "84559288703e5dd3282c991d4b218375075bee8dffc21f6756f0548e8c54b144",
+        "search/000040.npz": "b0a66fcedf3628f89cf65525c0af3cf0f07041050ef70f71b5677405584dd596",
+        "search/000041.npz": "95cd50d74fc52d43ed5e24bf60b0aeaf77271f09fc932d61a5fc56bfd668adb8",
+        "search/000042.npz": "5f394533541722163c7f3cb32f5ff6b29fa61b88e61d33320df79b5733a4d526",
+        "search/000043.npz": "cb61dda4f823e680f55cb587b317128c4251d6199d8ef81afd0ffea46850d4bb",
+        "search/000044.npz": "673db9476c1de6415ef3fa390c0b56ce6a25165a8f2c4317f13b8a05f6e02d1a",
+        "search/000045.npz": "79a3b0ed5db6a0f73c043893ebab0f3600dc5f76b53af2bf974092869157787a",
+        "search/000046.npz": "447a5fe66b80aff2de8974f39f2213977bda8efa4833b33b7f86f0c61288b7af",
+        "search/000047.npz": "11b0604b942fa05904f4151eb830baf14290ac4a767160014fed2163e9b3783a",
+        "search/000048.npz": "bc5cc2dfe6cb95d86384e0ccd0c33a91635495a9bb43bd0086ccf91fa90497a7",
+        "search/000049.npz": "23250c0df5556ef96c3881ef8471318880d11dc0e55d92da17cf782bc7cb7f78",
+        "search/000050.npz": "3c145a6ef629493150472744185797c54cc3eb466fb22300debe5f9db9654037",
+        "search/000051.npz": "480edcc4268400263efbb30177f43de2fd1b2aef3492b517d79d06e25961392f",
+        "search/000052.npz": "52984297f813b5a6b7081b8c57a9e5fd126bde20e715dea7a089a662b6e0ab9b",
+        "search/000053.npz": "659f090e7c2cb8464cdd841f9cc6b782007a59082ae3a8111f14f54ce121c982",
+        "search/000054.npz": "76119a6678ed127e1d2fbcccb96d1e460b7ef79a4148b83ba491fec84a0a70b0",
+        "search/000055.npz": "bb92160c8b9025f6750a68ea2121375a2015e03739b566420ac811b8232f9f8e",
+        "search/000056.npz": "f96bcef6adf9346f977d94e579bf34edc92a72f9822e17f00980808bef1e05e3",
+        "search/000057.npz": "1b0de3e8f9a5def68b65fe5cc7e4c0a501892d6f0202b723f37faa85e64176ab",
+        "search/000058.npz": "7f961f7dbb449914d9b54840bd99c14cac88b5bcd541ddec2a9ee6313aa1ad2a",
+        "search/000059.npz": "c41d4a3b145854a3b51485908f6f3287d691d1e3e88dd874a3da4de929f2fe2e",
+        "search/000060.npz": "3d3a9528e83c0c2dacff4f212d9128b1f96ad75ed85c7d5d302e7cf2973eecf6",
+        "search/000061.npz": "8c93a54d6938f0e3d3715e4d090e35bca1e3ee00ed3ac39fecbaf72e346c5763",
+        "search/000062.npz": "1c12cac80731cbc968b44e1845fe46f0b0fb949c3330c9d4dd1e6e678fbbc339",
+        "search/000063.npz": "eb9296a64583dc6cb6f55056e4e2d2f2b0b068fe0ad2016a75ff0e84d14ca46c",
+        "search/000064.npz": "ee5c4ee383e358d20ccbf98d7524bbb73abbd0cdd352127f0119c179043ce1b1",
+        "search/000065.npz": "34097a55548ee02057aef8c783ea3f13198f2ee75a9d65dac0da51931e7e41c3",
+        "search/000066.npz": "57b80694694cf29b280338b4c4b889ebb053266f43563ebfc742b73838d18867",
+        "search/000067.npz": "f95cfb29a1fc10b0d9ce8059aea965018a4d76b0383571929c655243f5d86962",
+        "search/000068.npz": "5328ae663c11a326dd0f1e54c51be06b1e61a71cde0222e6a4d0dc7c24af22f8",
+        "search/000069.npz": "e1871c68ccd5ff0fdcabe572be5dd8011866f26d107767b2ab6d81b9dc403430",
+        "search/000070.npz": "aa95a6ee16a028aaafb816e972f198ec9de9741ce2cbc4a59e2a3b407b07ea43",
+        "search/000071.npz": "024013cdf4fb999210dbcb9c7d0c0405d6001c8ad440190cf60d3a933685a022",
+        "search/000072.npz": "77471d38016e5703b30a589d300b593028263d3b37bb979e498caf88a1be0ffe",
+        "search/000073.npz": "7a16e175cdcdfcc07ca384c44ad9586ed7af6581af004b4579c7fa28683920fc",
+        "search/000074.npz": "dbc68e845e20c5d8147c124cdb454858815c865ecf7c210ffc98670007571a13",
+        "search/000075.npz": "40fbd4851c462251d0a7760b46cb08a912a477479734360b6f3d74d27f1365dd",
+        "search/000076.npz": "ff38c97dd4f69d205f50926b4ceccef28d96e975152892a2b96d8ba829a509e6",
+        "search/000077.npz": "2ee541ab5bd4aac2e747ebbb12540671d0cf0c805bc4fd6f6f94a9c6b5ed8c26",
+        "search/000078.npz": "95ce096e290d6cc7fb0da2730890143ff1c8302957760764bd08ce5f42300a8f",
+        "search/000079.npz": "81bef51e2a961606904c58933885ae69ae6e72b82da8835e4ef718e9088b4eab",
+        "search/000080.npz": "b927e3cebfa1373ec92f0f2763c4eefc96634aec3c1f1bc0aa95763d5f0acb20",
+        "search/000081.npz": "2c3e4f7641892f748c7cb893842046610488618c5d0fb7899b54f93eb83acaf3",
+        "search/000082.npz": "d1c3ca401f504e583f9bf8823b5cfaa2a94a125720deeb24d77ead9665ab3d4f",
+        "search/000083.npz": "401247e8975b9987ce92d422104613c84abe8c40f6e70630744f6138b9f2b9b4",
+        "search/000084.npz": "702662cfba4c6db7b5f9c837addca032cb61b02045faaa5ca873b5515fefd3cd",
+        "search/000085.npz": "b3f7496bc3feb792d352461391365798d6014a179170344b6074baf8ae8f22c9",
+        "search/000086.npz": "76acb96fee8550287af3c42addc2177ee7f45fa011a0e80d4b0bc5ab4947ed51",
+        "search/000087.npz": "b1558e2638b13c18ece043971108b96f9db7692b4f9c571b07f15888c158ca26",
+        "search/000088.npz": "a7a863d481ce6adbe230aacd0fbb293f03056997c7c1f20eeb0fb267c11857b0",
+        "search/000089.npz": "32a8ae81661e760fe39b747c0e429e9944027d0a60c57eb6f8d9fae5a3711f49",
+        "search/000090.npz": "646b279401bfe68682981a3cf26de23ac3a1f819b839de08f92464cd93badee1",
+        "search/000091.npz": "fb1af5fba6b6f6a9246ddeb373df377a633c805d5c9762eb3310513b23554af0",
+        "search/000092.npz": "c82620c86221aaa20c465737eac5d6ff383859c4f6969f348c17ba8b9d164563",
+        "search/000093.npz": "b443bd9e3d72a696be8d960d5c8d63ee2b8946fc6bb9ceed9e9aee8b883c7e2a",
+        "search/000094.npz": "69bbaf2f456a348bd65eaf9c4f9f729c1b72cf95bb3a74e693afece2b8580edc",
+        "search/000095.npz": "ee1ac96fbb8f90382b0ce150756eb1adea375dab1576a78a44e2efd7aa78311e",
+        "search/000096.npz": "955acaaa75a80d7dffad81a04315c85499e693aa34b7aa2d8bb2a7a3b33d5bfb",
+        "search/000097.npz": "4adcea4fa39925a8f85c1ff9cbd03774503693ec4c47b7a03da147e39bc4d641",
+        "search/000098.npz": "c72d3315fef9311e5ad6310e3007fe1b855fe2f31f5cab0f69595a1e3b7c9d90",
+        "obstacles.csv": "db9d1628a329de4b65ccfc02f103d018781c43e45eae2f3189bb8fb626387616",
+        "state_mppi_cycles.jsonl": "e8e5f05d5242fb3a0e9df9be8983fae391e13475ef641fb86a5e8fc77b0310dd",
+        "analysis/summary.json": "028b14eae530f531d2416f7d96d06caca9fddd07ac6cc84df4d4f901b27a4fad",
+        "experiment.launch": "259a881881ec6b99f0bed1d20d61e9041d70f93cd01ee5e133b6988b5f50800d"
+      },
+      "diagnostic_statistics_scope": "Only command publications strictly before recorded termination/contact; contact-time and later commands excluded",
+      "excluded_contact_or_later_rows": 3,
+      "diagnostic_alignment": {
+        "excluded_contact_or_later_rows": 3,
+        "missing_diagnostics": 0,
+        "missing_precontact_diagnostics": 0,
+        "unmatched_diagnostics": 0,
+        "matched_by": "solve timestamp, reason, validation code, ordered within duplicate keys; cycle publication controls cutoff"
+      },
+      "after_goal": {
+        "command_cycles": 247,
+        "matched_diagnostics": 247,
+        "cycles_with_reference": 230,
+        "reason_counts": {
+          "waiting_native_trajectory": 17,
+          "ok": 218,
+          "local_validation_failed": 4,
+          "deadline_miss": 3,
+          "no_feasible_candidate": 5
+        },
+        "phase_timing": {
+          "overall": {
+            "cycles": 230,
+            "kernel_ms": {
+              "min": 3.511868,
+              "p50": 8.8454,
+              "p95": 107.61139324999999,
+              "max": 164.110717
+            },
+            "callback_ms": {
+              "min": 7.655662000615848,
+              "p50": 26.320912000301178,
+              "p95": 133.95030299980135,
+              "max": 213.67281800121418
+            }
+          },
+          "freepath": {
+            "cycles": 88,
+            "kernel_ms": {
+              "min": 3.511868,
+              "p50": 3.8239115000000004,
+              "p95": 6.132178099999993,
+              "max": 9.924862
+            },
+            "callback_ms": {
+              "min": 7.655662000615848,
+              "p50": 9.954367500540684,
+              "p95": 15.945070399175163,
+              "max": 22.481273001176305
+            }
+          },
+          "monitoring": {
+            "cycles": 101,
+            "kernel_ms": {
+              "min": 7.922391,
+              "p50": 9.926462,
+              "p95": 19.424397,
+              "max": 24.64423
+            },
+            "callback_ms": {
+              "min": 22.725185001036152,
+              "p50": 30.33018999849446,
+              "p95": 46.19897400334594,
+              "max": 68.09104199783178
+            }
+          },
+          "intervention": {
+            "cycles": 41,
+            "kernel_ms": {
+              "min": 6.066326,
+              "p50": 93.724842,
+              "p95": 130.955403,
+              "max": 164.110717
+            },
+            "callback_ms": {
+              "min": 10.181767000176478,
+              "p50": 115.6809770000109,
+              "p95": 200.28530599665828,
+              "max": 213.67281800121418
+            }
+          },
+          "unknown": {
+            "cycles": 0,
+            "kernel_ms": null,
+            "callback_ms": null
+          }
+        },
+        "validated_actions": {
+          "validated_cycles": 218,
+          "proposal_recorded_cycles": 218,
+          "proposal_missing_cycles": 0,
+          "validated_nonzero_proposals": 218,
+          "nonzero_proposals_published": 218,
+          "validated_nonzero_publication_ratio": 1.0,
+          "basis": "validated selected proposal before deadline clearing versus published nonzero command",
+          "physical_execution_is_separate_measured_state_metric": true
+        },
+        "validation_attempt_counts": {
+          "0": 218,
+          "5": 27,
+          "3": 18
+        },
+        "cycles_with_rollout_rejection_code3": 3,
+        "cycles_with_braking_rejection_code5": 5,
+        "first_final_braking_rejection": {
+          "cycle": 367,
+          "command_publish_t": 20.620229823000045,
+          "reason": "local_validation_failed",
+          "selected_motion_min_gap_m": 0.02323123630370935,
+          "fallback_braking_min_gap_m": -3.99281785642136e-05
+        },
+        "first_no_feasible_command_t": 22.417256192999957,
+        "final_validation_code_counts": {
+          "-1": 22,
+          "0": 218,
+          "5": 4,
+          "3": 3
+        },
+        "deadline": {
+          "label_count": 3,
+          "validated_nonzero_proposals_cleared": 0,
+          "already_failed_validation": 3,
+          "no_successful_validation_or_no_nonzero_proposal": 3,
+          "final_validation_code_counts": {
+            "5": 3
+          }
+        },
+        "semantics": "code 3: selected-motion clearance/recovery rejected; code 5: fallback braking rejected; candidate attempts are not cycle counts"
+      },
+      "actor_window": {
+        "command_cycles": 172,
+        "matched_diagnostics": 172,
+        "cycles_with_reference": 172,
+        "reason_counts": {
+          "ok": 160,
+          "local_validation_failed": 4,
+          "deadline_miss": 3,
+          "no_feasible_candidate": 5
+        },
+        "phase_timing": {
+          "overall": {
+            "cycles": 172,
+            "kernel_ms": {
+              "min": 3.511868,
+              "p50": 10.000001000000001,
+              "p95": 111.87074769999998,
+              "max": 164.110717
+            },
+            "callback_ms": {
+              "min": 7.866293999541085,
+              "p50": 30.554213999494095,
+              "p95": 139.39060379943837,
+              "max": 213.67281800121418
+            }
+          },
+          "freepath": {
+            "cycles": 30,
+            "kernel_ms": {
+              "min": 3.511868,
+              "p50": 3.8743125000000003,
+              "p95": 5.884706849999996,
+              "max": 8.143424
+            },
+            "callback_ms": {
+              "min": 7.866293999541085,
+              "p50": 9.799722000025213,
+              "p95": 14.604336098273047,
+              "max": 22.481273001176305
+            }
+          },
+          "monitoring": {
+            "cycles": 101,
+            "kernel_ms": {
+              "min": 7.922391,
+              "p50": 9.926462,
+              "p95": 19.424397,
+              "max": 24.64423
+            },
+            "callback_ms": {
+              "min": 22.725185001036152,
+              "p50": 30.33018999849446,
+              "p95": 46.19897400334594,
+              "max": 68.09104199783178
+            }
+          },
+          "intervention": {
+            "cycles": 41,
+            "kernel_ms": {
+              "min": 6.066326,
+              "p50": 93.724842,
+              "p95": 130.955403,
+              "max": 164.110717
+            },
+            "callback_ms": {
+              "min": 10.181767000176478,
+              "p50": 115.6809770000109,
+              "p95": 200.28530599665828,
+              "max": 213.67281800121418
+            }
+          },
+          "unknown": {
+            "cycles": 0,
+            "kernel_ms": null,
+            "callback_ms": null
+          }
+        },
+        "validated_actions": {
+          "validated_cycles": 160,
+          "proposal_recorded_cycles": 160,
+          "proposal_missing_cycles": 0,
+          "validated_nonzero_proposals": 160,
+          "nonzero_proposals_published": 160,
+          "validated_nonzero_publication_ratio": 1.0,
+          "basis": "validated selected proposal before deadline clearing versus published nonzero command",
+          "physical_execution_is_separate_measured_state_metric": true
+        },
+        "validation_attempt_counts": {
+          "0": 160,
+          "5": 27,
+          "3": 18
+        },
+        "cycles_with_rollout_rejection_code3": 3,
+        "cycles_with_braking_rejection_code5": 5,
+        "first_final_braking_rejection": {
+          "cycle": 367,
+          "command_publish_t": 20.620229823000045,
+          "reason": "local_validation_failed",
+          "selected_motion_min_gap_m": 0.02323123630370935,
+          "fallback_braking_min_gap_m": -3.99281785642136e-05
+        },
+        "first_no_feasible_command_t": 22.417256192999957,
+        "final_validation_code_counts": {
+          "0": 160,
+          "5": 4,
+          "3": 3,
+          "-1": 5
+        },
+        "deadline": {
+          "label_count": 3,
+          "validated_nonzero_proposals_cleared": 0,
+          "already_failed_validation": 3,
+          "no_successful_validation_or_no_nonzero_proposal": 3,
+          "final_validation_code_counts": {
+            "5": 3
+          }
+        },
+        "semantics": "code 3: selected-motion clearance/recovery rejected; code 5: fallback braking rejected; candidate attempts are not cycle counts"
+      },
+      "largest_postpublish_to_next_start_gap": {
+        "cycle": 159,
+        "next_cycle": 160,
+        "gap_s": 0.08740077999755158,
+        "previous_publish_t": 8.043545896999944,
+        "next_publish_t": 8.148005934000025,
+        "next_reason": "ok"
+      },
+      "actual_filter": {
+        "crop_node_present": true,
+        "passthrough_output": "/livox/lidar_no_ground",
+        "manifest_adjustment": null,
+        "inferred_from": "recorded launch and manifest, not retained inactive YAML parameters"
+      },
+      "observed_reference_updates": {
+        "consumed_references": 1,
+        "after_actor_new_reference_count": 0,
+        "first_after_actor_new_reference_t": null,
+        "no_new_reference_is_not_proof_optimizer_never_ran": true
+      },
+      "remani_refresh_requests": {
+        "count": 4,
+        "outcomes": {
+          "target_selection_reject": 3,
+          "optimizer_reject_or_timeout": 1
+        },
+        "optimizer_calls": 1,
+        "requests": [
+          {
+            "request_id": 2,
+            "start_sim_s": 18.914902368999947,
+            "outcome": "target_selection_reject",
+            "optimizer_calls": 0
+          },
+          {
+            "request_id": 3,
+            "start_sim_s": 19.99286823600005,
+            "outcome": "target_selection_reject",
+            "optimizer_calls": 0
+          },
+          {
+            "request_id": 4,
+            "start_sim_s": 20.866792730000043,
+            "outcome": "target_selection_reject",
+            "optimizer_calls": 0
+          },
+          {
+            "request_id": 5,
+            "start_sim_s": 21.771691691,
+            "outcome": "optimizer_reject_or_timeout",
+            "optimizer_calls": 1
+          }
+        ]
+      }
+    },
+    {
+      "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/sim_crop_bypass_20261029_01/head_on_bypass_seed11",
+      "group": "bypass",
+      "termination": "native3d_sample_collision",
+      "reached_goal": false,
+      "motion_duration_s": 12.737469182000495,
+      "started_moving": true,
+      "motion_triggered_scene_activated": true,
+      "native3d_independent_sample_collision": true,
+      "native3d_physical_sample_collision": true,
+      "native3d_monitor_ready": true,
+      "native3d_independent_min_physical_sample_gap_m": -0.003181601746352,
+      "native3d_state_samples": 1027,
+      "native3d_online_substep_monitor": {
+        "sample_collision": true,
+        "min_physical_sample_gap": -0.003181601746352,
+        "checks": 5119,
+        "error": null,
+        "geometry_available": true,
+        "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+      },
+      "projection_2d_overlap": true,
+      "projection_2d_min_gap_m": -0.09666671736062749,
+      "projection_is_not_native3d_contact": true,
+      "interface_audit_valid": true,
+      "scope": "analytic native physical sphere samples vs finite cylinder/wall truth; discrete state sample audit, not mesh contact or continuous certificate",
+      "minimum_recorded_3d_sample_gap_m": -0.003181601746352,
+      "label": "仿真旁路自车过滤",
+      "execution_timing": {
+        "group": "matched",
+        "callback_deadline_s": 0.2,
+        "deadline_ms": 200.0,
+        "command_lease_s": 0.25,
+        "validation_reserve_ms": 5.0,
+        "native_solver_budgets_unchanged": true,
+        "same_runtime_sources": true,
+        "cpp_execution_lease_matches_simulator": true,
+        "unchanged": "native geometry, search, prediction, speed, latest-state validation and braking checks",
+        "scope": "paired head-on numerical ROS closed loop; not Gazebo or hardware"
+      },
+      "measured_stop": {
+        "available": true,
+        "window_start_s": 10.587423921999289,
+        "window_end_s": 21.316354323993437,
+        "total_s": 0.2897314739821013,
+        "longest_s": 0.26963977799459826,
+        "intervals": [
+          {
+            "start_s": 18.93025951400341,
+            "end_s": 18.950351209990913,
+            "duration_s": 0.020091695987503044
+          },
+          {
+            "start_s": 21.04671454599884,
+            "end_s": 21.316354323993437,
+            "duration_s": 0.26963977799459826
+          }
+        ],
+        "definition": "measured |v| < 0.01 m/s and |w| < 0.03 rad/s; left-sample intervals",
+        "zero_command_is_not_measured_stop": true
+      },
+      "maneuver_events": {
+        "actor_first_truth_t": 10.587423921999289,
+        "actor_baseline_y_m": 0.0,
+        "first_actual_sideways_t": null,
+        "first_refresh_consumed_t": null,
+        "sideways_after_actor_s": null,
+        "sideways_minus_refresh_s": null,
+        "sideways_before_refresh": null,
+        "sideways_without_refresh": false,
+        "observation_definition": "first measured |y - y_at_actor_appearance| > 0.05 m; not a new controller threshold or causal MPPI attribution"
+      },
+      "remani_delivery": {
+        "available": true,
+        "completed_refresh_requests": 3,
+        "accepted_refresh_requests": 0,
+        "consumed_refresh_references": 0,
+        "first_blocked_to_consumed_s": null,
+        "request_wall_ms": {
+          "min": 1.9178929942427203,
+          "p50": 2.0261530007701367,
+          "p95": 7.761561399092897,
+          "max": 8.398828998906538
+        },
+        "optimizer_wall_ms": null,
+        "unfinished_requests": [],
+        "initial_plan_excluded": true,
+        "source": "analysis/summary.json"
+      },
+      "first_truth_actor_t": 10.587423921999289,
+      "input_sha256": {
+        "manifest.json": "c96342c80d3db5d375b4f9e5b9ff45f3e8cc522e8e8fd671295fcc0203ee873d",
+        "coupling_parameters.json": "dc4c56343f3715a62725295463b023b31d925bd51350c9678eb865000377ae15",
+        "result.json": "cce01ad8131ccc043c350493958e10095dabc18ab81ed2771785e3db2fc2c817",
+        "run_status.json": "f698c31d5731cb01b56d8a58770989a1f766825cda2b16166e5cf967d5c2c629",
+        "trial_audit.json": "8b498ec063ddea9fee294934d59e0ec34476b4433c05914afb4d01f8bdfa8f7f",
+        "state.csv": "de91b40be86b74f775ce232fee6ddbb7218f01d2e0d7c5385385c2cca053a9cf",
+        "native_collision_3d_body.json": "610b893ee21b2ba466b3ffb39b82f7cadc041a70c873c35e709ee33d6fd368fc",
+        "geometry.json": "485bada84a3312f47e45c4d83928bf26b9540aec2af7776a9af4f980bd04201f",
+        "consumed_references.jsonl": "266e4eb2e97de12184599e66f35115b7b968063bb441fe104fcab090e7cb27d8",
+        "reference_events.jsonl": "6d0dcd5d59f7c734282b379ce629a96400a39769db817dcac8b227700a9d1ede",
+        "execution_rollouts.jsonl.gz": "f27ac8cd00aec47e5ea9e07814d5d79446c24148f837facae8a88289a5eafb53",
+        "mppi_diagnostics.json.gz": "ecfa4aa7be7924d8c58039154fd3780a136fd2bc6b0e20189275708269437395",
+        "search/000000.npz": "78a3baa92a51d33b39892c372de7d582175be97254be87c72572003180fe5633",
+        "search/000001.npz": "14546cc43f199b47bcefcfb136c7bd15a86a8082e3ab8fe8ae014d6ea56d6d00",
+        "search/000002.npz": "081d431f20e2e4f5350b2478f14e99cbe98f5c7a627b8d7ead8478307fdceacd",
+        "search/000003.npz": "1192e1c162328745313501be9633b3f367e4c1793d44a5cb921dfe5dddc3434d",
+        "search/000004.npz": "983107a3940e2c5a5ed5cf7847434fa99f0925b42c0111b99df97444496e4ec1",
+        "search/000005.npz": "cd0d5e456213ba68d5580e0f84c41bda542d2c5558f09a06be2c7cf0d9dda483",
+        "search/000006.npz": "8d43995627ad339e35559025bcaa2578042f13995af9d8193f0afe844f70b1e1",
+        "search/000007.npz": "9441bb8b7a3835d58fd399c8fa77e2c29f58bc95c5a7ec72695aff46b4f1cefb",
+        "search/000008.npz": "5d05fbd670e8fe33fb2baf7a244516ee772076c83bc742a3fd31f793f58db10a",
+        "search/000009.npz": "187c38fbd6f3f1a7a5f6a4bee93ecc549c55b71a9c867c0af7e24ec1e8f613ca",
+        "search/000010.npz": "0a7d1379a838ed72a000895f0ba767eb60c5823764769188413f27d943d1315e",
+        "search/000011.npz": "c0bbfb0ee3f3394c32aade5a52b2452f4e1875bc8e8f14d7bbcecfae3eccb1c4",
+        "search/000012.npz": "924b5a5dabf1e5e36dd3ee15bac79eb80500df818057a3acecb923a9e3ac2a22",
+        "search/000013.npz": "cb6c1a6c2ffdaebdeaace75d6d78ee6d10918e9c637842cf7efd8008b3b96131",
+        "search/000014.npz": "530afabaf7b05301069fa3494d7e82fd8f2278b42a9707df74f7eec74342933c",
+        "search/000015.npz": "1ad55dbef292dcce824a91f7cb1d6513e734d7a79f9319a6b3c56763e7fd5e45",
+        "search/000016.npz": "092e0bece5aad60bc80b9edec5bc4f724d36911646771becceb9af4ab4f5c9f6",
+        "search/000017.npz": "2a24b06e740ebbc8ec498b8601421f10ba2be2300fc4cfbdf8c2372b95f35370",
+        "search/000018.npz": "31e20e210154f3e5363fed4564056a69221b6ad4bac2bcf16a9c08d47455e956",
+        "search/000019.npz": "d6f7af588c4764d6c9bb7bee95c97f167746c61c3da24ac78074bf08899f9081",
+        "search/000020.npz": "6ac6e2a6b6ebd2f8609a6809b716982e07dc77b884ae5c44756bb2799bcfcba4",
+        "search/000021.npz": "0cc125eb0b3cae547cf371d17bdcc950ee66534d5fd68a91dc23eea2b46a4c52",
+        "search/000022.npz": "6d3af596aa0ba34aa8e8a607e8185f1f9f8a0f5de2417be3d667ab4b6f208fda",
+        "search/000023.npz": "9664f394fb1c3158833a7eb260e74bc5aae00db7076a5e474bd197fc29517d32",
+        "search/000024.npz": "38d2ce55b0049220271da246a0a487676bc67218ebcff0c7b70221467737f413",
+        "search/000025.npz": "2b4215f2cc1456499622c53bc7ca2df7f3834ae1922ceb8547c2876a9ba2aa1b",
+        "search/000026.npz": "e7c7fbeb9f9e19b919fdf1a77cb3f2a12e565fbc8bd1d052db5a3ddfef14a005",
+        "search/000027.npz": "994da1f5ededb4552e065f98d525e68859aa0db0e599e27759d82ed31aa741f4",
+        "search/000028.npz": "af9839e8af78d0bfefbf7eebb66c84eddd81893357c8a868f3c3a70e3b3c3ef8",
+        "search/000029.npz": "6ca6c97aa8e297af6fb1a68d8bcaaf040c4e0a5db48b76a642969ea28b661790",
+        "search/000030.npz": "4ada95b8947e7d2b21246d731b92eda63ad0959c16bdc1a3558edfd82c11fa3d",
+        "search/000031.npz": "4143321614c27ce811c9a496c28dd38b6450eae906fd811cc9f62e5d51b8ba88",
+        "search/000032.npz": "b3ee304b163bcfa8c80ab1af72d971adf4b33e28774a339a98f42832102ccfbf",
+        "search/000033.npz": "d10c67939ba589f69b59ba7761faa7c2b4b70cce6a13eabfd502afe0bc228984",
+        "search/000034.npz": "ecfc81f11454fb087b7a27349f6c259079d593a7ae4ac88e63c7ebeabcfac424",
+        "search/000035.npz": "e5b01eb9825cdce290a8d7fdcc35a2ae73a9391d8059de51d3da47d539c2e43a",
+        "search/000036.npz": "8dd091a8fd3cb6e081dd420c557982cc30f5758363bc9cc80585645af5a8f355",
+        "search/000037.npz": "e74f25470d714078cabcf51ef528cb7a9127c42b179e10069eebae9218a1cbe6",
+        "search/000038.npz": "cf5b299908f69c70784fe1107d1c6fef5675198ed2b2690558db5240949bd5b8",
+        "search/000039.npz": "b9f27e607f81323cddc8ca495fbd6b642f942a314238561450e7159aa4419852",
+        "search/000040.npz": "efc9fd2c2a68fafb5544583357b48495bcd2ba112f1bf5282bdf8823d1a49977",
+        "search/000041.npz": "581152b8792506758230eb92afd37304d559e8a1350266be9718225701446568",
+        "search/000042.npz": "0802ba848f4436b1f678259ede87e01f0c5f49c3ba6f619884c0c092808fa1eb",
+        "search/000043.npz": "acb64f725c3d62802e3bc5fefc6767c13a07c2c4d4546cf3ffdd19ce5870265c",
+        "search/000044.npz": "92fb2150bcf7d5cb7188ea4db1610fd631e74ef9729783de428de8cd76690f7d",
+        "search/000045.npz": "984d1f58c786908feed916ca5b46475d68ea78ec78d0785839c1da1c9f26b113",
+        "search/000046.npz": "39b723e1a85a7706db7f8fad13c3c3986c796d20ea68092a30d832de39ee1645",
+        "search/000047.npz": "cef44190c879e0d4a9bff799526c77f2685a74d3f7943694f474ace6ac3b97de",
+        "search/000048.npz": "a1c7b89593458037f0be8765baab953a55713e61e7cb4cfefd7847534061cddc",
+        "search/000049.npz": "0713793050cd78ffd4ba288462bb5ce75d6c6ef5e491a9c4e96fa8076e0c41b7",
+        "search/000050.npz": "c7a1612e2ba51ecf85a33b24ee490941891b26eebe26633328541741470f6e66",
+        "search/000051.npz": "dbbabeecddffd7b59b87449b37e90ba4c768b4645c36d5fd29e67ac0ddb4280d",
+        "search/000052.npz": "bee01623e206272fa879ef1174310a3b1ddf0c3f957796630bf58fd146154600",
+        "search/000053.npz": "545e212eb4cf9def7d3a2ad03dbb5a73274f255f183f30e679ebc6f8cdaf4bad",
+        "search/000054.npz": "89bfc62c39bcded35c5c436994b30e74001c0daec947fd84b9877ed6c8c5b72b",
+        "search/000055.npz": "830813205bdbb2b022ec3a3089ef47086df456cd34fe370b587b7aa4a5a7ea15",
+        "search/000056.npz": "323218d667b533294e7603f2c6e86080efe50782d94821caa1289ca963005393",
+        "search/000057.npz": "d4e798f5ab5312d68b50b3ca3cee2ed4e1a633cb6f1c6918fc2ca7e93b10c609",
+        "search/000058.npz": "4fe6b80836b67720572a3c6f9c1914c5b04c2c517e8f7ee9887f68960044e996",
+        "search/000059.npz": "c081a975dac95bd92e611849eb99757c9a62f1d5b36dc0266720467bd84fa5b0",
+        "search/000060.npz": "0a475c0526032aaed3c34a52a993c019efb02bc059fef8b8829b5f04902ace67",
+        "search/000061.npz": "6953016533cc8dff91f87bca6bac33d8e01cfb0d9a77b93e3cc541aa63b1daae",
+        "search/000062.npz": "3eb76c927d9d2074c210c2f9a7fb05f1248c9e01ebbfd5d866f4f623ce4eefac",
+        "search/000063.npz": "46f471195232b56cd92e3dd5ab6d2119479830754ed67c6df6f1816593d90ac2",
+        "search/000064.npz": "3966ce306228e6a0151ab78b816654d3d1ea5075131a507491f1192cbca70b9d",
+        "search/000065.npz": "578e3eb917d196b1518e8e1225f53903cc576611c8fb9f7ba29625f693f0421c",
+        "search/000066.npz": "a133efa9815de6babc0f0731e83f7095838dce0a1b7708f2cc3c0e20a6c4b294",
+        "search/000067.npz": "5f0b070900c66e660169b0c2c485437592b53f2b8609f276d955daf48a0eadb9",
+        "search/000068.npz": "f3edd9b9eac7b8ee7c204434b54ab2c5f031952833683bf870e6b50c23ee79ba",
+        "search/000069.npz": "cbfc75650c1b5c8053aec4aa621ee31aa630840cadf6a46ca18870883db6fb99",
+        "search/000070.npz": "7ed83202a7db1822f790ef235149a1a72555d6e7f9497c26889728a6be740140",
+        "search/000071.npz": "70f65903ec58b3131c5782fea48b1163b2ebae641edccf8123cb952c11ae00dc",
+        "search/000072.npz": "991f9907794c17f2c10a2a2ef6350d4b825a0610c193ed5279cf17dcd6364115",
+        "search/000073.npz": "cf94f429b35a70f0aaf599b62ef1805c54de78a66921ae1906691f1c97ff362d",
+        "search/000074.npz": "1e2b13f2dc0d61a56e210949865de5bb9d36f53dabe3de5e1fd1987f73cebe0c",
+        "search/000075.npz": "af72f32ed0ee3b3ab3feda5c6061a361b8aa5e1937a3168bcad75235b9814919",
+        "search/000076.npz": "f6beeec43be1bc8aea0ff86da508dc41ac0b1dc2176b99c07044385bff5fdaf5",
+        "search/000077.npz": "554307a8a4d9df16719ef5bdcd75c8b09149c6bcc771a89e2d384ed423275838",
+        "search/000078.npz": "e1a3714aee6490e607fa338b6812a348368edd28321a9ab2ba8f2d54c8674f6a",
+        "search/000079.npz": "c4cb42f5b8be6c8c39a2debf0311ae00325b11496478e7501ccb25aba5f3ea7a",
+        "search/000080.npz": "af5210081bbcb214665e012e98bad4df370e6d50d95f55687983c53872b7f28f",
+        "search/000081.npz": "d61d164a63ffb179ff85a296f72044a143f539c04ba040ae0d480d21097f965c",
+        "search/000082.npz": "ca006885345577bfaf0ee77b8bfce69635130cedd3edfd122985886ceb771365",
+        "search/000083.npz": "01076466fdf130cabe45cfdf56b90668d678236cb5dee189f59d4c05653a84d3",
+        "search/000084.npz": "3de8a377ff795e268c00beea82af54b6136eacb72f56096c70f57068f847a9f4",
+        "search/000085.npz": "4c7ced88011f45e2c3c837af100d14ab673d8af5a4759f3b142af8cc147dd7ce",
+        "search/000086.npz": "846b4397809793e6fd83f6e4b22d2b2933874864f242540ebe585d96c5e1b8d9",
+        "search/000087.npz": "e16ebdb587858f7d07c15b57b202651c53d5f2cbde5230eb40700e8945245941",
+        "search/000088.npz": "dfde73912ae59b15859751404b80c72feaa9741b68a0213f5a76666dbee179cf",
+        "search/000089.npz": "ef89cb3c6b2229fb1cd96796fc02adc67972b8542c6b30b4f812acf265286f3a",
+        "search/000090.npz": "9ba57ed388a8f2ff8bf718556ae88b192b788119f705ca8e5f84711a9939ad34",
+        "search/000091.npz": "b6d5274c96ef3c20b57dfa22c9f6c31ebf1d612aff82320adbac2833b1b2e8fa",
+        "search/000092.npz": "43783e75ae4026dd9875195ca1f3c91a1e30910d1951b19b5045f53562b634dc",
+        "search/000093.npz": "f96467f770cf50db2baf4bd8b1d1d3daa7ec86283fbe0ad762f5e7a8993dc69d",
+        "search/000094.npz": "f772d6a1b7a9ed8dee3c8b2c169b96ebf6c4308704eb9f6abd3ff80cc2ce1e0c",
+        "obstacles.csv": "bc2be4554186e99e590835f8456d9e79feba70891adf6d2b2420dfb68b1f9bc2",
+        "state_mppi_cycles.jsonl": "437035c26fd2c012f24d0aa467cc1c2adb6ce3bf7ed1521e76971aa02189091f",
+        "analysis/summary.json": "6167745d515ceafc58907393d64654b5ea2055459d4372a13e161ba17a1800b8",
+        "experiment.launch": "84161dd553b8451e9fc07fe9b4f55082b9e9c0028c01244b18e1254178e648b6"
+      },
+      "diagnostic_statistics_scope": "Only command publications strictly before recorded termination/contact; contact-time and later commands excluded",
+      "excluded_contact_or_later_rows": 0,
+      "diagnostic_alignment": {
+        "excluded_contact_or_later_rows": 0,
+        "missing_diagnostics": 1,
+        "missing_precontact_diagnostics": 1,
+        "unmatched_diagnostics": 0,
+        "matched_by": "solve timestamp, reason, validation code, ordered within duplicate keys; cycle publication controls cutoff"
+      },
+      "after_goal": {
+        "command_cycles": 238,
+        "matched_diagnostics": 238,
+        "cycles_with_reference": 225,
+        "reason_counts": {
+          "waiting_native_trajectory": 13,
+          "ok": 210,
+          "local_validation_failed": 4,
+          "deadline_miss": 1,
+          "no_feasible_candidate": 10
+        },
+        "phase_timing": {
+          "overall": {
+            "cycles": 225,
+            "kernel_ms": {
+              "min": 3.507038,
+              "p50": 9.130343,
+              "p95": 97.78008739999993,
+              "max": 126.452693
+            },
+            "callback_ms": {
+              "min": 5.277148986351676,
+              "p50": 26.113319996511564,
+              "p95": 121.53828259906727,
+              "max": 201.52386398694944
+            }
+          },
+          "freepath": {
+            "cycles": 88,
+            "kernel_ms": {
+              "min": 3.507038,
+              "p50": 3.7855280000000002,
+              "p95": 7.412409649999995,
+              "max": 18.728159
+            },
+            "callback_ms": {
+              "min": 7.629394007381052,
+              "p50": 10.524665500270203,
+              "p95": 25.37884254634262,
+              "max": 39.75534500204958
+            }
+          },
+          "monitoring": {
+            "cycles": 99,
+            "kernel_ms": {
+              "min": 8.114595,
+              "p50": 10.194893,
+              "p95": 18.623675599999995,
+              "max": 24.644851
+            },
+            "callback_ms": {
+              "min": 22.947478995774873,
+              "p50": 30.89969999564346,
+              "p95": 46.47555060073499,
+              "max": 52.069226003368385
+            }
+          },
+          "intervention": {
+            "cycles": 38,
+            "kernel_ms": {
+              "min": 3.981742,
+              "p50": 79.9184645,
+              "p95": 111.85474814999999,
+              "max": 126.452693
+            },
+            "callback_ms": {
+              "min": 5.277148986351676,
+              "p50": 99.82391450466821,
+              "p95": 171.44177535374183,
+              "max": 201.52386398694944
+            }
+          },
+          "unknown": {
+            "cycles": 0,
+            "kernel_ms": null,
+            "callback_ms": null
+          }
+        },
+        "validated_actions": {
+          "validated_cycles": 210,
+          "proposal_recorded_cycles": 210,
+          "proposal_missing_cycles": 0,
+          "validated_nonzero_proposals": 210,
+          "nonzero_proposals_published": 210,
+          "validated_nonzero_publication_ratio": 1.0,
+          "basis": "validated selected proposal before deadline clearing versus published nonzero command",
+          "physical_execution_is_separate_measured_state_metric": true
+        },
+        "validation_attempt_counts": {
+          "0": 210,
+          "5": 38
+        },
+        "cycles_with_rollout_rejection_code3": 0,
+        "cycles_with_braking_rejection_code5": 5,
+        "first_final_braking_rejection": {
+          "cycle": 365,
+          "command_publish_t": 19.963956725999992,
+          "reason": "local_validation_failed",
+          "selected_motion_min_gap_m": 0.021304268222547218,
+          "fallback_braking_min_gap_m": -0.00028184458810495694
+        },
+        "first_no_feasible_command_t": 20.862774511999987,
+        "final_validation_code_counts": {
+          "-1": 23,
+          "0": 210,
+          "5": 5
+        },
+        "deadline": {
+          "label_count": 1,
+          "validated_nonzero_proposals_cleared": 0,
+          "already_failed_validation": 1,
+          "no_successful_validation_or_no_nonzero_proposal": 1,
+          "final_validation_code_counts": {
+            "5": 1
+          }
+        },
+        "semantics": "code 3: selected-motion clearance/recovery rejected; code 5: fallback braking rejected; candidate attempts are not cycle counts"
+      },
+      "actor_window": {
+        "command_cycles": 167,
+        "matched_diagnostics": 167,
+        "cycles_with_reference": 167,
+        "reason_counts": {
+          "ok": 152,
+          "local_validation_failed": 4,
+          "deadline_miss": 1,
+          "no_feasible_candidate": 10
+        },
+        "phase_timing": {
+          "overall": {
+            "cycles": 167,
+            "kernel_ms": {
+              "min": 3.540447,
+              "p50": 10.194893,
+              "p95": 101.3535687,
+              "max": 126.452693
+            },
+            "callback_ms": {
+              "min": 5.277148986351676,
+              "p50": 30.503397007123567,
+              "p95": 132.53150279633695,
+              "max": 201.52386398694944
+            }
+          },
+          "freepath": {
+            "cycles": 30,
+            "kernel_ms": {
+              "min": 3.540447,
+              "p50": 3.8892595,
+              "p95": 10.1402787,
+              "max": 18.728159
+            },
+            "callback_ms": {
+              "min": 7.629394007381052,
+              "p50": 12.83857199450722,
+              "p95": 26.443666301929596,
+              "max": 39.75534500204958
+            }
+          },
+          "monitoring": {
+            "cycles": 99,
+            "kernel_ms": {
+              "min": 8.114595,
+              "p50": 10.194893,
+              "p95": 18.623675599999995,
+              "max": 24.644851
+            },
+            "callback_ms": {
+              "min": 22.947478995774873,
+              "p50": 30.89969999564346,
+              "p95": 46.47555060073499,
+              "max": 52.069226003368385
+            }
+          },
+          "intervention": {
+            "cycles": 38,
+            "kernel_ms": {
+              "min": 3.981742,
+              "p50": 79.9184645,
+              "p95": 111.85474814999999,
+              "max": 126.452693
+            },
+            "callback_ms": {
+              "min": 5.277148986351676,
+              "p50": 99.82391450466821,
+              "p95": 171.44177535374183,
+              "max": 201.52386398694944
+            }
+          },
+          "unknown": {
+            "cycles": 0,
+            "kernel_ms": null,
+            "callback_ms": null
+          }
+        },
+        "validated_actions": {
+          "validated_cycles": 152,
+          "proposal_recorded_cycles": 152,
+          "proposal_missing_cycles": 0,
+          "validated_nonzero_proposals": 152,
+          "nonzero_proposals_published": 152,
+          "validated_nonzero_publication_ratio": 1.0,
+          "basis": "validated selected proposal before deadline clearing versus published nonzero command",
+          "physical_execution_is_separate_measured_state_metric": true
+        },
+        "validation_attempt_counts": {
+          "0": 152,
+          "5": 38
+        },
+        "cycles_with_rollout_rejection_code3": 0,
+        "cycles_with_braking_rejection_code5": 5,
+        "first_final_braking_rejection": {
+          "cycle": 365,
+          "command_publish_t": 19.963956725999992,
+          "reason": "local_validation_failed",
+          "selected_motion_min_gap_m": 0.021304268222547218,
+          "fallback_braking_min_gap_m": -0.00028184458810495694
+        },
+        "first_no_feasible_command_t": 20.862774511999987,
+        "final_validation_code_counts": {
+          "0": 152,
+          "5": 5,
+          "-1": 10
+        },
+        "deadline": {
+          "label_count": 1,
+          "validated_nonzero_proposals_cleared": 0,
+          "already_failed_validation": 1,
+          "no_successful_validation_or_no_nonzero_proposal": 1,
+          "final_validation_code_counts": {
+            "5": 1
+          }
+        },
+        "semantics": "code 3: selected-motion clearance/recovery rejected; code 5: fallback braking rejected; candidate attempts are not cycle counts"
+      },
+      "largest_postpublish_to_next_start_gap": {
+        "cycle": 150,
+        "next_cycle": 151,
+        "gap_s": 0.06188333799946122,
+        "previous_publish_t": 7.42029449100005,
+        "next_publish_t": 7.481103423000036,
+        "next_reason": "waiting_native_trajectory"
+      },
+      "actual_filter": {
+        "crop_node_present": false,
+        "passthrough_output": "/velodyne_points",
+        "manifest_adjustment": {
+          "self_crop_bypassed": true,
+          "removed_node": "crop_box_filter",
+          "upstream": "passthrough_z",
+          "output": "/velodyne_points",
+          "reason": "Synthetic raw cloud contains only environment walls and actor cylinders, no self returns.",
+          "inactive_parameters": "Existing /crop_box_filter parameters are retained but have no running consumer.",
+          "unchanged": "height filtering, tracking, 3D geometry, CV, all planner/controller parameters, 200/250ms timing",
+          "production_changed": false,
+          "launch_sha256": "84161dd553b8451e9fc07fe9b4f55082b9e9c0028c01244b18e1254178e648b6",
+          "scope": "simulation-specific perception correction, not a hardware self-filter prescription"
+        },
+        "inferred_from": "recorded launch and manifest, not retained inactive YAML parameters"
+      },
+      "observed_reference_updates": {
+        "consumed_references": 1,
+        "after_actor_new_reference_count": 0,
+        "first_after_actor_new_reference_t": null,
+        "no_new_reference_is_not_proof_optimizer_never_ran": true
+      },
+      "remani_refresh_requests": {
+        "count": 3,
+        "outcomes": {
+          "target_selection_reject": 3
+        },
+        "optimizer_calls": 0,
+        "requests": [
+          {
+            "request_id": 2,
+            "start_sim_s": 18.804620770000042,
+            "outcome": "target_selection_reject",
+            "optimizer_calls": 0
+          },
+          {
+            "request_id": 3,
+            "start_sim_s": 19.823255938999978,
+            "outcome": "target_selection_reject",
+            "optimizer_calls": 0
+          },
+          {
+            "request_id": 4,
+            "start_sim_s": 20.701922473999957,
+            "outcome": "target_selection_reject",
+            "optimizer_calls": 0
+          }
+        ]
+      }
+    }
+  ],
+  "changed_factor": "simulation self-crop bypass only",
+  "scope": "fixed-arm complete REMANI+MPPI ROS numerical SIL, not Gazebo or hardware",
+  "historical_single_trial_comparison": true,
+  "statistical_success_rate_claim": false,
+  "endpoint_perception_audit": {
+    "trial": "/home/l/remani_ws/experiments/online_remani_validation/results/sim_crop_bypass_20261029_01/head_on_bypass_seed11",
+    "script_sha256": "8d11868351c5db47307897d7460b8b22d3eb172d4091e3e5118c1d9fd2ae12c6",
+    "scope": "Recorded endpoint audit only; actor truth is evaluation-only. Dynamic point query only, not combined static ESDF. No new simulation or performance measurement.",
+    "topology": {
+      "crop_node_absent": true,
+      "height_output": "/velodyne_points",
+      "bypass_verified": true,
+      "manifest_nodes_agree": true,
+      "launch_sha256_matches_manifest": true
+    },
+    "endpoint": {
+      "time_s": 21.316354323993437,
+      "state": [
+        1.8766400802299685,
+        0.0336125529511426,
+        -0.5148699252743578,
+        -0.0005937125874451766,
+        -0.0026647624040382497
+      ],
+      "actors": [
+        {
+          "t": 21.316354323993437,
+          "x": 2.3672555472399104,
+          "y": 0.0,
+          "r": 0.2,
+          "id": 1.0,
+          "vx": -0.18,
+          "vy": 0.0
+        }
+      ],
+      "native_truth_monitor": {
+        "sample_collision": true,
+        "min_physical_sample_gap": -0.003181601746352,
+        "checks": 5119,
+        "error": null,
+        "geometry_available": true,
+        "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+      },
+      "minimum_actor_physical_gap_m": -0.003181601746352,
+      "contact_balls_zero_based": [
+        {
+          "index": 20,
+          "local_body": [
+            0.16999999999999998,
+            0.16999999999999998,
+            0.16,
+            0.13,
+            0.18,
+            50000.0,
+            0.0
+          ],
+          "world_center": [
+            2.1083124121490555,
+            0.09786152666413167,
+            0.16
+          ],
+          "physical_radius_m": 0.08,
+          "physical_gap_m": -0.003181601746352,
+          "dynamic_hard_gap_m": 0.08876852396575685
+        },
+        {
+          "index": 40,
+          "local_body": [
+            0.16999999999999998,
+            0.16999999999999998,
+            0.24,
+            0.13,
+            0.18,
+            50000.0,
+            0.0
+          ],
+          "world_center": [
+            2.1083124121490555,
+            0.09786152666413167,
+            0.24
+          ],
+          "physical_radius_m": 0.08,
+          "physical_gap_m": -0.003181601746352,
+          "dynamic_hard_gap_m": 0.024465750352077265
+        },
+        {
+          "index": 60,
+          "local_body": [
+            0.16999999999999998,
+            0.16999999999999998,
+            0.32,
+            0.13,
+            0.18,
+            50000.0,
+            0.0
+          ],
+          "world_center": [
+            2.1083124121490555,
+            0.09786152666413167,
+            0.32
+          ],
+          "physical_radius_m": 0.08,
+          "physical_gap_m": -0.003181601746352,
+          "dynamic_hard_gap_m": -0.017484805534965328
+        },
+        {
+          "index": 80,
+          "local_body": [
+            0.16999999999999998,
+            0.16999999999999998,
+            0.4,
+            0.13,
+            0.18,
+            50000.0,
+            0.0
+          ],
+          "world_center": [
+            2.1083124121490555,
+            0.09786152666413167,
+            0.4
+          ],
+          "physical_radius_m": 0.08,
+          "physical_gap_m": -0.003181601746352,
+          "dynamic_hard_gap_m": -0.03462189706521064
+        },
+        {
+          "index": 100,
+          "local_body": [
+            0.16999999999999998,
+            0.16999999999999998,
+            0.48000000000000004,
+            0.13,
+            0.18,
+            50000.0,
+            0.0
+          ],
+          "world_center": [
+            2.1083124121490555,
+            0.09786152666413167,
+            0.48000000000000004
+          ],
+          "physical_radius_m": 0.08,
+          "physical_gap_m": -0.003181601746352,
+          "dynamic_hard_gap_m": -0.04341492686354796
+        },
+        {
+          "index": 120,
+          "local_body": [
+            0.16999999999999998,
+            0.16999999999999998,
+            0.56,
+            0.13,
+            0.18,
+            50000.0,
+            0.0
+          ],
+          "world_center": [
+            2.1083124121490555,
+            0.09786152666413167,
+            0.56
+          ],
+          "physical_radius_m": 0.08,
+          "physical_gap_m": -0.003181601746352,
+          "dynamic_hard_gap_m": -0.021097886628362456
+        }
+      ]
+    },
+    "recorded_snapshot": {
+      "sequence": 421,
+      "publication_time_s": 21.275873511999976,
+      "observation_time_s": 21.23569725499999,
+      "extrapolation_s": 0.08065706899344605,
+      "dynamic_points": 93,
+      "body_samples": 160,
+      "health": 1.0,
+      "velocity_min": [
+        -0.18000000715255737,
+        -1.7854429046337827e-10,
+        -1.6627727542751184e-22
+      ],
+      "velocity_max": [
+        -0.18000000715255737,
+        -1.7854429046337827e-10,
+        -1.6627727542751184e-22
+      ],
+      "minimum_dynamic_hard_gap_m": -0.04341492686354796,
+      "minimum_gap_ball_zero_based": 100,
+      "minimum_gap_world_ball": [
+        2.1083124121490555,
+        0.09786152666413167,
+        0.48000000000000004
+      ],
+      "nearest_predicted_point": [
+        2.1749858735802032,
+        0.05147588996639214,
+        0.4500000476837158
+      ],
+      "prefix_sha256": "682f03d1a64b55204612ad33714e8f7239f2b48f65aba8dccab8d19b0aa00344"
+    },
+    "sampling_evidence": {
+      "minimum_sensor_range_m": 0.3,
+      "voxel_leaf_size_m": 0.1,
+      "configured_output_cap": 160,
+      "last_tracker_log": {
+        "downsampled": 2593,
+        "residual": 186,
+        "health": 1
+      },
+      "stride_if_all_last_residual_points_are_one_qualified_actor": 2,
+      "note": "Latest throttled tracker log is not guaranteed to be the identical observation. Range/voxel/stride stages are NOT fully replayed; this does not uniquely attribute missing surface points."
+    },
+    "input_sha256": {
+      "experiment.launch": "84161dd553b8451e9fc07fe9b4f55082b9e9c0028c01244b18e1254178e648b6",
+      "manifest.json": "c96342c80d3db5d375b4f9e5b9ff45f3e8cc522e8e8fd671295fcc0203ee873d",
+      "parameters.yaml": "0de8df9f07b4409cc3ad83e1677f7eaeaadce1d5be9f5b28b0f4b4a92e617223",
+      "result.json": "cce01ad8131ccc043c350493958e10095dabc18ab81ed2771785e3db2fc2c817",
+      "state.csv": "de91b40be86b74f775ce232fee6ddbb7218f01d2e0d7c5385385c2cca053a9cf",
+      "obstacles.csv": "bc2be4554186e99e590835f8456d9e79feba70891adf6d2b2420dfb68b1f9bc2",
+      "native3d_snapshots/index.jsonl": "3e0ec465cbd557372af33b5266475c657e678f6d8eaa8c7e58b9272fe833abd8",
+      "runtime/simulator.py": "4327653b398d88be0966a51dcc6e6f573b7e9001848bb40d51004cabe1e0fbab",
+      "runtime/native_collision_runtime.py": "cae36796bd912bc64ae2877d836d66a2a00c6df7f6e6533532bceaa4da9ecf14"
+    },
+    "tracker_log_sha256": {
+      "roslogs/bf3e613c-d334-11f1-94d6-50bbb5b84c3d/dynamic_obstacle_tracker-7-stdout.log": "22ff71f9bfbe82beea50e0e375b7fb6fc70b06eef1f0dd82ad0d7fef60134648",
+      "roslogs/latest/dynamic_obstacle_tracker-7-stdout.log": "22ff71f9bfbe82beea50e0e375b7fb6fc70b06eef1f0dd82ad0d7fef60134648"
+    },
+    "hash_scope": "Hashes attest current recorded files and the exact frame prefix, not historical in-memory executables or every raw sensor point."
+  },
+  "visualization": {
+    "frames": 48,
+    "alignment": "each recorded actual motion anchor; freeze at actual termination",
+    "actual_robot_projection": true,
+    "actual_remani_reference": true,
+    "actual_recorded_mppi_search_subset": true,
+    "no_controller_reexecution": true
+  }
+}

@@ -1,0 +1,23 @@
+状态合同：单seed静态诊断（非速度benchmark）
+逐组报告精确状态/引用链；OFF/ON请求不视为同一输入，不能据此宣称速度因果改善。
+
+OFF: static_coupled_seed11_signed_off
+结果=goal；保守碰撞=False；审计有效=True
+odom记录=1776；MPPI周期=721；成功kernel=564；实际验证命令=531；精确完整周期链=531
+native请求=6；精确连至验证命令=2
+
+ON: static_coupled_seed11_signed_on
+结果=goal；保守碰撞=False；审计有效=True
+odom记录=1734；MPPI周期=707；成功kernel=547；实际验证命令=521；精确完整周期链=521
+native请求=4；精确连至验证命令=2
+
+配对条件={"scene": true, "seed": true, "build": true, "build_manifest_sha256": true, "runtime_sha256": true, "other_recorded_settings_equal": true}
+
+解释边界：
+单seed静态诊断SIL；OFF/ON闭环请求可能不同，不是同一冻结输入的因果配对。
+同步诊断写入/flush会扰动后续周期时序；本实验不是速度benchmark，也不证明动态或硬件安全。
+只以序列化hash+seq+纳秒stamp+frames关联状态；禁止最近CSV/近时刻替代精确身份。
+callback-entry不是网络到达时刻；capture_mono/capture_sim才是C++事件发生时刻，mono/sim可能是延迟flush时刻。
+缺失或歧义为null/未知，空证据不算完整链；同一payload重复回调不推断唯一收包时刻。
+kernel返回0、验证成功、最终命令发布与非零物理运动是不同事实；有效性字段不是安全认证。
+backend快照/已有静态10cm评估仅作同一冻结输入诊断；报告不重跑规划器或改变碰撞门限。
