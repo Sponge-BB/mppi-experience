@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only fixed-q base-arm self-collision calculation, one optimizer obstacleGradCostforMM sample; not a trajectory-integrated objective, an online timing result, or a mesh self-collision certificate.",
+  "inputs": {
+    "parameters": "experiments/online_remani_validation/results/watchdog_off_20261029_01/mid_cross_seed11/parameters.yaml",
+    "recorded_geometry": "experiments/online_remani_validation/results/watchdog_off_20261029_01/mid_cross_seed11/native_collision_3d_body.json",
+    "candidate": "experiments/online_remani_validation/results/urdf_sphere_simplification_20261029_01/candidate_coarse.json",
+    "candidate_center_field": "center_ground",
+    "joint_q_rad": [0.0, 0.5209807817203074, -1.048907973863552, -0.00003490658503988659, 0.9472949048124424, 0.00005235987755982989],
+    "joint_q_degrees": [0.0, 29.85, -60.098, -0.002, 54.276, 0.003],
+    "fixed_transform_xyz_ypr": [0.005, 0.0, 0.68, 0.0, 0.0, 0.0],
+    "self_safe_margin_m": 0.1,
+    "weight_manipulator_self": 1000.0,
+    "arm_physical_radius_m": 0.034,
+    "arm_spheres_per_zero_based_link": [3, 5, 2, 5, 1, 4],
+    "dh_reconstructed_vs_recorded_arm_max_coordinate_error_m": 0.0
+  },
+  "formula": {
+    "surface_gap": "norm(base_center - arm_center) - base_physical_radius - arm_physical_radius",
+    "cubic_sum": "sum(max(0, self_safe_margin - surface_gap)^3) over tested base-arm pairs",
+    "weighted_single_sample_cost": "weight_manipulator_self * cubic_sum",
+    "indices": "All arm-link and sphere indices are zero based. Hard-check scope for existing Piper is arm-link index >= 2. Original optimizer soft scope was arm-link index >= 1."
+  },
+  "original_140": {
+    "soft_start_link_1": {
+      "pair_count": 2380,
+      "min_surface_gap_m": 0.1799230228602267,
+      "physical_overlap_pairs": 0,
+      "soft_penalized_pairs": 0,
+      "cubic_sum": 0.0,
+      "weighted_single_sample_cost": 0.0
+    },
+    "existing_hard_scope_start_link_2": {
+      "pair_count": 1680,
+      "min_surface_gap_m": 0.30620767863836135,
+      "physical_overlap_pairs": 0,
+      "soft_penalized_pairs": 0,
+      "cubic_sum": 0.0,
+      "weighted_single_sample_cost": 0.0
+    }
+  },
+  "candidate_B_before_alignment": {
+    "fixed_sphere_count": 47,
+    "soft_start_link_1": {
+      "pair_count": 799,
+      "min_surface_gap_m": -0.03803879899682856,
+      "physical_overlap_pairs": 1,
+      "soft_penalized_pairs": 25,
+      "cubic_sum": 0.004778103526014984,
+      "weighted_single_sample_cost": 4.778103526014984
+    },
+    "new_soft_penalty_arm_link_indices": [1],
+    "cost_by_fixed_component": {
+      "arm_base": 3.200095539229841,
+      "arm_base_link": 1.3478161486366953,
+      "arm_support": 0.23019183814844782
+    },
+    "minimum_pair": {
+      "fixed_sphere_index": 45,
+      "fixed_link": "arm_base",
+      "fixed_center_m": [-0.0042500001192092894, -0.00000015, 0.7310000014603139],
+      "fixed_radius_m": 0.07664569445009725,
+      "arm_sphere_index": 7,
+      "arm_link_index": 1,
+      "arm_link_local_center_m": [-0.285, 0.0, 0.0],
+      "arm_center_m": [0.004976240898094869, -1.121580381492153e-21, 0.803018316797664],
+      "surface_gap_m": -0.03803879899682856,
+      "weighted_single_sample_pair_cost": 2.6302892875651493
+    }
+  },
+  "candidate_B_after_alignment": {
+    "soft_start_link_2_matches_existing_hard_scope": {
+      "pair_count": 564,
+      "min_surface_gap_m": 0.2022671208195564,
+      "physical_overlap_pairs": 0,
+      "soft_penalized_pairs": 0,
+      "cubic_sum": 0.0,
+      "weighted_single_sample_cost": 0.0
+    },
+    "minimum_pair": {
+      "fixed_sphere_index": 37,
+      "fixed_link": "arm_base_link",
+      "arm_sphere_index": 9,
+      "arm_link_index": 2
+    }
+  },
+  "implementation_scope": {
+    "source": "experiments/online_remani_validation/builds/urdf_spheres_b_20261029_01/source/poly_traj_optimizer.cpp",
+    "custom_spheres_piper_soft_start_link": 2,
+    "custom_spheres_fastarmer_soft_start_link": 1,
+    "legacy_sampled_box_soft_start_link": 1,
+    "native_hard_exclusion_policy_changed": false,
+    "external_obstacle_checks_changed_by_alignment_fix": false,
+    "arm_arm_self_checks_changed_by_alignment_fix": false,
+    "weights_or_margins_changed": false,
+    "reason": "New URDF fixed-structure spheres include the arm mount. Align only custom-sphere base-arm soft adjacency exclusions with the existing hard-check policy; do not add a new hard exclusion or disable all base-arm checks."
+  }
+}

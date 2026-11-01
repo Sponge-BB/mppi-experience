@@ -1,0 +1,215 @@
+{
+  "scope": "同输入、同一新库的native3d三维碰撞查询微基准；不是完整MPPI、REMANI或在线避障耗时",
+  "status": "completed",
+  "ctypes_overhead_included": true,
+  "host_exclusivity": "未预留独占CPU；运行时B规划器优化器正在重编。采用AB/BA交替并同时报告进程CPU时间，不将结果当作独占主机基准",
+  "timing_includes": "Python循环、ctypes调用、返回值有限性校验及结果复制；不包括快照加载/绑定、建KD树及完整控制求解",
+  "source_trial": "/home/l/remani_ws/experiments/online_remani_validation/results/watchdog_off_20261029_01/mid_cross_seed11",
+  "source_trial_online_valid": false,
+  "source_trial_warning": "来源在线试验末段REMANI崩溃；本测试仅使用此前健康的不可变输入帧，不作为在线成功证据",
+  "library": "/home/l/remani_ws/experiments/online_remani_validation/builds/urdf_spheres_b_20261029_01/build/libonline_mppi.so",
+  "library_sha256": "87eadd43d5f39cf83bca9c51ea186e9bff01125ae195b4b8554bd6d027bad9e3",
+  "candidate_path": "/home/l/remani_ws/experiments/online_remani_validation/results/urdf_sphere_simplification_20261029_01/candidate_coarse.json",
+  "candidate_sha256": "f65148ba30b4686dec8fe27def550cd551634804d03ecde4aca5246c07eedfef",
+  "frame": {
+    "publication_stamp": 1014.990483144,
+    "sequence": 297.0,
+    "dynamic_stamp": 1014.929867086,
+    "map_sha256": "66ae4aa17f246fb8b0199ca3fa051879d5add9a878c314ad06c336397a1339bb",
+    "odom_stamp": 1014.990483144,
+    "odom_time_difference_s": 0.0,
+    "actual_state": [
+      1.5556379918870336,
+      0.0,
+      0.0,
+      0.24394999999999964,
+      0.0
+    ]
+  },
+  "input_contract": {
+    "base_margin_m": 0.09999999999999999,
+    "resolution_m": 0.05,
+    "base_weight": 50000.0,
+    "dynamic_points": 117,
+    "legacy_base_spheres": 140,
+    "candidate_base_spheres": 47,
+    "unchanged_arm_spheres": 20
+  },
+  "queries_per_batch": 512,
+  "rounds": 6,
+  "order": "AB/BA交替，各模型独立handle；每批512个不同pose/time，完整查询而非碰撞即返回",
+  "query_time_range": [
+    1014.990483144,
+    1015.990483144
+  ],
+  "query_array_sha256": "dbaebfcd30050b59f5fbc78c8cfeed2fb0b12570ef01046adb64d1686055fac9",
+  "summary": {
+    "legacy": {
+      "total_spheres": 160,
+      "median_batch_wall_ms": 57.447899504040834,
+      "median_batch_cpu_ms": 57.30316799999996,
+      "median_query_wall_us": 112.20292871882975,
+      "median_query_cpu_us": 111.92024999999992,
+      "hard_colliding_queries": 0,
+      "minimum_hard_gap_m": 0.65
+    },
+    "candidate_b": {
+      "total_spheres": 67,
+      "median_batch_wall_ms": 27.989539499685634,
+      "median_batch_cpu_ms": 27.85961600000003,
+      "median_query_wall_us": 54.667069335323504,
+      "median_query_cpu_us": 54.41331250000006,
+      "hard_colliding_queries": 0,
+      "minimum_hard_gap_m": 0.65
+    }
+  },
+  "median_wall_speedup": 2.0524774801917003,
+  "median_cpu_speedup": 2.0568541935394906,
+  "collision_results_warning": "几何模型不同，碰撞间隙和代价值可以不同；本测试不把结果差异当成算法故障或避障效果提升",
+  "batches": [
+    {
+      "round": 1,
+      "order": [
+        "legacy",
+        "candidate_b"
+      ],
+      "model": "legacy",
+      "wall_ms": 57.705508996150456,
+      "process_cpu_ms": 57.53804800000006,
+      "mean_query_wall_us": 112.70607225810636,
+      "mean_query_cpu_us": 112.37900000000012
+    },
+    {
+      "round": 1,
+      "order": [
+        "legacy",
+        "candidate_b"
+      ],
+      "model": "candidate_b",
+      "wall_ms": 28.026276995660737,
+      "process_cpu_ms": 27.965664,
+      "mean_query_wall_us": 54.73882225714988,
+      "mean_query_cpu_us": 54.6204375
+    },
+    {
+      "round": 2,
+      "order": [
+        "candidate_b",
+        "legacy"
+      ],
+      "model": "candidate_b",
+      "wall_ms": 28.040645993314683,
+      "process_cpu_ms": 27.903584000000038,
+      "mean_query_wall_us": 54.76688670569274,
+      "mean_query_cpu_us": 54.49918750000007
+    },
+    {
+      "round": 2,
+      "order": [
+        "candidate_b",
+        "legacy"
+      ],
+      "model": "legacy",
+      "wall_ms": 57.52252700040117,
+      "process_cpu_ms": 57.372704000000056,
+      "mean_query_wall_us": 112.34868554765853,
+      "mean_query_cpu_us": 112.0560625000001
+    },
+    {
+      "round": 3,
+      "order": [
+        "legacy",
+        "candidate_b"
+      ],
+      "model": "legacy",
+      "wall_ms": 57.438747011474334,
+      "process_cpu_ms": 57.31366399999993,
+      "mean_query_wall_us": 112.18505275678581,
+      "mean_query_cpu_us": 111.94074999999987
+    },
+    {
+      "round": 3,
+      "order": [
+        "legacy",
+        "candidate_b"
+      ],
+      "model": "candidate_b",
+      "wall_ms": 28.0105959973298,
+      "process_cpu_ms": 27.863647999999962,
+      "mean_query_wall_us": 54.70819530728477,
+      "mean_query_cpu_us": 54.42118749999993
+    },
+    {
+      "round": 4,
+      "order": [
+        "candidate_b",
+        "legacy"
+      ],
+      "model": "candidate_b",
+      "wall_ms": 27.968483002041467,
+      "process_cpu_ms": 27.8555840000001,
+      "mean_query_wall_us": 54.62594336336224,
+      "mean_query_cpu_us": 54.4054375000002
+    },
+    {
+      "round": 4,
+      "order": [
+        "candidate_b",
+        "legacy"
+      ],
+      "model": "legacy",
+      "wall_ms": 57.45705199660733,
+      "process_cpu_ms": 57.29267199999999,
+      "mean_query_wall_us": 112.2208046808737,
+      "mean_query_cpu_us": 111.89974999999998
+    },
+    {
+      "round": 5,
+      "order": [
+        "legacy",
+        "candidate_b"
+      ],
+      "model": "legacy",
+      "wall_ms": 57.3650480073411,
+      "process_cpu_ms": 57.240672000000046,
+      "mean_query_wall_us": 112.04110938933809,
+      "mean_query_cpu_us": 111.7981875000001
+    },
+    {
+      "round": 5,
+      "order": [
+        "legacy",
+        "candidate_b"
+      ],
+      "model": "candidate_b",
+      "wall_ms": 27.80230100324843,
+      "process_cpu_ms": 27.73801600000003,
+      "mean_query_wall_us": 54.30136914696959,
+      "mean_query_cpu_us": 54.17581250000006
+    },
+    {
+      "round": 6,
+      "order": [
+        "candidate_b",
+        "legacy"
+      ],
+      "model": "candidate_b",
+      "wall_ms": 27.782395991380326,
+      "process_cpu_ms": 27.717824,
+      "mean_query_wall_us": 54.2624921706647,
+      "mean_query_cpu_us": 54.136375
+    },
+    {
+      "round": 6,
+      "order": [
+        "candidate_b",
+        "legacy"
+      ],
+      "model": "legacy",
+      "wall_ms": 57.34770400158595,
+      "process_cpu_ms": 57.21030400000004,
+      "mean_query_wall_us": 112.00723437809756,
+      "mean_query_cpu_us": 111.73887500000009
+    }
+  ]
+}
