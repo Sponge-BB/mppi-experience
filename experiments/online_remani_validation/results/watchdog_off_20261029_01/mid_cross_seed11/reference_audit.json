@@ -1,0 +1,59 @@
+{
+  "reference_contract_pass": true,
+  "closed_loop_reached": false,
+  "required_process_failed": true,
+  "failures": [],
+  "source": "actual /planning/trajectory; independently recorded polynomial coefficients",
+  "native_bundles": 3,
+  "consumed_versions": 3,
+  "live_kernel_calls": 480,
+  "stop_reasons": {
+    "native3d_missing_snapshot": 3,
+    "native3d_unhealthy": 47,
+    "native_hard_stop": 101,
+    "waiting_native_trajectory": 23,
+    "ok": 453,
+    "deadline_miss": 27,
+    "native3d_publication_stale": 6
+  },
+  "trial_result": {
+    "reason": "shutdown",
+    "goal_sent": 7.005313172994647,
+    "motion_anchor": 9.024194586003432,
+    "scenario_start": "motion",
+    "trajectory_bundles": 3,
+    "min_clearance": 0.4385462418122995,
+    "collision_conservative_projection": false,
+    "arm_max_error": 0.0,
+    "final_state": [
+      5.891374322169599,
+      -0.06777721615698785,
+      0.7173032482932707,
+      2.1845792250558618e-07,
+      -5.249495384822431e-07
+    ],
+    "elapsed": 62.717998774998705,
+    "scene": "dynamic_mid_cross",
+    "scope": "native ROS algorithm SIL, not Gazebo/real vehicle",
+    "native3d_truth_monitor": {
+      "sample_collision": false,
+      "min_physical_sample_gap": 0.47154567808423314,
+      "checks": 15187,
+      "error": null,
+      "geometry_available": true,
+      "scope": "independent analytic sphere vs finite cylinder/wall truth, <=5ms integration substeps; not full mesh or continuous proof"
+    },
+    "native_realtime_evidence": {
+      "first_truth_actor_t": 11.03665766499762,
+      "first_observed_moving_t": 11.621914096999944,
+      "deadline_zero_window_start": null,
+      "deadline_zero_window_end": null,
+      "deadline_zero_cycles": 0,
+      "deadline_zero_deadlock": false,
+      "early_stop_window_s": 5.0,
+      "minimum_stop_sim_s": 17.0,
+      "scope": "evaluation only; real motion-triggered scene exposure; no fabricated dynamic encounter"
+    }
+  },
+  "scope": "reference integration verification, NOT a performance comparison or hardware acceptance"
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "backend_wheel_gradient_audit_protocol_v1",
+  "no_solver_runs": true,
+  "no_ROS": true,
+  "no_production_edits": true,
+  "candidate_selection": "per trial/phase: initial, last accepted, max accepted wheel-ratio; deduplicated",
+  "point_selection": "four diagnostic wheel peaks plus minimum actual primary/dense objective node",
+  "coverage": "minimum speeds at actual primary and triggered dense nodes for every saved canonical candidate",
+  "independent_variable_order": [
+    "vx",
+    "vy",
+    "ax",
+    "ay",
+    "jx",
+    "jy"
+  ],
+  "finite_difference": "two-point centered and five-point centered with opposite-sample pairing, three prespecified steps",
+  "steps": [
+    2e-05,
+    6e-06,
+    2e-06
+  ],
+  "primary_step_index": 1,
+  "normalized_tolerance": 5e-05,
+  "clamp_boundary": "exact 1e-4 velocity norm is nondifferentiable; do not label analytic mismatch as a smooth-point failure",
+  "time_chain": "primary quadrature with frozen coefficients; not a complete native MINCO gradient test",
+  "no_improvement_claim": "numerical consistency audit only; no trajectory-delivery or solver improvement claim"
+}
