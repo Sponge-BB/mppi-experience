@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "returncode": 0,
+  "codes": {
+    "cursor_code": 0,
+    "controller_code": 0
+  },
+  "cursor_failure": null,
+  "controller_failure": null,
+  "bounds_assertions": true,
+  "source_sha256": {
+    "directed_reference.hpp": "26fc73dac66a372b72c7f0b32526052af514549a42b3a8f9a2b30ff611b8d285",
+    "online_kernel.hpp": "1b1cf354fbe6f40513bb8d549f35d1c7c9093a3afda679fefe27ffdfbdc38ab6",
+    "online_api.cpp": "260a4f6b0fba62d426c1abe771a19c75b0fca79c0eea9e6cf29e2443ca89575d",
+    "mppi_v12.hpp": "a112147155d37327a184c5ab4985d06b8c890db77fa29ef3962d9656b4ba3332",
+    "shared_collision.hpp": "76b3bed1fc7716ddb0b182c5ee6882ffff29b9f84586fede71fab6f024bb5282"
+  },
+  "probe_sha256": "09f2b19799466f0614a3aeef45220f37e062dc760df9bcc5693e68f2e07d9838",
+  "checks": [
+    "initial actual binding remains phase0",
+    "near-cusp and measured low speed gate only",
+    "same gear and stationary sampling conventions",
+    "candidate forecasts cannot advance actual cursor",
+    "new reference/reset clear phase and cached guide while retaining actuator feedback",
+    "full native goal and future segments retained",
+    "local connector independent index mapping",
+    "nonfinal cusp has no artificial terminal rotation",
+    "nonzero native endpoint speeds brake",
+    "off-path cusp projection retains reconnect motion",
+    "true final-yaw capture remains active"
+  ],
+  "scope": "Independent cursor and actual controller source boundaries, not collision-cost tuning, online success, or physical safety.",
+  "stdout": "[DirectedReference] t=0.049999999999954525 event=phase_start ref_fnv64=ac92e2b5ed18d681 from=-1 phase=0 count=3 gear=1 begin=0 end=2 measured=0,0.80000000000000004,1.5707963267948966,0.050000000000000003,0 checked_cusp_distance=0.19999999999999996\n[DirectedReference] t=0.049999999999954525 event=phase_switch ref_fnv64=ac92e2b5ed18d681 from=0 phase=1 count=3 gear=-1 begin=3 end=5 measured=0,1,1.5707963267948966,0.024,0 checked_cusp_distance=0\nDIRECTED_TEST_RESULT {\"cursor_code\": 0, \"controller_code\": 0}\n",
+  "stderr": "",
+  "frozen_fixture": {
+    "passed": true,
+    "original_trial": "/home/l/remani_ws/experiments/online_remani_validation/results/shared_collision/validation_04/static/v12_shared",
+    "original_result": "timeout",
+    "raw_trajectory_sha256": "a0bb79397720c942fccb33c9a5b21ebc3220ea65b2012ae41f846d243544a71c",
+    "sampled_reference_sha256": "4dc5201ff2e3051770019db4a8c7cb69b6435a49c8f3fa1ad22d881d4b6f2d93",
+    "native_message_directions": [
+      -1,
+      1
+    ],
+    "sample_count": 555,
+    "phase_count": 2,
+    "first_cusp": [
+      2.024742135058836,
+      -1.0522606866135165
+    ],
+    "native_cusp_signed_speed": -0.05000000000000006,
+    "global_endpoint": [
+      2.9999999999999996,
+      4.440892098500626e-16,
+      -9.99200722162657e-15
+    ],
+    "scope": "Saved native geometry with synthetic boundary measurements; not shadow rollout, online success, or safety validation."
+  },
+  "sources_unchanged_during_test": true
+}

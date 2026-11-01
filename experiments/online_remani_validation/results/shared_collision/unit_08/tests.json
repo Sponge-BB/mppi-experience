@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "poses_checked": 120,
+  "max_math_error": 3.637978807091713e-12,
+  "max_gradient_error": 1.2406570021994412e-05,
+  "open_reference_5s_max_error_m": 0.004645805159922451,
+  "shared_header_sha256": "76b3bed1fc7716ddb0b182c5ee6882ffff29b9f84586fede71fab6f024bb5282",
+  "checks": [
+    "identical native/MPPI shared kernel outputs",
+    "independent cubic-cost and analytic-gradient verification",
+    "malformed/nonfinite/body-drift input rejected",
+    "CV horizon bound enforced",
+    "safe straight reference progresses",
+    "new reference clears old control warm start",
+    "latest occupied frame vetoes historical chosen controls",
+    "occupied full body rejects forced movement"
+  ],
+  "scope": "math and C API contracts; native hook integration requires the separate online suite"
+}
