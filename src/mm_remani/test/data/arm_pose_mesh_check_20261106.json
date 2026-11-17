@@ -1,0 +1,1069 @@
+{
+  "schema": "recorded_final_arm_pose_original_mesh_replay_v1",
+  "ros_or_can_opened": false,
+  "runtime_changed": false,
+  "source_feedback": "/home/l/remani_ws/experiments/hardware_standby_mppi/commissioning_20261106/post_hold_passive.json",
+  "source_feedback_sha256": "c8ba6953ae46e0e1378e79a6164d5c6fa621ea30200c97d7f47bc2fab7c1a200",
+  "urdf": {
+    "path": "/home/l/remani_ws/src/my_description/robot/mm.urdf",
+    "sha256": "a60563d176db315181fd2aa11d5e61a9aa3f4722ff5d96d75bdfdf3325941069"
+  },
+  "tool": {
+    "path": "/tmp/standby_mesh_pair_distance_20261106",
+    "sha256": "9f66c620dd0fb689d1489f02b7eedbfa3858fae338f5f204abeada759e20c300",
+    "source": "/home/l/remani_ws/experiments/hardware_standby_mppi/mesh_audit_20261106/mesh_pair_distance.cpp",
+    "source_sha256": "a25f1759b9e7b1a1c67a52fd75408b4ad71bbd3192aea85fa5cbdb7cef4e0a04"
+  },
+  "meshes": {
+    "arm_base": {
+      "path": "/home/l/remani_ws/src/my_description/meshes/arm/base_link.stl",
+      "sha256": "fd4a3d6d0266205fe3f725f048645be66592c23564db22e08b0807d5569b2c64",
+      "collision_origin": {
+        "xyz": "0 0 0",
+        "rpy": "0 0 0"
+      },
+      "fallback": "Existing identical original Piper STL; broken URDF symlink unchanged."
+    },
+    "link1": {
+      "path": "/home/l/remani_ws/src/my_description/meshes/arm/link1.STL",
+      "sha256": "9ee6e1d67c0241f42a0dbaf5c676d19230375ed078ee1943bb8c4c37ab303d14",
+      "collision_origin": {
+        "xyz": "0 0 0",
+        "rpy": "0 0 1.5708"
+      },
+      "fallback": null
+    },
+    "link2": {
+      "path": "/home/l/remani_ws/src/my_description/meshes/arm/link2.STL",
+      "sha256": "0d37675b699b643f2e15348de99aed535fac10dc5f09a79b8e4b0acfaf4e0378",
+      "collision_origin": {
+        "xyz": "0 0 0",
+        "rpy": "0 0 0.1"
+      },
+      "fallback": null
+    },
+    "link5": {
+      "path": "/home/l/remani_ws/src/my_description/meshes/arm/link5.STL",
+      "sha256": "a1c69d1c7f6f8c60e2c82331c0f444725200ed4053d3e5ec23aa82cb5db5b29f",
+      "collision_origin": {
+        "xyz": "0 0 0",
+        "rpy": "0 0 -3.14"
+      },
+      "fallback": null
+    },
+    "link6": {
+      "path": "/home/l/remani_ws/src/my_description/meshes/arm/dae/camera_v3.dae",
+      "sha256": "c5b74840458937912aea866ca1f50d3eed6417aa390ad7066739415ba5bdcdd4",
+      "collision_origin": {
+        "xyz": "-0.002 -0.008 0",
+        "rpy": "-1.57 0 0"
+      },
+      "fallback": null
+    }
+  },
+  "cases": {
+    "prior_mesh_audit": {
+      "q_radians": [
+        -0.10108947027551157,
+        -0.03330088212805181,
+        0.010088003076527225,
+        0.0976337183565628,
+        0.48288024414927117,
+        -0.11770500475449759
+      ],
+      "model_check": {
+        "valid": false,
+        "violations": [
+          "arm_self_collision"
+        ],
+        "joint_gaps": {
+          "position": 0.016699117871948194
+        },
+        "min_self_gap": -0.007334862202686351,
+        "self_pair": [
+          0,
+          18
+        ],
+        "min_base_arm_gap": 0.020219008107315944,
+        "base_arm_pair": [
+          18,
+          45
+        ],
+        "min_ground_gap": 0.616,
+        "scope": "native sampled spheres, disclosed pair exclusions; shoulder/wrist convex support refinement; no external obstacle check"
+      },
+      "mesh_pairs": [
+        {
+          "links": [
+            "arm_base",
+            "link5"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.05646401030240603,
+          "triangles": [
+            12146,
+            16672
+          ],
+          "query_ms": 4.915218,
+          "nearest_points": [
+            [
+              0.04098610684275627,
+              0.0009998500474974513,
+              0.6590000029206277
+            ],
+            [
+              0.04191517098815563,
+              0.0008263842766015558,
+              0.715456102758203
+            ]
+          ]
+        },
+        {
+          "links": [
+            "arm_base",
+            "link6"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.07370805787615242,
+          "triangles": [
+            12146,
+            67590
+          ],
+          "query_ms": 4.851631,
+          "nearest_points": [
+            [
+              0.04098610684275627,
+              -0.001000150047497451,
+              0.6590000029206277
+            ],
+            [
+              0.0677121941733844,
+              -0.001401198807431367,
+              0.7276908553812139
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link1",
+            "link5"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.001471790275394066,
+          "triangles": [
+            8954,
+            16672
+          ],
+          "query_ms": 0.802077,
+          "nearest_points": [
+            [
+              0.01592603702415103,
+              0.003006185298486126,
+              0.7240774161219597
+            ],
+            [
+              0.01645833810152117,
+              0.002952191215822383,
+              0.7254485130612067
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link1",
+            "link6"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.02151602438376924,
+          "triangles": [
+            8954,
+            67590
+          ],
+          "query_ms": 4.098996,
+          "nearest_points": [
+            [
+              0.0181058424618479,
+              0.02449581389666681,
+              0.7240774161219597
+            ],
+            [
+              0.02645511849565051,
+              0.02364890315476334,
+              0.7438893225721116
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link2",
+            "link5"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.01705432372668005,
+          "triangles": [
+            73166,
+            16672
+          ],
+          "query_ms": 1.815746,
+          "nearest_points": [
+            [
+              0.01907527306791274,
+              0.03726971577383371,
+              0.7259332902816525
+            ],
+            [
+              0.02206845753509818,
+              0.02344368762942742,
+              0.7354586118127027
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link2",
+            "link6"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.02202259402785586,
+          "triangles": [
+            73166,
+            67590
+          ],
+          "query_ms": 2.182735,
+          "nearest_points": [
+            [
+              0.02756506588095175,
+              0.03640847272003652,
+              0.7213129339020258
+            ],
+            [
+              0.0369101511181406,
+              0.02906508086502161,
+              0.7398531233748745
+            ]
+          ]
+        }
+      ]
+    },
+    "last_recorded_stationary": {
+      "q_radians": [
+        -0.10108947027551157,
+        -0.03663446099936098,
+        0.018989182261698306,
+        0.09841911651996024,
+        0.49028044017772715,
+        -0.10299187916018539
+      ],
+      "model_check": {
+        "valid": false,
+        "violations": [
+          "arm_self_collision"
+        ],
+        "joint_gaps": {
+          "position": 0.013365539000639026
+        },
+        "min_self_gap": -0.01016232322525669,
+        "self_pair": [
+          0,
+          18
+        ],
+        "min_base_arm_gap": 0.01714724833283618,
+        "base_arm_pair": [
+          18,
+          45
+        ],
+        "min_ground_gap": 0.616,
+        "scope": "native sampled spheres, disclosed pair exclusions; shoulder/wrist convex support refinement; no external obstacle check"
+      },
+      "mesh_pairs": [
+        {
+          "links": [
+            "arm_base",
+            "link5"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.0531963208869786,
+          "triangles": [
+            12146,
+            16672
+          ],
+          "query_ms": 2.301843,
+          "nearest_points": [
+            [
+              0.04098610684275627,
+              0.0009998500474974513,
+              0.6590000029206277
+            ],
+            [
+              0.04132876975659311,
+              0.0009870592238451496,
+              0.7121952186306209
+            ]
+          ]
+        },
+        {
+          "links": [
+            "arm_base",
+            "link6"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.07017546260050299,
+          "triangles": [
+            12146,
+            67590
+          ],
+          "query_ms": 4.407807,
+          "nearest_points": [
+            [
+              0.04098610684275627,
+              -0.001000150047497451,
+              0.6590000029206277
+            ],
+            [
+              0.06721534907422046,
+              -0.00252316217509397,
+              0.7240715238588765
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link1",
+            "link5"
+          ],
+          "surface_intersection": true,
+          "surface_distance_m": 0,
+          "triangles": [
+            8954,
+            16672
+          ],
+          "query_ms": 0.014817,
+          "intersecting_triangle_ids": [
+            8602,
+            15784
+          ]
+        },
+        {
+          "links": [
+            "link1",
+            "link6"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.01895360632912939,
+          "triangles": [
+            8954,
+            67590
+          ],
+          "query_ms": 3.754279,
+          "nearest_points": [
+            [
+              0.01802886691942012,
+              0.02373694992224523,
+              0.7240774161219597
+            ],
+            [
+              0.02536178580599339,
+              0.02299313360219512,
+              0.7415392095798088
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link2",
+            "link5"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.01538592795695319,
+          "triangles": [
+            73166,
+            16672
+          ],
+          "query_ms": 1.593689,
+          "nearest_points": [
+            [
+              0.01897594068812614,
+              0.03727979242645333,
+              0.725967266281459
+            ],
+            [
+              0.02144514853778831,
+              0.02421386590938919,
+              0.7337075089095942
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link2",
+            "link6"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.01956363855454631,
+          "triangles": [
+            73166,
+            67590
+          ],
+          "query_ms": 1.220684,
+          "nearest_points": [
+            [
+              0.02802663849753481,
+              0.03636164877256801,
+              0.7210807975161903
+            ],
+            [
+              0.03660727374449723,
+              0.02923336734966205,
+              0.7371523953274649
+            ]
+          ]
+        }
+      ]
+    },
+    "configured_nominal": {
+      "q_radians": [
+        0.0,
+        0.520979,
+        -1.048914,
+        0.0,
+        0.947297,
+        0.0
+      ],
+      "model_check": {
+        "valid": true,
+        "violations": [],
+        "joint_gaps": {
+          "position": 0.30270300000000006
+        },
+        "min_self_gap": 0.0029999999999999333,
+        "self_pair": [
+          10,
+          18
+        ],
+        "min_base_arm_gap": 0.20226684977494286,
+        "base_arm_pair": [
+          9,
+          37
+        ],
+        "min_ground_gap": 0.616,
+        "scope": "native sampled spheres, disclosed pair exclusions; shoulder/wrist convex support refinement; no external obstacle check"
+      },
+      "mesh_pairs": [
+        {
+          "links": [
+            "arm_base",
+            "link5"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.3174328049388697,
+          "triangles": [
+            12146,
+            16672
+          ],
+          "query_ms": 3.378426,
+          "nearest_points": [
+            [
+              0.04095067363194243,
+              0.001319006932120207,
+              0.6590000029206277
+            ],
+            [
+              0.04708975339797179,
+              0.002000575521216501,
+              0.9763727062447214
+            ]
+          ]
+        },
+        {
+          "links": [
+            "arm_base",
+            "link6"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.3313718033040533,
+          "triangles": [
+            12146,
+            67590
+          ],
+          "query_ms": 4.543556,
+          "nearest_points": [
+            [
+              0.04098610684275627,
+              0.0009998500474974513,
+              0.6590000029206277
+            ],
+            [
+              0.07443037719033355,
+              0.002087183017150542,
+              0.9886779829449408
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link1",
+            "link5"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.2535309392036569,
+          "triangles": [
+            8954,
+            16672
+          ],
+          "query_ms": 1.2011,
+          "nearest_points": [
+            [
+              0.01038363540545106,
+              0.002000575521216502,
+              0.7255129884034396
+            ],
+            [
+              0.04708975339797179,
+              0.002000575521216501,
+              0.9763727062447214
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link1",
+            "link6"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.2708464500141876,
+          "triangles": [
+            8954,
+            67590
+          ],
+          "query_ms": 3.655844,
+          "nearest_points": [
+            [
+              0.01038363540545106,
+              0.002087183017150544,
+              0.7255129884034396
+            ],
+            [
+              0.07443037719033355,
+              0.002087183017150542,
+              0.9886779829449408
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link2",
+            "link5"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.1954537892038949,
+          "triangles": [
+            73166,
+            16672
+          ],
+          "query_ms": 2.797221,
+          "nearest_points": [
+            [
+              -0.1941392730859787,
+              -0.03849801166505455,
+              0.8868753978413301
+            ],
+            [
+              -0.03848557739647181,
+              -0.02927133359698521,
+              1.004726910959267
+            ]
+          ]
+        },
+        {
+          "links": [
+            "link2",
+            "link6"
+          ],
+          "surface_intersection": false,
+          "surface_distance_m": 0.2268511568671822,
+          "triangles": [
+            73166,
+            67590
+          ],
+          "query_ms": 8.126661,
+          "nearest_points": [
+            [
+              -0.1970120921225732,
+              0.04250202348591465,
+              0.8907363057819655
+            ],
+            [
+              -0.03110480732725282,
+              0.03707467337190631,
+              1.045354429216973
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "interpretation": "FCL surface intersections/distances concern the URDF mesh model only; not a physical calibration or motion approval. Positive surface distance alone does not exclude solid containment.",
+  "prior_pose_reproduction_matched_all_six_pairs": true,
+  "elapsed_s": 3.3921822470001644,
+  "peak_process_rss_mib": 38.5078125,
+  "peak_child_rss_mib": 117.41796875,
+  "shoulder_wrist_followup": {
+    "links": [
+      "link1",
+      "link5"
+    ],
+    "joint_delta_deg": [
+      0.0,
+      -0.1909999999999999,
+      0.51,
+      0.04499999999999959,
+      0.4240000000000016,
+      0.8430000000000004
+    ],
+    "cases": [
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 0.0,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03330088212805181,
+          0.010088003076527225,
+          0.0976337183565628,
+          0.48288024414927117,
+          -0.11770500475449759
+        ],
+        "surface_intersection": false,
+        "surface_distance_m": 0.001471790275394066,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.804989,
+        "nearest_points": [
+          [
+            0.01592603702415103,
+            0.003006185298486126,
+            0.7240774161219597
+          ],
+          [
+            0.01645833810152117,
+            0.002952191215822383,
+            0.7254485130612067
+          ]
+        ]
+      },
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 0.1,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.033634240015182726,
+          0.010978120995044333,
+          0.09771225817290255,
+          0.48362026375211675,
+          -0.11623369219506637
+        ],
+        "surface_intersection": false,
+        "surface_distance_m": 0.001181673475261649,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.590869,
+        "nearest_points": [
+          [
+            0.01592648791480904,
+            0.003010630407490633,
+            0.7240774161219597
+          ],
+          [
+            0.01635527693500094,
+            0.002967136094242326,
+            0.7251776890076636
+          ]
+        ]
+      },
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 0.2,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03396759790231364,
+          0.011868238913561441,
+          0.09779079798924228,
+          0.48436028335496234,
+          -0.11476237963563515
+        ],
+        "surface_intersection": false,
+        "surface_distance_m": 0.0008917350493068805,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.577876,
+        "nearest_points": [
+          [
+            0.01592693493361709,
+            0.00301503734583255,
+            0.7240774161219597
+          ],
+          [
+            0.01625158186845327,
+            0.002982106709053308,
+            0.724907302462988
+          ]
+        ]
+      },
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 0.30000000000000004,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03430095578944456,
+          0.01275835683207855,
+          0.09786933780558203,
+          0.485100302957808,
+          -0.11329106707620393
+        ],
+        "surface_intersection": false,
+        "surface_distance_m": 0.0006019760882518384,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.576789,
+        "nearest_points": [
+          [
+            0.01592737806122181,
+            0.003019405922716693,
+            0.7240774161219597
+          ],
+          [
+            0.01614725445018014,
+            0.002997102710444655,
+            0.7246373555393327
+          ]
+        ]
+      },
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 0.4,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.034634313676575476,
+          0.013648474750595658,
+          0.09794787762192178,
+          0.48584032256065357,
+          -0.11181975451677272
+        ],
+        "surface_intersection": false,
+        "surface_distance_m": 0.00031239768222441,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.584725,
+        "nearest_points": [
+          [
+            0.01592781727826519,
+            0.003023735947301914,
+            0.7240774161219597
+          ],
+          [
+            0.01604229623510784,
+            0.003012123747887326,
+            0.7243678503436419
+          ]
+        ]
+      },
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 0.5,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03496767156370639,
+          0.014538592669112765,
+          0.09802641743826151,
+          0.48658034216349916,
+          -0.11034844195734149
+        ],
+        "surface_intersection": false,
+        "surface_distance_m": 2.300092075450207e-05,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.597653,
+        "nearest_points": [
+          [
+            0.01592825256538473,
+            0.003028027228702849,
+            0.7240774161219597
+          ],
+          [
+            0.01593670878477033,
+            0.003027169470137371,
+            0.72409878897763
+          ]
+        ]
+      },
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 0.6000000000000001,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03530102945083731,
+          0.015428710587629874,
+          0.09810495725460126,
+          0.48732036176634475,
+          -0.10887712939791026
+        ],
+        "surface_intersection": true,
+        "surface_distance_m": 0,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.022433,
+        "intersecting_triangle_ids": [
+          8604,
+          15785
+        ]
+      },
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 0.7000000000000001,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.035634387337968226,
+          0.016318828506146982,
+          0.09818349707094101,
+          0.48806038136919033,
+          -0.10740581683847905
+        ],
+        "surface_intersection": true,
+        "surface_distance_m": 0,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.010176,
+        "intersecting_triangle_ids": [
+          8604,
+          15784
+        ]
+      },
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 0.8,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03596774522509914,
+          0.01720894642466409,
+          0.09826203688728076,
+          0.488800400972036,
+          -0.10593450427904783
+        ],
+        "surface_intersection": true,
+        "surface_distance_m": 0,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.010113,
+        "intersecting_triangle_ids": [
+          8604,
+          15784
+        ]
+      },
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 0.9,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03630110311223006,
+          0.018099064343181197,
+          0.0983405767036205,
+          0.48954042057488156,
+          -0.10446319171961661
+        ],
+        "surface_intersection": true,
+        "surface_distance_m": 0,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.007776,
+        "intersecting_triangle_ids": [
+          8602,
+          15784
+        ]
+      },
+      {
+        "kind": "synthetic_joint_interpolation_not_measured_path",
+        "fraction": 1.0,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03663446099936098,
+          0.018989182261698306,
+          0.09841911651996024,
+          0.49028044017772715,
+          -0.10299187916018539
+        ],
+        "surface_intersection": true,
+        "surface_distance_m": 0,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.008,
+        "intersecting_triangle_ids": [
+          8602,
+          15784
+        ]
+      },
+      {
+        "kind": "synthetic_one_joint_change",
+        "joint": 2,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03663446099936098,
+          0.010088003076527225,
+          0.0976337183565628,
+          0.48288024414927117,
+          -0.11770500475449759
+        ],
+        "surface_intersection": false,
+        "surface_distance_m": 0.001470747044535578,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.48997,
+        "nearest_points": [
+          [
+            0.01592649567335063,
+            0.003010706895132232,
+            0.7240774161219597
+          ],
+          [
+            0.01645387239839074,
+            0.002957212315283859,
+            0.7254493158955667
+          ]
+        ]
+      },
+      {
+        "kind": "synthetic_one_joint_change",
+        "joint": 3,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03330088212805181,
+          0.018989182261698306,
+          0.0976337183565628,
+          0.48288024414927117,
+          -0.11770500475449759
+        ],
+        "surface_intersection": true,
+        "surface_distance_m": 0,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.008769,
+        "intersecting_triangle_ids": [
+          8602,
+          15784
+        ]
+      },
+      {
+        "kind": "synthetic_one_joint_change",
+        "joint": 4,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03330088212805181,
+          0.010088003076527225,
+          0.09841911651996024,
+          0.48288024414927117,
+          -0.11770500475449759
+        ],
+        "surface_intersection": false,
+        "surface_distance_m": 0.001474653318417416,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.568116,
+        "nearest_points": [
+          [
+            0.01593033978128715,
+            0.003048604062658564,
+            0.7240774161219597
+          ],
+          [
+            0.01646363294009464,
+            0.002994509347985208,
+            0.7254511972464963
+          ]
+        ]
+      },
+      {
+        "kind": "synthetic_one_joint_change",
+        "joint": 5,
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03330088212805181,
+          0.010088003076527225,
+          0.0976337183565628,
+          0.49028044017772715,
+          -0.11770500475449759
+        ],
+        "surface_intersection": false,
+        "surface_distance_m": 0.001009580786195684,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.559892,
+        "nearest_points": [
+          [
+            0.01593011845690813,
+            0.003046422134573295,
+            0.7240774161219597
+          ],
+          [
+            0.01630214851385079,
+            0.003008685179864874,
+            0.7250151916403201
+          ]
+        ]
+      },
+      {
+        "kind": "first_recorded_post_stop_feedback",
+        "q_radians": [
+          -0.10108947027551157,
+          -0.03663446099936098,
+          0.018989182261698306,
+          0.0976337183565628,
+          0.4902629868852072,
+          -0.11770500475449759
+        ],
+        "record_monotonic": 25831.876730921,
+        "surface_intersection": true,
+        "surface_distance_m": 0,
+        "triangles": [
+          8954,
+          16672
+        ],
+        "query_ms": 0.009248,
+        "intersecting_triangle_ids": [
+          8602,
+          15784
+        ]
+      }
+    ],
+    "source_event_file": "experiments/hardware_standby_mppi/commissioning_20261106/hold_1793954050707874556/events.jsonl",
+    "source_event_sha256": "4e423f2ba2697ce733de8e495677945373a75825480b5270b3a0c671db8dcf71",
+    "interpretation": "Synthetic interpolation/component cases describe geometry only, not the actual trajectory or cause of motion. The post-stop sample is recorded feedback; no new physical measurement."
+  }
+}

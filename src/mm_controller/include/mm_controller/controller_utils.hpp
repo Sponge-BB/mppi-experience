@@ -13,6 +13,9 @@
 #include <std_msgs/Bool.h>
 #include <cstdint>
 #include <deque>
+#include <cmath>
+#include <set>
+#include <algorithm>
 
 #include "traj_utils/poly_traj_utils.hpp"
 #include "traj_utils/plan_container.hpp"
@@ -40,6 +43,7 @@ public:
 	ros::Time rcv_stamp;
 	ros::Time odom_rcv_stamp;
 	ros::Time joint_rcv_stamp;
+	ros::Time odom_source_stamp, joint_source_stamp;
 	bool have_car_;
 	bool have_mani_;
 
@@ -47,6 +51,7 @@ public:
 		rcv_stamp = ros::Time(0);
 		odom_rcv_stamp = ros::Time(0);
 		joint_rcv_stamp = ros::Time(0);
+		odom_source_stamp = joint_source_stamp = ros::Time(0);
 		car_q.setIdentity();
 		have_car_ = false;
 		have_mani_ = false;
@@ -54,11 +59,35 @@ public:
 
 	void setParam(int mani_dof){
 		mani_dof_ = mani_dof;
-		joint_p.resize(mani_dof_);
-		joint_v.resize(mani_dof_);
+		joint_p = Eigen::VectorXd::Zero(mani_dof_);
+		joint_v = Eigen::VectorXd::Zero(mani_dof_);
+	}
+
+	static bool sourceFresh(const ros::Time &stamp, const ros::Time &now, double timeout){
+		const double age = (now - stamp).toSec();
+		return !stamp.isZero() && age >= -0.05 && age < timeout;
 	}
 	
 	void feed_odom(const nav_msgs::Odometry::ConstPtr& pMsg){
+		const ros::Time now = ros::Time::now();
+		if(!odom_source_stamp.isZero() && pMsg->header.stamp <= odom_source_stamp) return;
+		const auto &p = pMsg->pose.pose.position;
+		const auto &q = pMsg->pose.pose.orientation;
+		const auto &v = pMsg->twist.twist.linear;
+		const auto &w = pMsg->twist.twist.angular;
+		const double norm = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
+		if(pMsg->header.stamp.isZero() || (pMsg->header.stamp-now).toSec() > 0.05){
+			have_car_ = false;
+			return;
+		}
+		odom_source_stamp = pMsg->header.stamp;
+		if(!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z) ||
+		   !std::isfinite(norm) || std::fabs(norm-1.0) > 0.02 ||
+		   !std::isfinite(v.x) || !std::isfinite(v.y) || !std::isfinite(v.z) ||
+		   !std::isfinite(w.x) || !std::isfinite(w.y) || !std::isfinite(w.z)){
+			have_car_ = false;
+			return;
+		}
 		have_car_ = true;
 		odom_msg = *pMsg;
 		rcv_stamp = ros::Time::now();
@@ -86,22 +115,34 @@ public:
 	}
 
 	void feed_joint(const sensor_msgs::JointState::ConstPtr& pMsg){
+		const ros::Time now = ros::Time::now();
+		if(!joint_source_stamp.isZero() && pMsg->header.stamp <= joint_source_stamp) return;
+		if(pMsg->header.stamp.isZero() || (pMsg->header.stamp-now).toSec() > 0.05){
+			have_mani_ = false;
+			return;
+		}
+		joint_source_stamp = pMsg->header.stamp;
+		if(pMsg->name.size() != pMsg->position.size() ||
+		   pMsg->velocity.size() != pMsg->name.size() ||
+		   std::set<std::string>(pMsg->name.begin(), pMsg->name.end()).size() != pMsg->name.size()){
+			have_mani_ = false;
+			return;
+		}
+		Eigen::VectorXd positions(mani_dof_), velocities(mani_dof_);
+		for(int i = 0; i < mani_dof_; ++i){
+			const auto it = std::find(pMsg->name.begin(), pMsg->name.end(), "joint" + std::to_string(i+1));
+			if(it == pMsg->name.end()) { have_mani_ = false; return; }
+			const auto j = std::distance(pMsg->name.begin(), it);
+			positions(i) = pMsg->position[j]; velocities(i) = pMsg->velocity[j];
+		}
+		if(!positions.allFinite() || !velocities.allFinite()) { have_mani_ = false; return; }
 		have_mani_ = true;
 		joint_state_msg = *pMsg;
 		rcv_stamp = ros::Time::now();
 		joint_rcv_stamp = rcv_stamp;
 
-		for(int i = 0; i < mani_dof_; ++i){
-			// FIXME joint_state must be sent in specific order: 
-			if(i < (int)joint_state_msg.position.size()){
-				joint_p(i) = joint_state_msg.position[i];
-			}
-			if(i < (int)joint_state_msg.velocity.size()){
-				joint_v(i) = joint_state_msg.velocity[i];
-			}else{
-				joint_v(i) = 0.0;
-			}
-		}
+		joint_p = positions;
+		joint_v = velocities;
 	}
 };
 

@@ -1,0 +1,249 @@
+{
+  "created_at": "2026-11-14T13:27:00.783932",
+  "scope": "只读历史复盘与已有回归入口；本次未运行测试、未改源码、未进行硬件动作。",
+  "current_version": "20261114-130001-latency-evidence",
+  "matrix": [
+    {
+      "area": "感知中断恢复",
+      "versions": [
+        "20261113-152321-perception-recovery"
+      ],
+      "historical_fault": "感知失效停车后无法自动继续原目标，或新候选尚未完整验收就解除停车。",
+      "current_preserved_behavior": "保留原目标；输入、执行状态、完整ESDF恢复后，从实测停止状态生成候选，交付前重新检查。不得把一切停车都当作感知中断恢复。",
+      "existing_tests": [
+        "src/mm_remani/test/test_perception_recovery.py",
+        "src/mm_remani/test/test_mppi_reference_wait.py"
+      ],
+      "offline_evidence": "15个实际生产C++方法场景，包括two_phase/source_validity/sustained_loss/esdf_wait/failure_retry/collision_reject/start_drift/final_feedback_expires/other_owners/rebase_all_segments/rear_goal_trials；ROS、地图几何、求解边界为桩。",
+      "latest_hardware_evidence": "本轮活动导航没有输入时效拒绝；持续停住由SAFETY碰撞ABORT及重规划5次失败后的目标放弃触发，不能声称感知恢复修复覆盖这条链。",
+      "remaining": "动态或占据碰撞ABORT后的目标保留/有界重试/新轨交付仍需单独核查；不能将原perception latch简单套到所有停止原因。",
+      "regression_if_touched": [
+        "失效仍停止",
+        "新目标与原目标分开",
+        "候选被拒绝不能提前恢复速度",
+        "原目标尚可恢复时不因短暂不利状态误放弃"
+      ],
+      "sources": [
+        "rollback/20261113-152321-perception-recovery/manifest.json",
+        "experiments/online_remani_validation/results/latency_capture_20261114-130027/first_cancel_chain.txt"
+      ]
+    },
+    {
+      "area": "地图开销与占据清理",
+      "versions": [
+        "20261112-210553-retain-high-clear-rays",
+        "20261113-172845-map-latency",
+        "20261113-235027-self-filter-input",
+        "20261114-130001-latency-evidence"
+      ],
+      "historical_fault": "高处清空射线丢失；广泛变化使局部ESDF仍计算约200万格，地图交付余量不足；旧关节消息覆盖自滤新状态。",
+      "current_preserved_behavior": "保持3m高回波清空射线、原占据/距离语义、异步结果代次验收、点云源戳与有效关节序。",
+      "existing_tests": [
+        "src/mm_remani_planner/plan_env/test/test_esdf_worker.cpp",
+        "src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp",
+        "src/mm_remani_planner/plan_env/test/test_dynamic_point_buffer.cpp",
+        "src/mm_remani/test/test_robot_self_filter.py",
+        "src/mm_remani/test/test_mapping_cloud_sparse.py",
+        "src/mm_remani/test/test_mppi_latency_evidence.py"
+      ],
+      "offline_evidence": "11/13的40.3万格crop逐格一致且计算约31.5%提速，只代表裁剪输入；11/14新增分段计时后96项C++通过，未修改算法。",
+      "latest_hardware_evidence": "两段活动导航ESDF均值84.74/79.82ms，x/y正距约占78%，负距完整回退0/44与0/48；首导出平均等待24.61/27.35ms，回调读锁P95约1.98/1.56ms；无活动段地图过期拒绝。",
+      "remaining": "性能仍可优化，但不能据此解释本轮两次ABORT；历史碰撞触发格来源没有同刻证据，停车5分钟后的图仅证明当时距离场与占据一致。",
+      "regression_if_touched": [
+        "旧新实现同输入逐格距离一致",
+        "占据新增/清空都正确",
+        "新ESDF结果不得覆盖更新观测",
+        "不完整快照不能充当完整地图",
+        "记录实际计算体素与端到端年龄，不能只看worker均值"
+      ],
+      "sources": [
+        "rollback/20261113-172845-map-latency/manifest.json",
+        "experiments/online_remani_validation/results/latency_capture_20261114-130027/map_latency_findings.txt",
+        "experiments/online_remani_validation/results/latency_capture_20261114-130027/stopped_scene_map_consistency.txt"
+      ]
+    },
+    {
+      "area": "MPPI超时与局部重试",
+      "versions": [
+        "20261112-131911-deadline-priority",
+        "20261113-105409-feedback-grace300",
+        "20261114-130001-latency-evidence"
+      ],
+      "historical_fault": "晚返回的无解被误分类为及时无可行候选，引发整条导航恢复；拒绝时零速度形成短暂停顿。",
+      "current_preserved_behavior": "正常求解晚返回优先归类deadline并保留目标；明确求解异常、真正及时无解、参考取消仍保持各自分支。LOCAL_RETRY目前仍发零速度。",
+      "existing_tests": [
+        "src/mm_remani/test/test_mppi_deadline_priority.py",
+        "src/mm_remani/test/test_mppi_execution_gate.py",
+        "src/mm_remani/test/test_mppi_failure_recording.py",
+        "src/mm_remani/test/test_mppi_latency_evidence.py"
+      ],
+      "offline_evidence": "deadline版本74项离线测试通过；当前9个deadline场景覆盖晚返回、下发晚、异常、关节/执行许可短缺、取消和边界。",
+      "latest_hardware_evidence": "第二次取消前134次交付，仅2次delivery_deadline_exceeded，109.198/103.370ms且输入有效，零速度约76/95ms；持续停住不能归因这两次超时。",
+      "remaining": "95ms总预算下偶发下发超时仍会插零；不能用无条件延长旧速度或取消地图/执行有效性门来消除日志。",
+      "regression_if_touched": [
+        "晚无解不得触发持久tracking_fault",
+        "及时无解仍能请求慢层恢复",
+        "取消或急停发生后不得交付旧候选",
+        "实际失败门信息与时钟源保持一致"
+      ],
+      "sources": [
+        "rollback/20261112-131911-deadline-priority/manifest.json",
+        "experiments/online_remani_validation/results/latency_capture_20261114-130027/mppi_gate_audit.json",
+        "experiments/online_remani_validation/results/drive_session_20261114-114345/NAVIGATION_STUTTER_DIAGNOSIS.txt"
+      ]
+    },
+    {
+      "area": "原控制器进度与换轨相位",
+      "versions": [
+        "20261111-114754-restore-pre020",
+        "20261113-234545-terminal-settle"
+      ],
+      "historical_fault": "参考时间与执行位置不一致造成虚拟进度冻结、过期、错误换档或换轨后仍用旧相位。",
+      "current_preserved_behavior": "原mm_controller发布虚拟progress；MPPI按该progress采样慢层参考；已有实际反馈冻结/减速逻辑仍工作。progress并不是MPPI的预测前缀。",
+      "existing_tests": [
+        "src/mm_remani/test/test_mppi_native_phase.py",
+        "src/mm_remani/test/test_native_feedback_gate.py",
+        "src/mm_remani/test/test_real_base_tracker_policy.py"
+      ],
+      "offline_evidence": "当前native_phase用例覆盖未来激活、同档位边界、暂停、进度过期、时钟回退、求解中换轨和普通进度更新；基座tracker仅验证局部策略，不是完整运动闭环。",
+      "latest_hardware_evidence": "11:48一次导航9.348s参考运行29.413s完成，进度缩放伴随停顿；13:xx活动段无tracking_fault=true但慢层仍主动取消。",
+      "remaining": "避障偏离原参考后，原控制器冻结是否会阻碍快层回接，及新候选如何对齐真实状态，需要与本轮协同修改一起验证；没有证据可归因所有停车于progress。",
+      "regression_if_touched": [
+        "同轨普通progress不使每次求解失效",
+        "pending新轨不得提前执行",
+        "过期progress不以墙钟擅自前推",
+        "前后档位不可错误跨越",
+        "已取消旧轨不能重新激活"
+      ],
+      "sources": [
+        "src/mm_controller/src/mm_controller_fsm.cpp",
+        "src/mm_remani/test/test_mppi_native_phase.py",
+        "experiments/online_remani_validation/results/latency_capture_20261114-130027/本轮导航结论.txt"
+      ]
+    },
+    {
+      "area": "终点收敛、掉头与后方目标",
+      "versions": [
+        "20261113-234545-terminal-settle"
+      ],
+      "historical_fault": "终点附近反复挪动/重规划、yaw或关节未到就切换、可选恢复待机与导航完成相互阻塞。",
+      "current_preserved_behavior": "MPPI末端有界yaw/小关节误差收敛，8s窗口，最终位置/姿态验收；MPPI模式取消可选到点后待机恢复；finish清参考与姿态原子化。",
+      "existing_tests": [
+        "src/mm_remani/test/test_goal_terminal.py",
+        "src/mm_remani/test/test_mppi_terminal_yaw.py",
+        "src/mm_remani/test/test_real_base_tracker_policy.py",
+        "src/mm_remani/test/test_mppi_native_phase.py"
+      ],
+      "offline_evidence": "终点轮134项Python及6终点/15恢复C++场景；实际几何与运动机理不在C++桩测试覆盖内。",
+      "latest_hardware_evidence": "11:48单目标finish=true，末次里程计距目标约0.0235m，观察到终端settling；13:xx未到目标被ABORT。",
+      "remaining": "没有原地180度调头、连续前后往返、狭窄空间完成的实车通过证据；单次finish不能外推这些场景。",
+      "regression_if_touched": [
+        "未到位置不得用终端转向偷过验收",
+        "yaw/arm超界不得finish",
+        "终端超时不重置窗口无限自转",
+        "新目标/取消/碰撞失效必须撤销旧终端命令"
+      ],
+      "sources": [
+        "rollback/20261113-234545-terminal-settle/manifest.json",
+        "experiments/online_remani_validation/results/drive_session_20261114-114345/navigation_stutter_brief.json"
+      ]
+    },
+    {
+      "area": "只影响机械臂时优先机械臂避障",
+      "versions": [
+        "inherited production baseline; no dedicated hardware-pass version"
+      ],
+      "historical_fault": "用户要求障碍只影响臂时尽量保留底盘轨迹，仿真有效但实车未展示可确认结果。",
+      "current_preserved_behavior": "候选先尝试保留完整名义底盘序列的arm_only；全部臂候选不满足时才whole_body_fallback；合成控制仍需全机碰撞和制动验收。",
+      "existing_tests": [
+        "src/mm_remani/test/test_mppi_navigation_priority.py",
+        "src/mm_remani/test/test_mppi_navigation_servo.py",
+        "src/mm_remani/test/test_mppi_position_servo.py",
+        "src/mm_remani/test/test_mppi_collision.py",
+        "src/mm_remani/test/test_mppi_standby.py"
+      ],
+      "offline_evidence": "navigation_priority用真实候选/rollout/加权验收、解析双球机器人+移动球障碍；证明分配逻辑，不是实车67球/雷达/URDF闭环。其H12和关节速度等也不同于实车H5和0.15rad/s。",
+      "latest_hardware_evidence": "本轮不能证明arm_only动态绕行成功；11:48动态有效点为零的窗口更不能作为动态避障证据。",
+      "remaining": "实物FOV能否观测威胁臂的物体、整机几何与当前姿态、动态预测是否有效，以及臂单独可行空间，均须有同刻证据后才能判断底盘扰动。",
+      "regression_if_touched": [
+        "arm_only可行时底盘整段名义序列不变",
+        "只有全部臂候选无解才释放底盘",
+        "初始碰撞不能靠噪声洗成可行",
+        "加权后再次验收",
+        "真实servo和制动尾迹保持一致"
+      ],
+      "sources": [
+        "src/mm_remani/test/test_mppi_navigation_priority.py",
+        "src/mm_remani/config/mppi.yaml",
+        "rollback/20261113-234545-terminal-settle/manifest.json"
+      ]
+    },
+    {
+      "area": "机械臂原驱动与短反馈间隙",
+      "versions": [
+        "20261111-114754-restore-pre020",
+        "20261113-105409-feedback-grace300"
+      ],
+      "historical_fault": "启动不达待机、腕部抖动、指令或反馈超时后失能；用户后来确认固件升级解决了机械臂状态问题。",
+      "current_preserved_behavior": "使用现有原启动路径与执行模型；150ms反馈失效暂停新目标但保持使能，持续300ms才锁停；明确急停/异常/失能立即阻断，不自动复位。",
+      "existing_tests": [
+        "src/mm_remani/test/test_piper_feedback_command.py",
+        "src/mm_remani/test/test_mppi_startup.py",
+        "src/mm_remani/test/test_mppi_execution_gate.py",
+        "src/mm_remani/test/test_native_feedback_gate.py"
+      ],
+      "offline_evidence": "feedback-grace版本55组驱动+112项MPPI检查，覆盖最旧关节对、状态/单电机源龄、软间隙恢复、硬故障、CAN发送期间失鲜、原启动截止时间。",
+      "latest_hardware_evidence": "11:48窗口1246条enabled=true、stop_latched=false、feedback_valid=true；command_active=false是指令流间隙，不等于失能。当前持续停车无需据此改驱动。",
+      "remaining": "长期高负载反馈尾延迟未被证明消失；启动60s TCPROS握手阻塞是另外一条连接证据，不能归为CAN固件问题。",
+      "regression_if_touched": [
+        "不改CAN接口/SDK模式/发布频率来掩盖导航问题",
+        "短间隙不触发重复使能",
+        "300ms持续故障仍锁停",
+        "旧反馈不得续期",
+        "异常状态绝不自动复位"
+      ],
+      "sources": [
+        "rollback/20261113-105409-feedback-grace300/manifest.json",
+        "experiments/online_remani_validation/results/drive_session_20261114-114345/startup_handshake_evidence.json",
+        "experiments/online_remani_validation/results/drive_session_20261114-114345/NAVIGATION_STUTTER_DIAGNOSIS.txt"
+      ]
+    },
+    {
+      "area": "快层到慢层的实质协同",
+      "versions": [
+        "20261114-130001-latency-evidence is observation only"
+      ],
+      "historical_fault": "快层已在避障，但慢层按旧参考碰撞直接ABORT，MPPI清空参考后不能继续正常导航候选，重规划失败则目标放弃。",
+      "current_preserved_behavior": "当前fast_to_slow_prefix_enabled=False，无MPPI执行前缀/获准避障事件到慢层订阅；快到慢直接通路主要tracking_fault，实际反馈间接改变初值。",
+      "existing_tests": [
+        "src/mm_remani/test/test_mppi_native_phase.py",
+        "src/mm_remani/test/test_perception_recovery.py",
+        "src/mm_remani/test/test_mppi_execution_gate.py"
+      ],
+      "offline_evidence": "这些测试只覆盖已有参考接收、相位、恢复和执行门；没有开启实车快层前缀的端到端验收证据。",
+      "latest_hardware_evidence": "13:xx两次SAFETY触发ACTION_ABORT；首次新ADD后恢复，第二次连续5次规划失败转WAIT_TARGET；现有证据没有证明两次旧参考碰撞对应真实执行路径也碰撞。",
+      "remaining": "核心修复应区分参考失效与实际执行危险，并让获准快层行为与慢层交接一致；不能直接忽略慢层碰撞或无条件带着旧前缀运动。",
+      "regression_if_touched": [
+        "区分当前状态碰撞/真实执行危险与旧参考未来碰撞",
+        "只有已验收、未过期、同目标的快层结果能参与交接",
+        "停止/新目标后旧结果不可续用",
+        "慢层失败保留目标的规则必须有界且不假报成功"
+      ],
+      "sources": [
+        "experiments/online_remani_validation/results/latency_capture_20261114-130027/本轮导航结论.txt",
+        "experiments/online_remani_validation/results/latency_capture_20261114-130027/abort_map_generation_alignment.json"
+      ]
+    }
+  ],
+  "important_boundaries": [
+    "20261110-234522-mppi-navigation-recovery在20261111完整restore-pre020中被回退；不得仅引用旧测试当当前功能证明。",
+    "所有相关版本登记仍为OFFLINE_VERIFIED_HARDWARE_PENDING；本轮诊断采集可验证成功，但不等于导航或动态避障实车通过。",
+    "以每段有效导航窗口分别归因：11:48主要输入过期脉冲，13:xx持续停住主要慢层碰撞取消+恢复失败，不可将等待段超龄混入活动段。",
+    "回归按本轮实际修改范围选择已有测试，不新增冗余状态框架或重复驱动排查。"
+  ],
+  "priority_for_this_round": [
+    "优先处理旧参考碰撞ABORT与快层实际执行/慢层交接不一致，以及5次失败后目标放弃",
+    "地图优化独立看x/y正距计算和首导出25ms等待，不能许诺仅改地图就解本轮持续停车",
+    "保留终点、虚拟进度、arm_only优先和驱动已有边界；无新证据不动驱动"
+  ]
+}

@@ -1,0 +1,39 @@
+地图实验最终结果（仅 staged，运行 src/devel 未由本 agent 修改）
+
+选择：float32_scratch 单项，完整新 plan_env 已干净构建并离线验证；根代理负责正式源码/库同步应用与版本归档。未实车验证，未证明在线卡顿已解决。
+
+axis_layout: REJECT_NOT_DEPLOYED；真实历史 403440 格 crop 的逐帧中位改善率中位数 -15.993%。
+  synthetic_empty（2208000 格）compute 中位 38.707 -> 42.512 ms，改善 -9.830%；p95 40.104 -> 43.129 ms。
+  synthetic_dense（2208000 格）compute 中位 58.800 -> 64.929 ms，改善 -10.422%；p95 66.741 -> 69.778 ms。
+  synthetic_thick（2208000 格）compute 中位 48.363 -> 53.028 ms，改善 -9.646%；p95 49.316 -> 62.627 ms。
+  synthetic_subset_sparse（2208000 格）compute 中位 89.952 -> 95.450 ms，改善 -6.113%；p95 95.749 -> 98.517 ms。
+  synthetic_subset_fullz（2208000 格）compute 中位 30.310 -> 34.887 ms，改善 -15.101%；p95 30.939 -> 35.925 ms。
+  synthetic_subset_corner（2208000 格）compute 中位 29.718 -> 33.507 ms，改善 -12.751%；p95 30.127 -> 35.059 ms。
+negative_subset: REJECT_NOT_DEPLOYED；真实历史 403440 格 crop 的逐帧中位改善率中位数 -3.978%。
+  synthetic_empty（2208000 格）compute 中位 36.517 -> 38.023 ms，改善 -4.124%；p95 37.882 -> 39.250 ms。
+  synthetic_dense（2208000 格）compute 中位 57.049 -> 58.114 ms，改善 -1.867%；p95 60.427 -> 59.808 ms。
+  synthetic_thick（2208000 格）compute 中位 45.920 -> 49.835 ms，改善 -8.526%；p95 48.649 -> 51.167 ms。
+  synthetic_subset_sparse（2208000 格）compute 中位 88.724 -> 63.246 ms，改善 28.716%；p95 99.884 -> 68.098 ms。
+  synthetic_subset_fullz（2208000 格）compute 中位 30.723 -> 32.199 ms，改善 -4.804%；p95 30.882 -> 40.414 ms。
+  synthetic_subset_corner（2208000 格）compute 中位 29.473 -> 24.107 ms，改善 18.205%；p95 30.636 -> 25.218 ms。
+float32_scratch: SELECTED_EXPERIMENTAL_STAGED_NOT_DEPLOYED；真实历史 403440 格 crop 的逐帧中位改善率中位数 1.521%。
+  synthetic_empty（2208000 格）compute 中位 41.718 -> 28.968 ms，改善 30.562%；p95 43.754 -> 37.843 ms。
+  synthetic_dense（2208000 格）compute 中位 61.248 -> 59.352 ms，改善 3.097%；p95 62.259 -> 60.377 ms。
+  synthetic_thick（2208000 格）compute 中位 46.415 -> 42.172 ms，改善 9.141%；p95 47.683 -> 51.571 ms。
+  synthetic_subset_sparse（2208000 格）compute 中位 89.234 -> 85.730 ms，改善 3.927%；p95 103.080 -> 88.431 ms。
+  synthetic_subset_fullz（2208000 格）compute 中位 30.947 -> 26.727 ms，改善 13.638%；p95 31.620 -> 27.311 ms。
+  synthetic_subset_corner（2208000 格）compute 中位 30.202 -> 25.438 ms，改善 15.775%；p95 30.586 -> 27.764 ms。
+
+精确性：每项均 1 组预热+5 组交替顺序实测，22 帧每组共 19,703,040 格，全部逐值相等/无非有限值；保留每组每帧 sha256、比较结果及两帧代表完整 f64。独立候选测试 axis 17/17、negative 19/19、float 18/18。
+证据范围：本轮 map_events 是 82×82×60 ESDF 输出，无完整约200万格原始 occupancy；不能反演/补零冒充。采用此前真实 occupancy crop 与明确标注的合成220.8万格输入。负向曾与 SDK 回放交叠的整组时序已排除并保留。
+float 精确边界：仅 ∑(size−1)^2≤2^24，整数平方距离存 float 后精确恢复 double；+inf 映射回 double MAX；envelope、sqrt、result 均 double。超界回双精度，模式不变复用容量。
+内存：220.8万格两份 scratch 理论减少约16.85 MiB；实际该轮 worker 峰值 baseline61.82MiB、float43.46MiB。候选编译/执行均受600MiB AS；全库构建另获1.4GiB AS授权，实测见下。
+限制：空图30.56%包含首次扩容，不能当稳定正向主耗时收益。真实crop仅1.52%改善；随机稠密合成3.10%。厚块5次样本p95反而47.68->51.57ms，不宣称所有尾延迟改善。
+完整构建：四个 plan_env 源从新 stage 重编，无旧 .o；耗时 274.734s，峰值组 RSS 1118.145MiB，可用内存最低 2056.223MiB。
+  test_esdf_worker：18 项，failures=0，errors=0，1.402s。
+  test_grid_map_parallel：65 项，failures=0，errors=0，20.050s。
+  test_dynamic_point_buffer：16 项，failures=0，errors=0，0.318s。
+libplan_env.so SHA256: 62cfbd985c82d935681f3baa1b67cf1cd7983f05dbde8444d37a17dd87d07bdc
+库 RPATH 为正式 devel/ROS；三套测试经 LD_LIBRARY_PATH 明确加载 staged 库，ldd/readelf 报告已保存。
+部署材料：full_plan_env_source/src/esdf_worker.cpp、include/plan_env/esdf_worker.h、test/test_esdf_worker.cpp；完整库 full_plan_env_devel/lib/libplan_env.so；validation_summary.json/source manifest。
+运行库未由本 agent 部署。350ms/halo/cap/碰撞语义未改。

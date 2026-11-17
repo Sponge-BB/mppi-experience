@@ -1,0 +1,574 @@
+{
+  "schema": "goal2_handoff_code_audit_v1",
+  "scope": "Read-only source and streamed existing-bag audit; no ROS node/subscription, compilation or robot commands",
+  "goal2_source": 1794792713.5756688,
+  "goal2_local": "2026-11-16T09:31:53.575669+08:00",
+  "runtime_parameters": {
+    "dynamic_replan_handoff_time": 0.7,
+    "dynamic_astar_search_time": 0.45,
+    "dynamic_astar_replan_wall_time": 0.6,
+    "controller_progress_timeout": 0.5,
+    "global_plan_dynamic_replan_hold_time": 0.35
+  },
+  "source_references": [
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        2644,
+        2658
+      ],
+      "fact": "Moving start state is predicted by handoff_time times controller time scale."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        2696,
+        2705
+      ],
+      "fact": "Dynamic optimizer receives independent .60s max wall time and A* independent .45s max search time; these are not an end-to-end deadline."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        2741,
+        2758
+      ],
+      "fact": "DynamicLatency wall includes the entire callReboundReplan, then snapshot teardown and restoring settings. It is not optimizer-only timing."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        3326,
+        3368
+      ],
+      "fact": "With a local trajectory, activation timestamp is captured immediately before manager call as now+.70s for moving repair; stopped guard uses now."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/planner_manager.cpp",
+      "lines": [
+        431,
+        434
+      ],
+      "fact": "A* initialization precedes optimizer, not covered by its later optimizer start clock."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/planner_manager.cpp",
+      "lines": [
+        489,
+        509
+      ],
+      "fact": "Initialization timing and optimization timing are separate; no shared request deadline is deducted."
+    },
+    {
+      "path": "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp",
+      "lines": [
+        218,
+        242
+      ],
+      "fact": "Optimizer .60s clock starts at L-BFGS entry after frontend and setup. Timeout callback causes failure."
+    },
+    {
+      "path": "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp",
+      "lines": [
+        545,
+        549
+      ],
+      "fact": "Time budget is checked cooperatively at callback entry, not an OS preemption or whole-pipeline deadline."
+    },
+    {
+      "path": "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp",
+      "lines": [
+        249,
+        258
+      ],
+      "fact": "Sampled safety checking follows the optimizer and is not under that callback budget."
+    },
+    {
+      "path": "src/mm_remani_planner/path_searching/src/kino_astar.cpp",
+      "lines": [
+        487,
+        543
+      ],
+      "fact": "Search has its own ROS-time .45s counter and checks inside search loop; node expansion/shot may pass a check before returning."
+    },
+    {
+      "path": "src/mm_remani_planner/path_searching/src/kino_astar.cpp",
+      "lines": [
+        162,
+        166
+      ],
+      "fact": "try_astar_times limits the cross-request continuous-failure mode; it does not run ten independent searches inside this attempt."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/planner_manager.cpp",
+      "lines": [
+        511,
+        554
+      ],
+      "fact": "Post-optimizer statistics run before manager explicitly sleeps until trajectory_start_time whenever have_local_traj and the timestamp is future."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/planner_manager.cpp",
+      "lines": [
+        551,
+        565
+      ],
+      "fact": "After waiting, manager preserves that activation timestamp in the candidate and then returns after visualization."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        3371,
+        3405
+      ],
+      "fact": "FSM sees manager success, then requires moving activation lead>=.020s before publication validation. Stopped candidates are instead rebased to now."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        748,
+        776
+      ],
+      "fact": "Dynamic retry calls planFromLocalTraj(true,false,.60,true), with no random retry, retaining TTC guard and retrying after .35s on failure."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_planner_node.cpp",
+      "lines": [
+        6,
+        13
+      ],
+      "fact": "Production FSM uses single-threaded ros::spin()."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        338,
+        351
+      ],
+      "fact": "FSM execution/safety timers and odom/joint/progress subscriptions share default nh callback queue."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        1067,
+        1075
+      ],
+      "fact": "Controller progress cache is updated only in trajectoryProgressCallback."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        1120,
+        1149
+      ],
+      "fact": "Matched progress older than .5s falls back to wall-clock phase and scale1; fresh matched progress uses virtual phase plus age*scale."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        1445,
+        1468
+      ],
+      "fact": "Raw safety scan uses getCurrentTrajectoryTime and braking threshold from cached measured velocity."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        1897,
+        1926
+      ],
+      "fact": "LiveCollisionStop logs the chosen phase, predicted query state, physical cached state and feedback source stamps."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        2438,
+        2444
+      ],
+      "fact": "Logged FSM odom stamp comes from its last odom callback, not the latest message available to another process."
+    }
+  ],
+  "confirmed_findings": [
+    {
+      "id": "sleep_activation_acceptance_conflict",
+      "severity": "blocking",
+      "statement": "Successful moving repairs with an existing trajectory cannot normally satisfy the subsequent 20ms activation-lead check: manager waits until activation if early, or activation has already passed if late, then FSM rejects.",
+      "conditions": [
+        "have_local_traj=true",
+        "dynamic_repair=true",
+        "guarded_dynamic_stop_handoff=false",
+        "manager solver returns success",
+        "no ROS time jump or interrupted sleep"
+      ],
+      "code_refs": [
+        12,
+        13,
+        14
+      ],
+      "classification": "Direct conditional control-flow proof from inspected source; observed late-rejection logs are consistent."
+    },
+    {
+      "id": "budget_is_optimizer_only",
+      "statement": "The .60s parameter is the optimizer callback budget, not search+optimization+validation or total repair wall time. Search can use its own .45s plus frontend/refit/visualization; post-solve safety/statistics/wait and publication validation add more work. The source does not reserve end-to-end .020s acceptance lead.",
+      "nominal_handoff_s": 0.7,
+      "required_prevalidation_lead_s": 0.02,
+      "nominal_available_until_lead_check_s": 0.68,
+      "independent_search_plus_optimizer_caps_s": 1.05,
+      "classification": "Direct source fact; caps are cooperative and not strict total bounds."
+    },
+    {
+      "id": "why_reported_repairs_around_700ms",
+      "statement": "DynamicLatency measures the whole call containing an explicit wait to a .70s activation time. Therefore 709.8/700.9/740.9ms does not prove 600ms optimizer overruns. All three log optimizer stopping-criteria success before late rejection; their exact search/optimization/sleep split was not recorded.",
+      "optimizer_result_to_rejection_ms": [
+        389.5890712738037,
+        169.9666976928711,
+        70.18065452575684
+      ],
+      "classification": "Observed timing plus code-consistent explanation; exact sleep duration unknown."
+    },
+    {
+      "id": "single_queue_feedback_starvation_and_wallclock_fallback",
+      "statement": "Synchronous planning and manager sleep hold the default FSM callback queue; its odom/progress callbacks cannot execute in that interval. A ~700ms operation exceeds .5s progress freshness and enables wall-clock phase/scale1 fallback when that cached progress is old.",
+      "classification": "Queue blocking and fallback conditions proven by source; which exact progress predicate failed at this stop is not directly logged."
+    }
+  ],
+  "observed_astar_attempts": [
+    {
+      "attempt": 1,
+      "start_source": 1794792721.4400325,
+      "start_local": "2026-11-16T09:32:01.440032+08:00",
+      "optimizer_result": {
+        "source": 1794792721.7602363,
+        "receipt": 1794792721.9473333,
+        "level": 2,
+        "name": "/remani_planner_node",
+        "message": "The optimization result is : Success: met stopping criteria (delta)."
+      },
+      "late_rejection": {
+        "source": 1794792722.1498253,
+        "receipt": 1794792722.854092,
+        "level": 4,
+        "name": "/remani_planner_node",
+        "message": "[FSM] Rejecting late moving repair: only -0.009 s remains before activation (minimum 0.020 s)."
+      },
+      "repair_latency": {
+        "source": 1794792722.1499345,
+        "receipt": 1794792722.8557174,
+        "level": 2,
+        "name": "/remani_planner_node",
+        "message": "[FSM][DynamicLatency] repair=failed seed=astar wall=709.8ms event_to_result=762.5ms horizon=local."
+      },
+      "optimizer_log_to_rejection_ms": 389.5890712738037
+    },
+    {
+      "attempt": 2,
+      "start_source": 1794792722.505003,
+      "start_local": "2026-11-16T09:32:02.505003+08:00",
+      "optimizer_result": {
+        "source": 1794792723.036109,
+        "receipt": 1794792723.0934746,
+        "level": 2,
+        "name": "/remani_planner_node",
+        "message": "The optimization result is : Success: met stopping criteria (delta)."
+      },
+      "late_rejection": {
+        "source": 1794792723.2060757,
+        "receipt": 1794792724.1667721,
+        "level": 4,
+        "name": "/remani_planner_node",
+        "message": "[FSM] Rejecting late moving repair: only -0.000 s remains before activation (minimum 0.020 s)."
+      },
+      "repair_latency": {
+        "source": 1794792723.206171,
+        "receipt": 1794792724.1691358,
+        "level": 2,
+        "name": "/remani_planner_node",
+        "message": "[FSM][DynamicLatency] repair=failed seed=astar wall=700.9ms event_to_result=1818.8ms horizon=local."
+      },
+      "optimizer_log_to_rejection_ms": 169.9666976928711
+    },
+    {
+      "attempt": 3,
+      "start_source": 1794792723.2474592,
+      "start_local": "2026-11-16T09:32:03.247459+08:00",
+      "optimizer_result": {
+        "source": 1794792723.918208,
+        "receipt": 1794792724.3027723,
+        "level": 2,
+        "name": "/remani_planner_node",
+        "message": "The optimization result is : Success: met stopping criteria (delta)."
+      },
+      "late_rejection": {
+        "source": 1794792723.9883885,
+        "receipt": 1794792724.3028011,
+        "level": 4,
+        "name": "/remani_planner_node",
+        "message": "[FSM] Rejecting late moving repair: only -0.040 s remains before activation (minimum 0.020 s)."
+      },
+      "repair_latency": {
+        "source": 1794792723.9884894,
+        "receipt": 1794792724.3299477,
+        "level": 2,
+        "name": "/remani_planner_node",
+        "message": "[FSM][DynamicLatency] repair=failed seed=astar wall=740.9ms event_to_result=2601.1ms horizon=local."
+      },
+      "optimizer_log_to_rejection_ms": 70.18065452575684
+    }
+  ],
+  "stop_phase_evidence": {
+    "live_stop_source": 1794792723.991133,
+    "live_stop_local": "2026-11-16T09:32:03.991133+08:00",
+    "checked_at": 1794792723.98863,
+    "reference_start": 1794792716.3637893,
+    "logged_phase_s": 7.62484073638916,
+    "wallclock_phase_s": 7.62484073638916,
+    "logged_phase_minus_wallclock_s": 0.0,
+    "cached_fsm_odom_age_ms": 818.3817863464355,
+    "cached_fsm_joint_age_ms": 4.507541656494141,
+    "first_matching_controller_progress_after_check": {
+      "source": 1794792723.992787,
+      "receipt": 1794792723.993236,
+      "reference_start": 1794792716.3637893,
+      "phase": 6.2781674688647024,
+      "scale": 0.0
+    },
+    "phase_lead_over_near_controller_s": 1.3466732675244577,
+    "last_mppi_status_before_stop": {
+      "receipt": 1794792723.9581082,
+      "fields": {
+        "mode": "nominal",
+        "reference_source": "native_polynomial",
+        "native_phase": 6.242451820635494,
+        "native_time_scale": 0.4005429709483396,
+        "feasible": 3,
+        "min_gap": 0.0029999999999999055,
+        "arm_motion": 0.005034454183427348,
+        "external_min_gap": 0.2703645940026923,
+        "pending_start_stamp": null,
+        "native_phase_source": "native_progress",
+        "state": "command_delivered",
+        "simulation": false,
+        "arm_enabled": true,
+        "seed": 11,
+        "arm_execution_model": "velocity_legacy",
+        "arm_servo_native": false,
+        "solve_ms": 48.48,
+        "base_v": 0.08598756642034668,
+        "base_w": -0.02373332107954573,
+        "cycle_ms": 62.8,
+        "base_safety_speed_limit": 0.08598756642034668,
+        "arm_target": [
+          -0.023142422654755034,
+          0.4968810299738439,
+          -1.0173307962293592,
+          -0.025997506024232106,
+          0.8878525773212741,
+          -0.0006174613096486346
+        ],
+        "base_anchor_error_m": 1.0858013434173754,
+        "candidate_diagnostics": {
+          "capture_inputs": {
+            "stage": "capture",
+            "checked_at": 1794792723.8930454,
+            "base_stamp": 1794792723.8701267,
+            "base_age_ms": 22.919,
+            "base_fresh": true,
+            "base_callback": {
+              "enter": 1794792723.886115,
+              "adopted": 1794792723.8865285,
+              "lock_wait_ms": 0.004
+            },
+            "joint_stamp": 1794792723.883989,
+            "joint_age_ms": 9.056,
+            "joint_fresh": true,
+            "joint_callback": {
+              "enter": 1794792723.889713,
+              "adopted": 1794792723.889997,
+              "lock_wait_ms": 0.002
+            },
+            "snapshot_header": [
+              3.0,
+              1.0,
+              5054.0,
+              1794792723.7090669,
+              1.0,
+              82.0,
+              82.0,
+              60.0,
+              -1.6999999999999997,
+              -2.9,
+              0.0,
+              0.05,
+              67.0,
+              0.0,
+              1850.0,
+              0.35,
+              2.0,
+              1794792723.8480153,
+              1794792723.7701247,
+              1.0,
+              1.0,
+              0.03,
+              1.0,
+              1.0,
+              1794792723.8439102,
+              0.0,
+              0.0,
+              0.0,
+              1.0,
+              1801.0,
+              2331.0,
+              2329.0
+            ],
+            "map_age_ms": 183.979,
+            "dynamic_age_ms": 122.921,
+            "map_age_ok": true,
+            "dynamic_age_ok": true,
+            "snapshot_valid": true,
+            "dynamic_valid": true,
+            "snapshot_callback": {
+              "enter": 1794792723.8651292,
+              "adopted": 1794792723.8731306,
+              "read_lock_wait_ms": 0.003,
+              "decode_ms": 7.957,
+              "write_lock_wait_ms": 0.004,
+              "wire_seq": 5054.0
+            },
+            "lock_wait_ms": 0.001
+          },
+          "planning_elapsed_ms": 48.479,
+          "deadline_ms": 95.0,
+          "delivery_lock_wait_ms": 0.003,
+          "checked_inputs": {
+            "stage": "before_delivery",
+            "checked_at": 1794792723.9527307,
+            "base_stamp": 1794792723.8701267,
+            "base_age_ms": 82.604,
+            "base_fresh": true,
+            "base_callback": {
+              "enter": 1794792723.886115,
+              "adopted": 1794792723.8865285,
+              "lock_wait_ms": 0.004
+            },
+            "joint_stamp": 1794792723.9341192,
+            "joint_age_ms": 18.611,
+            "joint_fresh": true,
+            "joint_callback": {
+              "enter": 1794792723.9368348,
+              "adopted": 1794792723.937089,
+              "lock_wait_ms": 0.004
+            },
+            "snapshot_header": [
+              3.0,
+              1.0,
+              5055.0,
+              1794792723.7090669,
+              1.0,
+              82.0,
+              82.0,
+              60.0,
+              -1.6999999999999997,
+              -2.85,
+              0.0,
+              0.05,
+              67.0,
+              0.0,
+              1851.0,
+              0.35,
+              2.0,
+              1794792723.8979592,
+              1794792723.7701247,
+              1.0,
+              1.0,
+              0.03,
+              1.0,
+              1.0,
+              1794792723.8891182,
+              0.0,
+              0.0,
+              0.0,
+              1.0,
+              1801.0,
+              2331.0,
+              2329.0
+            ],
+            "map_age_ms": 243.664,
+            "dynamic_age_ms": 182.606,
+            "map_age_ok": true,
+            "dynamic_age_ok": true,
+            "snapshot_valid": true,
+            "dynamic_valid": true,
+            "snapshot_callback": {
+              "enter": 1794792723.9187684,
+              "adopted": 1794792723.9292343,
+              "read_lock_wait_ms": 0.008,
+              "decode_ms": 10.391,
+              "write_lock_wait_ms": 0.006,
+              "wire_seq": 5055.0
+            }
+          },
+          "first_step_check_ms": 10.797,
+          "delivery_elapsed_ms": 62.313,
+          "delivery_lock_hold_ms": 14.225
+        }
+      }
+    }
+  },
+  "deployment_identity": {
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": {
+      "current_sha256": "f3c1ab3fa35db990dc88c06dd13daa20d2f8188989108094261e4552ba3b3757",
+      "recorded_sha256": "f3c1ab3fa35db990dc88c06dd13daa20d2f8188989108094261e4552ba3b3757",
+      "matches_recording": true
+    },
+    "src/mm_remani_planner/plan_manage/src/planner_manager.cpp": {
+      "current_sha256": "cdc4d1be2200dd35ac729f5a459da10e067b456e1939953b7ea7e617f05a8156",
+      "recorded_sha256": null,
+      "matches_recording": null
+    },
+    "src/mm_remani_planner/plan_manage/src/remani_planner_node.cpp": {
+      "current_sha256": "a2014461ebd384320a003c48494fb9be6bd4d2c59384c3480d24d0d65e2e172f",
+      "recorded_sha256": null,
+      "matches_recording": null
+    },
+    "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp": {
+      "current_sha256": "96ff28364f4f377d39295c772ee8723b1a975f7883c7135ad3fea6651d6258c0",
+      "recorded_sha256": null,
+      "matches_recording": null
+    },
+    "src/mm_remani_planner/path_searching/src/kino_astar.cpp": {
+      "current_sha256": "ffc1f03fa439d3b0094185717cd880781722532e83bb5575c9bbaaacec665802",
+      "recorded_sha256": null,
+      "matches_recording": null
+    },
+    "devel/lib/remani_planner/remani_planner_node": {
+      "current_sha256": "5be5976d9945b2362b7dbc39f7d2adc5fec7c65ffffeb8ead5a78a9dd8574f6f",
+      "recorded_sha256": "5be5976d9945b2362b7dbc39f7d2adc5fec7c65ffffeb8ead5a78a9dd8574f6f",
+      "matches_recording": true
+    }
+  },
+  "deployment_limits": [
+    "Recording hashes of the production FSM source and main planner executable match the current files.",
+    "planner_manager.cpp and optimizer/search source were not captured in code_and_inputs.json; current source hashes and source/log agreement do not constitute complete binary provenance.",
+    "Runtime shared-library mapping and hashes of every loaded dependency are unknown in this audit. No source snapshot is represented as a complete deployment proof."
+  ],
+  "unproven": [
+    "No per-attempt timestamps directly bracket A* exit, optimizer entry/exit, IsTrajSafe, statistics, actual sleep, and final publication validation. Exact CPU/scheduling/sleep attribution cannot be recovered from these logs.",
+    "FSM cached controller_progress_stamp and progress-match predicate were not logged at the stop. Exact reason for wall-clock fallback (age, missing progress, or mismatched start) is unknown, although phase exactly equals wall-clock and synchronous callback blockage is demonstrated.",
+    "Raw safety checked a phase roughly1.35s ahead of current controller progress; this audit does not independently certify that the actual swept robot was collision-free."
+  ],
+  "resources": {
+    "peak_streaming_rss_mib": 136.19140625,
+    "required_rss_limit_mib": 180,
+    "streamed_topics": {
+      "/rosout_agg": 3379,
+      "/mm_controller_node/trajectory_progress": 41886,
+      "/mppi/status": 3963
+    },
+    "source_log_window_s": 15
+  },
+  "evidence_sha256": {
+    "experiments/online_remani_validation/results/real_dynamic_20261116-092652/runtime_parameters.json": "6c855688d976732b60098b10edf07460e4fe8d7db905fa7fc56d4ffc870293be",
+    "experiments/online_remani_validation/results/real_dynamic_20261116-092652/core.bag": "1710f2fb64a50ad00cdde86fbdf7cb5840a33e2bd05ee6e51fa70e7d239e913b",
+    "experiments/online_remani_validation/results/real_dynamic_20261116-092652/code_and_inputs.json": "169ebca7eb2db7f259c82e5fd7f792c634e62e65c74dbb9f42e5bf4958a52a51"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "scope": "Offline real WholeBodyNode.cycle/startup_plan/checked_first_step; fake ROS clock/publishers; no graph or hardware",
+  "environment": "Synthetic clear static snapshot, constant external gap 1 m; no dynamic obstacles or perception",
+  "prediction": "velocity_legacy, current hardware prediction settings; independent nominal position Plant, not hardware calibration",
+  "startup_complete": true,
+  "reason": "startup_complete",
+  "simulated_elapsed_s": 44.800000000000004,
+  "initial_q_rad": [
+    -0.10072295113259275,
+    -0.03183480555637657,
+    0.01345648853287628,
+    0.10487683475233926,
+    0.46677085515336353,
+    -0.10257300013970674
+  ],
+  "target_q_rad": [
+    0.0,
+    0.5209807817203074,
+    -1.048907973863552,
+    -3.490658503988659e-05,
+    0.9472949048124424,
+    5.235987755982989e-05
+  ],
+  "final_state": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -7.963236751917735e-20,
+    0.5209807817117204,
+    -1.0391902590934419,
+    -3.490658503988604e-05,
+    0.9472949048119963,
+    5.2359877559829334e-05,
+    7.3463363118794e-20,
+    7.921875709569121e-12,
+    -0.008964767128761267,
+    -6.776262860279557e-19,
+    4.1206654994981063e-13,
+    6.776263403330937e-19
+  ],
+  "final_max_target_error_rad": 0.009717714770110186,
+  "final_max_joint_speed_rad_s": 0.008964767128761267,
+  "max_base_displacement_m": 0.0,
+  "max_base_yaw_rad": 0.0,
+  "max_base_command_abs": 0.0,
+  "initial_configuration_gap_m": 0.00013506787610318853,
+  "min_configuration_gap_m": 6.682049365763228e-07,
+  "min_predicted_gap_m": 3.630615596614262e-05,
+  "external_gap_m": 1.0,
+  "configuration_check_step_s": 0.005,
+  "cycle_count": 449,
+  "statuses": {
+    "command_delivered": 449
+  },
+  "arm_messages": 449,
+  "enable_messages": 0,
+  "configured_deadline_ms": 95.0,
+  "cycle_ms": {
+    "p50": 14.979755000240402,
+    "p95": 18.364166199899042,
+    "max": 42.11456399934832
+  },
+  "solve_ms": {
+    "p50": 9.18,
+    "p95": 11.287999999999997,
+    "max": 23.29
+  },
+  "cpu_s": 8.716486784,
+  "wall_s": 9.162870009997278,
+  "peak_rss_mib": 59.1640625,
+  "source_sha256": {
+    "experiments/online_remani_validation/results/startup_repair_20261107/offline_startup_loop.py": "7b992f7a0d3afdf8b4e95e63aa6a37e3fa352f0174c84f104a58fe7e493110a2",
+    "experiments/online_remani_validation/results/hardware_startup_check_20261107/runtime_feedback.json": "0e205f4a370ea4eca12e6dc30377cfe5ac0903801db5ff652a56f90c7204e042",
+    "src/mm_remani/config/mppi.yaml": "93892280d778b17f021f967f351657cfc3a1e73cb9e9e512e5d67a7be2c153c2",
+    "src/mm_remani/scripts/standby_simulator.py": "06eb88f00c6a6144f924f150f282f1052e989da4998b5246b5a4c494623ea51e",
+    "src/mm_remani_planner/plan_manage/config/exp0_param.yaml": "c55b18e65cc862e6f33e650814ad9682e79e1917b34b7ccc0dd628535f208188",
+    "src/mm_remani_planner/plan_manage/config/piper_param.yaml": "0a80105ed6adc5aec2c54b6c49b77b54a0f81fb9137248732b33a47413a862a3",
+    "src/mm_remani_planner/plan_manage/config/remani_planner_param.yaml": "00fc82035b0b0c74bb66370773de2c4da3314ac4903f77eac6ed721576a4b9f3",
+    "src/mm_remani_planner/plan_manage/config/fixed_collision_spheres_b.yaml": "db5825318c6307c506d93081d112aa8a45bcda8459114dbbbd0e8e3ee27b59f7",
+    "src/mm_remani/scripts/whole_body_mppi.py": "2d185bdfce2c872767907d95ae05c00f55e627d19df233b5c4ea83f00e06d8fe",
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "a392e5d6a777da99af69cf34e9e1864442d8e9c3c204c50b8f9bc6385ba2b09b",
+    "src/mm_remani/scripts/mppi/standby_whole_body_mppi.py": "c8bf285c7ca937ad8afa049da9f8a9e59ad344145842472df430d6941cac0baa",
+    "src/mm_remani/scripts/mppi/active_arm_model.py": "b638efda94377aecb85bfc311e4f99646b11055b9fc1945c1008f9c8e629e53b",
+    "src/mm_remani/config/mppi_shoulder_wrist_proxy.json": "3359bee77a77a58150da6741f0de242a2f44b22e618b0db22bbbe84266c00d68"
+  },
+  "limitations": [
+    "No physical response calibration, CAN timing or enable/stop validation.",
+    "Fake ROS time advances 100 ms each cycle, not during computation; wall computation deadline remains checked.",
+    "Zero base arises from startup commands; Plant base remains freely integrated.",
+    "Configuration gaps are sampled model checks, not proof of continuous geometry or real contact."
+  ]
+}

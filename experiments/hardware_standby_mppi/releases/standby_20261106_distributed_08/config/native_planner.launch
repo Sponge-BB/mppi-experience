@@ -1,0 +1,179 @@
+<launch>
+  <arg name="map_size_x" default="15.0"/>
+  <arg name="map_size_y" default="10.0"/>
+  <arg name="map_size_z" default="3.0"/>
+  <!-- Read-only native planner: no controller, driver, or actuator transport.
+       Run only on the isolated trial ROS master. world is this session local
+       odometry, not the original prebuilt-map localization frame. -->
+  <group ns="/standby_trial_20261106_distributed_08">
+    <!-- The original 15 x 10 x 3 m allocation, 5 cm resolution and fixed
+         collision spheres are retained. Live mapping is a local observation
+         experiment; the measured background is not a complete global map. -->
+    <node pkg="remani_planner" name="remani_planner_node" type="remani_planner_node" output="log" required="true">
+      <rosparam file="$(find remani_planner)/config/exp0_param.yaml" />
+      <rosparam file="$(find remani_planner)/config/piper_param.yaml" />
+      <rosparam file="$(find remani_planner)/config/remani_planner_param.yaml" />
+      <rosparam file="$(find remani_planner)/config/fixed_collision_spheres_b.yaml" />
+      <!-- Original real-robot planner overrides, extracted with source hash. -->
+      <rosparam file="$(dirname)/native_real_speed.yaml" />
+      <param name="mm/fixed_collision_spheres_enable" value="true" type="bool" />
+      <remap from="~gripper_cmd" to="/standby_trial_20261106_distributed_08/native/gripper_cmd_recording" />
+      <remap from="~gripper_state" to="/standby_trial_20261105_feedback_02/sensors/gripper_state" />
+      <remap from="~odom_world" to="/standby_trial_20261105_feedback_02/sensors/odom" />
+      <remap from="~joint_state" to="/standby_trial_20261105_feedback_02/sensors/joint_states" />
+      <remap from="~planning/trajectory" to="/standby_trial_20261106_distributed_08/native/trajectory" />
+      <remap from="~planning/start" to="/standby_trial_20261106_distributed_08/native/start" />
+      <remap from="~planning/finish" to="/standby_trial_20261106_distributed_08/native/finish" />
+      <remap from="~planning/data_display" to="/standby_trial_20261106_distributed_08/native/data_display" />
+      <remap from="~grid_map/odom" to="/standby_trial_20261105_feedback_02/sensors/odom" />
+      <remap from="~grid_map/cloud" to="/standby_trial_20261106_distributed_08/perception/filtered_points" />
+      <remap from="~grid_map/pose" to="/standby_trial_20261106_distributed_08/unused/camera_pose" />
+      <remap from="~grid_map/depth" to="/standby_trial_20261106_distributed_08/unused/depth" />
+      <param name="visualization/enable_heavy" value="false" type="bool" />
+      <param name="fsm/thresh_no_replan_meter" value="1.0" type="double" />
+      <param name="fsm/thresh_replan_time" value="2.5" type="double" />
+      <param name="fsm/replan_trajectory_time" value="0.4" type="double" />
+      <param name="fsm/dynamic_local_replan_enable" value="true" type="bool" />
+      <param name="fsm/dynamic_replan_hold_arm" value="true" type="bool" />
+      <param name="fsm/dynamic_replan_horizon" value="2.0" type="double" />
+      <param name="fsm/dynamic_replan_handoff_time" value="0.70" type="double" />
+      <param name="fsm/dynamic_astar_search_time" value="0.45" type="double" />
+      <param name="fsm/dynamic_astar_replan_wall_time" value="0.60" type="double" />
+      <param name="fsm/replan_feedback_position_threshold" value="0.08" type="double" />
+      <param name="fsm/replan_feedback_yaw_threshold" value="0.15" type="double" />
+      <param name="fsm/global_plan_dynamic_lookahead_distance" value="2.0" type="double" />
+      <param name="fsm/global_plan_dynamic_far_sample_distance" value="0.10" type="double" />
+      <param name="fsm/global_plan_dynamic_immediate_confirm_distance" value="1.0" type="double" />
+      <param name="fsm/global_plan_dynamic_confirm_frames" value="2" type="int" />
+      <param name="fsm/global_plan_dynamic_confirm_timeout" value="0.60" type="double" />
+      <param name="fsm/global_plan_dynamic_clear_hold_time" value="0.80" type="double" />
+      <param name="fsm/global_plan_dynamic_replan_hold_time" value="0.35" type="double" />
+      <param name="fsm/global_plan_dynamic_same_obstacle_radius" value="0.45" type="double" />
+      <param name="fsm/global_plan_dynamic_slowdown_distance" value="2.0" type="double" />
+      <param name="fsm/global_plan_dynamic_slowdown_min_speed" value="0.08" type="double" />
+      <param name="fsm/global_plan_dynamic_slowdown_max_speed" value="0.20" type="double" />
+      <param name="fsm/global_plan_dynamic_emergency_deceleration" value="0.35" type="double" />
+      <param name="fsm/global_plan_dynamic_emergency_reaction_time" value="0.15" type="double" />
+      <param name="fsm/global_plan_dynamic_emergency_margin" value="0.05" type="double" />
+      <param name="fsm/global_plan_dynamic_emergency_min_distance" value="0.15" type="double" />
+      <param name="fsm/global_plan_dynamic_emergency_max_distance" value="0.22" type="double" />
+      <param name="fsm/emergency_time" value="1.0" type="double" />
+      <param name="fsm/fail_safe" value="true" />
+      <param name="fsm/global_plan" value="true" />
+      <param name="search/max_seach_time" value="0.9" type="double" />
+      <param name="search/visualize_search" value="false" type="bool" />
+      <param name="grid_map/use_global_map" value="true" type="bool" />
+      <param name="grid_map/fuse_global_map" value="false" type="bool" />
+      <param name="grid_map/use_load_map" value="false" type="bool" />
+      <param name="grid_map/resolution" value="0.05" />
+      <param name="grid_map/map_size_x" value="$(arg map_size_x)" />
+      <param name="grid_map/map_size_y" value="$(arg map_size_y)" />
+      <param name="grid_map/map_size_z" value="$(arg map_size_z)" />
+      <param name="grid_map/local_update_range_x" value="8" />
+      <param name="grid_map/local_update_range_y" value="8" />
+      <param name="grid_map/local_update_range_z" value="3.0" />
+      <param name="grid_map/obstacles_inflation" value="0.0" />
+      <param name="grid_map/local_map_margin" value="15" />
+      <param name="grid_map/ground_height" value="0.0" />
+      <param name="grid_map/z_length" value="0.0" />
+      <param name="grid_map/self_filter_enable" value="true" />
+      <param name="grid_map/self_filter_min_x" value="-0.80" />
+      <param name="grid_map/self_filter_max_x" value="0.45" />
+      <param name="grid_map/self_filter_min_y" value="-0.85" />
+      <param name="grid_map/self_filter_max_y" value="0.55" />
+      <param name="grid_map/self_filter_min_z" value="-0.20" />
+      <param name="grid_map/self_filter_max_z" value="0.90" />
+      <param name="grid_map/lidar_offset_x" value="0.28" />
+      <param name="grid_map/lidar_offset_y" value="0.0" />
+      <param name="grid_map/lidar_offset_z" value="0.002" />
+      <param name="grid_map/cx" value="321.04638671875" />
+      <param name="grid_map/cy" value="243.44969177246094" />
+      <param name="grid_map/fx" value="387.229248046875" />
+      <param name="grid_map/fy" value="387.229248046875" />
+      <param name="grid_map/use_depth_filter" value="true" />
+      <param name="grid_map/depth_filter_tolerance" value="0.15" />
+      <param name="grid_map/depth_filter_maxdist" value="5.0" />
+      <param name="grid_map/depth_filter_mindist" value="0.2" />
+      <param name="grid_map/depth_filter_margin" value="2" />
+      <param name="grid_map/k_depth_scaling_factor" value="1000.0" />
+      <param name="grid_map/skip_pixel" value="2" />
+      <param name="grid_map/p_hit" value="0.65" />
+      <param name="grid_map/p_miss" value="0.35" />
+      <param name="grid_map/p_min" value="0.12" />
+      <param name="grid_map/p_max" value="0.90" />
+      <param name="grid_map/p_occ" value="0.80" />
+      <param name="grid_map/min_ray_length" value="0.1" />
+      <param name="grid_map/max_ray_length" value="4.5" />
+      <param name="grid_map/virtual_ceil_height" value="4.0" />
+      <param name="grid_map/visualization_truncate_height" value="2.8" />
+      <param name="grid_map/visualization_interval" value="0.20" />
+      <param name="grid_map/esdf_visualization_stride" value="2" />
+      <param name="grid_map/enable_visualization" value="false" type="bool" />
+      <param name="grid_map/show_occ_time" value="false" />
+      <param name="grid_map/pose_type" value="2" />
+      <param name="grid_map/frame_id" value="world" />
+      <param name="grid_map/local_bound_inflate" value="0.0" />
+      <param name="grid_map/local_esdf_follow_odom" value="true" />
+      <param name="grid_map/global_map_full_esdf" value="true" />
+      <param name="grid_map/global_map_obstacles_inflation" value="0.0" />
+      <param name="grid_map/global_map_lidar_clear" value="false" />
+      <param name="grid_map/dynamic_static_match_radius" value="0.075" />
+      <param name="grid_map/global_map_lidar_clear_radius" value="0.0" />
+      <param name="grid_map/global_map_lidar_clear_min_misses" value="3" />
+      <param name="grid_map/show_esdf_time" value="false" />
+      <param name="grid_map/esdf_slice_height" value="0.05" />
+      <param name="manager/control_points_distance" value="0.4" type="double" />
+      <param name="manager/polyTraj_piece_length" value="2.0" type="double" />
+      <param name="manager/feasibility_tolerance" value="0.05" type="double" />
+      <remap from="/move_base_simple/goal" to="/standby_trial_20261106_distributed_08/native/accepted_goal" />
+      <remap from="/mm_controller_node/trajectory_progress" to="/standby_trial_20261106_distributed_08/native/trajectory_progress" />
+      <remap from="/tracking_fault" to="/standby_trial_20261106_distributed_08/native/tracking_fault" />
+      <remap from="/mm_controller_node/destory_cmd" to="/standby_trial_20261106_distributed_08/native/destory_cmd_recording" />
+      <remap from="/map_generator/map_state" to="/standby_trial_20261106_distributed_08/native/map_state" />
+      <remap from="/map_generator/global_cloud" to="/standby_trial_20261106_distributed_08/perception/background" />
+      <remap from="/planning/safety_speed_limit" to="/standby_trial_20261106_distributed_08/native/safety_speed_limit" />
+      <remap from="/planning/dynamic_point_flow_state" to="/standby_trial_20261106_distributed_08/native/dynamic_point_flow_state" />
+      <remap from="/planning/dynamic_point_flow_ttc" to="/standby_trial_20261106_distributed_08/native/dynamic_point_flow_ttc" />
+      <param name="grid_map/live_lidar_health_monitor_enable" value="true" type="bool" />
+      <param name="fsm/target_type" value="1" type="int" />
+      <param name="fsm/manual_use_work_arm_waypoint" value="false" type="bool" />
+      <param name="fsm/manual_target_end_arm_standby" value="false" type="bool" />
+      <param name="fsm/manual_restore_standby_after_goal" value="false" type="bool" />
+      <param name="dynamic_point_flow/enable" value="true" type="bool" />
+      <param name="dynamic_point_flow/isolated_worker_enable" value="true" type="bool" />
+      <param name="dynamic_point_flow/shadow_mode" value="false" type="bool" />
+      <param name="dynamic_point_flow/active_mode" value="true" type="bool" />
+      <param name="dynamic_point_flow/active_replan" value="true" type="bool" />
+      <param name="dynamic_point_flow/fail_safe_on_unavailable" value="false" type="bool" />
+      <param name="dynamic_point_flow/active_confirm_frames" value="2" type="int" />
+      <param name="dynamic_point_flow/active_immediate_ttc" value="0.65" type="double" />
+      <param name="dynamic_point_flow/active_emergency_ttc" value="0.45" type="double" />
+      <param name="dynamic_point_flow/active_slowdown_ttc" value="1.50" type="double" />
+      <param name="dynamic_point_flow/active_clear_hold_time" value="0.30" type="double" />
+      <param name="dynamic_point_flow/topic" value="/standby_trial_20261106_distributed_08/perception/dynamic_points" />
+      <param name="dynamic_point_flow/shadow_check_interval" value="0.05" type="double" />
+      <param name="dynamic_point_flow/max_age" value="0.35" type="double" />
+      <param name="dynamic_point_flow/future_stamp_tolerance" value="0.05" type="double" />
+      <param name="dynamic_point_flow/max_prediction_time" value="2.0" type="double" />
+      <param name="dynamic_point_flow/max_point_speed" value="2.0" type="double" />
+      <param name="dynamic_point_flow/min_confidence" value="0.50" type="double" />
+      <param name="dynamic_point_flow/position_uncertainty" value="0.08" type="double" />
+      <param name="dynamic_point_flow/velocity_uncertainty" value="0.25" type="double" />
+      <param name="dynamic_point_flow/acceleration_bound" value="0.75" type="double" />
+      <param name="dynamic_point_flow/max_points" value="240" type="int" />
+      <param name="dynamic_point_flow/empty_clear_frames" value="3" type="int" />
+      <param name="dynamic_point_flow/require_world_frame" value="true" type="bool" />
+      <param name="dynamic_point_flow/planning_overlay_enable" value="true" type="bool" />
+      <param name="dynamic_point_flow/planning_overlay_update_interval" value="0.05" type="double" />
+      <param name="dynamic_point_flow/planning_overlay_horizon" value="1.20" type="double" />
+      <param name="dynamic_point_flow/planning_overlay_time_step" value="0.10" type="double" />
+      <param name="dynamic_point_flow/planning_overlay_extra_inflation" value="0.03" type="double" />
+      <param name="dynamic_point_flow/planning_overlay_max_inflation" value="0.30" type="double" />
+      <param name="dynamic_point_flow/planning_overlay_influence_distance" value="0.75" type="double" />
+    </node>
+    <!-- Identity defines the local test world; it is not an ICP/map alignment. -->
+    <!-- The reused sensor launch already owns camera_init -> odom. Attach the
+         world above that root, so odom never has two competing TF parents. -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="native_world_to_camera_init" args="0 0 0 0 0 0 world standby_feedback_02_camera_init" output="log" />
+  </group>
+</launch>

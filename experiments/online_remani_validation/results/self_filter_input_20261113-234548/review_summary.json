@@ -1,0 +1,53 @@
+{
+  "command": [
+    "nice",
+    "-n",
+    "15",
+    "/usr/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_robot_self_filter",
+    "test_mapping_cloud_sparse"
+  ],
+  "environment": {
+    "PYTHONNOUSERSITE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MALLOC_ARENA_MAX": "2",
+    "PYTHONPATH": "/home/l/remani_ws/src/mm_remani/test:/home/l/remani_ws/src/mm_remani/scripts:/home/l/remani_ws/src/mm_remani/scripts/mppi:/home/l/remani_ws/devel/lib/python3/dist-packages:/home/l/ws_livox/devel/lib/python3/dist-packages:/opt/ros/noetic/lib/python3/dist-packages"
+  },
+  "returncode": 0,
+  "elapsed_s": 2.0526447289739735,
+  "peak_rss_kib": 76032,
+  "earlier_attempt": {
+    "command": "/usr/bin/time -v ...",
+    "returncode": 127,
+    "reason": "/usr/bin/time unavailable; no tests executed by that attempt"
+  },
+  "baseline": "20261113-234548-before-self-filter-input",
+  "parent": "20261113-234545-terminal-settle",
+  "files": {
+    "src/mm_remani/scripts/velodyne_transformer.py": {
+      "before_sha256": "48a9ed895610ab68aa2ec961400903d3e74f4a320afb088cb92616b2aca638bb",
+      "after_sha256": "9fcd3a8c3025ed56deae40ef7a630cdaf8f0f4bc8570b0abca34e20072b4000c",
+      "mode": "0o775",
+      "size": 21180
+    },
+    "src/mm_remani/test/test_robot_self_filter.py": {
+      "before_sha256": "7c1ea0a10e0eafd7c5af2cba183c878c9244460ccc8d929b040b6920e61e8105",
+      "after_sha256": "1b8f5a845f93a5724aaa98ff9df24275af58217a1cefe57a8d5f165e647b3948",
+      "mode": "0o664",
+      "size": 19269
+    }
+  },
+  "test_count": 37,
+  "status": "OFFLINE_VERIFIED_HARDWARE_PENDING",
+  "scope": "Only self-filter source ordering, explicit scan time diagnostics, cloud receive buffer; no topic or threshold changes",
+  "hardware_or_ros_node_started": false,
+  "build_required": false,
+  "limitations": [
+    "The 1 MiB receive buffer is backlog mitigation, not a strict latest-frame guarantee.",
+    "This change does not prove the source of or eliminate the previous 51-second scan freshness failure."
+  ]
+}

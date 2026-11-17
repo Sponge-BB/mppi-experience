@@ -1,0 +1,530 @@
+{
+  "created_utc": "2026-11-07T06:09:36.035504+00:00",
+  "definitions": {
+    "window": "Scene0 <= record.elapsed_s <= result.elapsed_s; warmup excluded. Native has no MPPI statuses.",
+    "goal_finish": "True finish event after the sent goal, cross-checked with runner finish timestamp. Duration completed alone is not arrival.",
+    "planning_map_age": "Exact diagnostic.plan_time minus its snapshot_header[3]; only records with solve_ms, not receive-time approximation.",
+    "dynamic_loss": "First header[19]!=1 after an actually valid nonempty dynamic observation (header[19]==1,header[13]>0). Initial empty observations are excluded. nd0 when invalid is expected.",
+    "dynamic_source": "header[18] is source stamp; invalid snapshots can retain last source while map stamp advances.",
+    "geometric_invisibility": "First actor-present sensor sample with0 visible points after at least one visible sample; sensor source t and publication time are separately reported.",
+    "post_loss": "Messages received after first invalid snapshot. New trajectory means ADD/action1 with pieces; counts do not imply execution.",
+    "scope": "Recorded numerical closed-loop trial metrics, not hardware validation; geometric model omits scan/noise/robot occlusion."
+  },
+  "runs": {
+    "failure_capture": {
+      "stage": "historical_failure_diagnostic",
+      "group": "mppi_arm",
+      "scene": "navigation_arm_crossing",
+      "sensor_model": "ideal",
+      "duration_s": 5.0,
+      "runner_reason": "plant_finished",
+      "result_reason": "completed",
+      "duration_completed": true,
+      "actual_goal_finish": false,
+      "first_goal_finish_elapsed_s": null,
+      "collision": false,
+      "collision_elapsed_s": null,
+      "max_arm_change_deg": 0.008049029201303423,
+      "base_path_length_m": 0.10574999822986252,
+      "max_base_displacement_m": 0.10574999822986252,
+      "final_goal_position_error_m": 0.3442500017701375,
+      "peak_graph_rss_mib": 415.99609375,
+      "tracking_fault_true_messages": 23,
+      "first_tracking_fault_true_elapsed_s": 2.4250000010000576,
+      "mppi_cycle_status_count": 51,
+      "mppi_delivered_count": 21,
+      "status_counts": {
+        "collision_snapshot_unavailable": 21,
+        "command_delivered": 21,
+        "command_hold_or_braking_rejected_by_latest_state_or_map": 1,
+        "native_reference_cancelled": 3,
+        "native_reference_quiet_interval": 1,
+        "no_feasible_candidate": 2,
+        "reference_changed_during_plan": 1,
+        "waiting_native_reference_after_goal": 1
+      },
+      "planning_snapshot_count": 30,
+      "planning_snapshot_max_age_s": 0.2300000000000182,
+      "maximum_map_age_context": {
+        "plan_elapsed_s": 2.605000000000018,
+        "status": "no_feasible_candidate",
+        "sequence": 96
+      },
+      "first_valid_dynamic_observation": {
+        "receive_elapsed_s": 2.4250000010000576,
+        "observation_source_elapsed_s": 2.3500000000000227,
+        "dynamic_points": 38
+      },
+      "first_dynamic_source_invalid_after_observation": null,
+      "dynamic_invalid_intervals": [],
+      "first_geometrically_visible_actor": {
+        "source_elapsed_s": 2.05,
+        "publish_elapsed_s": 2.0700000000000003,
+        "actor_present": true,
+        "visible_points": 529
+      },
+      "first_geometrically_invisible_after_visible": null,
+      "after_first_dynamic_loss": null
+    },
+    "empty_mid360_s11": {
+      "stage": "preclock",
+      "group": "mppi_arm",
+      "scene": "empty",
+      "sensor_model": "mid360",
+      "duration_s": 14.0,
+      "runner_reason": "plant_finished",
+      "result_reason": "completed",
+      "duration_completed": true,
+      "actual_goal_finish": true,
+      "first_goal_finish_elapsed_s": 10.210000000000036,
+      "collision": false,
+      "collision_elapsed_s": null,
+      "max_arm_change_deg": 0.4857553186353987,
+      "base_path_length_m": 0.4375941306133327,
+      "max_base_displacement_m": 0.43163133388655456,
+      "final_goal_position_error_m": 0.022193257904625292,
+      "peak_graph_rss_mib": 450.953125,
+      "tracking_fault_true_messages": 1,
+      "first_tracking_fault_true_elapsed_s": 6.41999999899997,
+      "mppi_cycle_status_count": 141,
+      "mppi_delivered_count": 128,
+      "status_counts": {
+        "command_delivered": 128,
+        "native_progress_stale_during_plan": 1,
+        "native_reference_cancelled": 7,
+        "native_reference_quiet_interval": 1,
+        "reference_changed_during_plan": 2,
+        "waiting_native_reference_after_goal": 2
+      },
+      "planning_snapshot_count": 141,
+      "planning_snapshot_max_age_s": 0.15999999999996817,
+      "maximum_map_age_context": {
+        "plan_elapsed_s": 5.684999998999956,
+        "status": "command_delivered",
+        "sequence": 153
+      },
+      "first_valid_dynamic_observation": null,
+      "first_dynamic_source_invalid_after_observation": null,
+      "dynamic_invalid_intervals": [],
+      "first_geometrically_visible_actor": null,
+      "first_geometrically_invisible_after_visible": null,
+      "after_first_dynamic_loss": null
+    },
+    "moving_ideal_s11": {
+      "stage": "preclock",
+      "group": "mppi_arm",
+      "scene": "navigation_arm_crossing",
+      "sensor_model": "ideal",
+      "duration_s": 9.325,
+      "runner_reason": "plant_finished",
+      "result_reason": "collision",
+      "duration_completed": false,
+      "actual_goal_finish": false,
+      "first_goal_finish_elapsed_s": null,
+      "collision": true,
+      "collision_elapsed_s": 9.325,
+      "max_arm_change_deg": 0.012374984468805573,
+      "base_path_length_m": 0.11399999956821172,
+      "max_base_displacement_m": 0.11399999956821172,
+      "final_goal_position_error_m": 0.3360000004317883,
+      "peak_graph_rss_mib": 447.703125,
+      "tracking_fault_true_messages": 8,
+      "first_tracking_fault_true_elapsed_s": 2.5600000010000485,
+      "mppi_cycle_status_count": 94,
+      "mppi_delivered_count": 22,
+      "status_counts": {
+        "command_delivered": 22,
+        "native_reference_cancelled": 61,
+        "no_feasible_candidate": 8,
+        "reference_changed_during_plan": 1,
+        "waiting_native_reference_after_goal": 2
+      },
+      "planning_snapshot_count": 94,
+      "planning_snapshot_max_age_s": 0.13999999899999693,
+      "maximum_map_age_context": {
+        "plan_elapsed_s": 3.205000000000041,
+        "status": "no_feasible_candidate",
+        "sequence": 87
+      },
+      "first_valid_dynamic_observation": {
+        "receive_elapsed_s": 2.4150000010000667,
+        "observation_source_elapsed_s": 2.3450000000000273,
+        "dynamic_points": 38
+      },
+      "first_dynamic_source_invalid_after_observation": null,
+      "dynamic_invalid_intervals": [],
+      "first_geometrically_visible_actor": {
+        "source_elapsed_s": 2.0450000000000004,
+        "publish_elapsed_s": 2.065,
+        "actor_present": true,
+        "visible_points": 529
+      },
+      "first_geometrically_invisible_after_visible": null,
+      "after_first_dynamic_loss": null
+    },
+    "empty_mid360_fixed_clock_s11": {
+      "stage": "postclock_pretracker",
+      "group": "mppi_arm",
+      "scene": "empty",
+      "sensor_model": "mid360",
+      "duration_s": 14.005,
+      "runner_reason": "plant_finished",
+      "result_reason": "completed",
+      "duration_completed": true,
+      "actual_goal_finish": true,
+      "first_goal_finish_elapsed_s": 9.865000000000009,
+      "collision": false,
+      "collision_elapsed_s": null,
+      "max_arm_change_deg": 0.722046897023501,
+      "base_path_length_m": 0.4394697538840852,
+      "max_base_displacement_m": 0.43109076789802736,
+      "final_goal_position_error_m": 0.025145601352531573,
+      "peak_graph_rss_mib": 446.5546875,
+      "tracking_fault_true_messages": 0,
+      "first_tracking_fault_true_elapsed_s": null,
+      "mppi_cycle_status_count": 141,
+      "mppi_delivered_count": 131,
+      "status_counts": {
+        "command_delivered": 131,
+        "native_reference_expired": 6,
+        "native_reference_quiet_interval": 1,
+        "reference_changed_during_plan": 1,
+        "waiting_native_reference_after_goal": 2
+      },
+      "planning_snapshot_count": 141,
+      "planning_snapshot_max_age_s": 0.12999999999999545,
+      "maximum_map_age_context": {
+        "plan_elapsed_s": 13.990000000000009,
+        "status": "command_delivered",
+        "sequence": 301
+      },
+      "first_valid_dynamic_observation": null,
+      "first_dynamic_source_invalid_after_observation": null,
+      "dynamic_invalid_intervals": [],
+      "first_geometrically_visible_actor": null,
+      "first_geometrically_invisible_after_visible": null,
+      "after_first_dynamic_loss": null
+    },
+    "blind_enter_mppi_s11": {
+      "stage": "postclock_pretracker",
+      "group": "mppi_arm",
+      "scene": "navigation_arm_enter_blind",
+      "sensor_model": "mid360",
+      "duration_s": 13.085,
+      "runner_reason": "plant_finished",
+      "result_reason": "collision",
+      "duration_completed": false,
+      "actual_goal_finish": false,
+      "first_goal_finish_elapsed_s": null,
+      "collision": true,
+      "collision_elapsed_s": 13.085,
+      "max_arm_change_deg": 0.0082746111799233,
+      "base_path_length_m": 0.11374999954943811,
+      "max_base_displacement_m": 0.11374999954943811,
+      "final_goal_position_error_m": 0.3362500004505619,
+      "peak_graph_rss_mib": 445.5078125,
+      "tracking_fault_true_messages": 101,
+      "first_tracking_fault_true_elapsed_s": 2.5800000010000304,
+      "mppi_cycle_status_count": 132,
+      "mppi_delivered_count": 22,
+      "status_counts": {
+        "collision_snapshot_unavailable": 93,
+        "command_delivered": 22,
+        "native_reference_cancelled": 6,
+        "native_reference_quiet_interval": 1,
+        "no_feasible_candidate": 8,
+        "reference_changed_during_plan": 1,
+        "waiting_native_reference_after_goal": 1
+      },
+      "planning_snapshot_count": 39,
+      "planning_snapshot_max_age_s": 0.14499999899999239,
+      "maximum_map_age_context": {
+        "plan_elapsed_s": 3.240000000000009,
+        "status": "no_feasible_candidate",
+        "sequence": 87
+      },
+      "first_valid_dynamic_observation": {
+        "receive_elapsed_s": 2.4550000010000304,
+        "observation_source_elapsed_s": 2.384999999999991,
+        "dynamic_points": 24
+      },
+      "first_dynamic_source_invalid_after_observation": {
+        "receive_elapsed_s": 3.8450000010000167,
+        "last_observation_source_elapsed_s": 3.4850000000000136,
+        "source_age_at_receive_s": 0.36000000100000307,
+        "snapshot_sequence": 100,
+        "map_valid": 0,
+        "dynamic_valid": 0,
+        "dynamic_points": 0
+      },
+      "dynamic_invalid_intervals": [
+        {
+          "start_s": 3.8450000010000167,
+          "end_s": 13.085,
+          "recovered": false
+        }
+      ],
+      "first_geometrically_visible_actor": {
+        "source_elapsed_s": 2.0850000000000004,
+        "publish_elapsed_s": 2.105,
+        "actor_present": true,
+        "visible_points": 209
+      },
+      "first_geometrically_invisible_after_visible": {
+        "source_elapsed_s": 6.485000000000001,
+        "publish_elapsed_s": 6.505000000000001,
+        "actor_present": true,
+        "visible_points": 0
+      },
+      "after_first_dynamic_loss": {
+        "mppi_delivered_count": 0,
+        "first_delivery_elapsed_s": null,
+        "added_trajectory_message_count": 0,
+        "new_trajectory_id1_count": 0,
+        "first_new_trajectory_elapsed_s": null,
+        "latest_sensor_sample_at_first_loss": {
+          "source_elapsed_s": 3.7849999999999997,
+          "publish_elapsed_s": 3.805,
+          "actor_present": true,
+          "visible_points": 107
+        },
+        "loss_receive_minus_geometric_invisibility_source_s": -2.6399999989999845
+      }
+    },
+    "blind_enter_native_s11": {
+      "stage": "postclock_pretracker",
+      "group": "native",
+      "scene": "navigation_arm_enter_blind",
+      "sensor_model": "mid360",
+      "duration_s": 12.120000000000001,
+      "runner_reason": "plant_finished",
+      "result_reason": "collision",
+      "duration_completed": false,
+      "actual_goal_finish": false,
+      "first_goal_finish_elapsed_s": null,
+      "collision": true,
+      "collision_elapsed_s": 12.120000000000001,
+      "max_arm_change_deg": 0.009458383940435735,
+      "base_path_length_m": 0.20303241567408134,
+      "max_base_displacement_m": 0.20303241567408134,
+      "final_goal_position_error_m": 0.24696758432591867,
+      "peak_graph_rss_mib": 464.24609375,
+      "tracking_fault_true_messages": 0,
+      "first_tracking_fault_true_elapsed_s": null,
+      "mppi_cycle_status_count": 0,
+      "mppi_delivered_count": 0,
+      "status_counts": {},
+      "planning_snapshot_count": 0,
+      "planning_snapshot_max_age_s": null,
+      "maximum_map_age_context": null,
+      "first_valid_dynamic_observation": {
+        "receive_elapsed_s": 2.4500000000000455,
+        "observation_source_elapsed_s": 2.4099999989999787,
+        "dynamic_points": 22
+      },
+      "first_dynamic_source_invalid_after_observation": {
+        "receive_elapsed_s": 3.990000000000009,
+        "last_observation_source_elapsed_s": 3.6100000000000136,
+        "source_age_at_receive_s": 0.37999999999999545,
+        "snapshot_sequence": 90,
+        "map_valid": 0,
+        "dynamic_valid": 0,
+        "dynamic_points": 0
+      },
+      "dynamic_invalid_intervals": [
+        {
+          "start_s": 3.990000000000009,
+          "end_s": 12.120000000000001,
+          "recovered": false
+        }
+      ],
+      "first_geometrically_visible_actor": {
+        "source_elapsed_s": 2.01,
+        "publish_elapsed_s": 2.03,
+        "actor_present": true,
+        "visible_points": 215
+      },
+      "first_geometrically_invisible_after_visible": {
+        "source_elapsed_s": 6.409999999999999,
+        "publish_elapsed_s": 6.430000000000001,
+        "actor_present": true,
+        "visible_points": 0
+      },
+      "after_first_dynamic_loss": {
+        "mppi_delivered_count": 0,
+        "first_delivery_elapsed_s": null,
+        "added_trajectory_message_count": 0,
+        "new_trajectory_id1_count": 0,
+        "first_new_trajectory_elapsed_s": null,
+        "latest_sensor_sample_at_first_loss": {
+          "source_elapsed_s": 3.91,
+          "publish_elapsed_s": 3.9299999999999997,
+          "actor_present": true,
+          "visible_points": 97
+        },
+        "loss_receive_minus_geometric_invisibility_source_s": -2.41999999999999
+      }
+    },
+    "blind_enter_tracker_fixed_s11": {
+      "stage": "postclock_tracker_fixed",
+      "group": "mppi_arm",
+      "scene": "navigation_arm_enter_blind",
+      "sensor_model": "mid360",
+      "duration_s": 13.07,
+      "runner_reason": "plant_finished",
+      "result_reason": "collision",
+      "duration_completed": false,
+      "actual_goal_finish": false,
+      "first_goal_finish_elapsed_s": null,
+      "collision": true,
+      "collision_elapsed_s": 13.07,
+      "max_arm_change_deg": 0.008978251616102124,
+      "base_path_length_m": 0.11424999958620279,
+      "max_base_displacement_m": 0.11424999958620279,
+      "final_goal_position_error_m": 0.3357500004137972,
+      "peak_graph_rss_mib": 442.01953125,
+      "tracking_fault_true_messages": 95,
+      "first_tracking_fault_true_elapsed_s": 2.580000000000041,
+      "mppi_cycle_status_count": 132,
+      "mppi_delivered_count": 22,
+      "status_counts": {
+        "collision_snapshot_unavailable": 87,
+        "command_delivered": 22,
+        "native_reference_cancelled": 12,
+        "no_feasible_candidate": 8,
+        "reference_changed_during_plan": 1,
+        "waiting_native_reference_after_goal": 2
+      },
+      "planning_snapshot_count": 45,
+      "planning_snapshot_max_age_s": 0.12999999999999545,
+      "maximum_map_age_context": {
+        "plan_elapsed_s": 2.8900000010000895,
+        "status": "no_feasible_candidate",
+        "sequence": 98
+      },
+      "first_valid_dynamic_observation": {
+        "receive_elapsed_s": 2.4150000010000667,
+        "observation_source_elapsed_s": 2.3500000000000227,
+        "dynamic_points": 24
+      },
+      "first_dynamic_source_invalid_after_observation": {
+        "receive_elapsed_s": 4.410000001000071,
+        "last_observation_source_elapsed_s": 4.050000001000058,
+        "source_age_at_receive_s": 0.36000000000001364,
+        "snapshot_sequence": 129,
+        "map_valid": 0,
+        "dynamic_valid": 0,
+        "dynamic_points": 0
+      },
+      "dynamic_invalid_intervals": [
+        {
+          "start_s": 4.410000001000071,
+          "end_s": 13.07,
+          "recovered": false
+        }
+      ],
+      "first_geometrically_visible_actor": {
+        "source_elapsed_s": 2.0500000000000003,
+        "publish_elapsed_s": 2.07,
+        "actor_present": true,
+        "visible_points": 213
+      },
+      "first_geometrically_invisible_after_visible": {
+        "source_elapsed_s": 6.450000000000001,
+        "publish_elapsed_s": 6.470000000000001,
+        "actor_present": true,
+        "visible_points": 0
+      },
+      "after_first_dynamic_loss": {
+        "mppi_delivered_count": 0,
+        "first_delivery_elapsed_s": null,
+        "added_trajectory_message_count": 0,
+        "new_trajectory_id1_count": 0,
+        "first_new_trajectory_elapsed_s": null,
+        "latest_sensor_sample_at_first_loss": {
+          "source_elapsed_s": 4.35,
+          "publish_elapsed_s": 4.369999999999999,
+          "actor_present": true,
+          "visible_points": 80
+        },
+        "loss_receive_minus_geometric_invisibility_source_s": -2.03999999899993
+      }
+    },
+    "blind_enter_native_tracker_fixed_s11": {
+      "stage": "postclock_tracker_fixed",
+      "group": "native",
+      "scene": "navigation_arm_enter_blind",
+      "sensor_model": "mid360",
+      "duration_s": 11.99,
+      "runner_reason": "plant_finished",
+      "result_reason": "collision",
+      "duration_completed": false,
+      "actual_goal_finish": false,
+      "first_goal_finish_elapsed_s": null,
+      "collision": true,
+      "collision_elapsed_s": 11.99,
+      "max_arm_change_deg": 0.009460884850058816,
+      "base_path_length_m": 0.2322718792793277,
+      "max_base_displacement_m": 0.2322718792793277,
+      "final_goal_position_error_m": 0.21772812072067232,
+      "peak_graph_rss_mib": 465.96484375,
+      "tracking_fault_true_messages": 0,
+      "first_tracking_fault_true_elapsed_s": null,
+      "mppi_cycle_status_count": 0,
+      "mppi_delivered_count": 0,
+      "status_counts": {},
+      "planning_snapshot_count": 0,
+      "planning_snapshot_max_age_s": null,
+      "maximum_map_age_context": null,
+      "first_valid_dynamic_observation": {
+        "receive_elapsed_s": 2.5,
+        "observation_source_elapsed_s": 2.414999998999974,
+        "dynamic_points": 22
+      },
+      "first_dynamic_source_invalid_after_observation": {
+        "receive_elapsed_s": 4.6899999989999515,
+        "last_observation_source_elapsed_s": 4.3149999989999515,
+        "source_age_at_receive_s": 0.375,
+        "snapshot_sequence": 126,
+        "map_valid": 0,
+        "dynamic_valid": 0,
+        "dynamic_points": 0
+      },
+      "dynamic_invalid_intervals": [
+        {
+          "start_s": 4.6899999989999515,
+          "end_s": 11.99,
+          "recovered": false
+        }
+      ],
+      "first_geometrically_visible_actor": {
+        "source_elapsed_s": 2.0149999999999997,
+        "publish_elapsed_s": 2.035,
+        "actor_present": true,
+        "visible_points": 215
+      },
+      "first_geometrically_invisible_after_visible": {
+        "source_elapsed_s": 6.515000000000001,
+        "publish_elapsed_s": 6.535,
+        "actor_present": true,
+        "visible_points": 0
+      },
+      "after_first_dynamic_loss": {
+        "mppi_delivered_count": 0,
+        "first_delivery_elapsed_s": null,
+        "added_trajectory_message_count": 0,
+        "new_trajectory_id1_count": 0,
+        "first_new_trajectory_elapsed_s": null,
+        "latest_sensor_sample_at_first_loss": {
+          "source_elapsed_s": 4.615,
+          "publish_elapsed_s": 4.635000000000001,
+          "actor_present": true,
+          "visible_points": 68
+        },
+        "loss_receive_minus_geometric_invisibility_source_s": -1.825000001000049
+      }
+    }
+  },
+  "skipped_unfinished": [],
+  "related_figure": "tracker_repair_comparison.png"
+}

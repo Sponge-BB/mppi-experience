@@ -1,0 +1,191 @@
+{
+  "start": "2026-11-10T20:11:27.380131+08:00",
+  "duration_to_operator_shutdown_s": 12.071236610412598,
+  "control_frames": {
+    "0x150": {
+      "count": 1,
+      "unique_payloads": [
+        "0100000000000000"
+      ]
+    },
+    "0x151": {
+      "count": 57,
+      "unique_payloads": [
+        "01010f0000000000"
+      ]
+    },
+    "0x155": {
+      "count": 57,
+      "unique_payloads": [
+        "000000000000749a"
+      ]
+    },
+    "0x156": {
+      "count": 57,
+      "unique_payloads": [
+        "ffff153efffffffe"
+      ]
+    },
+    "0x157": {
+      "count": 57,
+      "unique_payloads": [
+        "0000d40400000003"
+      ]
+    },
+    "0x471": {
+      "count": 1,
+      "unique_payloads": [
+        "0702000000000000"
+      ]
+    }
+  },
+  "parameter_queries": [
+    {
+      "source": "motor_parameter_query_1794312880.json",
+      "firmware_raw_hex": "482d56312e322d3100000000000000003130000000000000000000000000000041524d5f4d4300000000000000000000333041480000000000000000532d56312e382d32323531303135000031350000df30000000000000",
+      "limits": [
+        {
+          "joint": 1,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        },
+        {
+          "joint": 2,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        },
+        {
+          "joint": 3,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        },
+        {
+          "joint": 4,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        },
+        {
+          "joint": 5,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        },
+        {
+          "joint": 6,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        }
+      ],
+      "acceleration": [
+        {
+          "joint": 1,
+          "maximum_acceleration_raw": 0
+        },
+        {
+          "joint": 2,
+          "maximum_acceleration_raw": 0
+        },
+        {
+          "joint": 3,
+          "maximum_acceleration_raw": 0
+        },
+        {
+          "joint": 4,
+          "maximum_acceleration_raw": 0
+        },
+        {
+          "joint": 5,
+          "maximum_acceleration_raw": 0
+        },
+        {
+          "joint": 6,
+          "maximum_acceleration_raw": 0
+        }
+      ],
+      "firmware": "S-V1.8-2"
+    },
+    {
+      "source": "motor_parameter_query_1794312951.json",
+      "firmware_raw_hex": "482d56312e322d3100000000000000003130000000000000000000000000000041524d5f4d4300000000000000000000333041480000000000000000532d56312e382d32323531303135000031350000df30000000000000",
+      "limits": [
+        {
+          "joint": 1,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        },
+        {
+          "joint": 2,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        },
+        {
+          "joint": 3,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        },
+        {
+          "joint": 4,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        },
+        {
+          "joint": 5,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        },
+        {
+          "joint": 6,
+          "minimum_deg": 0.0,
+          "maximum_deg": 0.0,
+          "maximum_speed_raw": 0
+        }
+      ],
+      "acceleration": [
+        {
+          "joint": 1,
+          "maximum_acceleration_raw": 0
+        },
+        {
+          "joint": 2,
+          "maximum_acceleration_raw": 0
+        },
+        {
+          "joint": 3,
+          "maximum_acceleration_raw": 0
+        },
+        {
+          "joint": 4,
+          "maximum_acceleration_raw": 0
+        },
+        {
+          "joint": 5,
+          "maximum_acceleration_raw": 0
+        },
+        {
+          "joint": 6,
+          "maximum_acceleration_raw": 0
+        }
+      ],
+      "firmware": "S-V1.8-2"
+    }
+  ],
+  "confirmed": "All 57 target sets are correct on host SocketCAN capture; raw arm feedback remains near zero. Both separate device parameter queries returned six zero angle ranges and zero maximum speed/acceleration. Native startup did not hand off to MPPI.",
+  "inference": "Invalid device motion-limit data is the primary actionable abnormality. Firmware flash corruption is plausible and matches a vendor-confirmed S-V1.8-2 issue, but the trigger on this unit and complete cause of wrist oscillation are not proven.",
+  "vendor_source": "https://github.com/agilexrobotics/pyAgxArm/discussions/58",
+  "not_done": [
+    "No configuration write",
+    "No enable/motion/reset from diagnostic tools",
+    "No firmware upgrade",
+    "No production change in this capture turn"
+  ]
+}

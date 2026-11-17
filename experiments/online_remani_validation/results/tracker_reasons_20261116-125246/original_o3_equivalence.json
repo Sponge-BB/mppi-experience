@@ -1,0 +1,109 @@
+{
+  "scope": "frozen original source compiled with actual CMake core flags plus requested GC memory flags; shared original core and same fixture.o; no ROS/node/deployment",
+  "original_core_sha256": "eeaef1f7f51d3ae79c727dd13fe49a2b8f95588b5f7d3c466df1a945c2042ea0",
+  "original_header_sha256": "0c233ba4808b817bae1c5a4df87ba42a3b4b4a04d8c127aa52929944cce5e7d2",
+  "fixture_object_sha256": "00e9e21fe9263d0b7318cab4586f51c236e5d0d3c4ca409d7e637a92cd6cbe1a",
+  "actual_candidate_library": "/tmp/remani_tracker_diag_devel_20261116/lib/libdynamic_obstacle_tracker_core.so",
+  "actual_candidate_library_sha256": "9ee6ed67b633e25478fb4f56694945710ac98f1eee406cf1b77c4eeb42082f62",
+  "cmake_flags_path": "/tmp/remani_tracker_diag_build_20261116/CMakeFiles/dynamic_obstacle_tracker_core.dir/flags.make",
+  "cmake_flags_sha256": "785eb7969efd4c1a71bcec7370702a7dab03532648fc192dfc3aa9d15353ca79",
+  "commands": [
+    {
+      "step": "original_o3_compile",
+      "command": [
+        "/usr/bin/c++",
+        "-O3",
+        "-DNDEBUG",
+        "-fPIC",
+        "-DROSCONSOLE_BACKEND_LOG4CXX",
+        "-DROS_BUILD_SHARED_LIBS=1",
+        "-DROS_PACKAGE_NAME=\"mm_remani\"",
+        "-Ddynamic_obstacle_tracker_core_EXPORTS",
+        "-DvtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL2)",
+        "-DvtkRenderingCore_AUTOINIT=3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)",
+        "-I/usr/include/vtk-7.1",
+        "-I/usr/include/freetype2",
+        "-I/tmp/remani_tracker_diag_stage/original/src/mm_remani/include",
+        "-I/home/l/ws_livox/devel/include",
+        "-I/opt/ros/noetic/include",
+        "-I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp",
+        "-I/usr/include/eigen3",
+        "-I/usr/include/pcl-1.10",
+        "--param=ggc-min-expand=10",
+        "--param=ggc-min-heapsize=32768",
+        "-c",
+        "/tmp/remani_tracker_diag_stage/original/src/mm_remani/src/dynamic_obstacle_tracker_core.cpp",
+        "-o",
+        "/tmp/remani_tracker_diag_stage/original_o3_build/core.o"
+      ],
+      "returncode": 0,
+      "guard": null,
+      "peak_process_group_rss_MiB": 219.23,
+      "elapsed_s": 9.736,
+      "log": "/home/l/remani_ws/experiments/online_remani_validation/results/tracker_reasons_20261116-125246/original_o3_compile.log"
+    },
+    {
+      "step": "original_o3_link_library",
+      "command": [
+        "/usr/bin/c++",
+        "-O3",
+        "-DNDEBUG",
+        "-fPIC",
+        "-shared",
+        "-Wl,-soname,libdynamic_obstacle_tracker_core.so",
+        "/tmp/remani_tracker_diag_stage/original_o3_build/core.o",
+        "-o",
+        "/tmp/remani_tracker_diag_stage/original_o3_build/libdynamic_obstacle_tracker_core.so"
+      ],
+      "returncode": 0,
+      "guard": null,
+      "peak_process_group_rss_MiB": 0.46,
+      "elapsed_s": 0.104,
+      "log": "/home/l/remani_ws/experiments/online_remani_validation/results/tracker_reasons_20261116-125246/original_o3_link_library.log"
+    },
+    {
+      "step": "original_o3_link_fixture",
+      "command": [
+        "/usr/bin/c++",
+        "/tmp/remani_tracker_diag_stage/standalone_build/fixture.o",
+        "/tmp/remani_tracker_diag_stage/original_o3_build/libdynamic_obstacle_tracker_core.so",
+        "-Wl,-rpath,/tmp/remani_tracker_diag_stage/original_o3_build",
+        "-o",
+        "/tmp/remani_tracker_diag_stage/original_o3_build/fixture"
+      ],
+      "returncode": 0,
+      "guard": null,
+      "peak_process_group_rss_MiB": 17.25,
+      "elapsed_s": 0.207,
+      "log": "/home/l/remani_ws/experiments/online_remani_validation/results/tracker_reasons_20261116-125246/original_o3_link_fixture.log"
+    },
+    {
+      "step": "original_o3_fixture_output",
+      "command": [
+        "/tmp/remani_tracker_diag_stage/original_o3_build/fixture"
+      ],
+      "returncode": 0,
+      "guard": null,
+      "peak_process_group_rss_MiB": 0.93,
+      "elapsed_s": 0.104,
+      "log": "/home/l/remani_ws/experiments/online_remani_validation/results/tracker_reasons_20261116-125246/original_o3_fixture_output.log"
+    }
+  ],
+  "status": "passed_byte_identical",
+  "original_o3_library_sha256": "245ea107f18f65a6ea08f7bc3b6a143fb8bcd4c6ebcbb823df5fd4da18eb9fe4",
+  "comparison": {
+    "byte_identical": true,
+    "original_o3_output_sha256": "7e84ad0101e6760a5553ce1d07c1660c8fd01b0684017b8437bda8353facb5c6",
+    "candidate_output_sha256": "7e84ad0101e6760a5553ce1d07c1660c8fd01b0684017b8437bda8353facb5c6",
+    "original_o3_bytes": 61418,
+    "candidate_bytes": 61418,
+    "original_o3_lines": 547,
+    "candidate_lines": 547
+  },
+  "difference_breakdown": {
+    "classification_or_count_differences": 0,
+    "classification_or_count_examples": [],
+    "float_fields": {},
+    "float_difference_examples": []
+  }
+}

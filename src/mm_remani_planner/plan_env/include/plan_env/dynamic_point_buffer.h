@@ -15,6 +15,9 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <tf2_ros/buffer.h>
 
+class DynamicPointBufferTestAccessor;
+class GridMapParallelTestAccessor;
+
 namespace plan_env
 {
 
@@ -42,7 +45,10 @@ struct DynamicPointSnapshot
   std::string frame_id;
   std::uint64_t sequence = 0;
   DynamicPointVector points;
+  bool has_track_ids = false;
   bool valid = false;
+  // An empty, fresh prediction means no qualified motion was detected.
+  // It never clears the independent live occupancy map.
   std::string invalid_reason;
 };
 
@@ -51,9 +57,11 @@ struct DynamicPointSnapshot
  *
  * The input PointCloud2 contract is deliberately strict: x/y/z and vx/vy/vz
  * must be FLOAT32 fields. track_id (UINT32 or non-negative INT32) and
- * confidence (FLOAT32) are optional. Accepted observations are transformed to
- * world_frame at the observation timestamp before being published as an
- * immutable snapshot.
+ * confidence (FLOAT32) are optional. IDs support motion association only;
+ * their disappearance must not invalidate unrelated current predictions.
+ * Real obstacle occupancy is owned and cleared by the LiDAR raycaster.
+ * Accepted observations are transformed to world_frame at the observation
+ * timestamp before being published as an immutable snapshot.
  */
 class DynamicPointBuffer
 {
@@ -75,7 +83,8 @@ public:
    * geometric distance, so the returned value is conservative.
    *
    * Returns false when the snapshot/time basis is invalid. An accepted empty
-   * snapshot returns true and max_search_distance.
+   * snapshot returns true and max_search_distance for this dynamic layer only;
+   * it does not certify that the queried space was observed free.
    */
   bool getPredictedDistance(const DynamicPointSnapshot &snapshot,
                             const Eigen::Vector3d &query_position,
@@ -118,20 +127,14 @@ public:
                                       double velocity_uncertainty,
                                       double acceleration_bound);
 
-  static bool emptyObservationConfirmed(int consecutive_empty_frames,
-                                        int required_empty_frames)
-  {
-    return consecutive_empty_frames >= required_empty_frames;
-  }
-
-  static bool shouldRetainLastValidSnapshot(
-      int consecutive_empty_frames, int required_empty_frames,
-      bool has_valid_nonempty_history)
-  {
-    return has_valid_nonempty_history &&
-        !emptyObservationConfirmed(consecutive_empty_frames,
-                                   required_empty_frames);
-  }
+  // A snapshot contains one real source epoch; never merge or re-stamp old
+  // targets when accepting a newer frame (including a no-motion frame).
+  static DynamicPointSnapshot applyObservation(
+      const DynamicPointSnapshot &previous,
+      const DynamicPointSnapshot &incoming);
+  static DynamicPointSnapshot checkSnapshotAge(
+      DynamicPointSnapshot snapshot, const ros::Time &now,
+      double max_age, double future_stamp_tolerance);
 
   /** Return the configured uncertainty envelope for a prediction offset. */
   double configuredPredictionUncertainty(double prediction_dt) const
@@ -143,7 +146,11 @@ public:
   double maxPredictionTime() const { return max_prediction_time_; }
 
 private:
+  friend class ::DynamicPointBufferTestAccessor;
+  friend class ::GridMapParallelTestAccessor;
   void pointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg);
+  // Caller holds mutex_. Only the newest actual observation is retained.
+  void recordObservation(const DynamicPointSnapshot &candidate);
 
   bool enabled_ = false;
   std::string topic_ = "/dynamic_points";
@@ -158,7 +165,6 @@ private:
   double velocity_uncertainty_ = 0.15;
   double acceleration_bound_ = 0.5;
   int max_points_ = 2000;
-  int empty_clear_frames_ = 3;
   bool require_world_frame_ = true;
 
   ros::Subscriber point_sub_;
@@ -166,8 +172,8 @@ private:
 
   mutable std::mutex mutex_;
   DynamicPointSnapshot latest_snapshot_;
+  ros::Time latest_input_stamp_;
   bool received_observation_ = false;
-  int consecutive_empty_observations_ = 0;
 };
 
 }  // namespace plan_env

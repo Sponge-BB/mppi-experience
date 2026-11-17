@@ -1,0 +1,11 @@
+第二个返回目标不动：确定阻塞链路（离线）
+
+1. 按消息时间排序：09:45:39.417 发布返回目标；39.451 FSM接受；39.885优化成功；39.947控制器收到新轨迹并进入POLY_TRAJ。不能把“稍后6秒没有新trajectory”解释成目标从未规划成功。
+2. 09:45:40.337执行反馈过期；40.807 FSM报Depth Lost并进入EMERGENCY_STOP；40.817控制器Abort；40.829 LiDAR健康监测报age=0.781s>0.750s；41.079输入恢复；42.012 MPPI仍为native_reference_cancelled。
+3. 代码确定：checkCollisionCallback传感超时把enable_fail_safe_写为false。全文件只有初始化参数读取和此false赋值，没有恢复true。EMERGENCY_STOP首轮发布ACTION_ABORT并把flag_escape_emergency_置false，此后回到GEN_NEW_TRAJ必须满足enable_fail_safe_。因此输入恢复也不能自动退出这个停止状态。
+4. have_target_和manual_restore_pending_没有在此分支清空；目标仍保留，但FSM执行状态锁在停止。MPPI收到ACTION_ABORT后清空参考，native_reference_cancelled是服从上游停止的结果，不是它独自拒绝可行路线。
+5. 后续有效新目标可通过planNextWaypoint直接改为GEN_NEW_TRAJ，相当于显式人工重新触发；它仍不把enable_fail_safe_恢复true。当前审计区间没有更晚新目标。
+6. 本地原生备份同样存在Depth Lost后禁用fail-safe的代码。这是继承的锁停策略，不是本轮诊断采集新增。对“短暂传感断流恢复后继续完成原目标”的需求，当前恢复链不完整。
+7. 09:49:12～18闭合补录：MPPI cancelled49次、snapshot unavailable10次，61条cmd_vel全零，无新trajectory，支持持续取消而未恢复规划。
+
+边界：rosout到达顺序异步，已按消息t排序；FSM状态cout并未完整留在rosout，内部标志据实际执行分支及全部赋值位置推导。反馈/点云为何短断流还需独立源链证据，不能由此直接归因CPU、CAN或雷达硬件。未改代码、未连接ROS。

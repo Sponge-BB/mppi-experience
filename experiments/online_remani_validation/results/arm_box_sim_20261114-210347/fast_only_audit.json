@@ -1,0 +1,213 @@
+{
+  "schema": 1,
+  "case": "/home/l/remani_ws/experiments/online_remani_validation/results/arm_box_sim_20261114-210347",
+  "scope": "Offline audit of recorded numerical ROS states, planner events and existing source hash; no ROS started",
+  "fast_only": {
+    "result": "goal",
+    "run_status": {
+      "group": "fast_only",
+      "result_written": true,
+      "graph_audited": true,
+      "stop_reason": null,
+      "required_process_failure": false,
+      "wall_s": 33.748842778999915,
+      "peak_group_rss_mib": 906.77734375,
+      "lowest_available_mib": 2518.25,
+      "return_code": 0,
+      "owned_process_group_stopped": true
+    },
+    "freeze_event": {
+      "event": "arm_box_slow_layer_frozen",
+      "mono": 1330.354517317,
+      "sim": 1007.41916152,
+      "pid": 12940,
+      "request_id": 0,
+      "guide_id": 1,
+      "initial_reference_retained": true,
+      "mapping_callbacks_unchanged": true
+    },
+    "first_reference": {
+      "bundle_block_count": 1,
+      "endpoint_xy": [
+        3.3999999999999995,
+        0.0
+      ],
+      "goal_xy": [
+        3.4,
+        0.0
+      ],
+      "endpoint_error_m": 4.440892098500626e-16,
+      "ends_at_goal": true,
+      "initial_q_endpoint_rad": [
+        -4.718447854656915e-16,
+        1.9198621771937625,
+        -1.0471975511965976,
+        4.0245584642661925e-16,
+        0.5235987755982988,
+        -1.5959455978986625e-15
+      ]
+    },
+    "no_subsequent_slow_planning": {
+      "total_events_after_freeze": 0,
+      "planning_request_stage_refresh_or_reference_events_after_freeze": [],
+      "reference_replace_cancel_events_after_freeze": [],
+      "all_request_begin_count": 1,
+      "all_reference_publish_count": 1,
+      "passed": true
+    },
+    "map_and_collision_inputs": {
+      "pipeline_samples_after_freeze": [
+        {
+          "t": 9.487646465999887,
+          "accepted": 78,
+          "fused": 76,
+          "window_commits": 22
+        },
+        {
+          "t": 14.497736444999873,
+          "accepted": 124,
+          "fused": 123,
+          "window_commits": 24
+        },
+        {
+          "t": 19.51373645600006,
+          "accepted": 169,
+          "fused": 167,
+          "window_commits": 25
+        },
+        {
+          "t": 24.51885186000004,
+          "accepted": 214,
+          "fused": 212,
+          "window_commits": 23
+        }
+      ],
+      "async_worker_warning_count_after_freeze": 19,
+      "last_worker_warning_time": 27.91670996799985,
+      "dynamic_observation_sequence_first_after_freeze": {
+        "t": 7.847032666999894,
+        "sequence": 50
+      },
+      "dynamic_observation_sequence_last": {
+        "t": 28.392938562999916,
+        "sequence": 235
+      },
+      "approved_fast_cycles_after_freeze": 183,
+      "first_approved_fast_time": 7.720368107000013,
+      "last_approved_fast_time": 28.44878139399998,
+      "snapshot_freshness_and_latest_rollout_brake_checks_present_in_frozen_runtime": true,
+      "conclusion": "Mapping and ESDF continued after FSM freeze; collision snapshots continued to pass original source-stamped freshness and latest-rollout/braking checks until the run ended.",
+      "limitation": "Per-cycle map snapshot generation and wire were not recorded; mapping progression is directly evidenced by pipeline commit logs, collision-input refresh by accepted freshness checks and advancing observation sequence. No per-packet field version count is claimed."
+    },
+    "deployed_child_sha_matches": true
+  },
+  "comparison_metrics": {
+    "mppi": {
+      "reason": "goal",
+      "goal_reached": true,
+      "collision_physical": false,
+      "joint_limit_violation": false,
+      "appearance_time": 11.416365013000132,
+      "appearance_front_gap_m": 1.0,
+      "appearance_pose": [
+        0.4137310742328496,
+        0.0,
+        0.0
+      ],
+      "box_far_face_x_m": 2.151765867009163,
+      "maximum_lateral_departure_from_appearance_m": 0.08634850087993155,
+      "maximum_heading_departure_from_appearance_rad": 0.30731996141155804,
+      "maximum_joint_departure_from_appearance_rad": 0.9555538643551569,
+      "maximum_joint_departure_from_appearance_deg": 54.749203524966845,
+      "per_joint_maximum_departure_from_appearance_deg": [
+        54.749203524966845,
+        36.671965226865204,
+        37.7751372657521,
+        12.509534830471468,
+        16.224399566575308,
+        3.642192848121
+      ],
+      "maximum_joint_departure_from_initial_deg": 52.51840188833032,
+      "final_arm_rear_x_m": 3.353872912453533,
+      "final_arm_rear_clearance_past_far_face_m": 1.2021070454443703,
+      "passed_box": true,
+      "passed_box_criterion": "At final recorded state, minimum over all 20 physical moving-arm spheres of (center_world_x-radius) strictly exceeds box far face x; additionally report first crossing.",
+      "first_all_arm_spheres_past_box_time": 23.686177740000176,
+      "final_all_body_spheres_past_box": true,
+      "first_all_body_spheres_past_box_time": 25.10742835100018,
+      "after_box_mppi_reason_counts": {
+        "ok": 162,
+        "validation_to_command_delay": 7,
+        "deadline_missed": 1,
+        "publication_collision_stale": 1,
+        "collision_snapshot_stale": 3
+      },
+      "after_box_approved_mppi_cycles": 162,
+      "minimum_arm_box_gap_recorded_m": 0.03768355644065369,
+      "minimum_base_box_gap_recorded_m": 0.24235430408958894
+    },
+    "fast_only": {
+      "reason": "goal",
+      "goal_reached": true,
+      "collision_physical": false,
+      "joint_limit_violation": false,
+      "appearance_time": 11.323145213999851,
+      "appearance_front_gap_m": 1.0,
+      "appearance_pose": [
+        0.40587925720871576,
+        0.0,
+        0.0
+      ],
+      "box_far_face_x_m": 2.1267924218436596,
+      "maximum_lateral_departure_from_appearance_m": 0.006554441680694809,
+      "maximum_heading_departure_from_appearance_rad": 0.04419484931478879,
+      "maximum_joint_departure_from_appearance_rad": 0.5300891343331662,
+      "maximum_joint_departure_from_appearance_deg": 30.371870163033766,
+      "per_joint_maximum_departure_from_appearance_deg": [
+        6.495705839817021,
+        30.371870163033766,
+        2.5211636443977077,
+        7.0195928836312484,
+        15.53346509409655,
+        7.96052865311479
+      ],
+      "maximum_joint_departure_from_initial_deg": 30.38796796047957,
+      "final_arm_rear_x_m": 3.3538243479909484,
+      "final_arm_rear_clearance_past_far_face_m": 1.2270319261472888,
+      "passed_box": true,
+      "passed_box_criterion": "At final recorded state, minimum over all 20 physical moving-arm spheres of (center_world_x-radius) strictly exceeds box far face x; additionally report first crossing.",
+      "first_all_arm_spheres_past_box_time": 20.54176527000004,
+      "final_all_body_spheres_past_box": true,
+      "first_all_body_spheres_past_box_time": 22.068354665000015,
+      "after_box_mppi_reason_counts": {
+        "ok": 147,
+        "validation_to_command_delay": 4,
+        "deadline_missed": 1
+      },
+      "after_box_approved_mppi_cycles": 147,
+      "minimum_arm_box_gap_recorded_m": 0.05178310526281851,
+      "minimum_base_box_gap_recorded_m": 0.24235430408958894
+    }
+  },
+  "source_sha256": {
+    "mppi/result.json": "4a817d36f2998b3854a91ab4cb9da2b7d7787379d4df6410e51a00e1435d661a",
+    "mppi/state.csv": "333c8b51103fab3fd4b3da65979f04df2742df572ccb2df09deae46b24563bc3",
+    "mppi/box_runtime.json": "5b391db4c656dbf65f884f63d2b9f9e8c5c7f4af56e41c1fe84718f330b11cc3",
+    "mppi/active_arm_cycles.jsonl": "a1a234d74e14035cb1830a54b88237ca23ae3acd6307f3311f0206b0f3c5ba1f",
+    "mppi/dual_timeline.jsonl": "f3a81a914b720958bdcd4bcea9bafbba975c977f80a0ed24f064c4fbb256421c",
+    "mppi/trajectories.json": "3b60f9b90fac8acf4fa1933348abb340201d2cca614bcadf75d3e6adc906472b",
+    "mppi/events.json": "83b943f71b7d600e5f15aa5a30c757db607cd092afb5ee749cf7f37276f866c3",
+    "mppi/active_arm_reference_events.jsonl": "5583569f397cf3cbda01ab11621985758f311ab86cf4239f0930858f5a194bbc",
+    "mppi/run_status.json": "aa7e22e76c6b6355fae5864ae3955683b01fdb435bbb282f8d242b017db2b24d",
+    "fast_only/result.json": "6f046d11d0bdddea3df0256229c2394094521c03e9dae35487dab8e6c332eff6",
+    "fast_only/state.csv": "d9aa723355527099292f5403f90a5148f6115e6ce578f559b9e0f5b75f0c1e08",
+    "fast_only/box_runtime.json": "d9848ff4b377ff489b7a237c61baceb236eb6931693c38cce57a2e5885450ba9",
+    "fast_only/active_arm_cycles.jsonl": "4be216a0593b8affeff18a5132f869fd8898683e7742da193555ed1f6552c162",
+    "fast_only/dual_timeline.jsonl": "c3bc4907a9bdb81f665e2d57a9f07bd1f804be10126a0aefe3f2ef7568c87503",
+    "fast_only/trajectories.json": "dc94aecf11bfb0f28caed79b4e2ea971e22c7d6e9e8b9d1c43378efaedc73f93",
+    "fast_only/events.json": "be21de93b121e347d2f449c80357ac8fd00d30a54f68fa0a041a2d58edb877a1",
+    "fast_only/active_arm_reference_events.jsonl": "3c3169e32ffd77b7893fa490354167d16c2978a56af37502e106f4e34fe4ddae",
+    "fast_only/run_status.json": "84695bea6bdac6ac00fdd848d29f916ca1e25d2c6271c18a58c608dc73db838e"
+  },
+  "fast_only_claim_supported": true
+}

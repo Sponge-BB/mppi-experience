@@ -1,0 +1,4820 @@
+{
+  "scope": "Single-thread read-only analysis of recorded robot run. No ROS nodes/CAN/hardware commands; no point-cloud arrays read.",
+  "active_window": {
+    "goal_event_receipt": 1794456459.9303157,
+    "last_nonzero_command_end_receipt": 1794456497.2009706,
+    "goal_to_final_stop_s": 37.270654916763306,
+    "moving_to_zero_transitions": 55,
+    "recorded_command_nonzero_s": 18.222606420516968,
+    "recorded_command_zero_s_before_final_hold": 19.02941632270813,
+    "subsequent_continuous_zero_s": 193.40956115722656
+  },
+  "time_and_identification_limits": [
+    "Bag timestamps are recorder callback entry, before its shared write lock. ROS log header is source publish time. cmd_vel, status, tracking_fault have no source header/cycle id; cross-topic callback delay and queue_size=1 drops prevent exact pairing in every case.",
+    "Categories below classify evidence within zero-command episodes; 46 freshness-associated episodes must not be asserted as 46 uniquely proven onset causes. Each row includes matching delay and confidence boundary.",
+    "4 tracking_fault=true packets all identify /whole_body_mppi as actual callerid. Therefore generic FSM wording excessive trajectory error does not prove a base tracking error.",
+    "Cycle_ms is sampled inside reject after stop_base/reference-lock handling. It is not exact solver elapsed. The three no-feasible cycles above95ms do not alone prove elapsed was above95ms when the result-none branch ran.",
+    "Source code shows a distinct confirmed defect: result=None raises no_feasible before elapsed/deadline check. This branch can escalate an expired result; the actual solve elapsed is not stored for these real failure cycles."
+  ],
+  "episode_evidence_category_counts": {
+    "map_or_input_freshness_rejection": 46,
+    "arm_execution_qualification_wait": 5,
+    "native_collision_stop_recovery": 1,
+    "whole_body_no_feasible_rejection": 3
+  },
+  "onset_evidence_strength_counts": {
+    "status_receipt_within_30ms": 14,
+    "episode-level association only": 37,
+    "native collision event/ABORT follows onset": 1,
+    "same_publisher_fault_within_5ms": 3
+  },
+  "zero_transitions": [
+    {
+      "index": 1,
+      "zero_start_receipt": 1794456460.759547,
+      "local": "12:07:40.759",
+      "zero_until_next_nonzero_receipt": 1794456460.875136,
+      "zero_span_s": 0.11558890342712402,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 3.4418106079101562,
+      "first_consistent_status": {
+        "receipt": 1794456460.7629888,
+        "receipt_local": "12:07:40.762",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.37,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 406.15,
+          "dynamic_age_ms": 123.95,
+          "cached_joint_age_ms": 82.51,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3280
+        },
+        "plan_time": 1794456460.7426586,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456460.7457333,
+        "source": 1794456460.7308204,
+        "start": 1794456460.2580767,
+        "phase": 0.43971161100000006,
+        "scale": 1.0
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456460.7597513,
+          "source": 1794456460.7502162,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.37 ms; snapshot={'valid': True, 'map_age_ms': 406.15, 'dynamic_age_ms': 123.95, 'cached_joint_age_ms': 82.51, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3280})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 3.442,
+        "receipt": 1794456460.7629888,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.37
+      }
+    },
+    {
+      "index": 2,
+      "zero_start_receipt": 1794456460.946051,
+      "local": "12:07:40.946",
+      "zero_until_next_nonzero_receipt": 1794456461.0953114,
+      "zero_span_s": 0.1492605209350586,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 14.442682266235352,
+      "first_consistent_status": {
+        "receipt": 1794456460.9604936,
+        "receipt_local": "12:07:40.960",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.36,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 410.13,
+          "dynamic_age_ms": 125.87,
+          "cached_joint_age_ms": 84.67,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3281
+        },
+        "plan_time": 1794456460.9448364,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456460.943317,
+        "source": 1794456460.9408283,
+        "start": 1794456460.2580767,
+        "phase": 0.6497199730000002,
+        "scale": 1.0
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456460.9632354,
+          "source": 1794456460.9589407,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.36 ms; snapshot={'valid': True, 'map_age_ms': 410.13, 'dynamic_age_ms': 125.87, 'cached_joint_age_ms': 84.67, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3281})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 14.443,
+        "receipt": 1794456460.9604936,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.36
+      }
+    },
+    {
+      "index": 3,
+      "zero_start_receipt": 1794456461.6729364,
+      "local": "12:07:41.672",
+      "zero_until_next_nonzero_receipt": 1794456462.024416,
+      "zero_span_s": 0.35147953033447266,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 77.00300216674805,
+      "first_consistent_status": {
+        "receipt": 1794456461.7499394,
+        "receipt_local": "12:07:41.749",
+        "state": "inputs_expired_before_delivery",
+        "cycle_ms": 35.55,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 354.17,
+          "dynamic_age_ms": 154.96,
+          "cached_joint_age_ms": 62.67,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3287
+        },
+        "plan_time": 1794456461.6376436,
+        "measured_state": [
+          -0.23934987685664635,
+          -0.046677550930942696,
+          -0.22852214949798397,
+          0.05816523504494647,
+          -0.32317771661412714,
+          0.010367255756846317,
+          0.556794937971231,
+          -1.0740058085072306,
+          0.0,
+          0.9444674714242115,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999333,
+        "external_min_gap": 0.36928583767148193,
+        "native_phase": 1.2812422386377866,
+        "native_time_scale": 0.8324873546524796,
+        "native_gear": 1,
+        "reference_revision": 3
+      },
+      "progress_at_zero": {
+        "t": 1794456461.6710327,
+        "source": 1794456461.67075,
+        "start": 1794456460.2580767,
+        "phase": 1.309213029315143,
+        "scale": 0.8644492914524795
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456461.7546394,
+          "source": 1794456461.748887,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: inputs_expired_before_delivery (cycle=35.55 ms; snapshot={'valid': True, 'map_age_ms': 354.17, 'dynamic_age_ms': 154.96, 'cached_joint_age_ms': 62.67, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3287})"
+        },
+        {
+          "t": 1794456461.7700546,
+          "source": 1794456461.7594714,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=1.21 ms; snapshot={'valid': False, 'map_age_ms': 433.0, 'dynamic_age_ms': 133.09, 'cached_joint_age_ms': 96.51, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3287})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 77.003,
+        "receipt": 1794456461.7499394,
+        "state": "inputs_expired_before_delivery",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 35.55
+      }
+    },
+    {
+      "index": 4,
+      "zero_start_receipt": 1794456462.0891895,
+      "local": "12:07:42.089",
+      "zero_until_next_nonzero_receipt": 1794456462.598742,
+      "zero_span_s": 0.5095524787902832,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 106.0781478881836,
+      "first_consistent_status": {
+        "receipt": 1794456462.1952677,
+        "receipt_local": "12:07:42.195",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 38.43,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 353.94,
+          "dynamic_age_ms": 67.44,
+          "cached_joint_age_ms": 26.15,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3291
+        },
+        "plan_time": 1794456462.0482388,
+        "measured_state": [
+          -0.2298092551979862,
+          -0.04916694454055681,
+          -0.2665892853332005,
+          0.021519512674182006,
+          -0.09436602315458253,
+          0.012217304763960305,
+          0.5594827450193023,
+          -1.0740058085072306,
+          0.0,
+          0.9444674714242115,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999055,
+        "external_min_gap": 0.37443153014154007,
+        "native_phase": 1.626001355588352,
+        "native_time_scale": 0.7554291587239066,
+        "native_gear": 1,
+        "reference_revision": 3
+      },
+      "progress_at_zero": {
+        "t": 1794456462.0635839,
+        "source": 1794456462.0609763,
+        "start": 1794456460.2580767,
+        "phase": 1.63521947582302,
+        "scale": 0.7459433415119077
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -63.986,
+        "receipt": 1794456462.0252035,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.09813821160544314,
+        "w": -0.35,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 85.42
+      }
+    },
+    {
+      "index": 5,
+      "zero_start_receipt": 1794456462.660573,
+      "local": "12:07:42.660",
+      "zero_until_next_nonzero_receipt": 1794456462.8230467,
+      "zero_span_s": 0.1624736785888672,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 38.4213924407959,
+      "first_consistent_status": {
+        "receipt": 1794456462.6989944,
+        "receipt_local": "12:07:42.698",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 22.01,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 354.12,
+          "dynamic_age_ms": 140.49,
+          "cached_joint_age_ms": 54.06,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3296
+        },
+        "plan_time": 1794456462.6375456,
+        "measured_state": [
+          -0.22550312382509516,
+          -0.049281855563694146,
+          -0.28485154858302114,
+          0.0032053018040844577,
+          -0.013163286804082987,
+          0.016091935703387718,
+          0.564474386680006,
+          -1.0764841760450625,
+          0.0,
+          0.9444674714242115,
+          0.0,
+          0.0,
+          0.0,
+          -0.3691212991501077,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999333,
+        "external_min_gap": 0.3770568172831088,
+        "native_phase": 2.00758720887699,
+        "native_time_scale": 0.43909263304464974,
+        "native_gear": 1,
+        "reference_revision": 3
+      },
+      "progress_at_zero": {
+        "t": 1794456462.6528363,
+        "source": 1794456462.6508367,
+        "start": 1794456460.2580767,
+        "phase": 2.013016369175286,
+        "scale": 0.4200149069348312
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456462.7214553,
+          "source": 1794456462.685378,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=22.01 ms; snapshot={'valid': True, 'map_age_ms': 354.12, 'dynamic_age_ms': 140.49, 'cached_joint_age_ms': 54.06, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3296})"
+        },
+        {
+          "t": 1794456462.556572,
+          "source": 1794456462.5431938,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=28.06 ms; snapshot={'valid': True, 'map_age_ms': 371.27, 'dynamic_age_ms': 247.1, 'cached_joint_age_ms': 60.12, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3294})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 38.421,
+        "receipt": 1794456462.6989944,
+        "state": "collision_snapshot_expired_during_plan",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 22.01
+      }
+    },
+    {
+      "index": 6,
+      "zero_start_receipt": 1794456462.862296,
+      "local": "12:07:42.862",
+      "zero_until_next_nonzero_receipt": 1794456462.9824338,
+      "zero_span_s": 0.12013769149780273,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 35.22038459777832,
+      "first_consistent_status": {
+        "receipt": 1794456462.8975165,
+        "receipt_local": "12:07:42.897",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 23.9,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 356.45,
+          "dynamic_age_ms": 142.33,
+          "cached_joint_age_ms": 51.0,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3298
+        },
+        "plan_time": 1794456462.8376231,
+        "measured_state": [
+          -0.21957781162734574,
+          -0.05045958703334531,
+          -0.304875671167311,
+          0.017068362972723572,
+          -0.04460248582447702,
+          0.021921335405048776,
+          0.5715080635655432,
+          -1.0768157886029415,
+          0.0079412480965742,
+          0.9444674714242115,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999998916,
+        "external_min_gap": 0.38074150488712866,
+        "native_phase": 2.081726738274399,
+        "native_time_scale": 0.33227514042282535,
+        "native_gear": 1,
+        "reference_revision": 3
+      },
+      "progress_at_zero": {
+        "t": 1794456462.8612015,
+        "source": 1794456462.8608243,
+        "start": 1794456460.2580767,
+        "phase": 2.0893667190220726,
+        "scale": 0.32928880671825195
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456462.90234,
+          "source": 1794456462.8849854,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=23.90 ms; snapshot={'valid': True, 'map_age_ms': 356.45, 'dynamic_age_ms': 142.33, 'cached_joint_age_ms': 51.0, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3298})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 35.22,
+        "receipt": 1794456462.8975165,
+        "state": "collision_snapshot_expired_during_plan",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 23.9
+      }
+    },
+    {
+      "index": 7,
+      "zero_start_receipt": 1794456463.0592413,
+      "local": "12:07:43.059",
+      "zero_until_next_nonzero_receipt": 1794456463.2353597,
+      "zero_span_s": 0.1761183738708496,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 56.1373233795166,
+      "first_consistent_status": {
+        "receipt": 1794456463.1153786,
+        "receipt_local": "12:07:43.115",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 2.75,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 370.81,
+          "dynamic_age_ms": 131.2,
+          "cached_joint_age_ms": 95.75,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3299
+        },
+        "plan_time": 1794456463.0485072,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456463.0589468,
+        "source": 1794456463.0508394,
+        "start": 1794456460.2580767,
+        "phase": 2.1439456890169066,
+        "scale": 0.24993165351995986
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456463.1272838,
+          "source": 1794456463.1138227,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=2.75 ms; snapshot={'valid': True, 'map_age_ms': 370.81, 'dynamic_age_ms': 131.2, 'cached_joint_age_ms': 95.75, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3299})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 56.137,
+        "receipt": 1794456463.1153786,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 2.75
+      }
+    },
+    {
+      "index": 8,
+      "zero_start_receipt": 1794456463.9958203,
+      "local": "12:07:43.995",
+      "zero_until_next_nonzero_receipt": 1794456464.086831,
+      "zero_span_s": 0.09101080894470215,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 13.645410537719727,
+      "first_consistent_status": {
+        "receipt": 1794456464.0094657,
+        "receipt_local": "12:07:44.009",
+        "state": "inputs_expired_before_delivery",
+        "cycle_ms": 58.86,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 211.39,
+          "dynamic_age_ms": 77.31,
+          "cached_joint_age_ms": 51.03,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3307
+        },
+        "plan_time": 1794456463.9376485,
+        "measured_state": [
+          -0.17330087594317545,
+          -0.06684177031010533,
+          -0.5529105164218444,
+          0.09150029389486013,
+          -0.3597700877469731,
+          0.04276056667386107,
+          0.6035872152171989,
+          -1.0876542832578262,
+          0.02352703831688356,
+          0.9439962325261729,
+          0.0,
+          -0.017452060894857558,
+          0.0,
+          0.0,
+          -0.3595124544340597,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999055,
+        "external_min_gap": 0.4153157751193204,
+        "native_phase": 2.3131407741392396,
+        "native_time_scale": 0.3524324594027023,
+        "native_gear": 1,
+        "reference_revision": 3
+      },
+      "progress_at_zero": {
+        "t": 1794456463.9938912,
+        "source": 1794456463.990819,
+        "start": 1794456460.2580767,
+        "phase": 2.3334589005396076,
+        "scale": 0.3981758490883156
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456464.0140316,
+          "source": 1794456464.0071208,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: inputs_expired_before_delivery (cycle=58.86 ms; snapshot={'valid': True, 'map_age_ms': 211.39, 'dynamic_age_ms': 77.31, 'cached_joint_age_ms': 51.03, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3307})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 13.645,
+        "receipt": 1794456464.0094657,
+        "state": "inputs_expired_before_delivery",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 58.86
+      }
+    },
+    {
+      "index": 9,
+      "zero_start_receipt": 1794456464.1394124,
+      "local": "12:07:44.139",
+      "zero_until_next_nonzero_receipt": 1794456464.2765014,
+      "zero_span_s": 0.13708901405334473,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 16.502857208251953,
+      "first_consistent_status": {
+        "receipt": 1794456464.1559153,
+        "receipt_local": "12:07:44.155",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.25,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 352.66,
+          "dynamic_age_ms": 117.09,
+          "cached_joint_age_ms": 37.27,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3307
+        },
+        "plan_time": 1794456464.1375444,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456464.131201,
+        "source": 1794456464.130818,
+        "start": 1794456460.2580767,
+        "phase": 2.385466106932345,
+        "scale": 0.37131200225638256
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456464.0140316,
+          "source": 1794456464.0071208,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: inputs_expired_before_delivery (cycle=58.86 ms; snapshot={'valid': True, 'map_age_ms': 211.39, 'dynamic_age_ms': 77.31, 'cached_joint_age_ms': 51.03, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3307})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 16.503,
+        "receipt": 1794456464.1559153,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.25
+      }
+    },
+    {
+      "index": 10,
+      "zero_start_receipt": 1794456464.3548942,
+      "local": "12:07:44.354",
+      "zero_until_next_nonzero_receipt": 1794456464.4835865,
+      "zero_span_s": 0.1286923885345459,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": -1.1513233184814453,
+      "first_consistent_status": {
+        "receipt": 1794456464.3537428,
+        "receipt_local": "12:07:44.353",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.3,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 375.1,
+          "dynamic_age_ms": 118.71,
+          "cached_joint_age_ms": 77.42,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3308
+        },
+        "plan_time": 1794456464.337591,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456464.3518672,
+        "source": 1794456464.3307953,
+        "start": 1794456460.2580767,
+        "phase": 2.4570059094491934,
+        "scale": 0.29726792415757236
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456464.356061,
+          "source": 1794456464.3468547,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.30 ms; snapshot={'valid': True, 'map_age_ms': 375.1, 'dynamic_age_ms': 118.71, 'cached_joint_age_ms': 77.42, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3308})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -1.151,
+        "receipt": 1794456464.3537428,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.3
+      }
+    },
+    {
+      "index": 11,
+      "zero_start_receipt": 1794456464.5412226,
+      "local": "12:07:44.541",
+      "zero_until_next_nonzero_receipt": 1794456464.6763947,
+      "zero_span_s": 0.13517212867736816,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 51.10979080200195,
+      "first_consistent_status": {
+        "receipt": 1794456464.5923324,
+        "receipt_local": "12:07:44.592",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.27,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 368.3,
+          "dynamic_age_ms": 119.68,
+          "cached_joint_age_ms": 28.4,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3309
+        },
+        "plan_time": 1794456464.538643,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456464.5324812,
+        "source": 1794456464.530835,
+        "start": 1794456460.2580767,
+        "phase": 2.500844172772417,
+        "scale": 0.16916253110519877
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456464.5969977,
+          "source": 1794456464.590224,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.27 ms; snapshot={'valid': True, 'map_age_ms': 368.3, 'dynamic_age_ms': 119.68, 'cached_joint_age_ms': 28.4, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3309})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 51.11,
+        "receipt": 1794456464.5923324,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.27
+      }
+    },
+    {
+      "index": 12,
+      "zero_start_receipt": 1794456464.9410315,
+      "local": "12:07:44.941",
+      "zero_until_next_nonzero_receipt": 1794456465.1740842,
+      "zero_span_s": 0.23305273056030273,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 132.58934020996094,
+      "first_consistent_status": {
+        "receipt": 1794456465.0736208,
+        "receipt_local": "12:07:45.073",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.94,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 401.56,
+          "dynamic_age_ms": 121.07,
+          "cached_joint_age_ms": 89.51,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3311
+        },
+        "plan_time": 1794456464.9390898,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456464.9312966,
+        "source": 1794456464.930834,
+        "start": 1794456460.2580767,
+        "phase": 2.5327456105799997,
+        "scale": 0.0
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -64.388,
+        "receipt": 1794456464.8766434,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07998760481426001,
+        "w": 0.03520725186360174,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 37.3
+      }
+    },
+    {
+      "index": 13,
+      "zero_start_receipt": 1794456465.5868735,
+      "local": "12:07:45.586",
+      "zero_until_next_nonzero_receipt": 1794456466.0835361,
+      "zero_span_s": 0.49666261672973633,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 267.6568031311035,
+      "first_consistent_status": {
+        "receipt": 1794456465.8545303,
+        "receipt_local": "12:07:45.854",
+        "state": "inputs_expired_before_delivery",
+        "cycle_ms": 38.01,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 199.25,
+          "dynamic_age_ms": 159.81,
+          "cached_joint_age_ms": 78.47,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3317
+        },
+        "plan_time": 1794456465.5409951,
+        "measured_state": [
+          -0.13304819809118806,
+          -0.10520699208960416,
+          -0.6545289703828343,
+          0.06186068587778541,
+          0.01269751249248299,
+          0.0584510766492901,
+          0.6276378523096808,
+          -1.0955257181843208,
+          0.0381354441560761,
+          0.93877769806271,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.01752727448871419,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999194,
+        "external_min_gap": 0.43166006647936744,
+        "native_phase": 2.5327456105799997,
+        "native_time_scale": 0.0,
+        "native_gear": 1,
+        "reference_revision": 3
+      },
+      "progress_at_zero": {
+        "t": 1794456465.5813751,
+        "source": 1794456465.5808265,
+        "start": 1794456460.2580767,
+        "phase": 2.5327456105799997,
+        "scale": 0.0
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -87.533,
+        "receipt": 1794456465.499341,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07999878992098239,
+        "w": 0.01100037303111634,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 60.85
+      }
+    },
+    {
+      "index": 14,
+      "zero_start_receipt": 1794456466.1726763,
+      "local": "12:07:46.172",
+      "zero_until_next_nonzero_receipt": 1794456466.3467574,
+      "zero_span_s": 0.17408108711242676,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 144.67239379882812,
+      "first_consistent_status": {
+        "receipt": 1794456466.3173487,
+        "receipt_local": "12:07:46.317",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 17.99,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 350.54,
+          "dynamic_age_ms": 152.03,
+          "cached_joint_age_ms": 20.68,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3320
+        },
+        "plan_time": 1794456466.153205,
+        "measured_state": [
+          -0.11916169652498115,
+          -0.11904366638641659,
+          -0.647295566568249,
+          -0.00027464720240094,
+          0.003915305446731666,
+          0.06040584541152374,
+          0.6224891310162975,
+          -1.0955257181843208,
+          0.03967133389783111,
+          0.93877769806271,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999055,
+        "external_min_gap": 0.43166006647936744,
+        "native_phase": 2.5327456105799997,
+        "native_time_scale": 0.0,
+        "native_gear": 1,
+        "reference_revision": 3
+      },
+      "progress_at_zero": {
+        "t": 1794456466.172555,
+        "source": 1794456466.1712365,
+        "start": 1794456460.2580767,
+        "phase": 2.5327456105799997,
+        "scale": 0.0
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456466.4471238,
+          "source": 1794456466.3094294,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=17.99 ms; snapshot={'valid': True, 'map_age_ms': 350.54, 'dynamic_age_ms': 152.03, 'cached_joint_age_ms': 20.68, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3320})"
+        },
+        {
+          "t": 1794456466.0446303,
+          "source": 1794456466.0314255,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=0.20 ms; snapshot={})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -27.996,
+        "receipt": 1794456466.1446805,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.079963956349116,
+        "w": 0.06003861903877006,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 33.86
+      }
+    },
+    {
+      "index": 15,
+      "zero_start_receipt": 1794456466.9543247,
+      "local": "12:07:46.954",
+      "zero_until_next_nonzero_receipt": 1794456467.1244307,
+      "zero_span_s": 0.1701059341430664,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 137.62521743774414,
+      "first_consistent_status": {
+        "receipt": 1794456467.09195,
+        "receipt_local": "12:07:47.091",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.26,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 367.76,
+          "dynamic_age_ms": 134.16,
+          "cached_joint_age_ms": 42.59,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3325
+        },
+        "plan_time": 1794456466.952931,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456466.9512665,
+        "source": 1794456466.9508302,
+        "start": 1794456460.2580767,
+        "phase": 2.5327456105799997,
+        "scale": 0.0
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456467.1579425,
+          "source": 1794456467.082675,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.26 ms; snapshot={'valid': True, 'map_age_ms': 367.76, 'dynamic_age_ms': 134.16, 'cached_joint_age_ms': 42.59, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3325})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -67.103,
+        "receipt": 1794456466.8872218,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.05916713328149068,
+        "w": -0.08580252921500531,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 29.37
+      }
+    },
+    {
+      "index": 16,
+      "zero_start_receipt": 1794456467.7573178,
+      "local": "12:07:47.757",
+      "zero_until_next_nonzero_receipt": 1794456467.927001,
+      "zero_span_s": 0.16968321800231934,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 105.0410270690918,
+      "first_consistent_status": {
+        "receipt": 1794456467.8623588,
+        "receipt_local": "12:07:47.862",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.26,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 375.94,
+          "dynamic_age_ms": 235.78,
+          "cached_joint_age_ms": 98.95,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3330
+        },
+        "plan_time": 1794456467.75421,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456467.75264,
+        "source": 1794456467.7509224,
+        "start": 1794456460.2580767,
+        "phase": 2.6388629307949434,
+        "scale": 0.4080717144000001
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456467.926878,
+          "source": 1794456467.8420706,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.26 ms; snapshot={'valid': True, 'map_age_ms': 375.94, 'dynamic_age_ms': 235.78, 'cached_joint_age_ms': 98.95, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3330})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -75.279,
+        "receipt": 1794456467.6820385,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07997925224689648,
+        "w": 0.04555068602832435,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 27.9
+      }
+    },
+    {
+      "index": 17,
+      "zero_start_receipt": 1794456468.3953984,
+      "local": "12:07:48.395",
+      "zero_until_next_nonzero_receipt": 1794456468.4904685,
+      "zero_span_s": 0.09507012367248535,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 53.28178405761719,
+      "first_consistent_status": {
+        "receipt": 1794456468.4486802,
+        "receipt_local": "12:07:48.448",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 29.73,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 365.62,
+          "dynamic_age_ms": 163.02,
+          "cached_joint_age_ms": 72.16,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3335
+        },
+        "plan_time": 1794456468.352957,
+        "measured_state": [
+          0.002143878356971163,
+          -0.20786878854149862,
+          -0.7076961626257722,
+          0.1269454274390442,
+          -0.0015629609680090882,
+          0.0719599250597262,
+          0.6520375552525616,
+          -1.1002730137497454,
+          0.04960225734167885,
+          0.9373639813685944,
+          0.0,
+          0.0,
+          0.17827878356889562,
+          0.0,
+          0.21673107022100832,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999055,
+        "external_min_gap": 0.43166006647936733,
+        "native_phase": 3.0322114924648047,
+        "native_time_scale": 0.8879982136000001,
+        "native_gear": 1,
+        "reference_revision": 3
+      },
+      "progress_at_zero": {
+        "t": 1794456468.3782127,
+        "source": 1794456468.3731086,
+        "start": 1794456460.2580767,
+        "phase": 3.05011735853465,
+        "scale": 0.9058213472000001
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456468.550626,
+          "source": 1794456468.4476147,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=29.73 ms; snapshot={'valid': True, 'map_age_ms': 365.62, 'dynamic_age_ms': 163.02, 'cached_joint_age_ms': 72.16, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3335})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 53.282,
+        "receipt": 1794456468.4486802,
+        "state": "collision_snapshot_expired_during_plan",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 29.73
+      }
+    },
+    {
+      "index": 18,
+      "zero_start_receipt": 1794456469.0816674,
+      "local": "12:07:49.081",
+      "zero_until_next_nonzero_receipt": 1794456469.196402,
+      "zero_span_s": 0.11473464965820312,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 80.36589622497559,
+      "first_consistent_status": {
+        "receipt": 1794456469.1620333,
+        "receipt_local": "12:07:49.162",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 23.89,
+        "snapshot": {
+          "valid": false,
+          "map_age_ms": 371.5,
+          "dynamic_age_ms": 59.64,
+          "cached_joint_age_ms": 68.63,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3340
+        },
+        "plan_time": 1794456469.0552804,
+        "measured_state": [
+          0.07002405289444105,
+          -0.26700465596351464,
+          -0.711819681358595,
+          0.13800879410415878,
+          0.02085551278146887,
+          0.08258898020437166,
+          0.6649006318397598,
+          -1.1063293062541657,
+          0.058939768839848514,
+          0.9347285341980831,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999055,
+        "external_min_gap": 0.43166006647936733,
+        "native_phase": 3.576622810249596,
+        "native_time_scale": 0.6978278957594113,
+        "native_gear": 1,
+        "reference_revision": 3
+      },
+      "progress_at_zero": {
+        "t": 1794456469.081257,
+        "source": 1794456469.0808084,
+        "start": 1794456460.2580767,
+        "phase": 3.5942851947160865,
+        "scale": 0.7218176525594113
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456469.2674558,
+          "source": 1794456469.1600459,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=23.89 ms; snapshot={'valid': False, 'map_age_ms': 371.5, 'dynamic_age_ms': 59.64, 'cached_joint_age_ms': 68.63, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3340})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -57.739,
+        "receipt": 1794456469.0239289,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.1536128670784015,
+        "w": 0.012871560445224084,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 68.6
+      }
+    },
+    {
+      "index": 19,
+      "zero_start_receipt": 1794456469.255044,
+      "local": "12:07:49.255",
+      "zero_until_next_nonzero_receipt": 1794456469.3919218,
+      "zero_span_s": 0.13687777519226074,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 39.79849815368652,
+      "first_consistent_status": {
+        "receipt": 1794456469.2948425,
+        "receipt_local": "12:07:49.294",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.33,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 377.54,
+          "dynamic_age_ms": 134.57,
+          "cached_joint_age_ms": 43.13,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3341
+        },
+        "plan_time": 1794456469.2533286,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456469.2513494,
+        "source": 1794456469.2508483,
+        "start": 1794456460.2580767,
+        "phase": 3.7104914981617645,
+        "scale": 0.6820481699322656
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456469.2940378,
+          "source": 1794456469.2889922,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.33 ms; snapshot={'valid': True, 'map_age_ms': 377.54, 'dynamic_age_ms': 134.57, 'cached_joint_age_ms': 43.13, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3341})"
+        },
+        {
+          "t": 1794456469.2674558,
+          "source": 1794456469.1600459,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=23.89 ms; snapshot={'valid': False, 'map_age_ms': 371.5, 'dynamic_age_ms': 59.64, 'cached_joint_age_ms': 68.63, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3340})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 39.798,
+        "receipt": 1794456469.2948425,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.33
+      }
+    },
+    {
+      "index": 20,
+      "zero_start_receipt": 1794456469.4541218,
+      "local": "12:07:49.454",
+      "zero_until_next_nonzero_receipt": 1794456470.511531,
+      "zero_span_s": 1.0574092864990234,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 210.26349067687988,
+      "first_consistent_status": {
+        "receipt": 1794456469.6643853,
+        "receipt_local": "12:07:49.664",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.47,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 376.98,
+          "dynamic_age_ms": 144.03,
+          "cached_joint_age_ms": 52.7,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3343
+        },
+        "plan_time": 1794456469.6627727,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456469.4516828,
+        "source": 1794456469.4508064,
+        "start": 1794456460.2580767,
+        "phase": 3.825186941832486,
+        "scale": 0.4811041476041541
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -59.661,
+        "receipt": 1794456469.3944604,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.12058258332238005,
+        "w": -0.048680568345623954,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 40.56
+      }
+    },
+    {
+      "index": 21,
+      "zero_start_receipt": 1794456470.608425,
+      "local": "12:07:50.608",
+      "zero_until_next_nonzero_receipt": 1794456470.8093066,
+      "zero_span_s": 0.2008817195892334,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 153.961181640625,
+      "first_consistent_status": {
+        "receipt": 1794456470.762386,
+        "receipt_local": "12:07:50.762",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 9.27,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 377.9,
+          "dynamic_age_ms": 166.03,
+          "cached_joint_age_ms": 74.67,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3347
+        },
+        "plan_time": 1794456470.5759206,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456470.604461,
+        "source": 1794456470.5808046,
+        "start": 1794456460.2580767,
+        "phase": 4.028747166284846,
+        "scale": 0.0
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456470.914547,
+          "source": 1794456470.7380087,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=9.27 ms; snapshot={'valid': True, 'map_age_ms': 377.9, 'dynamic_age_ms': 166.03, 'cached_joint_age_ms': 74.67, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3347})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -96.946,
+        "receipt": 1794456470.5114791,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07983516348228879,
+        "w": -0.12841072978770818,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 31.37
+      }
+    },
+    {
+      "index": 22,
+      "zero_start_receipt": 1794456470.880266,
+      "local": "12:07:50.880",
+      "zero_until_next_nonzero_receipt": 1794456471.0952404,
+      "zero_span_s": 0.21497440338134766,
+      "evidence_category": "arm_execution_qualification_wait",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 187.28137016296387,
+      "first_consistent_status": {
+        "receipt": 1794456471.0675473,
+        "receipt_local": "12:07:51.067",
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "cycle_ms": 0.22,
+        "plan_time": 1794456470.8773413,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456470.8729637,
+        "source": 1794456470.8708632,
+        "start": 1794456460.2580767,
+        "phase": 4.028747166284846,
+        "scale": 0.0
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456470.914547,
+          "source": 1794456470.7380087,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=9.27 ms; snapshot={'valid': True, 'map_age_ms': 377.9, 'dynamic_age_ms': 166.03, 'cached_joint_age_ms': 74.67, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3347})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -28.357,
+        "receipt": 1794456470.8519087,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07995730670337467,
+        "w": 0.06534301377661933,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 41.3
+      }
+    },
+    {
+      "index": 23,
+      "zero_start_receipt": 1794456472.393538,
+      "local": "12:07:52.393",
+      "zero_until_next_nonzero_receipt": 1794456472.508949,
+      "zero_span_s": 0.11541104316711426,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 31.421661376953125,
+      "first_consistent_status": {
+        "receipt": 1794456472.4249597,
+        "receipt_local": "12:07:52.424",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.36,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 368.56,
+          "dynamic_age_ms": 170.14,
+          "cached_joint_age_ms": 78.46,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3360
+        },
+        "plan_time": 1794456472.3886418,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456472.3867352,
+        "source": 1794456472.380829,
+        "start": 1794456460.2580767,
+        "phase": 4.028747166284846,
+        "scale": 0.0
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456472.4339051,
+          "source": 1794456472.4226565,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.36 ms; snapshot={'valid': True, 'map_age_ms': 368.56, 'dynamic_age_ms': 170.14, 'cached_joint_age_ms': 78.46, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3360})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 31.422,
+        "receipt": 1794456472.4249597,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.36
+      }
+    },
+    {
+      "index": 24,
+      "zero_start_receipt": 1794456473.188586,
+      "local": "12:07:53.188",
+      "zero_until_next_nonzero_receipt": 1794456474.195197,
+      "zero_span_s": 1.0066111087799072,
+      "evidence_category": "native_collision_stop_recovery",
+      "onset_evidence_strength": "native collision event/ABORT follows onset; exact zero publisher branch not timestamped",
+      "first_consistent_status_delta_ms": 171.9059944152832,
+      "first_consistent_status": {
+        "receipt": 1794456473.360492,
+        "receipt_local": "12:07:53.360",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.28,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 370.3,
+          "dynamic_age_ms": 168.36,
+          "cached_joint_age_ms": 82.04,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3365
+        },
+        "plan_time": 1794456473.1872814,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456473.187474,
+        "source": 1794456473.1809065,
+        "start": 1794456460.2580767,
+        "phase": 4.111598918296137,
+        "scale": 0.3600598408
+      },
+      "speed_limit_at_zero": null,
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456473.3164506,
+          "source": 1794456473.2074163,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Latched collision-event ESDF requirement at seq=3356."
+        },
+        {
+          "t": 1794456473.361752,
+          "source": 1794456473.232225,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Frozen planning-boundary ESDF requirement at seq=3356 in GEN_NEW_TRAJ."
+        },
+        {
+          "t": 1794456473.508252,
+          "source": 1794456473.232321,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3356, esdf_seq=3355, wait=0.00 s)."
+        },
+        {
+          "t": 1794456473.7967126,
+          "source": 1794456473.320249,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "msg": "[FSM] Real whole-body state is in hard collision (type=0, check_distance=0.004 m, base_surface_gap=0.004 m); stop before using nominal trajectory."
+        },
+        {
+          "t": 1794456473.5087206,
+          "source": 1794456473.3258498,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.28 ms; snapshot={'valid': True, 'map_age_ms': 370.3, 'dynamic_age_ms': 168.36, 'cached_joint_age_ms': 82.04, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3365})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -77.54,
+        "receipt": 1794456473.1110463,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07988659847701284,
+        "w": -0.10650273451358583,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 34.27
+      },
+      "boundary": "Zero command began at12:07:53.188; recorded native safety limit0 arrived12:07:53.209 and ABORT12:07:53.212. Native event is confirmed for the episode, but cannot uniquely prove it generated the earlier zero onset across callback timing."
+    },
+    {
+      "index": 25,
+      "zero_start_receipt": 1794456474.6884155,
+      "local": "12:07:54.688",
+      "zero_until_next_nonzero_receipt": 1794456474.851929,
+      "zero_span_s": 0.1635134220123291,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 102.73933410644531,
+      "first_consistent_status": {
+        "receipt": 1794456474.7911549,
+        "receipt_local": "12:07:54.791",
+        "state": "inputs_expired_before_delivery",
+        "cycle_ms": 48.51,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 366.02,
+          "dynamic_age_ms": 167.77,
+          "cached_joint_age_ms": 76.55,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3374
+        },
+        "plan_time": 1794456474.638583,
+        "measured_state": [
+          0.23264733945636235,
+          -0.4151858521323234,
+          -0.9233266734844302,
+          0.06376541019036588,
+          -0.31712058764906914,
+          0.09288642279113822,
+          0.684518132632176,
+          -1.1099595910983138,
+          0.06448991586119047,
+          0.9324945127555303,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999998916,
+        "external_min_gap": 0.43166006647936744,
+        "native_phase": 0.15023791623612648,
+        "native_time_scale": 0.4799897839999999,
+        "native_gear": 1,
+        "reference_revision": 5
+      },
+      "progress_at_zero": {
+        "t": 1794456474.6811652,
+        "source": 1794456474.680821,
+        "start": 1794456473.9021983,
+        "phase": 0.17161273178708564,
+        "scale": 0.520005004
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456474.9234755,
+          "source": 1794456474.7896101,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: inputs_expired_before_delivery (cycle=48.51 ms; snapshot={'valid': True, 'map_age_ms': 366.02, 'dynamic_age_ms': 167.77, 'cached_joint_age_ms': 76.55, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3374})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 102.739,
+        "receipt": 1794456474.7911549,
+        "state": "inputs_expired_before_delivery",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 48.51
+      }
+    },
+    {
+      "index": 26,
+      "zero_start_receipt": 1794456474.8609018,
+      "local": "12:07:54.860",
+      "zero_until_next_nonzero_receipt": 1794456474.9768379,
+      "zero_span_s": 0.1159360408782959,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 64.46146965026855,
+      "first_consistent_status": {
+        "receipt": 1794456474.9253633,
+        "receipt_local": "12:07:54.925",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.97,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 352.61,
+          "dynamic_age_ms": 127.98,
+          "cached_joint_age_ms": 36.63,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3375
+        },
+        "plan_time": 1794456474.8462222,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456474.851406,
+        "source": 1794456474.8508244,
+        "start": 1794456473.9021983,
+        "phase": 0.27225571714823016,
+        "scale": 0.6560075663999999
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456474.9234755,
+          "source": 1794456474.7896101,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: inputs_expired_before_delivery (cycle=48.51 ms; snapshot={'valid': True, 'map_age_ms': 366.02, 'dynamic_age_ms': 167.77, 'cached_joint_age_ms': 76.55, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3374})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -12.444,
+        "receipt": 1794456474.8484583,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07952425248147901,
+        "w": -0.2182246091605986,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 53.54
+      }
+    },
+    {
+      "index": 27,
+      "zero_start_receipt": 1794456475.075235,
+      "local": "12:07:55.075",
+      "zero_until_next_nonzero_receipt": 1794456475.1728055,
+      "zero_span_s": 0.09757065773010254,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 0.3094673156738281,
+      "first_consistent_status": {
+        "receipt": 1794456475.0755444,
+        "receipt_local": "12:07:55.075",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.35,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 354.13,
+          "dynamic_age_ms": 224.0,
+          "cached_joint_age_ms": 82.34,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3376
+        },
+        "plan_time": 1794456475.0425475,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456475.0238554,
+        "source": 1794456475.0108783,
+        "start": 1794456473.9021983,
+        "phase": 0.3881399155950054,
+        "scale": 0.7840509799999998
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456475.244103,
+          "source": 1794456475.0631976,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.35 ms; snapshot={'valid': True, 'map_age_ms': 354.13, 'dynamic_age_ms': 224.0, 'cached_joint_age_ms': 82.34, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3376})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 0.309,
+        "receipt": 1794456475.0755444,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.35
+      }
+    },
+    {
+      "index": 28,
+      "zero_start_receipt": 1794456475.2443867,
+      "local": "12:07:55.244",
+      "zero_until_next_nonzero_receipt": 1794456475.478442,
+      "zero_span_s": 0.2340552806854248,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 50.25935173034668,
+      "first_consistent_status": {
+        "receipt": 1794456475.294646,
+        "receipt_local": "12:07:55.294",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.52,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 382.99,
+          "dynamic_age_ms": 222.74,
+          "cached_joint_age_ms": 84.15,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3377
+        },
+        "plan_time": 1794456475.2391634,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456475.2111466,
+        "source": 1794456475.2108076,
+        "start": 1794456473.9021983,
+        "phase": 0.5616816458883799,
+        "scale": 0.9439928399999997
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456475.365403,
+          "source": 1794456475.2932081,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.52 ms; snapshot={'valid': True, 'map_age_ms': 382.99, 'dynamic_age_ms': 222.74, 'cached_joint_age_ms': 84.15, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3377})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 50.259,
+        "receipt": 1794456475.294646,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.52
+      }
+    },
+    {
+      "index": 29,
+      "zero_start_receipt": 1794456475.7486985,
+      "local": "12:07:55.748",
+      "zero_until_next_nonzero_receipt": 1794456475.8809748,
+      "zero_span_s": 0.13227629661560059,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 66.38240814208984,
+      "first_consistent_status": {
+        "receipt": 1794456475.815081,
+        "receipt_local": "12:07:55.815",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.25,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 359.91,
+          "dynamic_age_ms": 119.66,
+          "cached_joint_age_ms": 78.33,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3380
+        },
+        "plan_time": 1794456475.7386441,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456475.7374444,
+        "source": 1794456475.7208252,
+        "start": 1794456473.9021983,
+        "phase": 1.0700208122594908,
+        "scale": 1.0
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456475.8166597,
+          "source": 1794456475.8137977,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.25 ms; snapshot={'valid': True, 'map_age_ms': 359.91, 'dynamic_age_ms': 119.66, 'cached_joint_age_ms': 78.33, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3380})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -65.934,
+        "receipt": 1794456475.6827648,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07963989671754174,
+        "w": -0.18983512903386757,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 41.45
+      }
+    },
+    {
+      "index": 30,
+      "zero_start_receipt": 1794456476.440534,
+      "local": "12:07:56.440",
+      "zero_until_next_nonzero_receipt": 1794456476.6710224,
+      "zero_span_s": 0.23048830032348633,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 104.68053817749023,
+      "first_consistent_status": {
+        "receipt": 1794456476.5452147,
+        "receipt_local": "12:07:56.545",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.25,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 401.39,
+          "dynamic_age_ms": 120.17,
+          "cached_joint_age_ms": 78.39,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3386
+        },
+        "plan_time": 1794456476.4387326,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456476.4363472,
+        "source": 1794456476.4308696,
+        "start": 1794456473.9021983,
+        "phase": 1.780065142259491,
+        "scale": 1.0
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456476.5467923,
+          "source": 1794456476.5390089,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.25 ms; snapshot={'valid': True, 'map_age_ms': 401.39, 'dynamic_age_ms': 120.17, 'cached_joint_age_ms': 78.39, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3386})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -57.915,
+        "receipt": 1794456476.3826191,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.10587317227667309,
+        "w": -0.050270161968031246,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 41.82
+      }
+    },
+    {
+      "index": 31,
+      "zero_start_receipt": 1794456476.7675045,
+      "local": "12:07:56.767",
+      "zero_until_next_nonzero_receipt": 1794456476.8860018,
+      "zero_span_s": 0.11849737167358398,
+      "evidence_category": "arm_execution_qualification_wait",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": -0.040531158447265625,
+      "first_consistent_status": {
+        "receipt": 1794456476.767464,
+        "receipt_local": "12:07:56.767",
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "cycle_ms": 0.23,
+        "plan_time": 1794456476.7483666,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456476.7645712,
+        "source": 1794456476.7608356,
+        "start": 1794456473.9021983,
+        "phase": 2.1100466092594905,
+        "scale": 1.0
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456476.779374,
+          "source": 1794456476.7578273,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=0.23 ms; snapshot={})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -0.041,
+        "receipt": 1794456476.767464,
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.23
+      }
+    },
+    {
+      "index": 32,
+      "zero_start_receipt": 1794456476.9413266,
+      "local": "12:07:56.941",
+      "zero_until_next_nonzero_receipt": 1794456477.0891278,
+      "zero_span_s": 0.14780116081237793,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 35.040855407714844,
+      "first_consistent_status": {
+        "receipt": 1794456476.9763675,
+        "receipt_local": "12:07:56.976",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.49,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 220.74,
+          "dynamic_age_ms": 120.32,
+          "cached_joint_age_ms": 28.98,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3390
+        },
+        "plan_time": 1794456476.9390888,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456476.9333894,
+        "source": 1794456476.9308388,
+        "start": 1794456473.9021983,
+        "phase": 2.2800375242594897,
+        "scale": 1.0
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456476.977323,
+          "source": 1794456476.9741983,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.49 ms; snapshot={'valid': True, 'map_age_ms': 220.74, 'dynamic_age_ms': 120.32, 'cached_joint_age_ms': 28.98, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3390})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 35.041,
+        "receipt": 1794456476.9763675,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.49
+      }
+    },
+    {
+      "index": 33,
+      "zero_start_receipt": 1794456477.7395256,
+      "local": "12:07:57.739",
+      "zero_until_next_nonzero_receipt": 1794456477.898659,
+      "zero_span_s": 0.1591334342956543,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 133.91470909118652,
+      "first_consistent_status": {
+        "receipt": 1794456477.8734403,
+        "receipt_local": "12:07:57.873",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.25,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 353.04,
+          "dynamic_age_ms": 118.71,
+          "cached_joint_age_ms": 28.32,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3396
+        },
+        "plan_time": 1794456477.7386174,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456477.731346,
+        "source": 1794456477.730837,
+        "start": 1794456473.9021983,
+        "phase": 2.9098356014007045,
+        "scale": 0.7152147864382454
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456477.9354162,
+          "source": 1794456477.8718934,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.25 ms; snapshot={'valid': True, 'map_age_ms': 353.04, 'dynamic_age_ms': 118.71, 'cached_joint_age_ms': 28.32, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3396})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -64.662,
+        "receipt": 1794456477.6748638,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.14217034901605713,
+        "w": -0.013397853033580986,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 35.84
+      }
+    },
+    {
+      "index": 34,
+      "zero_start_receipt": 1794456478.9456725,
+      "local": "12:07:58.945",
+      "zero_until_next_nonzero_receipt": 1794456479.1716099,
+      "zero_span_s": 0.2259373664855957,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 15.748262405395508,
+      "first_consistent_status": {
+        "receipt": 1794456478.9614208,
+        "receipt_local": "12:07:58.961",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.42,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 364.41,
+          "dynamic_age_ms": 121.19,
+          "cached_joint_age_ms": 79.51,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3405
+        },
+        "plan_time": 1794456478.9396355,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456478.9453945,
+        "source": 1794456478.9408562,
+        "start": 1794456473.9021983,
+        "phase": 3.610260986330094,
+        "scale": 0.506916401763072
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456478.974889,
+          "source": 1794456478.960154,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.42 ms; snapshot={'valid': True, 'map_age_ms': 364.41, 'dynamic_age_ms': 121.19, 'cached_joint_age_ms': 79.51, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3405})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 15.748,
+        "receipt": 1794456478.9614208,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.42
+      }
+    },
+    {
+      "index": 35,
+      "zero_start_receipt": 1794456479.9442575,
+      "local": "12:07:59.944",
+      "zero_until_next_nonzero_receipt": 1794456480.1077533,
+      "zero_span_s": 0.16349577903747559,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 33.68043899536133,
+      "first_consistent_status": {
+        "receipt": 1794456479.977938,
+        "receipt_local": "12:07:59.977",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.45,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 355.31,
+          "dynamic_age_ms": 121.08,
+          "cached_joint_age_ms": 84.69,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3413
+        },
+        "plan_time": 1794456479.9398036,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456479.943251,
+        "source": 1794456479.9408054,
+        "start": 1794456473.9021983,
+        "phase": 3.9548817486120345,
+        "scale": 0.30631351502890763
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 33.68,
+        "receipt": 1794456479.977938,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.45
+      }
+    },
+    {
+      "index": 36,
+      "zero_start_receipt": 1794456480.6592934,
+      "local": "12:08:00.659",
+      "zero_until_next_nonzero_receipt": 1794456480.7634573,
+      "zero_span_s": 0.10416388511657715,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 8.534669876098633,
+      "first_consistent_status": {
+        "receipt": 1794456480.667828,
+        "receipt_local": "12:08:00.667",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.35,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 389.98,
+          "dynamic_age_ms": 128.2,
+          "cached_joint_age_ms": 86.77,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3418
+        },
+        "plan_time": 1794456480.6469772,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456480.6119761,
+        "source": 1794456480.6107936,
+        "start": 1794456473.9021983,
+        "phase": 4.126613973849468,
+        "scale": 0.3262917833439702
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456480.671911,
+          "source": 1794456480.65261,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.35 ms; snapshot={'valid': True, 'map_age_ms': 389.98, 'dynamic_age_ms': 128.2, 'cached_joint_age_ms': 86.77, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3418})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 8.535,
+        "receipt": 1794456480.667828,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.35
+      }
+    },
+    {
+      "index": 37,
+      "zero_start_receipt": 1794456481.7760534,
+      "local": "12:08:01.776",
+      "zero_until_next_nonzero_receipt": 1794456481.9067512,
+      "zero_span_s": 0.13069772720336914,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 35.360097885131836,
+      "first_consistent_status": {
+        "receipt": 1794456481.8114135,
+        "receipt_local": "12:08:01.811",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 34.28,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 352.06,
+          "dynamic_age_ms": 154.6,
+          "cached_joint_age_ms": 62.39,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3426
+        },
+        "plan_time": 1794456481.7386682,
+        "measured_state": [
+          0.42331514385490243,
+          -0.8465683851460684,
+          -1.176001049054078,
+          0.06754147581779808,
+          -0.008515343752034972,
+          0.048328166987722986,
+          0.6122440483070908,
+          -1.1045665237096514,
+          0.027401669256310976,
+          0.936927649055596,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999998916,
+        "external_min_gap": 0.41044601473943054,
+        "native_phase": 4.431846448071138,
+        "native_time_scale": 0.2566111364973423,
+        "native_gear": 1,
+        "reference_revision": 5
+      },
+      "progress_at_zero": {
+        "t": 1794456481.7754948,
+        "source": 1794456481.7708497,
+        "start": 1794456473.9021983,
+        "phase": 4.440834108964522,
+        "scale": 0.2886294460973423
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456481.8182924,
+          "source": 1794456481.8058665,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=34.28 ms; snapshot={'valid': True, 'map_age_ms': 352.06, 'dynamic_age_ms': 154.6, 'cached_joint_age_ms': 62.39, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3426})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 35.36,
+        "receipt": 1794456481.8114135,
+        "state": "collision_snapshot_expired_during_plan",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 34.28
+      }
+    },
+    {
+      "index": 38,
+      "zero_start_receipt": 1794456481.9842248,
+      "local": "12:08:01.984",
+      "zero_until_next_nonzero_receipt": 1794456482.2079713,
+      "zero_span_s": 0.22374653816223145,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 201.71260833740234,
+      "first_consistent_status": {
+        "receipt": 1794456482.1859374,
+        "receipt_local": "12:08:02.185",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 29.05,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 364.53,
+          "dynamic_age_ms": 149.51,
+          "cached_joint_age_ms": 57.67,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3428
+        },
+        "plan_time": 1794456481.9391723,
+        "measured_state": [
+          0.4313288066119829,
+          -0.8548945350255047,
+          -1.17499843160131,
+          0.05080397679620626,
+          -0.0005435290664193146,
+          0.04763003528692525,
+          0.6087359365105822,
+          -1.1027513812875773,
+          0.02546435378659727,
+          0.936927649055596,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999194,
+        "external_min_gap": 0.4130230256167934,
+        "native_phase": 4.493789765702375,
+        "native_time_scale": 0.34573473673631266,
+        "native_gear": 1,
+        "reference_revision": 5
+      },
+      "progress_at_zero": {
+        "t": 1794456481.9732316,
+        "source": 1794456481.9708464,
+        "start": 1794456473.9021983,
+        "phase": 4.503149891434314,
+        "scale": 0.294430490753076
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -79.111,
+        "receipt": 1794456481.9051142,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07999683445001128,
+        "w": -0.017792051217904614,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 64.12
+      }
+    },
+    {
+      "index": 39,
+      "zero_start_receipt": 1794456482.2306423,
+      "local": "12:08:02.230",
+      "zero_until_next_nonzero_receipt": 1794456482.3172996,
+      "zero_span_s": 0.08665728569030762,
+      "evidence_category": "arm_execution_qualification_wait",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 39.15286064147949,
+      "first_consistent_status": {
+        "receipt": 1794456482.2697952,
+        "receipt_local": "12:08:02.269",
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "cycle_ms": 22.28,
+        "plan_time": 1794456482.20755,
+        "measured_state": [
+          0.43175305878069864,
+          -0.8575125500603775,
+          -1.1778166885883035,
+          0.03030201749275295,
+          -0.009088354032626434,
+          0.04763003528692525,
+          0.6058735965373115,
+          -1.1027513812875773,
+          0.02546435378659727,
+          0.936927649055596,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999055,
+        "external_min_gap": 0.4122459662548733,
+        "native_phase": 4.557207189095541,
+        "native_time_scale": 0.19156147104329488,
+        "native_gear": 1,
+        "reference_revision": 5
+      },
+      "progress_at_zero": {
+        "t": 1794456482.2226489,
+        "source": 1794456482.2209673,
+        "start": 1794456473.9021983,
+        "phase": 4.559331386620916,
+        "scale": 0.1822971720221271
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456482.276833,
+          "source": 1794456482.2679732,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=22.28 ms; snapshot={})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -21.838,
+        "receipt": 1794456482.208804,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07998737521245766,
+        "w": -0.03553184432159284,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 20.63
+      }
+    },
+    {
+      "index": 40,
+      "zero_start_receipt": 1794456483.0314648,
+      "local": "12:08:03.031",
+      "zero_until_next_nonzero_receipt": 1794456483.081415,
+      "zero_span_s": 0.04995012283325195,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 0.5307197570800781,
+      "first_consistent_status": {
+        "receipt": 1794456483.0319955,
+        "receipt_local": "12:08:03.031",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 81.95,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 401.76,
+          "dynamic_age_ms": 202.68,
+          "cached_joint_age_ms": 111.28,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3434
+        },
+        "plan_time": 1794456482.9399061,
+        "measured_state": [
+          0.44703141413929415,
+          -0.9007318821673993,
+          -1.1936543693849446,
+          0.05970824328783887,
+          -0.025441245559430416,
+          0.03897320219703338,
+          0.598368680753736,
+          -1.101320211300942,
+          0.021711895894809458,
+          0.936927649055596,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.48057700484660215,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999998916,
+        "external_min_gap": 0.40972706618513,
+        "native_phase": 4.714850902692951,
+        "native_time_scale": 0.23661975972108937,
+        "native_gear": 1,
+        "reference_revision": 5
+      },
+      "progress_at_zero": {
+        "t": 1794456483.001361,
+        "source": 1794456483.0008059,
+        "start": 1794456473.9021983,
+        "phase": 4.731348066969271,
+        "scale": 0.28447944270733994
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456483.055668,
+          "source": 1794456483.0294616,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=81.95 ms; snapshot={'valid': True, 'map_age_ms': 401.76, 'dynamic_age_ms': 202.68, 'cached_joint_age_ms': 111.28, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3434})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 0.531,
+        "receipt": 1794456483.0319955,
+        "state": "collision_snapshot_expired_during_plan",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 81.95
+      }
+    },
+    {
+      "index": 41,
+      "zero_start_receipt": 1794456483.1558313,
+      "local": "12:08:03.155",
+      "zero_until_next_nonzero_receipt": 1794456483.2737753,
+      "zero_span_s": 0.11794400215148926,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 8.161544799804688,
+      "first_consistent_status": {
+        "receipt": 1794456483.163993,
+        "receipt_local": "12:08:03.163",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 4.75,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 368.54,
+          "dynamic_age_ms": 134.61,
+          "cached_joint_age_ms": 103.23,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3435
+        },
+        "plan_time": 1794456483.1490476,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456483.1512086,
+        "source": 1794456483.1508622,
+        "start": 1794456473.9021983,
+        "phase": 4.772996740008554,
+        "scale": 0.277246578967109
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456483.055668,
+          "source": 1794456483.0294616,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=81.95 ms; snapshot={'valid': True, 'map_age_ms': 401.76, 'dynamic_age_ms': 202.68, 'cached_joint_age_ms': 111.28, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3434})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 8.162,
+        "receipt": 1794456483.163993,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 4.75
+      }
+    },
+    {
+      "index": 42,
+      "zero_start_receipt": 1794456483.653567,
+      "local": "12:08:03.653",
+      "zero_until_next_nonzero_receipt": 1794456483.7690806,
+      "zero_span_s": 0.11551356315612793,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 81.86173439025879,
+      "first_consistent_status": {
+        "receipt": 1794456483.7354288,
+        "receipt_local": "12:08:03.735",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.99,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 375.83,
+          "dynamic_age_ms": 129.95,
+          "cached_joint_age_ms": 88.89,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3439
+        },
+        "plan_time": 1794456483.648451,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456483.642414,
+        "source": 1794456483.6408372,
+        "start": 1794456473.9021983,
+        "phase": 4.9074171518902885,
+        "scale": 0.3379555577284193
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456483.7682328,
+          "source": 1794456483.7313561,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.99 ms; snapshot={'valid': True, 'map_age_ms': 375.83, 'dynamic_age_ms': 129.95, 'cached_joint_age_ms': 88.89, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3439})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -75.232,
+        "receipt": 1794456483.5783348,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07997772566549796,
+        "w": -0.04719678825540008,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 38.74
+      }
+    },
+    {
+      "index": 43,
+      "zero_start_receipt": 1794456484.9543173,
+      "local": "12:08:04.954",
+      "zero_until_next_nonzero_receipt": 1794456485.1788614,
+      "zero_span_s": 0.22454404830932617,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 142.8201198577881,
+      "first_consistent_status": {
+        "receipt": 1794456485.0971375,
+        "receipt_local": "12:08:05.097",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 1.1,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 395.03,
+          "dynamic_age_ms": 134.33,
+          "cached_joint_age_ms": 92.98,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3448
+        },
+        "plan_time": 1794456484.952442,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456484.9515572,
+        "source": 1794456484.950844,
+        "start": 1794456473.9021983,
+        "phase": 5.399509394368264,
+        "scale": 0.3777009812770326
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456485.1261678,
+          "source": 1794456485.0847936,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=1.10 ms; snapshot={'valid': True, 'map_age_ms': 395.03, 'dynamic_age_ms': 134.33, 'cached_joint_age_ms': 92.98, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3448})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -78.406,
+        "receipt": 1794456484.875911,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07999750204978665,
+        "w": -0.015804946102260686,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 34.69
+      }
+    },
+    {
+      "index": 44,
+      "zero_start_receipt": 1794456485.2546892,
+      "local": "12:08:05.254",
+      "zero_until_next_nonzero_receipt": 1794456485.3890471,
+      "zero_span_s": 0.13435792922973633,
+      "evidence_category": "arm_execution_qualification_wait",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": -0.6527900695800781,
+      "first_consistent_status": {
+        "receipt": 1794456485.2540364,
+        "receipt_local": "12:08:05.254",
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "cycle_ms": 0.24,
+        "plan_time": 1794456485.241532,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456485.2531364,
+        "source": 1794456485.2507763,
+        "start": 1794456473.9021983,
+        "phase": 5.519622123651455,
+        "scale": 0.3350230636194731
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456485.3106308,
+          "source": 1794456485.252564,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=0.24 ms; snapshot={})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -0.653,
+        "receipt": 1794456485.2540364,
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.24
+      }
+    },
+    {
+      "index": 45,
+      "zero_start_receipt": 1794456485.4467921,
+      "local": "12:08:05.446",
+      "zero_until_next_nonzero_receipt": 1794456485.6805348,
+      "zero_span_s": 0.23374271392822266,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 37.13798522949219,
+      "first_consistent_status": {
+        "receipt": 1794456485.48393,
+        "receipt_local": "12:08:05.483",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.3,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 358.99,
+          "dynamic_age_ms": 321.58,
+          "cached_joint_age_ms": 79.88,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3453
+        },
+        "plan_time": 1794456485.4401557,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456485.4354467,
+        "source": 1794456485.4307742,
+        "start": 1794456473.9021983,
+        "phase": 5.574892501037934,
+        "scale": 0.2879647012490055
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456485.5443769,
+          "source": 1794456485.4807312,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.30 ms; snapshot={'valid': True, 'map_age_ms': 358.99, 'dynamic_age_ms': 321.58, 'cached_joint_age_ms': 79.88, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3453})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 37.138,
+        "receipt": 1794456485.48393,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.3
+      }
+    },
+    {
+      "index": 46,
+      "zero_start_receipt": 1794456485.7697551,
+      "local": "12:08:05.769",
+      "zero_until_next_nonzero_receipt": 1794456485.9781497,
+      "zero_span_s": 0.20839452743530273,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 12.656927108764648,
+      "first_consistent_status": {
+        "receipt": 1794456485.782412,
+        "receipt_local": "12:08:05.782",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 29.98,
+        "snapshot": {
+          "valid": false,
+          "map_age_ms": 360.74,
+          "dynamic_age_ms": 49.92,
+          "cached_joint_age_ms": 58.38,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3456
+        },
+        "plan_time": 1794456485.7389839,
+        "measured_state": [
+          0.49847241792381836,
+          -1.0503646106457085,
+          -1.2288457949573555,
+          0.005789713439668176,
+          0.011084071220003756,
+          0.025202554398798115,
+          0.5757841202329292,
+          -1.0899930244554987,
+          0.008918632477691023,
+          0.9405928404847841,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999194,
+        "external_min_gap": 0.40464864807628564,
+        "native_phase": 5.655808243209664,
+        "native_time_scale": 0.2171634929990346,
+        "native_gear": 1,
+        "reference_revision": 5
+      },
+      "progress_at_zero": {
+        "t": 1794456485.7611763,
+        "source": 1794456485.7608323,
+        "start": 1794456473.9021983,
+        "phase": 5.659757683780077,
+        "scale": 0.1893968765354354
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456485.7871928,
+          "source": 1794456485.7805123,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=29.98 ms; snapshot={'valid': False, 'map_age_ms': 360.74, 'dynamic_age_ms': 49.92, 'cached_joint_age_ms': 58.38, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3456})"
+        },
+        {
+          "t": 1794456485.9496775,
+          "source": 1794456485.8971124,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.76 ms; snapshot={'valid': False, 'map_age_ms': 434.43, 'dynamic_age_ms': 123.61, 'cached_joint_age_ms': 132.07, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3456})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 12.657,
+        "receipt": 1794456485.782412,
+        "state": "collision_snapshot_expired_during_plan",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 29.98
+      }
+    },
+    {
+      "index": 47,
+      "zero_start_receipt": 1794456486.1761575,
+      "local": "12:08:06.176",
+      "zero_until_next_nonzero_receipt": 1794456486.284569,
+      "zero_span_s": 0.10841155052185059,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 51.847219467163086,
+      "first_consistent_status": {
+        "receipt": 1794456486.2280047,
+        "receipt_local": "12:08:06.228",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 37.37,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 356.05,
+          "dynamic_age_ms": 56.29,
+          "cached_joint_age_ms": 15.43,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3459
+        },
+        "plan_time": 1794456486.138647,
+        "measured_state": [
+          0.5122680953550773,
+          -1.0623436910328055,
+          -1.2272814763923598,
+          0.03520490812925581,
+          -0.0005531100552481209,
+          0.025202554398798115,
+          0.5718396761234221,
+          -1.0878986293531054,
+          0.008918632477691023,
+          0.9425999691245776,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.002999999999999947,
+        "external_min_gap": 0.4136915313957107,
+        "native_phase": 5.734042840760177,
+        "native_time_scale": 0.20853902062349844,
+        "native_gear": 1,
+        "reference_revision": 5
+      },
+      "progress_at_zero": {
+        "t": 1794456486.1719656,
+        "source": 1794456486.1708267,
+        "start": 1794456473.9021983,
+        "phase": 5.741485489209371,
+        "scale": 0.24054575902349842
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456486.2414832,
+          "source": 1794456486.2192268,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=37.37 ms; snapshot={'valid': True, 'map_age_ms': 356.05, 'dynamic_age_ms': 56.29, 'cached_joint_age_ms': 15.43, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3459})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 51.847,
+        "receipt": 1794456486.2280047,
+        "state": "collision_snapshot_expired_during_plan",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 37.37
+      }
+    },
+    {
+      "index": 48,
+      "zero_start_receipt": 1794456486.5574841,
+      "local": "12:08:06.557",
+      "zero_until_next_nonzero_receipt": 1794456486.679712,
+      "zero_span_s": 0.12222790718078613,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 75.78563690185547,
+      "first_consistent_status": {
+        "receipt": 1794456486.6332698,
+        "receipt_local": "12:08:06.633",
+        "state": "collision_snapshot_unavailable",
+        "cycle_ms": 0.24,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 370.0,
+          "dynamic_age_ms": 136.78,
+          "cached_joint_age_ms": 95.49,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3461
+        },
+        "plan_time": 1794456486.5558178,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456486.553395,
+        "source": 1794456486.524958,
+        "start": 1794456473.9021983,
+        "phase": 5.845674026573524,
+        "scale": 0.308785705496322
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456486.6377275,
+          "source": 1794456486.632281,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.24 ms; snapshot={'valid': True, 'map_age_ms': 370.0, 'dynamic_age_ms': 136.78, 'cached_joint_age_ms': 95.49, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3461})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 75.786,
+        "receipt": 1794456486.6332698,
+        "state": "collision_snapshot_unavailable",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 0.24
+      }
+    },
+    {
+      "index": 49,
+      "zero_start_receipt": 1794456486.9546654,
+      "local": "12:08:06.954",
+      "zero_until_next_nonzero_receipt": 1794456488.873749,
+      "zero_span_s": 1.919083595275879,
+      "evidence_category": "whole_body_no_feasible_rejection",
+      "onset_evidence_strength": "same_publisher_fault_within_5ms; status identifies rejection, receipt delayed",
+      "first_consistent_status_delta_ms": 27.70543098449707,
+      "first_consistent_status": {
+        "receipt": 1794456486.9823709,
+        "receipt_local": "12:08:06.982",
+        "state": "no_feasible_candidate",
+        "cycle_ms": 215.55,
+        "plan_time": 1794456486.7386012,
+        "measured_state": [
+          0.5157638609753366,
+          -1.1008961099358663,
+          -1.2321444348510766,
+          0.047818571513853436,
+          -0.015539190013144813,
+          0.0216071761396898,
+          0.568174484694234,
+          -1.0837971056109188,
+          0.0,
+          0.9405928404847841,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -1.134870957575352,
+          0.0,
+          0.0
+        ],
+        "structured_external_gaps_minmax": [
+          0.3787668125325887,
+          0.40524594571704164
+        ],
+        "structured_configuration_gaps_minmax": [
+          0.0029999999999998916,
+          0.002999999999999947
+        ],
+        "structured_valid_true_count": 0,
+        "structured_valid_count": 19,
+        "structured_bounds_valid_true_count": 19,
+        "structured_bounds_valid_count": 19,
+        "structured_braking_stopped_true_count": 0,
+        "structured_braking_stopped_count": 19,
+        "structured_braking_tail_s_minmax": [
+          2.0,
+          2.0
+        ],
+        "structured_checked_duration_s_minmax": [
+          2.5,
+          2.5
+        ],
+        "feasible": 0,
+        "candidates": 23,
+        "min_gap": 0.002999999999999947,
+        "native_phase": 5.924658098647743,
+        "native_time_scale": 0.4126081045374654,
+        "native_gear": 1,
+        "reference_revision": 5
+      },
+      "progress_at_zero": {
+        "t": 1794456486.9134789,
+        "source": 1794456486.9108222,
+        "start": 1794456473.9021983,
+        "phase": 5.986350593641173,
+        "scale": 0.3297645759374784
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456474.0361145,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [
+        {
+          "t": 1794456486.955847,
+          "value": true,
+          "caller": "/whole_body_mppi"
+        }
+      ],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456486.9775147,
+          "source": 1794456486.9552984,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "msg": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+        },
+        {
+          "t": 1794456487.0270886,
+          "source": 1794456486.985671,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3436, esdf_seq=3435, wait=0.00 s)."
+        },
+        {
+          "t": 1794456487.012834,
+          "source": 1794456486.9940507,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: native_reference_cancelled (cycle=0.67 ms; snapshot={})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 27.705,
+        "receipt": 1794456486.9823709,
+        "state": "no_feasible_candidate",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 215.55
+      }
+    },
+    {
+      "index": 50,
+      "zero_start_receipt": 1794456489.0728278,
+      "local": "12:08:09.072",
+      "zero_until_next_nonzero_receipt": 1794456491.5501418,
+      "zero_span_s": 2.477313995361328,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 73.50873947143555,
+      "first_consistent_status": {
+        "receipt": 1794456489.1463366,
+        "receipt_local": "12:08:09.146",
+        "state": "collision_snapshot_expired_during_plan",
+        "cycle_ms": 30.74,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 351.5,
+          "dynamic_age_ms": 152.19,
+          "cached_joint_age_ms": 63.82,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3476
+        },
+        "plan_time": 1794456489.038619,
+        "measured_state": [
+          0.5248156070555325,
+          -1.1176343386042684,
+          -1.267600800757405,
+          0.026598836705489046,
+          -0.1591614864642043,
+          0.0216071761396898,
+          0.5666560482449989,
+          -1.0837971056109188,
+          0.006579891280018622,
+          0.943071208022616,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999333,
+        "external_min_gap": 0.4111283476365598,
+        "native_phase": 0.055613025271481584,
+        "native_time_scale": 0.28800844240000006,
+        "native_gear": 1,
+        "reference_revision": 8
+      },
+      "progress_at_zero": {
+        "t": 1794456489.0631793,
+        "source": 1794456489.0608168,
+        "start": 1794456488.5559757,
+        "phase": 0.06239936308931672,
+        "scale": 0.3119981224000001
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456488.6784985,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [
+        {
+          "t": 1794456489.189431,
+          "value": true,
+          "caller": "/whole_body_mppi"
+        }
+      ],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456489.2997944,
+          "source": 1794456489.144468,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=30.74 ms; snapshot={'valid': True, 'map_age_ms': 351.5, 'dynamic_age_ms': 152.19, 'cached_joint_age_ms': 63.82, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3476})"
+        },
+        {
+          "t": 1794456489.39048,
+          "source": 1794456489.1890862,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "msg": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 73.509,
+        "receipt": 1794456489.1463366,
+        "state": "collision_snapshot_expired_during_plan",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 30.74
+      },
+      "secondary_escalation": "This zero episode starts with collision_snapshot_expired_during_plan evidence. At12:08:09.189, /whole_body_mppi tracking_fault=true follows a separate final command recheck rejection; it causes ABORT but is not an additional nonzero-to-zero transition."
+    },
+    {
+      "index": 51,
+      "zero_start_receipt": 1794456492.0512555,
+      "local": "12:08:12.051",
+      "zero_until_next_nonzero_receipt": 1794456492.295647,
+      "zero_span_s": 0.24439144134521484,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 183.67600440979004,
+      "first_consistent_status": {
+        "receipt": 1794456492.2349315,
+        "receipt_local": "12:08:12.234",
+        "state": "inputs_expired_before_delivery",
+        "cycle_ms": 53.65,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 381.55,
+          "dynamic_age_ms": 130.15,
+          "cached_joint_age_ms": 88.83,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3492
+        },
+        "plan_time": 1794456491.9957626,
+        "measured_state": [
+          0.5401775550014998,
+          -1.1419191152257666,
+          -1.2487235540216228,
+          0.04348870131477042,
+          0.12924148655773585,
+          0.0216071761396898,
+          0.5666560482449989,
+          -1.0837971056109188,
+          0.0062482787221397,
+          0.9409942662127427,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999055,
+        "external_min_gap": 0.4106423084665999,
+        "native_phase": 0.13462707120231665,
+        "native_time_scale": 0.4559941136000001,
+        "native_gear": 1,
+        "reference_revision": 10
+      },
+      "progress_at_zero": {
+        "t": 1794456492.0335913,
+        "source": 1794456492.0308084,
+        "start": 1794456490.9815485,
+        "phase": 0.1512667515124799,
+        "scale": 0.4879782712000001
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456491.431983,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -117.442,
+        "receipt": 1794456491.9338136,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07998443576522714,
+        "w": 0.039452172914768546,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 37.08
+      }
+    },
+    {
+      "index": 52,
+      "zero_start_receipt": 1794456492.7731566,
+      "local": "12:08:12.773",
+      "zero_until_next_nonzero_receipt": 1794456492.8558233,
+      "zero_span_s": 0.08266663551330566,
+      "evidence_category": "map_or_input_freshness_rejection",
+      "onset_evidence_strength": "status_receipt_within_30ms; consistent with reject->zero code; no cycle id",
+      "first_consistent_status_delta_ms": 29.028892517089844,
+      "first_consistent_status": {
+        "receipt": 1794456492.8021855,
+        "receipt_local": "12:08:12.802",
+        "state": "inputs_expired_before_delivery",
+        "cycle_ms": 61.51,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 355.48,
+          "dynamic_age_ms": 138.02,
+          "cached_joint_age_ms": 96.71,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 3497
+        },
+        "plan_time": 1794456492.6957521,
+        "measured_state": [
+          0.5571875761400678,
+          -1.1765549245701266,
+          -1.2337742029629786,
+          0.07779846548966478,
+          0.04501136877041001,
+          0.0216071761396898,
+          0.5666560482449989,
+          -1.0837971056109188,
+          0.008360127117052838,
+          0.9409942662127427,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feasible": 3,
+        "candidates": 3,
+        "min_gap": 0.0029999999999999333,
+        "external_min_gap": 0.3635557382052982,
+        "native_phase": 0.655191746143234,
+        "native_time_scale": 1.0,
+        "native_gear": 1,
+        "reference_revision": 10
+      },
+      "progress_at_zero": {
+        "t": 1794456492.7629058,
+        "source": 1794456492.7607765,
+        "start": 1794456490.9815485,
+        "phase": 0.7199483650040739,
+        "scale": 1.0
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456491.431983,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456492.8054008,
+          "source": 1794456492.7990427,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: inputs_expired_before_delivery (cycle=61.51 ms; snapshot={'valid': True, 'map_age_ms': 355.48, 'dynamic_age_ms': 138.02, 'cached_joint_age_ms': 96.71, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3497})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 29.029,
+        "receipt": 1794456492.8021855,
+        "state": "inputs_expired_before_delivery",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 61.51
+      }
+    },
+    {
+      "index": 53,
+      "zero_start_receipt": 1794456493.302335,
+      "local": "12:08:13.302",
+      "zero_until_next_nonzero_receipt": 1794456495.9600692,
+      "zero_span_s": 2.6577341556549072,
+      "evidence_category": "whole_body_no_feasible_rejection",
+      "onset_evidence_strength": "same_publisher_fault_within_5ms; status identifies rejection, receipt delayed",
+      "first_consistent_status_delta_ms": 129.48346138000488,
+      "first_consistent_status": {
+        "receipt": 1794456493.4318185,
+        "receipt_local": "12:08:13.431",
+        "state": "no_feasible_candidate",
+        "cycle_ms": 105.73,
+        "plan_time": 1794456493.1957538,
+        "measured_state": [
+          0.5695571328581774,
+          -1.212412928511179,
+          -1.2524389012804755,
+          0.07875374054404427,
+          -0.03268790841244972,
+          0.0216071761396898,
+          0.5681919379867539,
+          -1.0837971056109188,
+          0.008342673824532895,
+          0.9435075403356146,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.40080497440489166,
+          0.5018775331678643,
+          0.0
+        ],
+        "structured_external_gaps_minmax": [
+          0.34846769401361954,
+          0.38218669222639834
+        ],
+        "structured_configuration_gaps_minmax": [
+          0.002999999999999864,
+          0.0029999999999998916
+        ],
+        "structured_valid_true_count": 0,
+        "structured_valid_count": 19,
+        "structured_bounds_valid_true_count": 0,
+        "structured_bounds_valid_count": 19,
+        "structured_braking_stopped_true_count": 19,
+        "structured_braking_stopped_count": 19,
+        "structured_braking_tail_s_minmax": [
+          0.9500000000000001,
+          0.9500000000000001
+        ],
+        "structured_checked_duration_s_minmax": [
+          1.4500000000000002,
+          1.4500000000000002
+        ],
+        "feasible": 0,
+        "candidates": 23,
+        "min_gap": 0.0029999999999998916,
+        "native_phase": 1.155181900679856,
+        "native_time_scale": 1.0,
+        "native_gear": 1,
+        "reference_revision": 10
+      },
+      "progress_at_zero": {
+        "t": 1794456493.30147,
+        "source": 1794456493.3008358,
+        "start": 1794456490.9815485,
+        "phase": 1.2601236730040748,
+        "scale": 1.0
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456491.431983,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [
+        {
+          "t": 1794456493.3027508,
+          "value": true,
+          "caller": "/whole_body_mppi"
+        }
+      ],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456493.416547,
+          "source": 1794456493.3032148,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "msg": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+        },
+        {
+          "t": 1794456493.4390404,
+          "source": 1794456493.413396,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: no_feasible_candidate (cycle=105.73 ms; snapshot={})"
+        },
+        {
+          "t": 1794456493.4772518,
+          "source": 1794456493.4323833,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: native_reference_cancelled (cycle=0.72 ms; snapshot={})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 129.483,
+        "receipt": 1794456493.4318185,
+        "state": "no_feasible_candidate",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 105.73
+      }
+    },
+    {
+      "index": 54,
+      "zero_start_receipt": 1794456495.996767,
+      "local": "12:08:15.996",
+      "zero_until_next_nonzero_receipt": 1794456497.00004,
+      "zero_span_s": 1.0032730102539062,
+      "evidence_category": "arm_execution_qualification_wait",
+      "onset_evidence_strength": "episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status",
+      "first_consistent_status_delta_ms": 493.8321113586426,
+      "first_consistent_status": {
+        "receipt": 1794456496.4905992,
+        "receipt_local": "12:08:16.490",
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "cycle_ms": 0.23,
+        "plan_time": 1794456495.9957771,
+        "measured_state": null
+      },
+      "progress_at_zero": {
+        "t": 1794456495.9911475,
+        "source": 1794456495.9907353,
+        "start": 1794456495.468035,
+        "phase": 0.056200854598848465,
+        "scale": 0.29589690640000005
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456495.6235447,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456496.0856564,
+          "source": 1794456495.9296107,
+          "node": "/whole_body_mppi",
+          "level": 4,
+          "msg": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=17.37 ms; snapshot={'valid': True, 'map_age_ms': 355.09, 'dynamic_age_ms': 94.26, 'cached_joint_age_ms': 52.89, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3516})"
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": -11.111,
+        "receipt": 1794456495.9856563,
+        "state": "command_delivered",
+        "mode": "nominal",
+        "v": 0.07236518801623881,
+        "w": 0.35,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 24.76
+      }
+    },
+    {
+      "index": 55,
+      "zero_start_receipt": 1794456497.2009706,
+      "local": "12:08:17.200",
+      "zero_until_next_nonzero_receipt": null,
+      "zero_span_s": null,
+      "evidence_category": "whole_body_no_feasible_rejection",
+      "onset_evidence_strength": "same_publisher_fault_within_5ms; status identifies rejection, receipt delayed",
+      "first_consistent_status_delta_ms": 168.96748542785645,
+      "first_consistent_status": {
+        "receipt": 1794456497.3699381,
+        "receipt_local": "12:08:17.369",
+        "state": "no_feasible_candidate",
+        "cycle_ms": 152.94,
+        "plan_time": 1794456497.04778,
+        "measured_state": [
+          0.5769344196624948,
+          -1.2386043337756107,
+          -1.2598040349776602,
+          -0.0023600938152473295,
+          0.004477470853991571,
+          0.0216071761396898,
+          0.5649805321630844,
+          -1.0837971056109188,
+          0.0,
+          0.9416574913285006,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -1.314986871167457,
+          0.0,
+          0.0
+        ],
+        "structured_external_gaps_minmax": [
+          0.34761120633120246,
+          0.3738601380053437
+        ],
+        "structured_configuration_gaps_minmax": [
+          0.002999999999999836,
+          0.0029999999999998778
+        ],
+        "structured_valid_true_count": 0,
+        "structured_valid_count": 19,
+        "structured_bounds_valid_true_count": 0,
+        "structured_bounds_valid_count": 19,
+        "structured_braking_stopped_true_count": 0,
+        "structured_braking_stopped_count": 19,
+        "structured_braking_tail_s_minmax": [
+          2.0,
+          2.0
+        ],
+        "structured_checked_duration_s_minmax": [
+          2.5,
+          2.5
+        ],
+        "feasible": 0,
+        "candidates": 23,
+        "min_gap": 0.0029999999999998778,
+        "native_phase": 0.2366324245980689,
+        "native_time_scale": 0.4400657296,
+        "native_gear": 1,
+        "reference_revision": 13
+      },
+      "progress_at_zero": {
+        "t": 1794456497.193203,
+        "source": 1794456497.1911292,
+        "start": 1794456495.468035,
+        "phase": 0.3092175880163707,
+        "scale": 0.5602726744000001
+      },
+      "speed_limit_at_zero": {
+        "t": 1794456495.6235447,
+        "value": -1.0
+      },
+      "tracking_fault_true_nearby": [
+        {
+          "t": 1794456497.2017252,
+          "value": true,
+          "caller": "/whole_body_mppi"
+        }
+      ],
+      "source_rejection_or_fsm_logs": [
+        {
+          "t": 1794456497.3637106,
+          "source": 1794456497.2014172,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "msg": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+        },
+        {
+          "t": 1794456497.3822203,
+          "source": 1794456497.2294564,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Frozen planning-boundary ESDF requirement at seq=3492 in GEN_NEW_TRAJ."
+        },
+        {
+          "t": 1794456497.462277,
+          "source": 1794456497.229549,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3492, esdf_seq=3491, wait=0.00 s)."
+        }
+      ],
+      "first_nearest_status_may_be_previous_nonzero_cycle": {
+        "offset_ms": 168.967,
+        "receipt": 1794456497.3699381,
+        "state": "no_feasible_candidate",
+        "mode": null,
+        "v": null,
+        "w": null,
+        "speed_limit": null,
+        "hold": null,
+        "cycle_ms": 152.94
+      }
+    }
+  ],
+  "recorded_explicit_selected_zero_statuses": [
+    {
+      "receipt": 1794456459.9487994,
+      "receipt_local": "12:07:39.948",
+      "state": "command_delivered",
+      "mode": "reference_wait_hold",
+      "hold_reason": "waiting_native_reference_after_goal",
+      "cycle_ms": 8.86,
+      "solve_ms": 4.3,
+      "base_v": 0.0,
+      "base_w": 0.0,
+      "base_safety_speed_limit": null
+    },
+    {
+      "receipt": 1794456460.054948,
+      "receipt_local": "12:07:40.054",
+      "state": "command_delivered",
+      "mode": "reference_wait_hold",
+      "hold_reason": "waiting_native_reference_after_goal",
+      "cycle_ms": 12.86,
+      "solve_ms": 1.37,
+      "base_v": 0.0,
+      "base_w": 0.0,
+      "base_safety_speed_limit": null
+    },
+    {
+      "receipt": 1794456460.2533116,
+      "receipt_local": "12:07:40.253",
+      "state": "command_delivered",
+      "mode": "reference_wait_hold",
+      "hold_reason": "waiting_native_reference_after_goal",
+      "cycle_ms": 10.92,
+      "solve_ms": 3.61,
+      "base_v": 0.0,
+      "base_w": 0.0,
+      "base_safety_speed_limit": null
+    },
+    {
+      "receipt": 1794456488.6808355,
+      "receipt_local": "12:08:08.680",
+      "state": "command_delivered",
+      "mode": "nominal",
+      "cycle_ms": 40.45,
+      "solve_ms": 28.13,
+      "base_v": 0.0,
+      "base_w": 0.0,
+      "base_safety_speed_limit": 0.0
+    },
+    {
+      "receipt": 1794456491.4382524,
+      "receipt_local": "12:08:11.438",
+      "state": "command_delivered",
+      "mode": "nominal",
+      "cycle_ms": 32.57,
+      "solve_ms": 21.0,
+      "base_v": 0.0,
+      "base_w": 0.0,
+      "base_safety_speed_limit": 0.0
+    },
+    {
+      "receipt": 1794456495.622696,
+      "receipt_local": "12:08:15.622",
+      "state": "command_delivered",
+      "mode": "nominal",
+      "cycle_ms": 25.45,
+      "solve_ms": 15.78,
+      "base_v": 0.0,
+      "base_w": 0.0,
+      "base_safety_speed_limit": 0.0
+    }
+  ],
+  "selected_zero_interpretation": "Six delivered-zero statuses were recorded: three before first plan, three when recovery safety limit was0. All were inside already-zero periods, not starts of the55 observed nonzero-to-zero transitions. Missing records remain possible.",
+  "aborts": [
+    {
+      "abort_receipt": 1794456473.212379,
+      "abort_local": "12:07:53.212",
+      "abort_header_stamp": 0.0,
+      "header_stamp_valid": false,
+      "tracking_fault": [],
+      "rejection_details": [],
+      "source_fsm_logs": [
+        {
+          "t": 1794456473.3164506,
+          "source": 1794456473.2074163,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Latched collision-event ESDF requirement at seq=3356."
+        },
+        {
+          "t": 1794456473.3501804,
+          "source": 1794456473.2213662,
+          "node": "/mm_controller_node",
+          "level": 4,
+          "msg": "[MMCtrl] Aborting the trajectory."
+        },
+        {
+          "t": 1794456473.361752,
+          "source": 1794456473.232225,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Frozen planning-boundary ESDF requirement at seq=3356 in GEN_NEW_TRAJ."
+        },
+        {
+          "t": 1794456473.508252,
+          "source": 1794456473.232321,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3356, esdf_seq=3355, wait=0.00 s)."
+        },
+        {
+          "t": 1794456473.7967126,
+          "source": 1794456473.320249,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "msg": "[FSM] Real whole-body state is in hard collision (type=0, check_distance=0.004 m, base_surface_gap=0.004 m); stop before using nominal trajectory."
+        }
+      ],
+      "trigger": "Native safety collision event (latched ESDF seq3356, adjacent hard car collision type0 gap0.004m); no tracking_fault=true recorded around this abort. Exact scan geometry/source point not determined here."
+    },
+    {
+      "abort_receipt": 1794456486.9626355,
+      "abort_local": "12:08:06.962",
+      "abort_header_stamp": 0.0,
+      "header_stamp_valid": false,
+      "tracking_fault": [
+        {
+          "t": 1794456486.955847,
+          "value": true,
+          "caller": "/whole_body_mppi"
+        }
+      ],
+      "rejection_details": [
+        {
+          "receipt": 1794456486.9823709,
+          "receipt_local": "12:08:06.982",
+          "state": "no_feasible_candidate",
+          "cycle_ms": 215.55,
+          "plan_time": 1794456486.7386012,
+          "measured_state": [
+            0.5157638609753366,
+            -1.1008961099358663,
+            -1.2321444348510766,
+            0.047818571513853436,
+            -0.015539190013144813,
+            0.0216071761396898,
+            0.568174484694234,
+            -1.0837971056109188,
+            0.0,
+            0.9405928404847841,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -1.134870957575352,
+            0.0,
+            0.0
+          ],
+          "structured_external_gaps_minmax": [
+            0.3787668125325887,
+            0.40524594571704164
+          ],
+          "structured_configuration_gaps_minmax": [
+            0.0029999999999998916,
+            0.002999999999999947
+          ],
+          "structured_valid_true_count": 0,
+          "structured_valid_count": 19,
+          "structured_bounds_valid_true_count": 19,
+          "structured_bounds_valid_count": 19,
+          "structured_braking_stopped_true_count": 0,
+          "structured_braking_stopped_count": 19,
+          "structured_braking_tail_s_minmax": [
+            2.0,
+            2.0
+          ],
+          "structured_checked_duration_s_minmax": [
+            2.5,
+            2.5
+          ],
+          "feasible": 0,
+          "candidates": 23,
+          "min_gap": 0.002999999999999947,
+          "native_phase": 5.924658098647743,
+          "native_time_scale": 0.4126081045374654,
+          "native_gear": 1,
+          "reference_revision": 5
+        }
+      ],
+      "source_fsm_logs": [
+        {
+          "t": 1794456486.9775147,
+          "source": 1794456486.9552984,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "msg": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+        },
+        {
+          "t": 1794456486.987186,
+          "source": 1794456486.9709144,
+          "node": "/mm_controller_node",
+          "level": 4,
+          "msg": "[MMCtrl] Aborting the trajectory."
+        },
+        {
+          "t": 1794456487.0270886,
+          "source": 1794456486.985671,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3436, esdf_seq=3435, wait=0.00 s)."
+        }
+      ],
+      "trigger": "WholeBody MPPI publisher sent tracking_fault=true; FSM interpreted undifferentiated bool as trajectory tracking fault and entered emergency stop/replan."
+    },
+    {
+      "abort_receipt": 1794456489.1982448,
+      "abort_local": "12:08:09.198",
+      "abort_header_stamp": 0.0,
+      "header_stamp_valid": false,
+      "tracking_fault": [
+        {
+          "t": 1794456489.189431,
+          "value": true,
+          "caller": "/whole_body_mppi"
+        }
+      ],
+      "rejection_details": [
+        {
+          "receipt": 1794456489.5425062,
+          "receipt_local": "12:08:09.542",
+          "state": "command_hold_or_braking_rejected_by_latest_state_or_map",
+          "cycle_ms": 43.1,
+          "plan_time": 1794456489.1455495,
+          "measured_state": [
+            0.524521128210988,
+            -1.1234575687711734,
+            -1.295528785931826,
+            0.03663751321389874,
+            -0.20127577320567963,
+            0.0216071761396898,
+            0.5666560482449989,
+            -1.0837971056109188,
+            0.006702064327658225,
+            0.9424428894918981,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.07347381863121577,
+            0.06647631209493676,
+            0.0
+          ],
+          "feasible": 3,
+          "candidates": 3,
+          "min_gap": 0.0029999999999999333,
+          "external_min_gap": 0.40800242146196575,
+          "native_phase": 0.0923332438256535,
+          "native_time_scale": 0.37606825360000007,
+          "native_gear": 1,
+          "reference_revision": 8
+        }
+      ],
+      "source_fsm_logs": [
+        {
+          "t": 1794456489.39048,
+          "source": 1794456489.1890862,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "msg": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+        },
+        {
+          "t": 1794456489.5436497,
+          "source": 1794456489.2010622,
+          "node": "/mm_controller_node",
+          "level": 4,
+          "msg": "[MMCtrl] Aborting the trajectory."
+        }
+      ],
+      "trigger": "WholeBody MPPI publisher sent tracking_fault=true; FSM interpreted undifferentiated bool as trajectory tracking fault and entered emergency stop/replan.",
+      "boundary": "Nominal candidates were feasible; final command recheck rejected. This recorded version does not record recheck subreason, so external/self/ground/bounds cannot be uniquely classified."
+    },
+    {
+      "abort_receipt": 1794456493.3067834,
+      "abort_local": "12:08:13.306",
+      "abort_header_stamp": 0.0,
+      "header_stamp_valid": false,
+      "tracking_fault": [
+        {
+          "t": 1794456493.3027508,
+          "value": true,
+          "caller": "/whole_body_mppi"
+        }
+      ],
+      "rejection_details": [
+        {
+          "receipt": 1794456493.4318185,
+          "receipt_local": "12:08:13.431",
+          "state": "no_feasible_candidate",
+          "cycle_ms": 105.73,
+          "plan_time": 1794456493.1957538,
+          "measured_state": [
+            0.5695571328581774,
+            -1.212412928511179,
+            -1.2524389012804755,
+            0.07875374054404427,
+            -0.03268790841244972,
+            0.0216071761396898,
+            0.5681919379867539,
+            -1.0837971056109188,
+            0.008342673824532895,
+            0.9435075403356146,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.40080497440489166,
+            0.5018775331678643,
+            0.0
+          ],
+          "structured_external_gaps_minmax": [
+            0.34846769401361954,
+            0.38218669222639834
+          ],
+          "structured_configuration_gaps_minmax": [
+            0.002999999999999864,
+            0.0029999999999998916
+          ],
+          "structured_valid_true_count": 0,
+          "structured_valid_count": 19,
+          "structured_bounds_valid_true_count": 0,
+          "structured_bounds_valid_count": 19,
+          "structured_braking_stopped_true_count": 19,
+          "structured_braking_stopped_count": 19,
+          "structured_braking_tail_s_minmax": [
+            0.9500000000000001,
+            0.9500000000000001
+          ],
+          "structured_checked_duration_s_minmax": [
+            1.4500000000000002,
+            1.4500000000000002
+          ],
+          "feasible": 0,
+          "candidates": 23,
+          "min_gap": 0.0029999999999998916,
+          "native_phase": 1.155181900679856,
+          "native_time_scale": 1.0,
+          "native_gear": 1,
+          "reference_revision": 10
+        }
+      ],
+      "source_fsm_logs": [
+        {
+          "t": 1794456493.416547,
+          "source": 1794456493.3032148,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "msg": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+        },
+        {
+          "t": 1794456493.515724,
+          "source": 1794456493.4586627,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Frozen planning-boundary ESDF requirement at seq=3472 in GEN_NEW_TRAJ."
+        },
+        {
+          "t": 1794456493.5159647,
+          "source": 1794456493.459489,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3472, esdf_seq=3471, wait=0.00 s)."
+        }
+      ],
+      "trigger": "WholeBody MPPI publisher sent tracking_fault=true; FSM interpreted undifferentiated bool as trajectory tracking fault and entered emergency stop/replan."
+    },
+    {
+      "abort_receipt": 1794456497.209265,
+      "abort_local": "12:08:17.209",
+      "abort_header_stamp": 0.0,
+      "header_stamp_valid": false,
+      "tracking_fault": [
+        {
+          "t": 1794456497.2017252,
+          "value": true,
+          "caller": "/whole_body_mppi"
+        }
+      ],
+      "rejection_details": [
+        {
+          "receipt": 1794456497.3699381,
+          "receipt_local": "12:08:17.369",
+          "state": "no_feasible_candidate",
+          "cycle_ms": 152.94,
+          "plan_time": 1794456497.04778,
+          "measured_state": [
+            0.5769344196624948,
+            -1.2386043337756107,
+            -1.2598040349776602,
+            -0.0023600938152473295,
+            0.004477470853991571,
+            0.0216071761396898,
+            0.5649805321630844,
+            -1.0837971056109188,
+            0.0,
+            0.9416574913285006,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -1.314986871167457,
+            0.0,
+            0.0
+          ],
+          "structured_external_gaps_minmax": [
+            0.34761120633120246,
+            0.3738601380053437
+          ],
+          "structured_configuration_gaps_minmax": [
+            0.002999999999999836,
+            0.0029999999999998778
+          ],
+          "structured_valid_true_count": 0,
+          "structured_valid_count": 19,
+          "structured_bounds_valid_true_count": 0,
+          "structured_bounds_valid_count": 19,
+          "structured_braking_stopped_true_count": 0,
+          "structured_braking_stopped_count": 19,
+          "structured_braking_tail_s_minmax": [
+            2.0,
+            2.0
+          ],
+          "structured_checked_duration_s_minmax": [
+            2.5,
+            2.5
+          ],
+          "feasible": 0,
+          "candidates": 23,
+          "min_gap": 0.0029999999999998778,
+          "native_phase": 0.2366324245980689,
+          "native_time_scale": 0.4400657296,
+          "native_gear": 1,
+          "reference_revision": 13
+        }
+      ],
+      "source_fsm_logs": [
+        {
+          "t": 1794456497.353589,
+          "source": 1794456497.2109225,
+          "node": "/mm_controller_node",
+          "level": 4,
+          "msg": "[MMCtrl] Aborting the trajectory."
+        },
+        {
+          "t": 1794456497.3637106,
+          "source": 1794456497.2014172,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "msg": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+        },
+        {
+          "t": 1794456497.3822203,
+          "source": 1794456497.2294564,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Frozen planning-boundary ESDF requirement at seq=3492 in GEN_NEW_TRAJ."
+        },
+        {
+          "t": 1794456497.462277,
+          "source": 1794456497.229549,
+          "node": "/remani_planner_node",
+          "level": 2,
+          "msg": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3492, esdf_seq=3491, wait=0.00 s)."
+        }
+      ],
+      "trigger": "WholeBody MPPI publisher sent tracking_fault=true; FSM interpreted undifferentiated bool as trajectory tracking fault and entered emergency stop/replan."
+    }
+  ],
+  "joint_related_rejection_evidence": [
+    {
+      "receipt": 1794456486.9823709,
+      "receipt_local": "12:08:06.982",
+      "state": "no_feasible_candidate",
+      "cycle_ms": 215.55,
+      "plan_time": 1794456486.7386012,
+      "measured_state": [
+        0.5157638609753366,
+        -1.1008961099358663,
+        -1.2321444348510766,
+        0.047818571513853436,
+        -0.015539190013144813,
+        0.0216071761396898,
+        0.568174484694234,
+        -1.0837971056109188,
+        0.0,
+        0.9405928404847841,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.134870957575352,
+        0.0,
+        0.0
+      ],
+      "structured_external_gaps_minmax": [
+        0.3787668125325887,
+        0.40524594571704164
+      ],
+      "structured_configuration_gaps_minmax": [
+        0.0029999999999998916,
+        0.002999999999999947
+      ],
+      "structured_valid_true_count": 0,
+      "structured_valid_count": 19,
+      "structured_bounds_valid_true_count": 19,
+      "structured_bounds_valid_count": 19,
+      "structured_braking_stopped_true_count": 0,
+      "structured_braking_stopped_count": 19,
+      "structured_braking_tail_s_minmax": [
+        2.0,
+        2.0
+      ],
+      "structured_checked_duration_s_minmax": [
+        2.5,
+        2.5
+      ],
+      "feasible": 0,
+      "candidates": 23,
+      "min_gap": 0.002999999999999947,
+      "native_phase": 5.924658098647743,
+      "native_time_scale": 0.4126081045374654,
+      "native_gear": 1,
+      "reference_revision": 5
+    },
+    {
+      "receipt": 1794456489.5425062,
+      "receipt_local": "12:08:09.542",
+      "state": "command_hold_or_braking_rejected_by_latest_state_or_map",
+      "cycle_ms": 43.1,
+      "plan_time": 1794456489.1455495,
+      "measured_state": [
+        0.524521128210988,
+        -1.1234575687711734,
+        -1.295528785931826,
+        0.03663751321389874,
+        -0.20127577320567963,
+        0.0216071761396898,
+        0.5666560482449989,
+        -1.0837971056109188,
+        0.006702064327658225,
+        0.9424428894918981,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.07347381863121577,
+        0.06647631209493676,
+        0.0
+      ],
+      "feasible": 3,
+      "candidates": 3,
+      "min_gap": 0.0029999999999999333,
+      "external_min_gap": 0.40800242146196575,
+      "native_phase": 0.0923332438256535,
+      "native_time_scale": 0.37606825360000007,
+      "native_gear": 1,
+      "reference_revision": 8
+    },
+    {
+      "receipt": 1794456493.4318185,
+      "receipt_local": "12:08:13.431",
+      "state": "no_feasible_candidate",
+      "cycle_ms": 105.73,
+      "plan_time": 1794456493.1957538,
+      "measured_state": [
+        0.5695571328581774,
+        -1.212412928511179,
+        -1.2524389012804755,
+        0.07875374054404427,
+        -0.03268790841244972,
+        0.0216071761396898,
+        0.5681919379867539,
+        -1.0837971056109188,
+        0.008342673824532895,
+        0.9435075403356146,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.40080497440489166,
+        0.5018775331678643,
+        0.0
+      ],
+      "structured_external_gaps_minmax": [
+        0.34846769401361954,
+        0.38218669222639834
+      ],
+      "structured_configuration_gaps_minmax": [
+        0.002999999999999864,
+        0.0029999999999998916
+      ],
+      "structured_valid_true_count": 0,
+      "structured_valid_count": 19,
+      "structured_bounds_valid_true_count": 0,
+      "structured_bounds_valid_count": 19,
+      "structured_braking_stopped_true_count": 19,
+      "structured_braking_stopped_count": 19,
+      "structured_braking_tail_s_minmax": [
+        0.9500000000000001,
+        0.9500000000000001
+      ],
+      "structured_checked_duration_s_minmax": [
+        1.4500000000000002,
+        1.4500000000000002
+      ],
+      "feasible": 0,
+      "candidates": 23,
+      "min_gap": 0.0029999999999998916,
+      "native_phase": 1.155181900679856,
+      "native_time_scale": 1.0,
+      "native_gear": 1,
+      "reference_revision": 10
+    },
+    {
+      "receipt": 1794456497.3699381,
+      "receipt_local": "12:08:17.369",
+      "state": "no_feasible_candidate",
+      "cycle_ms": 152.94,
+      "plan_time": 1794456497.04778,
+      "measured_state": [
+        0.5769344196624948,
+        -1.2386043337756107,
+        -1.2598040349776602,
+        -0.0023600938152473295,
+        0.004477470853991571,
+        0.0216071761396898,
+        0.5649805321630844,
+        -1.0837971056109188,
+        0.0,
+        0.9416574913285006,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.314986871167457,
+        0.0,
+        0.0
+      ],
+      "structured_external_gaps_minmax": [
+        0.34761120633120246,
+        0.3738601380053437
+      ],
+      "structured_configuration_gaps_minmax": [
+        0.002999999999999836,
+        0.0029999999999998778
+      ],
+      "structured_valid_true_count": 0,
+      "structured_valid_count": 19,
+      "structured_bounds_valid_true_count": 0,
+      "structured_bounds_valid_count": 19,
+      "structured_braking_stopped_true_count": 0,
+      "structured_braking_stopped_count": 19,
+      "structured_braking_tail_s_minmax": [
+        2.0,
+        2.0
+      ],
+      "structured_checked_duration_s_minmax": [
+        2.5,
+        2.5
+      ],
+      "feasible": 0,
+      "candidates": 23,
+      "min_gap": 0.0029999999999998778,
+      "native_phase": 0.2366324245980689,
+      "native_time_scale": 0.4400657296,
+      "native_gear": 1,
+      "reference_revision": 13
+    }
+  ],
+  "execution_health_evidence": {
+    "samples": 1770,
+    "enabled_false_or_invalid_or_latched_samples": 0,
+    "source_age_at_recorder_ms_minmax": [
+      0.8738040924072266,
+      54.851531982421875
+    ],
+    "valid_until_remaining_at_recorder_ms_minmax": [
+      51.488399505615234,
+      133.39757919311523
+    ],
+    "interpretation": "Healthy driver observations at recorder do not prove they reached MPPI callback in time. Five zero episodes contain execution qualification waits, but this run does not show actual arm disable in these recorded packets. Do not label them hardware disable events.",
+    "sample_window": "Goal receipt1794456459.9303 through1794456501.0, approximately41.07s; includes ~3.8s after final command stop."
+  },
+  "final_recovery_failure": {
+    "observed_source_logs": [
+      {
+        "t": 1794456497.669172,
+        "source": 1794456497.3969767,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "-12.441464 max left wheel omega is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456497.7716968,
+        "source": 1794456497.5310526,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "-12.441464 max left wheel omega is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456497.8294346,
+        "source": 1794456497.7991996,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "-12.441464 max left wheel omega is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456497.9871895,
+        "source": 1794456497.955004,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "-12.441464 max left wheel omega is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456498.256643,
+        "source": 1794456498.2326765,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "-26.604736 max left wheel omega is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456498.5559359,
+        "source": 1794456498.387651,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "-26.604736 max left wheel omega is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456498.7107701,
+        "source": 1794456498.579874,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "-26.604736 max left wheel omega is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456499.0409825,
+        "source": 1794456498.8074756,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "-26.604736 max left wheel omega is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456499.178842,
+        "source": 1794456498.9493477,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "[FSM] Failed to generate new trajectory (2/5)."
+      },
+      {
+        "t": 1794456499.187591,
+        "source": 1794456499.0368617,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "77.940914 max left wheel alpha is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456499.1956685,
+        "source": 1794456499.1732504,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "77.940914 max left wheel alpha is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456499.408579,
+        "source": 1794456499.3126721,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "[FSM] Failed to generate new trajectory (3/5)."
+      },
+      {
+        "t": 1794456499.591709,
+        "source": 1794456499.4735796,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "67.877407 max left wheel alpha is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456499.6132076,
+        "source": 1794456499.588271,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "67.877407 max left wheel alpha is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456499.6586528,
+        "source": 1794456499.6340966,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "67.877407 max left wheel alpha is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456500.2974324,
+        "source": 1794456499.8280702,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "89.163544 max left wheel alpha is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456500.3003511,
+        "source": 1794456499.895227,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "89.163544 max left wheel alpha is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456500.3899236,
+        "source": 1794456499.948644,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "89.163544 max left wheel alpha is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456500.441144,
+        "source": 1794456500.0060441,
+        "node": "/remani_planner_node",
+        "level": 4,
+        "msg": "89.163544 max left wheel alpha is not feasible at relative time 0.050000! opt failed"
+      },
+      {
+        "t": 1794456500.498035,
+        "source": 1794456500.0637097,
+        "node": "/remani_planner_node",
+        "level": 8,
+        "msg": "[FSM] Give up current target and return to WAIT_TARGET. Please send a new goal."
+      }
+    ],
+    "runtime_max_failures": 5,
+    "runtime_trials_per_global_attempt": 5,
+    "source_mechanism": "GEN_NEW_TRAJ increments new_traj_fail_time_ when planFromGlobalTraj() fails. At>=5 it clears have_target_/have_new_target_/have_local_traj_ and returns WAIT_TARGET. planFromGlobalTraj starts from mm_state_pos_, mm_state_vel_, zero acceleration/jerk; each iteration tries candidate optimization subject to wall-time budget. Optimization success text alone does not imply final kinematic acceptance.",
+    "observed_failures": "Recovery candidates fail left-wheel omega/alpha checks at relative0.05s; logs include omega -12.441464/-26.604736 and alpha77.940914/67.877407/89.163544. These are candidate constraints, not measured wheel speeds.",
+    "boundary": "Only failure counters2/5 and3/5 plus terminal give-up were captured; queue_size=1 can omit individual1/5,4/5,5/5 logs. Five-attempt exhaustion is supported by source condition+final log, not by five complete captured attempt transcripts.",
+    "arrival": false,
+    "terminal_source_stamp": 1794456500.0637097,
+    "terminal_message": "Give up current target and return to WAIT_TARGET. Please send a new goal."
+  },
+  "minimal_repair_order": [
+    {
+      "priority": 1,
+      "action": "Verify actual deployed source/version, then repair deadline precedence before no-feasible fault escalation and current-time checks under locks. Add only regression of these control branches.",
+      "why": "The recorded code still checks no-feasible before deadline and uses old cycle time for capture/qualification. Do not assume previously reviewed fixes remain deployed; do not replace entire version blindly."
+    },
+    {
+      "priority": 2,
+      "action": "Fix and validate source-timed arm velocity estimation/interpretation before letting isolated estimates invalidate all base candidates. Distinguish arm estimate/command-check failure from base reference spatial failure when deciding recovery.",
+      "why": "Three rejected candidate sets have positive external and configuration gaps. q4/q5 speed samples cause stopping/bounds infeasibility. Current undifferentiated tracking_fault bool aborts entire navigation. Do not simply zero/clamp real velocity or bypass collision/braking checks."
+    },
+    {
+      "priority": 3,
+      "action": "Reduce map processing/delivery age using measured pipeline bottlenecks, retain source deadlines and latest-state collision recheck.",
+      "why": "46 zero episodes contain map/input freshness rejection evidence. These repeatedly stop base even without a navigation abort. Extending validity blindly would hide stale perception."
+    },
+    {
+      "priority": 4,
+      "action": "Replay final recovery initialization and its first0.05s wheel constraints; correct boundary/gear/near-goal initialization before increasing retry count. Explicitly report retry exhaustion as failed/waiting goal rather than arrived.",
+      "why": "Final persistent standstill follows bounded retry exhaustion, not a continuing MPPI optimization or successful arrival."
+    },
+    {
+      "priority": 5,
+      "action": "Independently inspect first native base-hard-collision event against recorded map/geometry.",
+      "why": "First ABORT has no tracking_fault and carries a separate native collision event. Joint-velocity repairs alone cannot explain that abort."
+    }
+  ],
+  "source_references": {
+    "recorded_mppi": "inputs/src/mm_remani/scripts/whole_body_mppi.py: reject/stop_base/cycle/checked_first_step; sha256845c264dadc1db757a9e271c9d651d7c348d994a0eba9c3d6c3eb770b621deee",
+    "fsm_current_source": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:793 trackingFaultCallback, 405-475 GEN_NEW_TRAJ, 2224 planFromGlobalTraj,3132 callEmergencyStop; these source paths explain logs, current source not captured full in bag inputs",
+    "recording": "record_drive_session.py uses queue_size=1 and preserves callerid in rosbag connection header"
+  },
+  "deadline_branch_offline_reproduction": {
+    "artifact": "deadline_branch_reproduction.json",
+    "script": "reproduce_deadline_branch.py",
+    "method": "Actual captured WholeBodyNode.cycle code with all publishers mocked, controlled elapsed; no ROS/hardware.",
+    "cases": [
+      {
+        "controlled_elapsed_ms": 50.0,
+        "feasible_return": false,
+        "rejection": "no_feasible_candidate",
+        "fault_true_calls": 1,
+        "arm_publications": 0,
+        "base_commands": [
+          [
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "controlled_elapsed_ms": 120.0,
+        "feasible_return": false,
+        "rejection": "no_feasible_candidate",
+        "fault_true_calls": 1,
+        "arm_publications": 0,
+        "base_commands": [
+          [
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "controlled_elapsed_ms": 120.0,
+        "feasible_return": true,
+        "rejection": "planning_deadline_exceeded",
+        "fault_true_calls": 0,
+        "arm_publications": 0,
+        "base_commands": [
+          [
+            0.0,
+            0.0
+          ]
+        ]
+      }
+    ],
+    "conclusion": "At same controlled120ms elapsed and95ms deadline, infeasible return emits tracking_fault=true while feasible return becomes local planning_deadline retry. This proves code branch defect; real solve elapsed remains unrecorded."
+  }
+}

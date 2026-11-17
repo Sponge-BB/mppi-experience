@@ -1,0 +1,103 @@
+{
+  "mppi_true": {
+    "selected_params": {
+      "/remani_planner_node/fsm/init_state": [
+        0.0,
+        0.0,
+        0.0,
+        29.85,
+        -60.098,
+        -0.002,
+        54.276,
+        0.003
+      ],
+      "/piper_ctrl_single_node/fixed_vel": 1,
+      "/whole_body_mppi/native_arm_startup": true,
+      "/piper_ctrl_single_node/can_port": "can1",
+      "/piper_ctrl_single_node/auto_enable": false,
+      "/piper_ctrl_single_node/command_timeout": 0.3,
+      "/piper_ctrl_single_node/native_startup_to_standby": true
+    },
+    "nodes": [
+      "filter_joint_states",
+      "remani_planner_node",
+      "mm_controller_node",
+      "world_to_map_broadcaster",
+      "real_arm_joint_bridge",
+      "global_map_publisher",
+      "whole_body_mppi",
+      "static_fr_wheel",
+      "static_fl_wheel",
+      "static_br_wheel",
+      "static_bl_wheel",
+      "robot_state_publisher",
+      "real_base_controller",
+      "laserMapping",
+      "fastlio_to_odom",
+      "global_localization",
+      "pub_initial_pose",
+      "map_to_camera_init",
+      "camera_init_to_odom",
+      "piper_ctrl_single_node",
+      "custom_to_pcl",
+      "pcl_manager_filter",
+      "passthrough_z",
+      "crop_box_filter",
+      "dynamic_obstacle_tracker",
+      "base_link_to_real_lidar_tf"
+    ]
+  },
+  "mppi_false": {
+    "selected_params": {
+      "/remani_planner_node/fsm/init_state": [
+        0.0,
+        0.0,
+        0.0,
+        29.85,
+        -60.098,
+        -0.002,
+        54.276,
+        0.003
+      ],
+      "/piper_ctrl_single_node/fixed_vel": 15,
+      "/piper_ctrl_single_node/can_port": "can1",
+      "/piper_ctrl_single_node/auto_enable": true,
+      "/piper_ctrl_single_node/command_timeout": 0.0,
+      "/piper_ctrl_single_node/native_startup_to_standby": false
+    },
+    "nodes": [
+      "filter_joint_states",
+      "remani_planner_node",
+      "mm_controller_node",
+      "world_to_map_broadcaster",
+      "real_arm_joint_bridge",
+      "global_map_publisher",
+      "real_base_tracker",
+      "static_fr_wheel",
+      "static_fl_wheel",
+      "static_br_wheel",
+      "static_bl_wheel",
+      "robot_state_publisher",
+      "real_base_controller",
+      "laserMapping",
+      "fastlio_to_odom",
+      "global_localization",
+      "pub_initial_pose",
+      "map_to_camera_init",
+      "camera_init_to_odom",
+      "joint_cmd_bridge",
+      "piper_ctrl_single_node",
+      "custom_to_pcl",
+      "pcl_manager_filter",
+      "passthrough_z",
+      "crop_box_filter",
+      "dynamic_obstacle_tracker",
+      "base_link_to_real_lidar_tf"
+    ]
+  },
+  "message": {
+    "md5": "9d0009ff1df44d2fd23184d0bff84dd5",
+    "roundtrip": "passed",
+    "source_matches_binding": true
+  }
+}

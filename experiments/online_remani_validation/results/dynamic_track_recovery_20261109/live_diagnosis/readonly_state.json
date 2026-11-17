@@ -1,0 +1,591 @@
+{
+  "time": "2026-11-09 11:54:55",
+  "parameters": {
+    "/remani_planner_node/mppi/enable": false,
+    "/remani_planner_node/dynamic_point_flow": {
+      "isolated_worker_enable": true,
+      "enable": true,
+      "shadow_mode": false,
+      "active_mode": true,
+      "active_replan": true,
+      "fail_safe_on_unavailable": false,
+      "active_confirm_frames": 2,
+      "active_immediate_ttc": 0.65,
+      "active_emergency_ttc": 0.45,
+      "active_slowdown_ttc": 1.5,
+      "active_clear_hold_time": 0.3,
+      "topic": "/dynamic_points",
+      "shadow_check_interval": 0.05,
+      "max_age": 0.35,
+      "future_stamp_tolerance": 0.05,
+      "max_prediction_time": 2.0,
+      "max_point_speed": 2.0,
+      "min_confidence": 0.5,
+      "position_uncertainty": 0.08,
+      "velocity_uncertainty": 0.25,
+      "acceleration_bound": 0.75,
+      "max_points": 240,
+      "require_world_frame": true,
+      "planning_overlay_enable": true,
+      "planning_overlay_update_interval": 0.05,
+      "planning_overlay_horizon": 1.2,
+      "planning_overlay_time_step": 0.1,
+      "planning_overlay_extra_inflation": 0.03,
+      "planning_overlay_max_inflation": 0.3,
+      "planning_overlay_influence_distance": 0.75
+    },
+    "/remani_planner_node/grid_map/resolution": 0.05,
+    "/dynamic_obstacle_tracker": {
+      "input_topic": "/velodyne_points",
+      "static_map_topic": "/map_generator/global_cloud",
+      "output_topic": "/dynamic_points",
+      "world_frame": "world",
+      "require_static_map": true,
+      "tf_timeout": 0.03,
+      "max_cloud_age": 0.3,
+      "future_stamp_tolerance": 0.05,
+      "voxel_leaf_size": 0.1,
+      "static_map_leaf_size": 0.08,
+      "static_match_radius": 0.12,
+      "minimum_range": 0.3,
+      "maximum_range": 6.0,
+      "minimum_world_z": 0.15,
+      "maximum_world_z": 1.7,
+      "cluster_tolerance": 0.32,
+      "minimum_cluster_points": 8,
+      "maximum_cluster_points": 1200,
+      "maximum_cluster_extent": 2.2,
+      "maximum_residual_points": 800,
+      "maximum_output_points": 160,
+      "motion_center_trim_fraction": 0.15,
+      "motion_center_tall_target_min_height": 0.65,
+      "motion_center_stable_core_lower_height_ratio": 0.35,
+      "motion_center_stable_core_upper_height_ratio": 0.9,
+      "motion_center_minimum_stable_core_points": 8,
+      "association_gate": 0.35,
+      "association_position_allowance": 0.12,
+      "association_shape_weight": 0.2,
+      "maximum_extent_change": 0.45,
+      "maximum_point_count_ratio": 4.0,
+      "position_alpha": 0.65,
+      "velocity_alpha": 0.3,
+      "regression_velocity_weight": 0.75,
+      "motion_direction_alpha": 0.3,
+      "velocity_deadband": 0.1,
+      "maximum_track_speed": 2.0,
+      "dynamic_enter_speed": 0.22,
+      "dynamic_exit_speed": 0.1,
+      "minimum_dynamic_displacement": 0.1,
+      "direction_consistency_cosine": 0.6,
+      "minimum_motion_duration": 0.25,
+      "motion_history_duration": 0.6,
+      "minimum_motion_efficiency": 0.7,
+      "minimum_direction_consistency_fraction": 0.75,
+      "maximum_motion_step_speed_ratio": 1.25,
+      "minimum_track_dt": 0.03,
+      "maximum_track_dt": 0.35,
+      "minimum_confirmed_hits": 4,
+      "minimum_dynamic_hits": 3,
+      "minimum_motion_cluster_points": 15,
+      "minimum_stationary_hits": 3,
+      "minimum_stationary_background_hits": 5,
+      "stationary_background_minimum_duration": 0.5,
+      "stationary_background_maximum_speed": 0.1,
+      "stationary_background_maximum_displacement": 0.06,
+      "stationary_background_merge_radius": 0.2,
+      "stationary_background_release_radius": 0.25,
+      "stationary_background_dwell_duration": 2.0,
+      "stationary_background_dwell_radius": 0.3,
+      "maximum_stationary_background_anchors": 128,
+      "maximum_missed_frames": 3,
+      "health_maximum_motion_tracks": 3,
+      "health_recovery_frames": 15,
+      "health_degradation_frames": 3
+    }
+  },
+  "counts": {
+    "/dynamic_points": 177,
+    "/rosout_agg": 93,
+    "/cmd_vel": 847,
+    "/odom": 162,
+    "/planning/safety_speed_limit": 1,
+    "/planning/dynamic_point_flow_state": 1,
+    "/dynamic_obstacle_tracker/confirmed_track_count": 129,
+    "/dynamic_obstacle_tracker/motion_qualified_track_count": 126,
+    "/dynamic_obstacle_tracker/stationary_confirmed_track_count": 125,
+    "/dynamic_obstacle_tracker/stationary_background_anchor_count": 122,
+    "/dynamic_obstacle_tracker/cluster_count": 119,
+    "/dynamic_obstacle_tracker/processing_ms": 116,
+    "/dynamic_obstacle_tracker/input_age": 112,
+    "/dynamic_obstacle_tracker/residual_point_count": 108,
+    "/dynamic_obstacle_tracker/maximum_confirmed_speed": 105,
+    "/dynamic_obstacle_tracker/maximum_motion_qualified_speed": 100,
+    "/dynamic_obstacle_tracker/perception_healthy": 96,
+    "/dynamic_obstacle_tracker/perception_health_state": 90,
+    "/dynamic_obstacle_tracker/suppressed_motion_track_count": 80
+  },
+  "last_messages": {
+    "/dynamic_points": {
+      "stamp": 1794196494.9531662,
+      "age_s": 0.11467957496643066,
+      "frame": "world",
+      "points": 0,
+      "track_counts": {},
+      "bounds": {},
+      "velocities": {}
+    },
+    "/cmd_vel": {
+      "v": 0.0,
+      "w": 0.0
+    },
+    "/odom": {
+      "stamp": 1794196495.0535033,
+      "x": -0.29473463596083793,
+      "y": 0.08888225884469986
+    },
+    "/planning/safety_speed_limit": "data: -1.0",
+    "/planning/dynamic_point_flow_state": "data: 0",
+    "/dynamic_obstacle_tracker/confirmed_track_count": "data: 9",
+    "/dynamic_obstacle_tracker/motion_qualified_track_count": "data: 0",
+    "/dynamic_obstacle_tracker/stationary_confirmed_track_count": "data: 9",
+    "/dynamic_obstacle_tracker/stationary_background_anchor_count": "data: 38",
+    "/dynamic_obstacle_tracker/cluster_count": "data: 11",
+    "/dynamic_obstacle_tracker/processing_ms": "data: 9.164848",
+    "/dynamic_obstacle_tracker/input_age": "data: 0.104931521",
+    "/dynamic_obstacle_tracker/residual_point_count": "data: 268",
+    "/dynamic_obstacle_tracker/maximum_confirmed_speed": "data: 0.5611569921286741",
+    "/dynamic_obstacle_tracker/maximum_motion_qualified_speed": "data: 0.0",
+    "/dynamic_obstacle_tracker/perception_healthy": "data: True",
+    "/dynamic_obstacle_tracker/perception_health_state": "data: 1",
+    "/dynamic_obstacle_tracker/suppressed_motion_track_count": "data: 0"
+  },
+  "logs": [
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 971.315 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2615 residual=288 clusters=11 confirmed=11 motion_qualified=0 nonmoving_confirmed=11 background_anchors=38 tracks=14 health=1 publish=yes age=0.105s processing=9.06ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow][overlay] Planning overlay unavailable (lost_observation); static/live-map planning remains active."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 125.44ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 168 stale live obstacle voxels after 4 missed fused scans (total=869815); static PCD unchanged."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 972.410 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2411 residual=249 clusters=10 confirmed=9 motion_qualified=0 nonmoving_confirmed=9 background_anchors=38 tracks=14 health=1 publish=yes age=0.103s processing=6.25ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 141.80ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 201 stale live obstacle voxels after 4 missed fused scans (total=870679); static PCD unchanged."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2602 residual=303 clusters=13 confirmed=13 motion_qualified=0 nonmoving_confirmed=13 background_anchors=38 tracks=15 health=1 publish=yes age=0.106s processing=6.35ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 973.413 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 135.19ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 141 stale live obstacle voxels after 4 missed fused scans (total=871680); static PCD unchanged."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 974.510 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=22 avg/max=13.17/18.17ms esdf=22 compute_avg/max=141.40/176.20ms main_commit_avg/max=12.04/13.63ms snapshot_avg/max=1.18/1.82ms age=186.21ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=10111/10111/0/10 clouds_coalesced=29 async(submit/commit/reject/occ_defer)=21/22/0/43 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2385 residual=244 clusters=11 confirmed=11 motion_qualified=0 nonmoving_confirmed=11 background_anchors=38 tracks=16 health=1 publish=yes age=0.103s processing=15.46ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 220 stale live obstacle voxels after 4 missed fused scans (total=872623); static PCD unchanged."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 975.520 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 149.52ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 151 stale live obstacle voxels after 4 missed fused scans (total=873843); static PCD unchanged."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 976.613 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 146.88ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 180 stale live obstacle voxels after 4 missed fused scans (total=874681); static PCD unchanged."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2385 residual=275 clusters=10 confirmed=9 motion_qualified=0 nonmoving_confirmed=9 background_anchors=38 tracks=14 health=1 publish=yes age=0.103s processing=17.55ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 977.623 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 145.08ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 213 stale live obstacle voxels after 4 missed fused scans (total=875729); static PCD unchanged."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2359 residual=271 clusters=13 confirmed=13 motion_qualified=0 nonmoving_confirmed=13 background_anchors=38 tracks=17 health=1 publish=yes age=0.103s processing=20.01ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 978.726 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][pipeline] window=5.04s mode=async occ=22 avg/max=12.56/14.95ms esdf=22 compute_avg/max=140.47/170.91ms main_commit_avg/max=11.40/12.96ms snapshot_avg/max=1.28/4.30ms age=189.09ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=10161/10161/0/10 clouds_coalesced=28 async(submit/commit/reject/occ_defer)=23/22/0/49 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 122.55ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 169 stale live obstacle voxels after 4 missed fused scans (total=876570); static PCD unchanged."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2450 residual=269 clusters=11 confirmed=11 motion_qualified=0 nonmoving_confirmed=11 background_anchors=38 tracks=12 health=1 publish=yes age=0.107s processing=5.88ms."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2249 residual=231 clusters=11 confirmed=10 motion_qualified=0 nonmoving_confirmed=10 background_anchors=38 tracks=18 health=1 publish=yes age=0.104s processing=14.55ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 129.95ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 235 stale live obstacle voxels after 4 missed fused scans (total=877637); static PCD unchanged."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 148.76ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2599 residual=285 clusters=12 confirmed=11 motion_qualified=0 nonmoving_confirmed=11 background_anchors=38 tracks=16 health=1 publish=yes age=0.101s processing=22.67ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 981.927 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 983.024 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 146.22ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 984.028 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][pipeline] window=5.05s mode=async occ=22 avg/max=13.20/20.83ms esdf=22 compute_avg/max=140.89/183.99ms main_commit_avg/max=11.60/14.18ms snapshot_avg/max=1.16/1.99ms age=187.76ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=10212/10212/0/10 clouds_coalesced=29 async(submit/commit/reject/occ_defer)=22/22/0/56 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2446 residual=294 clusters=12 confirmed=9 motion_qualified=0 nonmoving_confirmed=9 background_anchors=38 tracks=16 health=1 publish=yes age=0.104s processing=24.44ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 985.130 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 154.54ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 264 stale live obstacle voxels after 4 missed fused scans (total=881317); static PCD unchanged."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2473 residual=268 clusters=12 confirmed=11 motion_qualified=0 nonmoving_confirmed=11 background_anchors=38 tracks=16 health=1 publish=yes age=0.102s processing=16.75ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 986.221 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 136.72ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 232 stale live obstacle voxels after 4 missed fused scans (total=882292); static PCD unchanged."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 987.222 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2390 residual=279 clusters=11 confirmed=10 motion_qualified=0 nonmoving_confirmed=10 background_anchors=38 tracks=15 health=1 publish=yes age=0.103s processing=16.59ms."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][LiDAR] Expired 182 stale live obstacle voxels after 4 missed fused scans (total=883060); static PCD unchanged."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 139.52ms exceeds 50.00ms; the ROS callback queue remains available."
+    },
+    {
+      "node": "/remani_planner_node",
+      "message": "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age 988.333 s). Empty or partial frames cannot clear the missing geometry."
+    },
+    {
+      "node": "/dynamic_obstacle_tracker",
+      "message": "[DynamicTracker] downsampled=2608 residual=270 clusters=12 confirmed=10 motion_qualified=0 nonmoving_confirmed=10 background_anchors=38 tracks=17 health=1 publish=yes age=0.110s processing=20.87ms."
+    }
+  ],
+  "graph": {
+    "publishers": [
+      [
+        "/cmd_vel",
+        [
+          "/real_base_tracker"
+        ]
+      ],
+      [
+        "/odom",
+        [
+          "/fastlio_to_odom"
+        ]
+      ],
+      [
+        "/dynamic_points",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/confirmed_track_count",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/motion_qualified_track_count",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/stationary_confirmed_track_count",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/stationary_background_anchor_count",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/cluster_count",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/processing_ms",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/input_age",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/residual_point_count",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/maximum_confirmed_speed",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/maximum_motion_qualified_speed",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/perception_healthy",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/perception_health_state",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/suppressed_motion_track_count",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/remani_planner_node/grid_map/dynamic_point_swept",
+        [
+          "/remani_planner_node"
+        ]
+      ],
+      [
+        "/remani_planner_node/grid_map/dynamic_prediction_nominal",
+        [
+          "/remani_planner_node"
+        ]
+      ],
+      [
+        "/remani_planner_node/grid_map/dynamic_prediction_markers",
+        [
+          "/remani_planner_node"
+        ]
+      ],
+      [
+        "/planning/trajectory",
+        [
+          "/remani_planner_node"
+        ]
+      ],
+      [
+        "/planning/dynamic_point_flow_state",
+        [
+          "/remani_planner_node"
+        ]
+      ],
+      [
+        "/planning/dynamic_point_flow_ttc",
+        [
+          "/remani_planner_node"
+        ]
+      ]
+    ],
+    "subscribers": [
+      [
+        "/odom",
+        [
+          "/arm_inspection_spheres",
+          "/mm_controller_node",
+          "/real_base_tracker",
+          "/global_map_publisher",
+          "/remani_planner_node"
+        ]
+      ],
+      [
+        "/planning/trajectory",
+        [
+          "/mm_controller_node"
+        ]
+      ],
+      [
+        "/cmd_vel",
+        [
+          "/real_base_controller"
+        ]
+      ],
+      [
+        "/dynamic_points",
+        [
+          "/remani_planner_node",
+          "/rviz"
+        ]
+      ],
+      [
+        "/remani_planner_node/grid_map/dynamic_prediction_nominal",
+        [
+          "/rviz"
+        ]
+      ]
+    ],
+    "services": [
+      [
+        "/dynamic_obstacle_tracker/get_loggers",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/dynamic_obstacle_tracker/set_logger_level",
+        [
+          "/dynamic_obstacle_tracker"
+        ]
+      ],
+      [
+        "/codex_dynamic_readonly_190937_1794196471606/get_loggers",
+        [
+          "/codex_dynamic_readonly_190937_1794196471606"
+        ]
+      ],
+      [
+        "/codex_dynamic_readonly_190937_1794196471606/set_logger_level",
+        [
+          "/codex_dynamic_readonly_190937_1794196471606"
+        ]
+      ]
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "production_change": "Only classify eight transient delivery/input-age failures as local stop-and-retry, retaining the reference; actual collision, malformed command, latched stop and unknown errors still request recovery.",
+  "guardrails_unchanged": [
+    "stop_base on every rejection",
+    "no arm command on rejection",
+    "map and feedback expiry",
+    "latest-map command/lease/braking collision check",
+    "explicit trajectory abort",
+    "no fault-clear on rejection"
+  ],
+  "offline_tests_passed": 53,
+  "navigation_performance_experiment": "reverted; two files byte-identical to before backup",
+  "recorded_abort_events": 41,
+  "live_validation": "Pending user restart and navigation retest; current process still uses old code."
+}

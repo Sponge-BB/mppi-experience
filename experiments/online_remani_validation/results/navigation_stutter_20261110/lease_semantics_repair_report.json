@@ -1,0 +1,53 @@
+{
+  "scope": "Offline repair only; no ROS node, CAN, SDK construction, restart or hardware command.",
+  "changed_driver_methods": [
+    "PublishExecutionState",
+    "_check_command_timeout"
+  ],
+  "message_fields_unchanged": true,
+  "contract": {
+    "valid_until": "Earliest actual status/joint/motor source-health deadline; old command lease excluded.",
+    "command_active": "True only after a successful external joint command while its monotonic lease remains valid.",
+    "healthy_hold": "No CAN send, disable, latch or accepted-source barrier advance. A new plan may span an old command lease if its own validation passes.",
+    "preserved": "Explicit enable ordering, successful-command source monotonicity, <300ms command age, <=.03rad target lead, true health failures, stop latch, initial-command timeout and send-failure checks remain."
+  },
+  "validation": {
+    "driver_AST_groups": 47,
+    "execution_gate_and_reference_wait_tests": 21,
+    "result": "PASS",
+    "logs": [
+      "lease_driver_tests.txt",
+      "lease_execution_tests.txt"
+    ],
+    "new_coverage": [
+      "Old lease has only 5ms left without clipping source-health deadline.",
+      "Normal expiry retains last accepted source stamp and emits no CAN command.",
+      "A newer independently fresh command begun before old lease expiry is accepted, including expiry handled in the joint callback.",
+      "Accepted-message replay and >300ms commands remain rejected.",
+      "Healthy active-to-hold transition does not change MPPI authority epoch.",
+      "Actual source-health gap during solving invalidates the plan even after fresh recovery."
+    ]
+  },
+  "limitations": [
+    "No physical or live timing validation in this task.",
+    "Recorded map/reference failures remain independent; this patch does not make unavailable collision input executable."
+  ],
+  "sha256": {
+    "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py": {
+      "before": "a9519bb5f7654e0f090870c0f9c72fb2f6e74536ed981fe895542258cee1efa3",
+      "after": "8c11814f639a78543fa0e6e33c37c5d1922bf431452d96c35be57fb894a02fc5"
+    },
+    "src/mm_remani/test/test_piper_feedback_command.py": {
+      "before": "6dc56485b4f35a44d3ce5d199782ff9e4491319dbf07ad59694b863cfefe6c71",
+      "after": "d8a88fe1fdd5876f4f3b1bbbe649f4146832bafd5aaa36023d21aa0a8cac693c"
+    },
+    "src/mm_remani/test/test_mppi_execution_gate.py": {
+      "before": "2ac1f36c33475828b8707b560ec077433e189b96c02cf18292da06dbacf92e40",
+      "after": "5f6ab92b4934b78ea06a1395b3ccc42d0214a4ab892df43f70299df0015fda3a"
+    },
+    "src/piper_msgs/msg/PiperExecutionState.msg": {
+      "before": "0959e14c7fafd80582fd59eb798ed38ba72317d69f79e3af204622fd770a084b",
+      "after": "e270c2e1d4e6cbedba2900bc8b7dbf449f75c08781083dab5ef880e13349e5f3"
+    }
+  }
+}

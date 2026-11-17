@@ -1,0 +1,33 @@
+本轮实车诊断（2026-11-13）
+
+运行版本：20261113-172845-map-latency
+回退父版本：20261113-165655-before-map-latency
+本轮仅记录与分析，未修改生产代码，未发送运动、使能、复位或导航目标。
+capture.bag 和 followup_175451.bag 均已正常关闭，可离线分析。
+
+1. 到点与调头
+目标1：终点底盘误差0.026m、朝向误差0.014rad已在容差内，机械臂误差约0.120rad触发GOAL_FEEDBACK。后续实测机械臂误差已小于0.12rad，但GEN_NEW_TRAJ没有重新检查到点，仍继续整机求解并被碰撞验收拒绝。
+目标2：发布时实际含0.2805m位移、176度朝向变化。跟踪期间出现冻结参考相位、角速度正负切换和live占据触发的ABORT；terminal_yaw_alignment计数为0，不能把这一段解释为终端转向指令执行失败。
+目标3：17:46:32.808主日志明确Manual target reached，随后自动要求机械臂恢复待机姿态，整机规划连续5轮失败，17:46:38.436 Give up，没有导航finish。到点完成与可选待机恢复耦合，造成目标已经到达但流程继续求解。
+证据：turn_goal_diagnosis.json、goal_completion_joint_samples.json、runtime_logs/hai_goal_completion_windows.log。
+
+2. 人进入后停车与无可行候选
+目标2全段454条dynamic_points均为空；慢层使用live占据的碰撞检查发零速并撤销参考，随后MPPI报告native_reference_cancelled。不能将其称为已验证的动态预测绕障效果。
+3次no_feasible_candidate均在候选t=0触及底盘5cm保护带，最小gap为-10.7至-18.4mm；同模型物理半径间隔仍为31.6至39.3mm，机械臂外部间隔为0.44至0.54m。不是已经确认实物接触。
+最近占据体素中心为(1.025,-1.475,0.175)m和(0.925,-1.525,0.175)m，均无对应先验PCD占据，属于实时新增占据；车体坐标约x=0.35m、y=-0.05至-0.06m。自身回波值得核对，但缺同期完整点云，不能判定为人体、残留或自身点。
+两份独立地图显示旧格随后已经清空、另一个新格产生，不能把它们解释为始终固定在世界坐标中的历史残影。
+证据：no_candidate_same_field_audit.json、no_candidate_obstacle_provenance.json及map_events同代完整快照。
+
+3. 感知性能与断流要分别判断
+前三目标正常段ESDF平均耗时窗口中位约74至81ms，新地图首次可见年龄中位约136至142ms；前一轮对应约135ms和200ms。路线、占据和负载不同，属于实车观测比较，不是受控A/B实验。
+前四目标观察窗MPPI的95ms预算拒绝仅5次。全袋包含长时间启动/待机，不能用全袋预算拒绝次数推断导航主要瓶颈。
+仍有去地后点云中断：原始JointState发布源分别出现约615ms与3045ms断档，自滤明确报告关节反馈不可用/过期；注册及去地点云仍持续。只能确认ROS关节发布断档，不能据此声称物理CAN断流。
+完整hai主日志比bag中的rosout_agg更完整。17:46:50.894首次停车在51.422已经恢复（0.528s），不是连续59秒。17:48:02.127另一次停车直到53.235恢复（51.109s）；其完整恢复时间超出主bag边界。
+长停中raw关节发布在17:48:04.155、filtered关节在04.210已恢复，但自滤/建图输出继续中断。主日志多次明确scan/joint source time unavailable or stale，直到52.819 Live input recovered。因此3秒关节缺口不足以解释51秒停顿，后续仍卡在去地后的扫描/关节时效校验，具体源龄超限原因尚未定位到回调或锁。
+证据：map_performance_window_summary.json、depth_lost_q_and_cloud_chain.json、perception_recovery_events_complete_log.json、runtime_logs/hai_navigation_logs.jsonl。
+
+建议的最小修复顺序
+先解决终点状态收敛与完成判定：末端机械臂偏差不应反复引发底盘整机求解，重规划状态仍应检查实测到点；可选待机恢复不应把已达导航目标变为失败。不能仅提前发finish后沿用原恢复轨迹，因为现有adapter收到finish会清除目标。
+随后核查车体前方低位实时占据的自滤边界；在占据来源未证实前，不缩小物理模型或删除安全拒绝。
+最后调整快慢层避障交接，结合实测状态、可行MPPI轨迹和紧急边界决定撤轨，验证人体是否产生有效动态预测。当前数据不能证明这段人体轨迹已进入预测并被MPPI成功绕行。
+以上是诊断与修复范围，尚未实施，也未宣称实车功能验证通过。

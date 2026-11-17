@@ -1,0 +1,30 @@
+{
+  "scope": "static review and bounded recording only",
+  "lock_order_bug_fixed": true,
+  "concurrent_disable_regression_test_passed": true,
+  "explicit_horizon_s": 0.14,
+  "explicit_validation_budget_s": 0.03,
+  "legacy_validation_budget_s": 0.02,
+  "position_horizon_s": 0.1,
+  "fixed_deadline_before_validation": true,
+  "current_inputs_checked_before_send": true,
+  "remaining_horizon_checked_after_transport": true,
+  "known_limitations": [
+    "No physical latency or servo response measurement",
+    "Watchdog shares gateway lock; not a certified 20ms response",
+    "Continuous gateway timing not passed on shared host",
+    "Near-arm perception coverage remains unvalidated"
+  ],
+  "reverted_experiments": [
+    {
+      "run": "actual_recording_10",
+      "change": "CPU affinity",
+      "reason": "No improvement"
+    },
+    {
+      "run": "actual_recording_14",
+      "change": "Python thread switch interval 1ms",
+      "reason": "Decision median79.58ms versus75.27ms in13;4packets then expiry; no clear improvement"
+    }
+  ]
+}

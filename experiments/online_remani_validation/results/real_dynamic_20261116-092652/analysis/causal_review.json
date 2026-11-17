@@ -1,0 +1,65 @@
+{
+  "scope": "Independent causal challenge of existing closed bags/source artifacts; no runtime edits, ROS startup or robot commands.",
+  "crosscheck_file": "analysis/causal_crosscheck.json",
+  "verified_core_findings": [
+    {
+      "id": "moving_handoff_contract_conflict",
+      "classification": "Source-proven logic defect under the observed moving-repair path",
+      "evidence": "planner_manager.cpp:548-552 waits until trajectory_start_time if early; remani_replan_fsm.cpp:3392-3405 requires >=20ms lead after manager return. All three observed successful optimizer results were subsequently rejected late.",
+      "causal_limit": "Reported ~700ms whole repair latency includes explicit sleep; not proof the optimizer exceeded its .60s budget."
+    },
+    {
+      "id": "non_equivalent_execution_phase_fallback",
+      "classification": "Observed timing inconsistency plus source-proven fallback semantics",
+      "evidence": "FSM fallback at remani_replan_fsm.cpp:1123-1149 replaces scaled/paused controller phase with wall elapsed and scale1 when progress unavailable/mismatched/stale; logged phase7.624840736 equals wall time, near controller phase6.278167469.",
+      "causal_limit": "Fallback predicate/cached progress stamp were not logged. Difference can change scanned reference segment and distance/TTC, but does not prove the real robot was collision-free, that this was a false positive, or that correcting phase alone prevents the stop."
+    },
+    {
+      "id": "safety_recovery_target_retention_inconsistent",
+      "classification": "Observed policy inconsistency backed by branch inspection",
+      "evidence": "Raw dynamic near-stop calls beginTransientObstacleRecovery at1931 and retains goal across failed recovery; later map-collision ordinary emergency path at~2110 bypasses that helper, EMERGENCY_STOP 979-993 enters ordinary GEN_NEW_TRAJ, and 691-703 clears accepted target after5 failures. Logs show failures1/5 at49.441281 through5/5 at49.588342, give-up49.588383.",
+      "causal_limit": "This is explicit goal deletion by ordinary failure policy, not evidence an auto-recovery switch was disabled. It does not establish that no valid path existed."
+    },
+    {
+      "id": "joint_feedback_gates_perception_transport",
+      "classification": "Confirmed observed chain; upstream root still undetermined",
+      "evidence": "Parent independently found /robot_self_filter source14.8692877 rejected stale/unavailable joint feedback. velodyne_transformer.py:217-220,316-317,342-344 impose150ms joint freshness and suppress output. Independent mapping recorder and tracker output both have~1.2s gap (stamps14.5701177 to15.7701535), then GridMap timeout15.383077 and ABORT15.381757.",
+      "causal_limit": "Does not identify CAN, SDK, scheduler or raw LiDAR failure. Isolated GridMap heartbeat and separate mapping publisher rule out a purely FSM callback-queue explanation for the published-topic gap. Piper300ms allowance does not alter self-filter150ms gate."
+    },
+    {
+      "id": "dynamic_prediction_output_missing",
+      "classification": "Measured functional chain failure; classifier cause not identified",
+      "evidence": "Perception audit counted1795 second-goal dynamic output frames, all0points and all motion-qualified track counts0, despite nonzero residual/clusters and confirmed associations.",
+      "causal_limit": "Association velocity alone is not verified physical motion; cannot yet name a particular threshold/association bug or claim raw LiDAR was empty."
+    }
+  ],
+  "nominal_window_check": {
+    "receipt_window": [
+      1794792721.2931733,
+      1794792724.1931732
+    ],
+    "delivered": 27,
+    "modes": {
+      "nominal": 27
+    },
+    "strictly_after_first_collision_warning_source": 26,
+    "minimum_external_gap_m": 0.2703645940026923,
+    "source_behavior": "active_arm_mppi.py nominal valid/external_gap>=.12 returns without broader base maneuver generation.",
+    "limit": "This proves which branch executed, not that MPPI was disconnected or that no feasible bypass existed."
+  },
+  "reference_cancel_check": {
+    "goal2_cancel_cycles": 1575,
+    "goal2_cycles_without_prior_abort_or_after_new_add_in_receipt_order": 0,
+    "full_bag_exception": "One goal1 cancellation status received10.537178 after recovery ADD10.517433; its capture source10.151573 precedes the new reference epoch10.471313, consistent with delayed old-cycle status.",
+    "limit": "Use source and receipt times separately; status String has no independent publication header, and input capture is not necessarily publication time."
+  },
+  "unsupported_claims": [
+    "The person had already left at each rejected candidate or final target give-up: departure time was not annotated.",
+    "Occupied cells must be ghosts merely because the user later reported leaving.",
+    "The1.35s phase discrepancy alone proves a false collision.",
+    "A711ms optional solve directly caused the first LiDAR timeout.",
+    "Every ~700ms repair was optimizer computation or optimizer timeout.",
+    "All nominal commands indicate no MPPI work or prove MPPI could not bypass the obstacle."
+  ],
+  "runtime_modified": false
+}

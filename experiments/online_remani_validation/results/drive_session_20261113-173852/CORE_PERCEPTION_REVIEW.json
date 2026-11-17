@@ -1,0 +1,101 @@
+{
+  "scope": "本轮只读核心复核：51秒长停、自滤入口时效、关节缓存和是否恢复死锁。不修改生产文件，不启动ROS节点，不扩大物理CAN或TCP根因推测。",
+  "conclusion": {
+    "recovery_deadlock_proven": false,
+    "fresh_scan_and_joint_recover_immediately_in_offline_reproduction": true,
+    "primary_verified_fact": "长停后段的 self-filter scan/joint source time unavailable or stale 报错来自点云入口扫描时间门，尚未调用关节插值；不能把这些报错解释为关节持续超时或等待旧关节的锁。",
+    "unresolved": "记录没有自滤节点回调入口所见的cloud源戳和当时now，不能进一步证明是旧扫描排队、节点调度还是其他供帧时间问题。停止扩展根因推测。"
+  },
+  "verified_runtime_timeline": {
+    "authoritative_events": "runtime_logs/hai_navigation_logs.jsonl；bag的rosout_agg缺失部分恢复消息，先前连续59秒判断已撤回。",
+    "long_stop": {
+      "depth_lost_source": 1794563282.1270607,
+      "recovery_release_source": 1794563333.2359574,
+      "duration_seconds": 51.10889673233032,
+      "bag_end_source_clock": 1794563332.2434106,
+      "recovery_after_bag_end": true
+    },
+    "joint_source_gap": {
+      "raw_last_before": 1794563281.1099072,
+      "raw_first_after": 1794563284.1549046,
+      "raw_gap_ms": 3044.997453689575,
+      "filtered_first_after": 1794563284.2098925,
+      "filtered_gap_ms": 3099.985361099243,
+      "interpretation": "关节发布源序列约3秒中断后恢复，无法单独解释其后直到53秒的持续自滤停发。发布序列不等于原始物理CAN帧。"
+    },
+    "cloud_chain": {
+      "mapping_last_source_before_stop": 1794563281.0821443,
+      "mapping_no_more_output_through_bag_end": true,
+      "cloud_registered_and_no_ground_continue_through_bag_end": true,
+      "source_log_scan_gate_failures": [
+        "17:48:10.382",
+        "17:48:15.525",
+        "17:48:52.306",
+        "17:48:52.775"
+      ],
+      "interpretation": "错误定位在去地之后、自滤入口扫描时效链。单凭泛化的scan/joint报错文字不能说关节仍未恢复。"
+    }
+  },
+  "source_findings": [
+    {
+      "file": "src/mm_remani/scripts/velodyne_transformer.py",
+      "lines": [245, 250],
+      "certainty": "确定源码事实",
+      "finding": "filter_self_cloud开头只读取msg.header.stamp并检查finite、正值、当前年龄不超过150ms和未来不超过5ms；失败却报scan/joint source time unavailable or stale。此处没有检查关节。",
+      "boundary": "应区分scan时间失败和后续关节插值失败；日志没有实际age，不能凭报错给出精确延迟或供帧根因。"
+    },
+    {
+      "file": "src/mm_remani/scripts/velodyne_transformer.py",
+      "lines": [197, 217, 337],
+      "certainty": "确定源码事实和轻量复现",
+      "finding": "没有应用层pending scan或恢复锁存状态；cloud_cb同步调用过滤，关节等待最多50ms，Condition.wait会释放关节锁。拒绝旧帧后，新鲜扫描和新鲜q可以立即发布。",
+      "boundary": "不应另加一个恢复状态机或把51秒解释成该函数固有等待。"
+    },
+    {
+      "file": "src/mm_remani/scripts/velodyne_transformer.py",
+      "lines": [163, 169],
+      "related_file": "src/mm_remani/scripts/filter_joint_states.py",
+      "certainty": "确定依赖事实",
+      "finding": "自滤只用position却订阅/mm/joint_states；该topic在原始关节缺口后须等待50ms速度窗口重新完整才发布，解释观测到的恢复额外50ms。",
+      "boundary": "这可以解释50ms额外恢复延迟，不能解释51秒。该复核不改订阅链或速度估计。"
+    },
+    {
+      "file": "src/mm_remani/scripts/velodyne_transformer.py",
+      "lines": [178, 201],
+      "certainty": "可复现的独立稳健性问题，未证为本次原因",
+      "finding": "迟到且已过期的旧关节消息会在except中清空较新有效q/history。下一条新鲜q仍可自行恢复。",
+      "boundary": "本次没有证明自滤收到乱序旧q，故不据此解释长停，也不为掩盖本次原因而修改。"
+    },
+    {
+      "file": "src/mm_remani/scripts/velodyne_transformer.py",
+      "lines": [173, 174],
+      "certainty": "已验证的通用接收语义，未证为现场根因",
+      "finding": "输入订阅queue_size=1、默认65536字节buff；轻量测试证明queue_size=1只裁剪当前recv批次的完整消息，不保证跨recv只收到最新帧。",
+      "boundary": "不将这个通用机制升级为本次51秒的原因，不继续扩展TCP排队推测。"
+    }
+  ],
+  "minimal_offline_reproduction": {
+    "script": "review_self_filter_recovery.py",
+    "results": "self_filter_recovery_reproductions.json",
+    "ros_master_or_node_started": false,
+    "production_files_changed": false,
+    "benchmark_repeated": false,
+    "verified_checks": [
+      "旧扫描被丢弃；新鲜扫描加新鲜关节立即恢复发布。",
+      "过期旧关节可清空较新缓存，但下一新鲜关节仍恢复。",
+      "8个200KiB消息在64KiB分批反序列化时queue_size=1仍依次交付8帧；整流一次反序列化仅交付最后帧。该测试未模拟51秒。"
+    ]
+  },
+  "minimum_fix_boundary": {
+    "current_review": "只更正原因描述和日志判据，不添加额外恢复机制，不放宽150ms，不用新时间戳伪装旧扫描。",
+    "if_followup_is_authorized": "仅在自滤入口失败分支记录scan_source、now、scan_age及最新accepted_joint_source，用于确定实际未过哪项门。之后只改经证据定位的供帧/时基环节。",
+    "not_authorized_here": "未实施订阅切换、缓冲调整、worker队列或关节驱动修改。"
+  },
+  "evidence_files": [
+    "depth_lost_q_and_cloud_chain.json",
+    "cloud_payload_header_recording_boundaries.json",
+    "runtime_logs/hai_navigation_logs.jsonl",
+    "perception_recovery_events_complete_log.json",
+    "self_filter_recovery_reproductions.json"
+  ]
+}

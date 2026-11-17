@@ -1,0 +1,236 @@
+{
+  "scope": "Supplement to analysis_153036/stop_recovery_review.json, using the completed 240.116 s capture; first stop audit is not repeated. No runtime changes or new acquisition.",
+  "time_basis": "Logs are ordered by source timestamp relative to goal receive time. Topic events use bag receipt times; receipt order across different topics is not publication order.",
+  "evidence_sha256": {
+    "summary.json": "f1896da906f3156deac57441109f257e6a1f0f83cac6aae00e9a97718035f88c",
+    "navigation_evidence.jsonl": "0012397a6c0f2e5d3d2a2c4616940f77fb47ccbe9f59bc04155cc7d362b637b2"
+  },
+  "partial_recording": false,
+  "timeline": [
+    {
+      "topic": "/rosout_agg",
+      "name": "/remani_planner_node",
+      "msg": "[GridMap][LiDAR] Live input timed out: age 0.752s exceeds 0.750s (accepted/fused/pending=2468/2468/0). Static PCD availability does not mask this fault.",
+      "evidence_line": 24133,
+      "kind": "live_input_timeout_detail",
+      "receive_rel_s": 179.3822,
+      "source_rel_s": 177.7396
+    },
+    {
+      "topic": "/rosout_agg",
+      "name": "/remani_planner_node",
+      "msg": "Depth Lost! EMERGENCY_STOP",
+      "evidence_line": 24134,
+      "kind": "perception_timeout_stop",
+      "receive_rel_s": 179.3825,
+      "source_rel_s": 177.7403
+    },
+    {
+      "topic": "/planning/safety_speed_limit",
+      "value": 0.0,
+      "evidence_line": 24007,
+      "kind": "/planning/safety_speed_limit",
+      "receive_rel_s": 177.7408
+    },
+    {
+      "topic": "/planning/trajectory",
+      "action": 2,
+      "trajectory_id": 0,
+      "duration": 0,
+      "evidence_line": 24009,
+      "kind": "/planning/trajectory",
+      "receive_rel_s": 177.7505
+    },
+    {
+      "topic": "/rosout_agg",
+      "name": "/mm_controller_node",
+      "msg": "[MMCtrl] Aborting the trajectory.",
+      "evidence_line": 24052,
+      "kind": "controller_abort",
+      "receive_rel_s": 179.1678,
+      "source_rel_s": 177.7561
+    },
+    {
+      "topic": "/rosout_agg",
+      "name": "/remani_planner_node",
+      "msg": "[GridMap][LiDAR] Live input recovered (accepted/fused=2469/2468).",
+      "evidence_line": 24165,
+      "kind": "live_input_recovered",
+      "receive_rel_s": 179.419,
+      "source_rel_s": 178.9396
+    },
+    {
+      "topic": "/rosout_agg",
+      "name": "/remani_planner_node",
+      "msg": "[FSM] Frozen planning-boundary ESDF requirement at seq=1402 in PERCEPTION_RECOVERY.",
+      "evidence_line": 24226,
+      "kind": "esdf_boundary",
+      "receive_rel_s": 179.6461,
+      "source_rel_s": 179.6025
+    },
+    {
+      "topic": "/rosout_agg",
+      "name": "/remani_planner_node",
+      "msg": "[FSM] Wait for required ESDF in PERCEPTION_RECOVERY (required_seq=1402, esdf_seq=1401, wait=0.00 s).",
+      "evidence_line": 24232,
+      "kind": "wait_for_esdf",
+      "receive_rel_s": 179.6897,
+      "source_rel_s": 179.6026
+    },
+    {
+      "topic": "/planning/trajectory",
+      "action": 1,
+      "trajectory_id": 1,
+      "duration": 2.1726296127730222,
+      "evidence_line": 24229,
+      "kind": "/planning/trajectory",
+      "receive_rel_s": 179.6777,
+      "source_rel_s": 179.6534
+    },
+    {
+      "topic": "/planning/trajectory",
+      "action": 1,
+      "trajectory_id": 2,
+      "duration": 4.611655415923895,
+      "evidence_line": 24234,
+      "kind": "/planning/trajectory",
+      "receive_rel_s": 179.693,
+      "source_rel_s": 179.6534
+    },
+    {
+      "topic": "/rosout_agg",
+      "name": "/remani_planner_node",
+      "msg": "[FSM] Fresh perception, feedback and accepted goal validated a new recovery trajectory; release only the transient stop.",
+      "evidence_line": 24241,
+      "kind": "accepted_goal_recovery_validated",
+      "receive_rel_s": 179.7323,
+      "source_rel_s": 179.6753
+    },
+    {
+      "topic": "/planning/safety_speed_limit",
+      "value": -1.0,
+      "evidence_line": 24231,
+      "kind": "/planning/safety_speed_limit",
+      "receive_rel_s": 179.6778
+    },
+    {
+      "topic": "/cmd_vel",
+      "v": 0.07808721675468946,
+      "w": 0.35,
+      "evidence_line": 24321,
+      "kind": "first_nonzero_command_after_second_release",
+      "receive_rel_s": 180.2314
+    },
+    {
+      "topic": "/planning/finish",
+      "value": true,
+      "evidence_line": 33616,
+      "kind": "/planning/finish",
+      "receive_rel_s": 237.6809
+    }
+  ],
+  "second_stop": {
+    "cause": "Live LiDAR input timeout: source +177.7396 s says age 0.752 s exceeds 0.750 s; Depth Lost emergency stop follows at source +177.7403 s.",
+    "branch": "Same perception-timeout / PERCEPTION_RECOVERY branch as the first stop. Not evidence of a collision-triggered transient-obstacle recovery branch.",
+    "hold_duration_s": 1.937,
+    "recorded_cmd_count": 7,
+    "recorded_nonzero_cmd_count": 0,
+    "recorded_odom_count": 20,
+    "max_xy_displacement_from_first_stop_sample_m": 0.008486444849325687,
+    "goal_retention": "One goal message across the complete capture. Source +179.6753 s recovery log explicitly validates the accepted goal before releasing the transient stop.",
+    "esdf_gate": "Source +179.6025/+179.6026 s freezes and waits for required ESDF seq 1402 while current ESDF is 1401, in PERCEPTION_RECOVERY.",
+    "publication_order_caveat": "ADD segment 1 arrives +179.6777 s, safety=-1 arrives +179.6778 s, ADD segment 2 arrives +179.6930 s. Cross-topic receipt order cannot establish that segment 2 was published after safety release. Source recovery path calls sendPolyTrajROSMsg before finishNewTrajectory/safety release.",
+    "first_nonzero_command_rel_s": 180.2314
+  },
+  "finish_acceptance": {
+    "finish_event": {
+      "t": 1794641534.2312942,
+      "topic": "/planning/finish",
+      "value": true,
+      "rel": 237.6809,
+      "evidence_line": 33616
+    },
+    "confirmed": "Planner published /planning/finish=true at +237.6809 s after the two recorded perception-stop recoveries.",
+    "nearest_odom_before_finish": {
+      "t": 1794641534.1884773,
+      "topic": "/odom",
+      "source": 1794641534.1717625,
+      "x": 0.5568904197672752,
+      "y": -1.4006029909105966,
+      "v": -0.06925977696786498,
+      "w": -0.08981483138911468,
+      "rel": 237.638,
+      "evidence_line": 33607
+    },
+    "next_odom_after_finish": {
+      "t": 1794641534.2880569,
+      "topic": "/odom",
+      "source": 1794641534.2716932,
+      "x": 0.5565944684738575,
+      "y": -1.4098805622566972,
+      "v": -0.07744181683652557,
+      "w": -0.10486485891779987,
+      "rel": 237.7376,
+      "evidence_line": 33625
+    },
+    "last_odom": {
+      "t": 1794641536.5903475,
+      "topic": "/odom",
+      "source": 1794641536.571765,
+      "x": 0.548130623932812,
+      "y": -1.408666861747886,
+      "v": 0.010382985468501646,
+      "w": 0.0008089317779872989,
+      "rel": 240.0399,
+      "evidence_line": 33977
+    },
+    "cmd_count_after_finish": 19,
+    "nonzero_cmd_count_after_finish": 8,
+    "last_nonzero_cmd_after_finish": {
+      "t": 1794641536.170476,
+      "topic": "/cmd_vel",
+      "v": 0.002254565819233483,
+      "w": -0.02726231750444866,
+      "rel": 239.62,
+      "evidence_line": 33916
+    },
+    "confirmed_limit": "The robot was not stationary at the finish event: adjacent odom longitudinal speeds are -0.06926 and -0.07744 m/s; angular speeds are -0.08981 and -0.10486 rad/s. Eight nonzero commands are recorded after finish, last at +239.6200 s.",
+    "pose_acceptance_status": "Not independently certified in this audit. navigation_evidence.jsonl has odom x/y but no quaternion/frame or joint values. Supplementary yaw_review.json identifies goal frame world and odom frame odom, so direct subtraction is not a verified world-frame goal residual. Independent goal-frame pose, yaw, arm and settling checks remain necessary.",
+    "source_gate_context": "Current FSM source checks measured position/yaw/arm against tolerances before normal manual finish, but that source-level check and a Bool success message do not substitute for independent recorded pose verification."
+  },
+  "refresh_acceptance": {
+    "mppi_refresh_log_count": 0,
+    "refresh_request_topic_in_extracted_set": false,
+    "conclusion": "No actual MPPIRefresh event is recorded in the complete capture. Neither recovery ADD sequence is evidence of MPPIRefresh; this feature remains unvalidated by this run."
+  },
+  "run_wide_fault_evidence": {
+    "goal_messages": 1,
+    "tracking_fault_counts": {
+      "False": 956
+    },
+    "perception_stop_count": 2,
+    "runtime_state_caveat": "MPPI freshness/deadline rejections persist; nine waiting_explicit_arm_enable_or_normal_status and three state_feedback_stale states are recorded despite the extracted Piper execution states remaining normal. This audit does not assign the underlying cause."
+  },
+  "source_refs": [
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 446,
+      "meaning": "Stopped perception recovery validates current goal, feedback and map before trajectory publication."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 539,
+      "meaning": "Trajectory send precedes recovery success log and finishNewTrajectory."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1433,
+      "meaning": "Depth Lost starts perception recovery."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 824,
+      "meaning": "Measured position/yaw/arm used by finish gates."
+    }
+  ]
+}

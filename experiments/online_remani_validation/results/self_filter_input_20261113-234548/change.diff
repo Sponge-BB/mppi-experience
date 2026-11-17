@@ -1,0 +1,130 @@
+--- baseline/src/mm_remani/scripts/velodyne_transformer.py
++++ current/src/mm_remani/scripts/velodyne_transformer.py
+@@ -170,13 +170,19 @@
+                                                queue_size=1, tcp_nodelay=True)
+         self.pub = rospy.Publisher('~output', PointCloud2, queue_size=1)
+         self.sub = rospy.Subscriber(
+-            '~input', PointCloud2, self.cloud_cb, queue_size=1, tcp_nodelay=True)
++            '~input', PointCloud2, self.cloud_cb, queue_size=1,
++            buff_size=1024**2, tcp_nodelay=True)
+         rospy.loginfo("Transformer node started, target_frame: %s, filter_self: %s",
+                       self.target_frame, self.filter_self)
+ 
+     def joints_cb(self, msg):
++        stamp = math.nan
+         try:
+             stamp = msg.header.stamp.to_sec()
++            if math.isfinite(stamp) and stamp > 0.:
++                with self.joint_lock:
++                    if stamp <= self.joint_stamp:
++                        return
+             ids = [msg.name.index('joint'+str(i)) for i in range(1, 7)]
+             if len(msg.name) != len(set(msg.name)):
+                 raise ValueError('duplicate self-filter joint names')
+@@ -192,6 +198,10 @@
+                     self.joint_condition.notify_all()
+         except (ValueError, IndexError) as exc:
+             with self.joint_lock:
++                # Another callback may have accepted a newer source while
++                # this message was being checked. It cannot revoke that q.
++                if math.isfinite(stamp) and 0. < stamp <= self.joint_stamp:
++                    return
+                 self.q = None
+                 self.joint_history.clear()
+                 self.joint_condition.notify_all()
+@@ -247,7 +257,9 @@
+             source_frame = msg.header.frame_id
+             if (not math.isfinite(stamp) or stamp <= 0. or
+                     not -.005 <= now-stamp <= .15):
+-                raise ValueError('self-filter scan/joint source time unavailable or stale')
++                raise ValueError('self-filter scan source time invalid or stale '
++                                 '(stamp=%.9f now=%.9f age_ms=%.3f)' %
++                                 (stamp, now, (now-stamp)*1000.))
+             q, joint_stamp = self.joints_at_scan(stamp, now)
+             # No Time(0) fallback is permitted on the planning/perception path.
+             scan_tf = self.tf_buffer.lookup_transform('world', source_frame,
+--- baseline/src/mm_remani/test/test_robot_self_filter.py
++++ current/src/mm_remani/test/test_robot_self_filter.py
+@@ -111,6 +111,82 @@
+         point = self.model.body_spheres(q)[-1, :3]
+         self.deliver([point]); self.node.pub.publish.assert_called_once()
+         self.assertEqual(self.node.pub.publish.call_args.args[0].width, 0)
++
++    def test_old_or_duplicate_feedback_cannot_clear_newer_valid_pose(self):
++        for stamp in (99.8, self.scan_stamp):
++            with self.subTest(stamp=stamp):
++                msg = JointState(); msg.header.stamp = rospy.Time.from_sec(stamp)
++                msg.name = ['joint%d'%i for i in range(1, 7)]
++                # Even invalid content in an obsolete source has no authority
++                # to revoke the pose already accepted from a newer source.
++                msg.position = [np.nan]*6
++                with patch('velodyne_transformer.rospy.get_time', return_value=self.now), \
++                        patch('velodyne_transformer.rospy.logwarn_throttle'):
++                    self.node.joints_cb(msg)
++                np.testing.assert_array_equal(self.node.q, self.q_a)
++                self.assertEqual(self.node.joint_stamp, self.scan_stamp)
++                self.assertEqual(len(self.node.joint_history), 1)
++
++    def test_invalid_feedback_without_obsolete_source_still_clears_pose(self):
++        for stamp in (0., np.nan, 100.04):
++            with self.subTest(stamp=stamp):
++                self.node.q = self.q_a.copy()
++                self.node.joint_history = deque([(self.scan_stamp, self.q_a.copy())], maxlen=64)
++                msg = Mock(); msg.header.stamp.to_sec.return_value = stamp
++                msg.name = ['joint%d'%i for i in range(1, 7)]
++                msg.position = ([np.nan]*6 if stamp == 100.04 else self.q_a.tolist())
++                with patch('velodyne_transformer.rospy.get_time', return_value=self.now), \
++                        patch('velodyne_transformer.rospy.logwarn_throttle'):
++                    self.node.joints_cb(msg)
++                self.assertIsNone(self.node.q)
++                self.assertFalse(self.node.joint_history)
++
++    def test_invalid_message_cannot_revoke_source_accepted_during_validation(self):
++        newer = JointState(); newer.header.stamp = rospy.Time.from_sec(100.04)
++        newer.name = ['joint%d'%i for i in range(1, 7)]
++        newer.position = self.q_b.tolist()
++        node = self.node
++        class InterleavedNames(list):
++            delivered = False
++            def index(names, value):
++                if not names.delivered:
++                    names.delivered = True
++                    node.joints_cb(newer)
++                return super().index(value)
++        invalid = JointState(); invalid.header.stamp = rospy.Time.from_sec(100.035)
++        invalid.name = InterleavedNames(newer.name); invalid.position = [np.nan]*6
++        with patch('velodyne_transformer.rospy.get_time', return_value=self.now), \
++                patch('velodyne_transformer.rospy.logwarn_throttle'):
++            node.joints_cb(invalid)
++        np.testing.assert_array_equal(node.q, self.q_b)
++        self.assertEqual(node.joint_stamp, 100.04)
++        self.assertEqual(len(node.joint_history), 2)
++
++    def test_stale_scan_log_identifies_scan_source_age_before_joint_lookup(self):
++        self.now = 100.24
++        with patch('velodyne_transformer.rospy.get_time', return_value=self.now), \
++                patch('velodyne_transformer.rospy.logwarn_throttle') as warning, \
++                patch.object(self.node, 'joints_at_scan') as lookup:
++            self.node.cloud_cb(self.cloud([[1., 0., .5]]))
++        lookup.assert_not_called()
++        message = str(warning.call_args.args[-1])
++        self.assertIn('self-filter scan source time', message)
++        self.assertIn('stamp=100.030000000', message)
++        self.assertIn('now=100.240000000', message)
++        self.assertIn('age_ms=210.000', message)
++        self.node.pub.publish.assert_not_called()
++
++    def test_stale_scan_does_not_latch_recovery_with_new_scan_and_joints(self):
++        self.now = 103.04
++        self.deliver([[1., 0., .5]])
++        self.node.pub.publish.assert_not_called()
++        self.scan_stamp = self.now
++        msg = JointState(); msg.header.stamp = rospy.Time.from_sec(self.scan_stamp)
++        msg.name = ['joint%d'%i for i in range(1, 7)]; msg.position = self.q_a.tolist()
++        with patch('velodyne_transformer.rospy.get_time', return_value=self.now):
++            self.node.joints_cb(msg)
++        self.deliver([[1., 0., .5]])
++        self.node.pub.publish.assert_called_once()
+ 
+     def test_latest_feedback_one_hundred_ms_after_scan_cannot_replace_missing_history(self):
+         self.node.joint_stamp = 100.13; self.now = 100.14

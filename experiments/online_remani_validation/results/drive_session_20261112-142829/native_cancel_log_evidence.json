@@ -1,0 +1,628 @@
+{
+  "dataset": "drive_session_20261112-142829/capture.bag",
+  "scope": "Read-only offline extraction of existing /rosout_agg and local log files; no ROS subscriptions or robot commands",
+  "source_window": [
+    1794465017,
+    1794465024
+  ],
+  "conclusions": {
+    "observed_abort_log": {
+      "receipt": 1794465019.7032716,
+      "source": 1794465019.5348113,
+      "level": 4,
+      "name": "/mm_controller_node",
+      "message": "[MMCtrl] Aborting the trajectory.",
+      "file": "/home/l/remani_ws/src/mm_controller/src/controller_utils.cpp",
+      "function": "Trajectory_Data_t::feed",
+      "line": 33,
+      "seq": 244540
+    },
+    "last_pre_abort_dynamic_decision": {
+      "receipt": 1794465019.5396588,
+      "source": 1794465019.0020504,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow][active] Predicted horizon clear (seq=393).",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "function": "REMANIReplanFSM::updateDynamicPointFlowDecision",
+      "line": 2800,
+      "seq": 244534
+    },
+    "direct_planner_abort_trigger": "Resolved from existing hai ROS master rosout.log: source 1794465019.523924904 Depth Lost! EMERGENCY_STOP; map reports live input age 0.761s > 0.750s at source 1794465019.526724462.",
+    "planner_give_up_log_after_goal_recorded": false,
+    "local_latest": "/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b",
+    "local_planner_or_rosout_log_exists": false,
+    "ros_master_host_from_current_launch": "192.168.137.107",
+    "next_existing_evidence_source": "Retrieved by parent as hai_rosout_cancel_window.txt; direct-cause gap now closed.",
+    "recovered_input_source": 1794465019.576721,
+    "input_recovery_delay_after_depth_lost_ms": 52.796,
+    "why_no_new_trajectory": "DepthLost assigns enable_fail_safe_=false. EMERGENCY_STOP issues ACTION_ABORT once; subsequent automatic transition to GEN_NEW_TRAJ requires enable_fail_safe_=true. There is no recovery assignment anywhere in the planner code. checkCollisionCallback returns immediately in EMERGENCY_STOP, so map recovery does not change the state.",
+    "goal_cleared_by_this_branch": false,
+    "persistent_stop_scope": "Automatic recovery remains blocked for this process after this sensor event. A newly accepted manual goal can explicitly enter GEN_NEW_TRAJ, but does not reset enable_fail_safe_; not proof of autonomous recovery."
+  },
+  "recording_limits": [
+    "/rosout_agg subscriber queue_size=1; missing aggregate sequence numbers around abort prevent unique source-cause identification. The direct-cause gap was subsequently closed using the existing complete ROS master log.",
+    "source is message.header.stamp; receipt is recorder bag timestamp, often delayed by hundreds of milliseconds.",
+    "Previous pre-goal LiDAR timeout logs exist but do not establish cause of this later abort.",
+    "No motion-qualified dynamic points were logged near this abort; this does not certify static/live map or blind regions free."
+  ],
+  "aggregate_sequence_gap_window": {
+    "range": [
+      244530,
+      244554
+    ],
+    "present": [
+      244530,
+      244533,
+      244534,
+      244537,
+      244538,
+      244539,
+      244540,
+      244544,
+      244545,
+      244546,
+      244550,
+      244551,
+      244552,
+      244553,
+      244554
+    ],
+    "missing": [
+      244531,
+      244532,
+      244535,
+      244536,
+      244541,
+      244542,
+      244543,
+      244547,
+      244548,
+      244549
+    ]
+  },
+  "messages": [
+    {
+      "receipt": 1794465017.3856108,
+      "source": 1794465017.184751,
+      "level": 4,
+      "name": "/mm_controller_node",
+      "message": "[MMctrl] Execution feedback unavailable/stale; suppressing commands.",
+      "file": "/home/l/remani_ws/src/mm_controller/src/mm_controller_fsm.cpp",
+      "function": "MMControllerFSM::process",
+      "line": 133,
+      "seq": 244505
+    },
+    {
+      "receipt": 1794465017.4104874,
+      "source": 1794465017.2104924,
+      "level": 4,
+      "name": "/whole_body_mppi",
+      "message": "MPPI command rejected: delivery_deadline_exceeded (cycle=97.79 ms; snapshot={})",
+      "file": "whole_body_mppi.py",
+      "function": "WholeBodyNode.reject",
+      "line": 504,
+      "seq": 244506
+    },
+    {
+      "receipt": 1794465017.4470873,
+      "source": 1794465017.1310093,
+      "level": 4,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 69.24ms exceeds 50.00ms; the ROS callback queue remains available.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "recordESDFTiming",
+      "line": 1824,
+      "seq": 244507
+    },
+    {
+      "receipt": 1794465017.9003093,
+      "source": 1794465017.2900252,
+      "level": 4,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow][overlay] Planning overlay unavailable (stale); static/live-map planning remains active.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "refreshDynamicPointPlanningOverlay",
+      "line": 3166,
+      "seq": 244508
+    },
+    {
+      "receipt": 1794465017.9290252,
+      "source": 1794465017.3051457,
+      "level": 4,
+      "name": "/piper_ctrl_single_node",
+      "message": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled.",
+      "file": "piper_ctrl_single_node.py",
+      "function": "C_PiperRosNode._check_command_timeout",
+      "line": 703,
+      "seq": 244509
+    },
+    {
+      "receipt": 1794465018.1037233,
+      "source": 1794465017.3795846,
+      "level": 4,
+      "name": "/robot_self_filter",
+      "message": "Robot self-filter suppressed cloud: self-filter joint feedback unavailable or stale",
+      "file": "velodyne_transformer.py",
+      "function": "CloudTransformer.filter_self_cloud",
+      "line": 336,
+      "seq": 244510
+    },
+    {
+      "receipt": 1794465018.107701,
+      "source": 1794465017.379867,
+      "level": 4,
+      "name": "/real_base_controller",
+      "message": "/cmd_vel 超过 0.300s 未更新，持续发送零速度",
+      "file": "base_control.py",
+      "function": "CmdVelToUartNode.send_timer_callback",
+      "line": 148,
+      "seq": 244511
+    },
+    {
+      "receipt": 1794465018.1349416,
+      "source": 1794465017.305961,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[FSM] Manual target keeps current arm pose. Restore stand-by after goal: true",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "function": "REMANIReplanFSM::waypointCallback",
+      "line": 2021,
+      "seq": 244513
+    },
+    {
+      "receipt": 1794465018.1464922,
+      "source": 1794465017.4232347,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=27 avg/max=17.49/27.96ms esdf=27 compute_avg/max=96.34/121.96ms main_commit_avg/max=9.12/11.73ms snapshot_avg/max=2.29/5.29ms age=73.14ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=377/376/377/0 clouds_coalesced=13 async(submit/commit/reject/occ_defer)=27/27/0/34 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "maybeLogPerformanceDiagnostics",
+      "line": 1881,
+      "seq": 244514
+    },
+    {
+      "receipt": 1794465018.2235272,
+      "source": 1794465017.8657722,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "The optimization result is : Success: met stopping criteria (delta).",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp",
+      "function": "PolyTrajOptimizer::OptimizeTrajectory_lbfgs",
+      "line": 237,
+      "seq": 244515
+    },
+    {
+      "receipt": 1794465018.2344837,
+      "source": 1794465017.8904245,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow][overlay] Swept planning cloud: 0 points, seq=383, max time-varying guide radius=0.000 m.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "refreshDynamicPointPlanningOverlay",
+      "line": 3173,
+      "seq": 244518
+    },
+    {
+      "receipt": 1794465018.3592284,
+      "source": 1794465017.957709,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow][active] Predicted horizon clear (seq=384).",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "function": "REMANIReplanFSM::updateDynamicPointFlowDecision",
+      "line": 2800,
+      "seq": 244519
+    },
+    {
+      "receipt": 1794465018.3642654,
+      "source": 1794465018.132432,
+      "level": 4,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 93.18ms exceeds 50.00ms; the ROS callback queue remains available.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "recordESDFTiming",
+      "line": 1824,
+      "seq": 244521
+    },
+    {
+      "receipt": 1794465018.444719,
+      "source": 1794465017.9651074,
+      "level": 2,
+      "name": "/mm_controller_node",
+      "message": "[MMctrl] Reset virtual trajectory clock for update 1.",
+      "file": "/home/l/remani_ws/src/mm_controller/src/mm_controller_fsm.cpp",
+      "function": "MMControllerFSM::syncTrajectoryClock",
+      "line": 312,
+      "seq": 244522
+    },
+    {
+      "receipt": 1794465018.4489584,
+      "source": 1794465017.965238,
+      "level": 2,
+      "name": "/mm_controller_node",
+      "message": "[MMctrl] Receive the trajectory. STAY --> POLY_TRAJ",
+      "file": "/home/l/remani_ws/src/mm_controller/src/mm_controller_fsm.cpp",
+      "function": "MMControllerFSM::CMD_CTRL_process",
+      "line": 215,
+      "seq": 244523
+    },
+    {
+      "receipt": 1794465018.9137323,
+      "source": 1794465018.355732,
+      "level": 4,
+      "name": "/real_base_controller",
+      "message": "/cmd_vel 超过 0.300s 未更新，持续发送零速度",
+      "file": "base_control.py",
+      "function": "CmdVelToUartNode.send_timer_callback",
+      "line": 148,
+      "seq": 244524
+    },
+    {
+      "receipt": 1794465018.9375515,
+      "source": 1794465018.3792055,
+      "level": 4,
+      "name": "/whole_body_mppi",
+      "message": "MPPI command rejected: collision_snapshot_expired_during_plan (cycle=34.28 ms; snapshot={'valid': True, 'map_age_ms': 353.88, 'dynamic_age_ms': 141.91, 'cached_joint_age_ms': 33.5, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 248})",
+      "file": "whole_body_mppi.py",
+      "function": "WholeBodyNode.reject",
+      "line": 504,
+      "seq": 244525
+    },
+    {
+      "receipt": 1794465019.1419003,
+      "source": 1794465018.7055163,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][LocalESDF] changed=904 input_bound=2013375/3600000 voxels, cap=0.60m; full=no",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "prepareIncrementalESDF",
+      "line": 2226,
+      "seq": 244527
+    },
+    {
+      "receipt": 1794465019.148771,
+      "source": 1794465018.7663083,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow] no_dynamic_detected: no qualified motion points; this does not certify sensor blind regions as free.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp",
+      "function": "DynamicPointBuffer::pointCloudCallback",
+      "line": 559,
+      "seq": 244528
+    },
+    {
+      "receipt": 1794465019.3151793,
+      "source": 1794465018.8309777,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][LocalESDF] committed regions=1 compute=2013375/2013375 input-bound voxels, worker=96.34ms commit=7.75ms.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "commitAsyncESDFResult",
+      "line": 2575,
+      "seq": 244529
+    },
+    {
+      "receipt": 1794465019.43557,
+      "source": 1794465018.9400914,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow][overlay] Swept planning cloud: 0 points, seq=393, max time-varying guide radius=0.000 m.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "refreshDynamicPointPlanningOverlay",
+      "line": 3173,
+      "seq": 244530
+    },
+    {
+      "receipt": 1794465019.460504,
+      "source": 1794465019.041586,
+      "level": 4,
+      "name": "/whole_body_mppi",
+      "message": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.40 ms; snapshot={'valid': True, 'map_age_ms': 366.46, 'dynamic_age_ms': 108.08, 'cached_joint_age_ms': 54.84, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 250})",
+      "file": "whole_body_mppi.py",
+      "function": "WholeBodyNode.reject",
+      "line": 504,
+      "seq": 244533
+    },
+    {
+      "receipt": 1794465019.5396588,
+      "source": 1794465019.0020504,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow][active] Predicted horizon clear (seq=393).",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "function": "REMANIReplanFSM::updateDynamicPointFlowDecision",
+      "line": 2800,
+      "seq": 244534
+    },
+    {
+      "receipt": 1794465019.5399518,
+      "source": 1794465019.1469696,
+      "level": 4,
+      "name": "/piper_ctrl_single_node",
+      "message": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled.",
+      "file": "piper_ctrl_single_node.py",
+      "function": "C_PiperRosNode._check_command_timeout",
+      "line": 703,
+      "seq": 244537
+    },
+    {
+      "receipt": 1794465019.6782815,
+      "source": 1794465019.461128,
+      "level": 4,
+      "name": "/whole_body_mppi",
+      "message": "MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=0.17 ms; snapshot={})",
+      "file": "whole_body_mppi.py",
+      "function": "WholeBodyNode.reject",
+      "line": 504,
+      "seq": 244538
+    },
+    {
+      "receipt": 1794465019.7032716,
+      "source": 1794465019.5348113,
+      "level": 4,
+      "name": "/mm_controller_node",
+      "message": "[MMCtrl] Aborting the trajectory.",
+      "file": "/home/l/remani_ws/src/mm_controller/src/controller_utils.cpp",
+      "function": "Trajectory_Data_t::feed",
+      "line": 33,
+      "seq": 244540
+    },
+    {
+      "receipt": 1794465019.9253535,
+      "source": 1794465019.618813,
+      "level": 4,
+      "name": "/real_base_controller",
+      "message": "/cmd_vel 超过 0.300s 未更新，持续发送零速度",
+      "file": "base_control.py",
+      "function": "CmdVelToUartNode.send_timer_callback",
+      "line": 148,
+      "seq": 244545
+    },
+    {
+      "receipt": 1794465020.3311596,
+      "source": 1794465019.7004302,
+      "level": 4,
+      "name": "/whole_body_mppi",
+      "message": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.23 ms; snapshot={'valid': False, 'map_age_ms': 610.19, 'dynamic_age_ms': 734.07, 'cached_joint_age_ms': 276.13, 'dynamic_valid': False, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 254})",
+      "file": "whole_body_mppi.py",
+      "function": "WholeBodyNode.reject",
+      "line": 504,
+      "seq": 244546
+    },
+    {
+      "receipt": 1794465020.3465736,
+      "source": 1794465019.7311249,
+      "level": 4,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 101.39ms exceeds 50.00ms; the ROS callback queue remains available.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "recordESDFTiming",
+      "line": 1824,
+      "seq": 244551
+    },
+    {
+      "receipt": 1794465020.8342276,
+      "source": 1794465019.9900172,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow][overlay] Swept planning cloud: 0 points, seq=399, max time-varying guide radius=0.000 m.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "refreshDynamicPointPlanningOverlay",
+      "line": 3173,
+      "seq": 244552
+    },
+    {
+      "receipt": 1794465020.8558676,
+      "source": 1794465020.3477135,
+      "level": 4,
+      "name": "/whole_body_mppi",
+      "message": "MPPI command rejected: native_reference_cancelled (cycle=0.52 ms; snapshot={})",
+      "file": "whole_body_mppi.py",
+      "function": "WholeBodyNode.reject",
+      "line": 504,
+      "seq": 244554
+    },
+    {
+      "receipt": 1794465021.7064583,
+      "source": 1794465020.7356222,
+      "level": 4,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 83.55ms exceeds 50.00ms; the ROS callback queue remains available.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "recordESDFTiming",
+      "line": 1824,
+      "seq": 244556
+    },
+    {
+      "receipt": 1794465022.1624303,
+      "source": 1794465021.0404086,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow][overlay] Swept planning cloud: 0 points, seq=409, max time-varying guide radius=0.000 m.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "refreshDynamicPointPlanningOverlay",
+      "line": 3173,
+      "seq": 244559
+    },
+    {
+      "receipt": 1794465022.2434156,
+      "source": 1794465021.9261494,
+      "level": 4,
+      "name": "/whole_body_mppi",
+      "message": "MPPI command rejected: collision_snapshot_unavailable (cycle=2.21 ms; snapshot={'valid': True, 'map_age_ms': 363.92, 'dynamic_age_ms': 132.01, 'cached_joint_age_ms': 73.72, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 262})",
+      "file": "whole_body_mppi.py",
+      "function": "WholeBodyNode.reject",
+      "line": 504,
+      "seq": 244561
+    },
+    {
+      "receipt": 1794465022.4295578,
+      "source": 1794465022.0421412,
+      "level": 4,
+      "name": "/real_base_controller",
+      "message": "/cmd_vel 超过 0.300s 未更新，持续发送零速度",
+      "file": "base_control.py",
+      "function": "CmdVelToUartNode.send_timer_callback",
+      "line": 148,
+      "seq": 244562
+    },
+    {
+      "receipt": 1794465022.429848,
+      "source": 1794465021.8314846,
+      "level": 4,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 91.54ms exceeds 50.00ms; the ROS callback queue remains available.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "recordESDFTiming",
+      "line": 1824,
+      "seq": 244563
+    },
+    {
+      "receipt": 1794465022.4801018,
+      "source": 1794465022.0900707,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow][overlay] Swept planning cloud: 0 points, seq=420, max time-varying guide radius=0.000 m.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "refreshDynamicPointPlanningOverlay",
+      "line": 3173,
+      "seq": 244564
+    },
+    {
+      "receipt": 1794465022.5472338,
+      "source": 1794465022.2421548,
+      "level": 4,
+      "name": "/whole_body_mppi",
+      "message": "MPPI command rejected: native_reference_cancelled (cycle=0.42 ms; snapshot={})",
+      "file": "whole_body_mppi.py",
+      "function": "WholeBodyNode.reject",
+      "line": 504,
+      "seq": 244565
+    },
+    {
+      "receipt": 1794465022.7449007,
+      "source": 1794465022.4320393,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=28 avg/max=17.02/30.95ms esdf=28 compute_avg/max=92.28/124.92ms main_commit_avg/max=8.62/12.36ms snapshot_avg/max=2.30/3.65ms age=112.24ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=421/419/421/0 clouds_coalesced=16 async(submit/commit/reject/occ_defer)=28/28/0/42 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "maybeLogPerformanceDiagnostics",
+      "line": 1881,
+      "seq": 244566
+    },
+    {
+      "receipt": 1794465023.6020405,
+      "source": 1794465022.8810103,
+      "level": 4,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 96.73ms exceeds 50.00ms; the ROS callback queue remains available.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "recordESDFTiming",
+      "line": 1824,
+      "seq": 244568
+    },
+    {
+      "receipt": 1794465023.9560075,
+      "source": 1794465023.1401036,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow][overlay] Swept planning cloud: 0 points, seq=430, max time-varying guide radius=0.000 m.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "refreshDynamicPointPlanningOverlay",
+      "line": 3173,
+      "seq": 244569
+    },
+    {
+      "receipt": 1794465025.0822134,
+      "source": 1794465023.7992806,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][LocalESDF] changed=886 input_bound=2024880/3600000 voxels, cap=0.60m; full=no",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "prepareIncrementalESDF",
+      "line": 2226,
+      "seq": 244571
+    },
+    {
+      "receipt": 1794465025.137303,
+      "source": 1794465023.8668344,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[DynamicPointFlow] no_dynamic_detected: no qualified motion points; this does not certify sensor blind regions as free.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp",
+      "function": "DynamicPointBuffer::pointCloudCallback",
+      "line": 559,
+      "seq": 244572
+    },
+    {
+      "receipt": 1794465025.1398647,
+      "source": 1794465023.9324672,
+      "level": 4,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][AsyncESDF][worker] Computation 112.45ms exceeds 50.00ms; the ROS callback queue remains available.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "recordESDFTiming",
+      "line": 1824,
+      "seq": 244573
+    },
+    {
+      "receipt": 1794465025.1633167,
+      "source": 1794465023.9339108,
+      "level": 2,
+      "name": "/remani_planner_node",
+      "message": "[GridMap][LocalESDF] committed regions=1 compute=2024880/2024880 input-bound voxels, worker=112.45ms commit=9.20ms.",
+      "file": "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "commitAsyncESDFResult",
+      "line": 2575,
+      "seq": 244574
+    }
+  ],
+  "remote_complete_log_evidence": [
+    "1794465017.379584550 WARN /robot_self_filter [velodyne_transformer.py:336(CloudTransformer.filter_self_cloud)] Robot self-filter suppressed cloud: self-filter joint feedback unavailable or stale",
+    "1794465019.534811259 WARN /mm_controller_node [/home/l/remani_ws/src/mm_controller/src/controller_utils.cpp:33(Trajectory_Data_t::feed)] [MMCtrl] Aborting the trajectory.",
+    "1794465019.523924904 ERROR /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1139(REMANIReplanFSM::checkCollisionCallback)] Depth Lost! EMERGENCY_STOP",
+    "1794465019.526724462 ERROR /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp:1075(updateSensorTimeoutState)] [GridMap][LiDAR] Live input timed out: age 0.761s exceeds 0.750s (accepted/fused/pending=391/391/0). Static PCD availability does not mask this fault.",
+    "1794465019.540447235 WARN /robot_self_filter [velodyne_transformer.py:336(CloudTransformer.filter_self_cloud)] Robot self-filter suppressed cloud: self-filter joint feedback unavailable or stale",
+    "1794465019.534920958 INFO /mm_controller_node [/home/l/remani_ws/src/mm_controller/src/mm_controller_fsm.cpp:245(MMControllerFSM::CMD_CTRL_process)] [MMctrl] Stop execute the trajectory. POLY_TRAJ --> STAY",
+    "1794465019.576721026 INFO /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp:1086(updateSensorTimeoutState)] [GridMap][LiDAR] Live input recovered (accepted/fused=393/391)."
+  ],
+  "source_references": [
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 28,
+      "meaning": "fail_safe loaded from parameter only at initialization"
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 739,
+      "meaning": "EMERGENCY_STOP calls abort once, later requires enable_fail_safe and low base velocity to replan"
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1135,
+      "meaning": "Safety callback immediately returns in EMERGENCY_STOP"
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1142,
+      "meaning": "Depth loss sets enable_fail_safe false; does not clear target"
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1829,
+      "meaning": "Explicit accepted new goal changes state to GEN_NEW_TRAJ, not reset fail_safe"
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 3136,
+      "meaning": "callEmergencyStop publishes ACTION_ABORT"
+    },
+    {
+      "file": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "line": 1086,
+      "meaning": "Map health automatically clears its own transient timeout and logs recovery"
+    }
+  ],
+  "minimal_repair_boundary": "Do not change runtime code in this analysis. A later fix must separate configured fail_safe policy from transient sensor-stop cause, hold zero until live sensor and measured-state validity recover, require current ESDF and validated new trajectory, preserve non-sensor stop owners, and never replay the aborted old trajectory. Removing only enable_fail_safe_=false is insufficient because current EMERGENCY_STOP auto-recovery has no live sensor-health condition."
+}

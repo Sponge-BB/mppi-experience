@@ -1,12 +1,35 @@
 #include "plan_env/grid_map.h"
 
 #include <algorithm>
+#include <cstring>
+#include <limits>
 #include <map>
 #include <sstream>
 #include <thread>
 
 namespace
 {
+
+// Compare every byte, but only decode indices in blocks that actually differ.
+// This includes removals, expiry and static clearing outside the latest scan.
+template <typename Visitor>
+bool visitChangedOccupancy(const std::vector<char> &current,
+                           const std::vector<char> &committed,
+                           const Visitor &visitor)
+{
+  const std::size_t block = 4096;
+  for (std::size_t begin = 0; begin < current.size(); begin += block)
+  {
+    const std::size_t end = std::min(current.size(), begin + block);
+    if (std::memcmp(current.data() + begin, committed.data() + begin,
+                    end - begin) == 0)
+      continue;
+    for (std::size_t i = begin; i < end; ++i)
+      if (current[i] != committed[i] && !visitor(i))
+        return false;
+  }
+  return true;
+}
 
 template <typename Function>
 void boundedParallelFor(std::size_t item_count,
@@ -67,11 +90,196 @@ bool validIndexBounds(const Eigen::Vector3i &minimum,
 
 }  // namespace
 
+thread_local const GridMap *GridMap::writer_context_ = nullptr;
+thread_local const GridMap *GridMap::reader_context_ = nullptr;
+thread_local std::shared_ptr<const GridMap::ReadSnapshot> GridMap::reader_snapshot_;
+thread_local bool GridMap::reader_on_writer_ = false;
+
+GridMap::ReadScope::ReadScope(const GridMap &map, Selection selection)
+    : previous_map_(reader_context_), previous_(reader_snapshot_),
+      previous_writer_read_(reader_on_writer_)
+{
+  reader_context_ = &map;
+  reader_snapshot_ = std::atomic_load(&map.latest_read_snapshot_);
+  // Exporting is read-only even though it shares the map's writer queue.
+  // Ordinary writer callbacks still query their own live buffers.
+  reader_on_writer_ = selection == Complete;
+  if (selection == Complete)
+    valid_ = map.beginPlanningReadSnapshot() &&
+        map.getDynamicObservationSeq() == map.getESDFObservationSeq();
+}
+
+GridMap::ReadScope::~ReadScope()
+{
+  reader_context_ = previous_map_;
+  reader_snapshot_ = std::move(previous_);
+  reader_on_writer_ = previous_writer_read_;
+}
+
+std::shared_ptr<const GridMap::ReadSnapshot> GridMap::readSnapshot() const
+{
+  if (!isolated_mapping_ || (writer_context_ == this && !reader_on_writer_)) return {};
+  if (reader_context_ == this) return reader_snapshot_;
+  return std::atomic_load(&latest_read_snapshot_);
+}
+
+bool GridMap::copyDistanceRegion(const Eigen::Vector3i &lo,
+                                 const Eigen::Vector3i &hi,
+                                 std::vector<double> &output) const
+{
+  const Eigen::Vector3i dimensions = mp_.map_voxel_num_;
+  if (!validIndexBounds(lo, hi, dimensions)) return false;
+
+  const std::size_t nx = static_cast<std::size_t>(dimensions.x());
+  const std::size_t ny = static_cast<std::size_t>(dimensions.y());
+  const std::size_t nz = static_cast<std::size_t>(dimensions.z());
+  const std::size_t limit = std::numeric_limits<std::size_t>::max();
+  if (ny > limit / nz) return false;
+  const std::size_t plane_stride = ny * nz;
+  if (nx > limit / plane_stride) return false;
+  const std::size_t source_count = nx * plane_stride;
+
+  // Keep one shared owner for the whole copy. An enclosing Complete scope
+  // selects the same coherent field and source stamps as scalar queries.
+  const auto view = readSnapshot();
+  if (view && !view->distance) return false;
+  const auto &source = view ? *view->distance : md_.distance_buffer_all_;
+  if (source.size() < source_count) return false;
+
+  const std::size_t rows_x = static_cast<std::size_t>(hi.x() - lo.x()) + 1;
+  const std::size_t rows_y = static_cast<std::size_t>(hi.y() - lo.y()) + 1;
+  const std::size_t row_size = static_cast<std::size_t>(hi.z() - lo.z()) + 1;
+  if (rows_x > output.max_size() / rows_y) return false;
+  const std::size_t row_count = rows_x * rows_y;
+  if (row_count > output.max_size() / row_size) return false;
+
+  output.resize(row_count * row_size);
+  std::size_t destination = 0;
+  for (int x = lo.x(); x <= hi.x(); ++x)
+    for (int y = lo.y(); y <= hi.y(); ++y)
+    {
+      const std::size_t address = static_cast<std::size_t>(x) * plane_stride +
+          static_cast<std::size_t>(y) * nz + static_cast<std::size_t>(lo.z());
+      std::copy_n(source.data() + address, row_size,
+                  output.data() + destination);
+      destination += row_size;
+    }
+  return true;
+}
+
+void GridMap::refreshReadSnapshot() const
+{
+  if (reader_context_ == this)
+    reader_snapshot_ = std::atomic_load(&latest_read_snapshot_);
+}
+
+bool GridMap::beginPlanningReadSnapshot() const
+{
+  if (!isolated_mapping_) return true;
+  const auto complete = std::atomic_load(&latest_complete_snapshot_);
+  if (reader_context_ != this || !reader_snapshot_ || !complete ||
+      complete->epoch != reader_snapshot_->epoch ||
+      complete->esdf < reader_snapshot_->esdf)
+    return false;
+  // A newer live occupancy may be waiting for EDT. Search and optimization
+  // both use this completed generation; final validation uses the live layer.
+  reader_snapshot_ = complete;
+  return true;
+}
+
+void GridMap::publishReadSnapshot()
+{
+  const bool trace = mp_.enable_performance_diagnostics_;
+  const ros::SteadyTime trace_start = trace ? ros::SteadyTime::now() : ros::SteadyTime();
+  ros::SteadyTime phase_start = trace_start;
+  double occupancy_copy_ms = 0.0, distance_copy_ms = 0.0;
+  const auto previous = std::atomic_load(&latest_read_snapshot_);
+  auto next = std::make_shared<ReadSnapshot>();
+  next->observation = md_.dynamic_observation_seq_;
+  next->esdf = md_.esdf_observation_seq_;
+  next->accepted = md_.lidar_accepted_seq_;
+  next->fused = md_.lidar_fused_seq_;
+  next->distance_revision = read_distance_revision_;
+  next->epoch = esdf_map_epoch_;
+  const bool copy_occupancy = !previous || previous->observation != next->observation || previous->epoch != next->epoch;
+  const bool copy_distance = !previous || previous->distance_revision != next->distance_revision || previous->epoch != next->epoch;
+  if (copy_occupancy) {
+    auto layer = std::make_shared<OccupancySnapshot>();
+    layer->occupancy = md_.occupancy_buffer_;
+    layer->inflated = md_.occupancy_buffer_inflate_;
+    layer->fixed = md_.static_occupancy_;
+    next->occupancy = layer;
+  } else next->occupancy = previous->occupancy;
+  if (trace) {
+    const ros::SteadyTime now = ros::SteadyTime::now();
+    occupancy_copy_ms = (now - phase_start).toSec() * 1e3;
+    phase_start = now;
+  }
+  if (copy_distance)
+    next->distance = std::make_shared<const std::vector<double>>(md_.distance_buffer_all_);
+  else next->distance = previous->distance;
+  if (trace)
+    distance_copy_ms = (ros::SteadyTime::now() - phase_start).toSec() * 1e3;
+  next->static_ready = md_.static_map_esdf_ready_;
+  next->has_odom = md_.has_odom_;
+  next->has_depth = md_.has_first_depth_;
+  next->depth_fusion = md_.flag_use_depth_fusion;
+  next->last_occupancy = md_.last_occ_update_time_;
+  next->health_start = md_.lidar_health_monitor_start_steady_;
+  next->last_lidar = md_.last_lidar_input_steady_;
+  std::shared_ptr<const ReadSnapshot> immutable = next;
+  if (next->observation == next->esdf)
+    std::atomic_store(&latest_complete_snapshot_, immutable);
+  std::atomic_store(&latest_read_snapshot_, immutable);
+  if (trace && (copy_occupancy || copy_distance))
+    ROS_DEBUG_NAMED("latency",
+        "[MapTrace] stage=read epoch=%lu obs=%lu esdf=%lu rev=%lu fusion=%.9f complete=%d occ_copy=%d dist_copy=%d occ_cells=%zu dist_cells=%zu occ_ms=%.3f dist_ms=%.3f total_ms=%.3f ready_mono=%.9f",
+        static_cast<unsigned long>(next->epoch), static_cast<unsigned long>(next->observation),
+        static_cast<unsigned long>(next->esdf), static_cast<unsigned long>(next->distance_revision),
+        next->last_occupancy.toSec(), next->observation == next->esdf ? 1 : 0,
+        copy_occupancy ? 1 : 0, copy_distance ? 1 : 0,
+        md_.occupancy_buffer_.size(), md_.distance_buffer_all_.size(),
+        occupancy_copy_ms, distance_copy_ms,
+        (ros::SteadyTime::now() - trace_start).toSec() * 1e3,
+        ros::SteadyTime::now().toSec());
+}
+
 // #define current_img_ md_.depth_image_[image_cnt_ & 1]
 // #define last_img_ md_.depth_image_[!(image_cnt_ & 1)]
 
+void GridMap::mappingLoop()
+{
+  writer_context_ = this;
+  try {
+    while (!mapping_stop_.load() && ros::ok()) {
+      mapping_queue_.callOne(ros::WallDuration(.01));
+      if (synchronous_fallback_requested_.exchange(false))
+        requestSynchronousESDFFallback();
+      // The existing writer loop already wakes at least every 10 ms when
+      // idle. Drain completed work here instead of waiting for a 50 ms ESDF
+      // timer or another cloud; the normal commit validation remains intact.
+      if (asyncESDFUpdateOutstanding())
+        commitAsyncESDFResult();
+      publishReadSnapshot();
+    }
+  } catch (const std::exception &error) {
+    ROS_FATAL("[GridMap] Mapping worker failed: %s", error.what());
+    ros::shutdown();
+  }
+  writer_context_ = nullptr;
+}
+
+void GridMap::stopMapping()
+{
+  mapping_stop_.store(true);
+  mapping_queue_.disable();
+  if (mapping_thread_.joinable()) mapping_thread_.join();
+  mapping_queue_.clear();
+}
+
 GridMap::~GridMap()
 {
+  stopMapping();
   occ_timer_.stop();
   esdf_timer_.stop();
   vis_timer_.stop();
@@ -100,6 +308,10 @@ GridMap::~GridMap()
 void GridMap::initMap(ros::NodeHandle &nh)
 {
   node_ = nh;
+  bool mppi_enabled = false;
+  node_.param("mppi/enable", mppi_enabled, false);
+  node_.param("grid_map/isolated_mapping", isolated_mapping_, mppi_enabled);
+  if (isolated_mapping_) node_.setCallbackQueue(&mapping_queue_);
 
   // TF2 — used by cloudOdomCallback to look up transforms at the exact scan timestamp
   tf_buffer_.reset(new tf2_ros::Buffer());
@@ -210,20 +422,16 @@ void GridMap::initMap(ros::NodeHandle &nh)
   node_.param("grid_map/fuse_global_map", mp_.fuse_global_map_, true);
   node_.param("grid_map/local_esdf_follow_odom", mp_.local_esdf_follow_odom_, true);
   node_.param("grid_map/global_map_full_esdf", mp_.global_map_full_esdf_, true);
+  node_.param("grid_map/incremental_esdf", mp_.incremental_esdf_, false);
+  node_.param("grid_map/esdf_distance_cap", mp_.esdf_distance_cap_, 0.6);
   node_.param("grid_map/global_map_obstacles_inflation", mp_.global_map_obstacles_inflation_, mp_.obstacles_inflation_);
   node_.param("grid_map/global_map_lidar_clear", mp_.global_map_lidar_clear_, true);
   node_.param("grid_map/global_map_lidar_clear_radius", mp_.global_map_lidar_clear_radius_, 0.0);
   node_.param("grid_map/global_map_lidar_clear_min_misses", mp_.global_map_lidar_clear_min_misses_, 3);
   node_.param("grid_map/dynamic_static_match_radius", mp_.dynamic_static_match_radius_, 0.075);
-  node_.param("grid_map/live_obstacle_expiry_enable",
-              mp_.live_obstacle_expiry_enable_, true);
-  node_.param("grid_map/live_obstacle_max_missed_fusions",
-              mp_.live_obstacle_max_missed_fusions_, 4);
   if (mp_.global_map_lidar_clear_min_misses_ < 1)
     mp_.global_map_lidar_clear_min_misses_ = 1;
   mp_.dynamic_static_match_radius_ = std::max(0.0, mp_.dynamic_static_match_radius_);
-  mp_.live_obstacle_max_missed_fusions_ =
-      std::max(1, mp_.live_obstacle_max_missed_fusions_);
   node_.param("grid_map/self_filter_enable", mp_.self_filter_enable_, false);
   node_.param("grid_map/self_filter_min_x", mp_.self_filter_min_(0), -0.8);
   node_.param("grid_map/self_filter_max_x", mp_.self_filter_max_(0), 0.45);
@@ -272,6 +480,10 @@ void GridMap::initMap(ros::NodeHandle &nh)
   if(global_plan){
     mp_.use_global_map_ = true;
   }
+  if (mp_.incremental_esdf_ &&
+      (!fusedGlobalMapOwnsESDFBounds() || !mp_.global_map_full_esdf_ ||
+       !std::isfinite(mp_.esdf_distance_cap_) || mp_.esdf_distance_cap_ < 0.6))
+    throw std::invalid_argument("incremental ESDF requires a fused full global map and a finite distance cap >= 0.6m");
   bool use_load_map_;
   nh.param("grid_map/use_load_map", use_load_map_, false);
 
@@ -327,21 +539,17 @@ void GridMap::initMap(ros::NodeHandle &nh)
   // initialize data buffers
 
   int buffer_size = mp_.map_voxel_num_(0) * mp_.map_voxel_num_(1) * mp_.map_voxel_num_(2);
+  // A reader generation holds two original double fields and two byte masks.
+  // Solver, latest complete, live publication and construction retain at most
+  // four generations; unchanged layers are shared. Never crop the model.
+  if (isolated_mapping_ && (buffer_size <= 0 ||
+      std::uint64_t(buffer_size) * (2*sizeof(double)+2) > 128ULL*1024*1024))
+    throw std::runtime_error("isolated GridMap read generation exceeds 128 MiB memory budget");
 
   md_.occupancy_buffer_ = vector<double>(buffer_size, mp_.clamp_min_log_ - mp_.unknown_flag_);
   md_.occupancy_buffer_inflate_ = vector<char>(buffer_size, 0);
   md_.static_occupancy_ = vector<char>(buffer_size, 0);
   md_.static_miss_count_ = vector<unsigned char>(buffer_size, 0);
-  if (mp_.live_obstacle_expiry_enable_)
-  {
-    md_.live_occupancy_last_hit_cycle_ =
-        vector<std::uint32_t>(buffer_size, 0);
-    md_.live_occupancy_active_ =
-        vector<unsigned char>(buffer_size, 0);
-  }
-  md_.active_live_occupancy_indices_.clear();
-  md_.live_fusion_cycle_ = 0;
-  md_.expired_live_occupancy_count_ = 0;
   md_.global_map_stamp_ = ros::Time(0);
   md_.global_esdf_pending_ = false;
   md_.static_map_esdf_pending_ = false;
@@ -580,10 +788,13 @@ void GridMap::initMap(ros::NodeHandle &nh)
            (mp_.live_lidar_health_monitor_enable_ &&
             mp_.live_lidar_health_isolated_worker_) ? "on" : "off",
            mp_.live_lidar_timeout_, mp_.live_lidar_startup_grace_);
-  ROS_INFO("[GridMap][LiDAR] live obstacle expiry=%s, "
-           "max_missed_fusions=%d; static PCD occupancy is never expired.",
-           mp_.live_obstacle_expiry_enable_ ? "on" : "off",
-           mp_.live_obstacle_max_missed_fusions_);
+  ROS_INFO("[GridMap][LiDAR] Live occupancy clears only from observed free rays; "
+           "missing returns and track IDs never clear obstacles.");
+  if (isolated_mapping_) {
+    publishReadSnapshot();
+    mapping_thread_ = std::thread(&GridMap::mappingLoop, this);
+    ROS_INFO("[GridMap] Isolated serialized mapping; immutable planner generations <=128 MiB each.");
+  }
 }
 
 void GridMap::resetBuffer()
@@ -673,7 +884,8 @@ bool GridMap::liveLidarMessageStampFresh(const ros::Time &stamp,
 
 ros::SteadyTime GridMap::latestLiveLidarHealthTime() const
 {
-  ros::SteadyTime latest = md_.last_lidar_input_steady_;
+  const auto view = readSnapshot();
+  ros::SteadyTime latest = view ? view->last_lidar : md_.last_lidar_input_steady_;
   const std::uint64_t ingress_ns =
       lidar_health_steady_ns_.load(std::memory_order_acquire);
   if (ingress_ns == 0)
@@ -815,22 +1027,24 @@ void GridMap::clearPendingLidarObservation()
 
 bool GridMap::sensorTimeoutNow() const
 {
+  const auto view = readSnapshot();
+  const auto last_occupancy = view ? view->last_occupancy : md_.last_occ_update_time_;
   const ros::Time now_ros = ros::Time::now();
   const bool legacy_depth_or_odom_timeout =
-      !mp_.use_global_map_ && md_.flag_use_depth_fusion &&
-      md_.last_occ_update_time_.toSec() >= 1.0 &&
-      (now_ros - md_.last_occ_update_time_).toSec() >
+      !mp_.use_global_map_ && (view ? view->depth_fusion : md_.flag_use_depth_fusion) &&
+      last_occupancy.toSec() >= 1.0 &&
+      (now_ros - last_occupancy).toSec() >
           mp_.odom_depth_timeout_;
 
   bool live_lidar_timeout = false;
-  if (mp_.live_lidar_health_monitor_enable_ && md_.has_odom_)
+  if (mp_.live_lidar_health_monitor_enable_ && (view ? view->has_odom : md_.has_odom_))
   {
     const ros::SteadyTime latest_live_input =
         latestLiveLidarHealthTime();
     const bool has_healthy_live_input = !latest_live_input.isZero();
     const ros::SteadyTime reference = has_healthy_live_input
         ? latest_live_input
-        : md_.lidar_health_monitor_start_steady_;
+        : (view ? view->health_start : md_.lidar_health_monitor_start_steady_);
     const double deadline = has_healthy_live_input
         ? mp_.live_lidar_timeout_
         : mp_.live_lidar_startup_grace_;
@@ -926,6 +1140,10 @@ void GridMap::updateLocalBoundsAroundRobot(bool force_esdf_update)
     return;
   if (mp_.global_map_full_esdf_ && md_.global_esdf_pending_)
     return;
+  // Incremental work bounds belong to the captured occupancy changes, not
+  // newer odometry. Moving the robot must not invalidate an in-flight patch.
+  if (mp_.incremental_esdf_ && esdf_occupancy_epoch_ == esdf_map_epoch_)
+    return;
 
   Eigen::Vector3i min_id, max_id;
   if (mp_.global_map_full_esdf_ && fusedGlobalMapOwnsESDFBounds())
@@ -978,7 +1196,7 @@ void GridMap::clearStaticGlobalMap()
     md_.occupancy_buffer_neg_[idx] = 0;
     md_.distance_buffer_[idx] = 10000;
     md_.distance_buffer_neg_[idx] = 10000;
-    md_.distance_buffer_all_[idx] = 10000;
+    if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
   }
 }
 
@@ -1007,7 +1225,7 @@ int GridMap::clearStaticOccupancyAround(const Eigen::Vector3i &center, int clear
         md_.occupancy_buffer_neg_[idx] = 1;
         md_.distance_buffer_[idx] = 10000;
         md_.distance_buffer_neg_[idx] = 10000;
-        md_.distance_buffer_all_[idx] = 10000;
+        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
         ++cleared;
       }
 
@@ -1224,7 +1442,6 @@ void GridMap::raycastProcess(bool live_lidar_observation)
   Eigen::Vector3d half = Eigen::Vector3d(0.5, 0.5, 0.5);
   Eigen::Vector3d ray_pt, pt_w;
   bool processed_projected_point = false;
-  std::uint32_t current_live_fusion_cycle = 0;
 
   for (int i = 0; i < md_.proj_points_cnt; ++i)
   {
@@ -1317,33 +1534,6 @@ void GridMap::raycastProcess(bool live_lidar_observation)
     return;
   }
 
-  if (live_lidar_observation && mp_.live_obstacle_expiry_enable_)
-  {
-    // Count only scans which survive every raycast-level filter. Rejected
-    // scans must not consume a missed-fusion allowance and thereby age a
-    // valid obstacle while no replacement observation was fused.
-    // Wrap is practically unreachable. Rebase tracked cells so unsigned age
-    // arithmetic still fails safe in a very long-lived process.
-    if (md_.live_fusion_cycle_ ==
-        std::numeric_limits<std::uint32_t>::max())
-    {
-      for (const int idx : md_.active_live_occupancy_indices_)
-      {
-        if (idx >= 0 &&
-            idx < static_cast<int>(
-                      md_.live_occupancy_last_hit_cycle_.size()) &&
-            md_.live_occupancy_active_[idx])
-          md_.live_occupancy_last_hit_cycle_[idx] = 0;
-      }
-      md_.live_fusion_cycle_ = 1;
-    }
-    else
-    {
-      ++md_.live_fusion_cycle_;
-    }
-    current_live_fusion_cycle = md_.live_fusion_cycle_;
-  }
-
   min_x = min(min_x, ray_origin(0));
   min_y = min(min_y, ray_origin(1));
   min_z = min(min_z, ray_origin(2));
@@ -1381,21 +1571,6 @@ void GridMap::raycastProcess(bool live_lidar_observation)
 
   md_.local_updated_ = true;
 
-  // update occupancy cached in queue
-  // Keep all work for this queued observation tied to its captured sensor
-  // origin. A newer rejected synchronized frame may already have refreshed
-  // camera_pos_, but must not change the pending valid scan's fusion window.
-  Eigen::Vector3d local_range_min = ray_origin - mp_.local_update_range_;
-  Eigen::Vector3d local_range_max = ray_origin + mp_.local_update_range_;
-
-  Eigen::Vector3i min_id, max_id;
-  posToIndex(local_range_min, min_id);
-  posToIndex(local_range_max, max_id);
-  boundIndex(min_id);
-  boundIndex(max_id);
-
-  // std::cout << "cache all: " << md_.cache_voxel_.size() << std::endl;
-
   int static_clear_step = 0;
   if (mp_.global_map_lidar_clear_)
   {
@@ -1403,6 +1578,8 @@ void GridMap::raycastProcess(bool live_lidar_observation)
   }
   int cleared_static_voxels = 0;
 
+  // The prediction layer never owns occupancy. Only this complete frame's
+  // actual hits/free rays can update obstacle geometry.
   while (!md_.cache_voxel_.empty())
   {
 
@@ -1410,8 +1587,13 @@ void GridMap::raycastProcess(bool live_lidar_observation)
     int idx_ctns = toAddress(idx);
     md_.cache_voxel_.pop();
 
-    double log_odds_update =
-        md_.count_hit_[idx_ctns] >= md_.count_hit_and_miss_[idx_ctns] - md_.count_hit_[idx_ctns] ? mp_.prob_hit_log_ : mp_.prob_miss_log_;
+    // For live LiDAR an actual endpoint wins over other beams through the
+    // same voxel. A visible surface must not be erased by majority voting.
+    const bool occupied = live_lidar_observation
+        ? md_.count_hit_[idx_ctns] > 0
+        : md_.count_hit_[idx_ctns] >=
+              md_.count_hit_and_miss_[idx_ctns] - md_.count_hit_[idx_ctns];
+    const double log_odds_update = occupied ? mp_.prob_hit_log_ : mp_.prob_miss_log_;
 
     md_.count_hit_[idx_ctns] = md_.count_hit_and_miss_[idx_ctns] = 0;
 
@@ -1438,38 +1620,10 @@ void GridMap::raycastProcess(bool live_lidar_observation)
     if (log_odds_update > 0)
     {
       md_.occupancy_buffer_[idx_ctns] = mp_.clamp_max_log_;
-      if (current_live_fusion_cycle > 0 &&
-          !md_.static_occupancy_[idx_ctns])
-      {
-        if (!md_.live_occupancy_active_[idx_ctns])
-        {
-          md_.live_occupancy_active_[idx_ctns] = 1;
-          md_.active_live_occupancy_indices_.push_back(idx_ctns);
-        }
-        md_.live_occupancy_last_hit_cycle_[idx_ctns] =
-            current_live_fusion_cycle;
-      }
     }
     else
     {
       md_.occupancy_buffer_[idx_ctns] = mp_.clamp_min_log_;
-    }
-  }
-
-  if (current_live_fusion_cycle > 0)
-  {
-    const std::size_t expired =
-        expireStaleLiveOccupancy(current_live_fusion_cycle);
-    if (expired > 0)
-    {
-      md_.expired_live_occupancy_count_ += expired;
-      ROS_INFO_THROTTLE(
-          1.0,
-          "[GridMap][LiDAR] Expired %zu stale live obstacle voxels after "
-          "%d missed fused scans (total=%lu); static PCD unchanged.",
-          expired, mp_.live_obstacle_max_missed_fusions_,
-          static_cast<unsigned long>(
-              md_.expired_live_occupancy_count_));
     }
   }
 
@@ -1478,68 +1632,6 @@ void GridMap::raycastProcess(bool live_lidar_observation)
     ROS_INFO_THROTTLE(2.0, "[GridMap] LiDAR cleared %d local static-map voxels from free rays.",
                       cleared_static_voxels);
   }
-}
-
-std::size_t GridMap::expireStaleLiveOccupancy(
-    std::uint32_t current_cycle)
-{
-  if (!mp_.live_obstacle_expiry_enable_ || current_cycle == 0 ||
-      md_.live_occupancy_active_.empty())
-    return 0;
-
-  std::size_t write_index = 0;
-  std::size_t expired_count = 0;
-  for (const int idx : md_.active_live_occupancy_indices_)
-  {
-    if (idx < 0 ||
-        idx >= static_cast<int>(md_.occupancy_buffer_.size()) ||
-        !md_.live_occupancy_active_[idx])
-      continue;
-
-    if (md_.static_occupancy_[idx] ||
-        md_.occupancy_buffer_[idx] <= mp_.min_occupancy_log_)
-    {
-      md_.live_occupancy_active_[idx] = 0;
-      md_.live_occupancy_last_hit_cycle_[idx] = 0;
-      continue;
-    }
-
-    const std::uint32_t last_hit_cycle =
-        md_.live_occupancy_last_hit_cycle_[idx];
-    const std::uint32_t missed_fusions =
-        current_cycle >= last_hit_cycle
-            ? current_cycle - last_hit_cycle
-            : std::numeric_limits<std::uint32_t>::max();
-    if (missed_fusions >= static_cast<std::uint32_t>(
-                              mp_.live_obstacle_max_missed_fusions_))
-    {
-      md_.occupancy_buffer_[idx] = mp_.clamp_min_log_;
-      md_.occupancy_buffer_inflate_[idx] = 0;
-      md_.live_occupancy_active_[idx] = 0;
-      md_.live_occupancy_last_hit_cycle_[idx] = 0;
-
-      // Expired voxels can lie outside the newest rays. Extend the dirty
-      // bounds so inflation is rebuilt and the next ESDF generation contains
-      // the removal as well as the newest hits.
-      const int yz_size =
-          mp_.map_voxel_num_.y() * mp_.map_voxel_num_.z();
-      const int x = idx / yz_size;
-      const int yz = idx % yz_size;
-      const int y = yz / mp_.map_voxel_num_.z();
-      const int z = yz % mp_.map_voxel_num_.z();
-      const Eigen::Vector3i expired_index(x, y, z);
-      md_.occupancy_bound_min_ =
-          md_.occupancy_bound_min_.cwiseMin(expired_index);
-      md_.occupancy_bound_max_ =
-          md_.occupancy_bound_max_.cwiseMax(expired_index);
-      ++expired_count;
-      continue;
-    }
-
-    md_.active_live_occupancy_indices_[write_index++] = idx;
-  }
-  md_.active_live_occupancy_indices_.resize(write_index);
-  return expired_count;
 }
 
 Eigen::Vector3d GridMap::closetPointInMap(const Eigen::Vector3d &pt, const Eigen::Vector3d &camera_pt)
@@ -1571,7 +1663,11 @@ Eigen::Vector3d GridMap::closetPointInMap(const Eigen::Vector3d &pt, const Eigen
 void GridMap::clearAndInflateLocalMap()
 {
   /*clear outside local*/
-  const int vec_margin = 5;
+  // A live scan's tighter bounds are not free-space evidence. Zero-width
+  // perimeter strips leave its raw occupancy intact; only actual free rays
+  // may remove it. Keep the original five-cell reset for legacy depth input.
+  // The pending LiDAR generation is consumed only after this function returns.
+  const int vec_margin = hasPendingLidarObservation() ? 0 : 5;
   // Eigen::Vector3i min_vec_margin = min_vec - Eigen::Vector3i(vec_margin,
   // vec_margin, vec_margin); Eigen::Vector3i max_vec_margin = max_vec +
   // Eigen::Vector3i(vec_margin, vec_margin, vec_margin);
@@ -1598,7 +1694,7 @@ void GridMap::clearAndInflateLocalMap()
         int idx = toAddress(x, y, z);
         if (md_.static_occupancy_[idx]) continue;
         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
-        md_.distance_buffer_all_[idx] = 10000;
+        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
       }
 
       for (int z = max_cut(2) + 1; z <= max_cut_m(2); ++z)
@@ -1606,7 +1702,7 @@ void GridMap::clearAndInflateLocalMap()
         int idx = toAddress(x, y, z);
         if (md_.static_occupancy_[idx]) continue;
         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
-        md_.distance_buffer_all_[idx] = 10000;
+        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
       }
     }
 
@@ -1619,7 +1715,7 @@ void GridMap::clearAndInflateLocalMap()
         int idx = toAddress(x, y, z);
         if (md_.static_occupancy_[idx]) continue;
         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
-        md_.distance_buffer_all_[idx] = 10000;
+        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
       }
 
       for (int y = max_cut(1) + 1; y <= max_cut_m(1); ++y)
@@ -1627,7 +1723,7 @@ void GridMap::clearAndInflateLocalMap()
         int idx = toAddress(x, y, z);
         if (md_.static_occupancy_[idx]) continue;
         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
-        md_.distance_buffer_all_[idx] = 10000;
+        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
       }
     }
 
@@ -1640,7 +1736,7 @@ void GridMap::clearAndInflateLocalMap()
         int idx = toAddress(x, y, z);
         if (md_.static_occupancy_[idx]) continue;
         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
-        md_.distance_buffer_all_[idx] = 10000;
+        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
       }
 
       for (int x = max_cut(0) + 1; x <= max_cut_m(0); ++x)
@@ -1648,7 +1744,7 @@ void GridMap::clearAndInflateLocalMap()
         int idx = toAddress(x, y, z);
         if (md_.static_occupancy_[idx]) continue;
         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
-        md_.distance_buffer_all_[idx] = 10000;
+        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
       }
     }
 
@@ -1884,9 +1980,20 @@ void GridMap::updateOccupancyCallback(const ros::TimerEvent & /*event*/)
   // blocking perception or processing an obsolete queue of scans.
   if (asyncESDFUpdateOutstanding())
   {
-    ++md_.async_esdf_occupancy_deferred_count_;
-    maybeLogPerformanceDiagnostics();
-    return;
+    // A completed worker result may be waiting only for the separate 50ms
+    // ESDF timer. Resolve it now through the same validation/fallback path.
+    updateESDFCallback(ros::TimerEvent());
+    if (asyncESDFUpdateOutstanding())
+    {
+      ++md_.async_esdf_occupancy_deferred_count_;
+      maybeLogPerformanceDiagnostics();
+      return;
+    }
+    // Preserve this complete generation before fusing the next scan. The
+    // normal end-of-callback publication would already contain newer
+    // occupancy with the previous ESDF, starving complete-map consumers.
+    if (isolated_mapping_)
+      publishReadSnapshot();
   }
 
   /* update occupancy */
@@ -1897,6 +2004,10 @@ void GridMap::updateOccupancyCallback(const ros::TimerEvent & /*event*/)
   const bool accepted_lidar_observation = hasPendingLidarObservation();
   const std::uint64_t pending_lidar_generation =
       md_.lidar_pending_seq_;
+  const ros::Time traced_input_stamp = md_.pending_lidar_stamp_;
+  const double traced_pending_ms = accepted_lidar_observation &&
+      !md_.pending_lidar_received_steady_.isZero()
+      ? (ros::SteadyTime::now() - md_.pending_lidar_received_steady_).toSec() * 1e3 : 0.0;
 
   // A valid callback can still sit behind other work before this timer gets a
   // turn. Never fuse such an old robot-relative snapshot using a now-obsolete
@@ -2012,6 +2123,15 @@ void GridMap::updateOccupancyCallback(const ros::TimerEvent & /*event*/)
   t2 = ros::Time::now();
   const double wall_ms =
       (ros::WallTime::now() - wall_start).toSec() * 1000.0;
+  if (mp_.enable_performance_diagnostics_ && md_.local_updated_)
+    ROS_DEBUG_NAMED("latency",
+        "[MapTrace] stage=fusion epoch=%lu obs=%lu lidar=%lu fusion=%.9f input=%.9f input_age_ms=%.3f pending_ms=%.3f occupancy_ms=%.3f",
+        static_cast<unsigned long>(esdf_map_epoch_),
+        static_cast<unsigned long>(md_.dynamic_observation_seq_),
+        static_cast<unsigned long>(md_.lidar_fused_seq_), md_.last_occ_update_time_.toSec(),
+        traced_input_stamp.toSec(), accepted_lidar_observation
+            ? (md_.last_occ_update_time_ - traced_input_stamp).toSec() * 1e3 : 0.0,
+        traced_pending_ms, wall_ms);
 
   md_.fuse_time_ += (t2 - t1).toSec();
   md_.max_fuse_time_ = max(md_.max_fuse_time_, (t2 - t1).toSec());
@@ -2036,6 +2156,12 @@ void GridMap::updateOccupancyCallback(const ros::TimerEvent & /*event*/)
   md_.occ_need_update_ = false;
   md_.local_updated_ = false;
   updateSensorTimeoutState();
+  // Hand the coherent occupancy to the worker in this callback, without
+  // waiting another timer period. The ESDF timer still drains work when no
+  // scan is pending; the synchronous baseline keeps its original schedule.
+  if (mp_.async_esdf_enable_ && !async_esdf_fallback_to_sync_ &&
+      md_.esdf_need_update_)
+    updateESDFCallback(ros::TimerEvent());
   maybeLogPerformanceDiagnostics();
 }
 
@@ -2078,10 +2204,12 @@ bool GridMap::asyncESDFUpdateOutstanding() const
 
 void GridMap::requestSynchronousESDFFallback()
 {
-  // GridMap and the FSM are serviced by the same default ROS callback queue,
-  // so this transition cannot race occupancy mutation or result commit. Keep
-  // the worker alive until destruction: its private snapshot is harmless and
-  // joining a long-running job here would reintroduce callback blockage.
+  // A planner watchdog requests this transition; only the map writer applies
+  // it. Never invalidate worker/map bookkeeping from the planning thread.
+  if (isolated_mapping_ && writer_context_ != this) {
+    synchronous_fallback_requested_.store(true);
+    return;
+  }
   if (!async_esdf_fallback_to_sync_)
   {
     async_esdf_fallback_to_sync_ = true;
@@ -2090,6 +2218,109 @@ void GridMap::requestSynchronousESDFFallback()
               "the remainder of this process.");
   }
   md_.esdf_need_update_ = true;
+}
+
+bool GridMap::prepareIncrementalESDF()
+{
+  if (!mp_.incremental_esdf_)
+    return true;
+
+  const ros::SteadyTime trace_start = mp_.enable_performance_diagnostics_
+      ? ros::SteadyTime::now() : ros::SteadyTime();
+  const auto &occupancy = md_.occupancy_buffer_inflate_;
+  const Eigen::Vector3i last = mp_.map_voxel_num_ - Eigen::Vector3i::Ones();
+  Eigen::Vector3i lo = last, hi = Eigen::Vector3i::Zero();
+  const bool full = esdf_occupancy_epoch_ != esdf_map_epoch_ ||
+      esdf_committed_occupancy_.size() != occupancy.size() ||
+      md_.static_map_esdf_pending_ || md_.global_esdf_pending_;
+  std::size_t changed = 0;
+  if (!full)
+  {
+    const int nz = mp_.map_voxel_num_.z();
+    const int yz = mp_.map_voxel_num_.y() * nz;
+    // Compare the actual inflated binary layer, including removals, expiry,
+    // static clearing and inflation. A ray/endpoint bounding box misses some
+    // of these mutations. This linear byte scan costs no full EDT workspace.
+    visitChangedOccupancy(occupancy, esdf_committed_occupancy_,
+      [&](std::size_t i) {
+        const Eigen::Vector3i p(i / yz, (i % yz) / nz, i % nz);
+        lo = lo.cwiseMin(p);
+        hi = hi.cwiseMax(p);
+        ++changed;
+        return true;
+      });
+    if (changed == 0)
+    {
+      // Freshly fused occupancy is identical to the field's input. Reuse its
+      // distances without renewing the original observation/fusion timestamp.
+      md_.esdf_observation_seq_ = md_.dynamic_observation_seq_;
+      md_.esdf_need_update_ = false;
+      incremental_patch_ready_ = false;
+      if (mp_.enable_performance_diagnostics_)
+        ROS_DEBUG_NAMED("latency",
+            "[MapTrace] stage=region epoch=%lu obs=%lu fusion=%.9f reuse=1 full=0 changed=0 prepare_ms=%.3f",
+            static_cast<unsigned long>(esdf_map_epoch_),
+            static_cast<unsigned long>(md_.dynamic_observation_seq_),
+            md_.last_occ_update_time_.toSec(),
+            (ros::SteadyTime::now() - trace_start).toSec() * 1e3);
+      return false;
+    }
+  }
+  // Native signed EDT is resolution - distance_to_free inside obstacles.
+  // Both the affected output and its input halo need cap + one voxel.
+  const int radius = static_cast<int>(std::ceil(
+      mp_.esdf_distance_cap_ / mp_.resolution_)) + 1;
+  const Eigen::Vector3i pad = Eigen::Vector3i::Constant(radius);
+  esdf_write_min_ = full ? Eigen::Vector3i::Zero().eval()
+                         : (lo - pad).cwiseMax(Eigen::Vector3i::Zero()).eval();
+  esdf_write_max_ = full ? last : (hi + pad).cwiseMin(last).eval();
+  md_.local_bound_min_ = (esdf_write_min_ - pad).cwiseMax(Eigen::Vector3i::Zero());
+  md_.local_bound_max_ = (esdf_write_max_ + pad).cwiseMin(last);
+  incremental_patch_ready_ = true;
+  if (mp_.enable_performance_diagnostics_)
+    ROS_DEBUG_NAMED("latency",
+        "[MapTrace] stage=region epoch=%lu obs=%lu fusion=%.9f reuse=0 full=%d changed=%zu changed_lo=%d,%d,%d changed_hi=%d,%d,%d input_lo=%d,%d,%d input_hi=%d,%d,%d halo=%d input_cells=%ld prepare_ms=%.3f",
+        static_cast<unsigned long>(esdf_map_epoch_),
+        static_cast<unsigned long>(md_.dynamic_observation_seq_),
+        md_.last_occ_update_time_.toSec(), full ? 1 : 0, changed,
+        lo.x(), lo.y(), lo.z(), hi.x(), hi.y(), hi.z(),
+        md_.local_bound_min_.x(), md_.local_bound_min_.y(), md_.local_bound_min_.z(),
+        md_.local_bound_max_.x(), md_.local_bound_max_.y(), md_.local_bound_max_.z(),
+        radius, static_cast<long>((md_.local_bound_max_ - md_.local_bound_min_ +
+            Eigen::Vector3i::Ones()).cast<long>().prod()),
+        (ros::SteadyTime::now() - trace_start).toSec() * 1e3);
+  ROS_INFO_THROTTLE(5.0,
+      "[GridMap][LocalESDF] changed=%zu input_bound=%ld/%zu voxels, cap=%.2fm; full=%s",
+      changed, static_cast<long>((md_.local_bound_max_ - md_.local_bound_min_ +
+          Eigen::Vector3i::Ones()).cast<long>().prod()), occupancy.size(),
+      mp_.esdf_distance_cap_, full ? "yes" : "no");
+  return true;
+}
+
+void GridMap::finishIncrementalESDF()
+{
+  if (!mp_.incremental_esdf_)
+    return;
+  if (esdf_occupancy_epoch_ != esdf_map_epoch_ ||
+      esdf_committed_occupancy_.size() != md_.occupancy_buffer_inflate_.size())
+    esdf_committed_occupancy_ = md_.occupancy_buffer_inflate_;
+  else
+  {
+    // Every binary change is inside the prepared write interior. Only advance
+    // this baseline AFTER the whole result has passed validation and committed.
+    const int nz = mp_.map_voxel_num_.z();
+    const int yz = mp_.map_voxel_num_.y() * nz;
+    for (int x = esdf_write_min_.x(); x <= esdf_write_max_.x(); ++x)
+      for (int y = esdf_write_min_.y(); y <= esdf_write_max_.y(); ++y)
+      {
+        const std::size_t address = x * yz + y * nz + esdf_write_min_.z();
+        std::copy_n(md_.occupancy_buffer_inflate_.data() + address,
+                    esdf_write_max_.z() - esdf_write_min_.z() + 1,
+                    esdf_committed_occupancy_.data() + address);
+      }
+  }
+  esdf_occupancy_epoch_ = esdf_map_epoch_;
+  incremental_patch_ready_ = false;
 }
 
 bool GridMap::submitAsyncESDFUpdate()
@@ -2106,6 +2337,7 @@ bool GridMap::submitAsyncESDFUpdate()
   job.max_index = md_.local_bound_max_;
   job.resolution = mp_.resolution_;
   job.captured_steady = snapshot_start;
+  job.trace_timing = mp_.enable_performance_diagnostics_;
   const std::uint64_t submitted_request_id = job.request_id;
 
   if (!validESDFBounds())
@@ -2140,6 +2372,21 @@ bool GridMap::submitAsyncESDFUpdate()
         std::copy_n(md_.occupancy_buffer_inflate_.begin() + map_address,
                     nz, job.occupancy.begin() + compact_address);
       }
+    if (mp_.incremental_esdf_ && esdf_occupancy_epoch_ == esdf_map_epoch_ &&
+        esdf_committed_occupancy_.size() == md_.occupancy_buffer_inflate_.size())
+    {
+      const int map_nz = mp_.map_voxel_num_.z();
+      const int map_yz = mp_.map_voxel_num_.y() * map_nz;
+      // Bound sparse bookkeeping; widespread changes keep the dense path.
+      const bool sparse = visitChangedOccupancy(md_.occupancy_buffer_inflate_,
+          esdf_committed_occupancy_, [&](std::size_t i) {
+            if (job.changed_cells.size() == 8192) return false;
+            job.changed_cells.emplace_back(i / map_yz, (i % map_yz) / map_nz, i % map_nz);
+            return true;
+          });
+      if (sparse) job.distance_cap = mp_.esdf_distance_cap_;
+      else job.changed_cells.clear();
+    }
   }
   catch (const std::exception &error)
   {
@@ -2171,6 +2418,13 @@ bool GridMap::submitAsyncESDFUpdate()
   md_.async_esdf_snapshot_wall_max_ms_ =
       std::max(md_.async_esdf_snapshot_wall_max_ms_, snapshot_ms);
   md_.esdf_need_update_ = false;
+  if (mp_.enable_performance_diagnostics_)
+    ROS_DEBUG_NAMED("latency",
+        "[MapTrace] stage=submit epoch=%lu obs=%lu id=%lu fusion=%.9f capture_mono=%.9f snapshot_ms=%.3f input_cells=%zu",
+        static_cast<unsigned long>(esdf_map_epoch_),
+        static_cast<unsigned long>(md_.dynamic_observation_seq_),
+        static_cast<unsigned long>(submitted_request_id), md_.last_occ_update_time_.toSec(),
+        snapshot_start.toSec(), snapshot_ms, voxel_count);
 
   if (mp_.enable_performance_diagnostics_ && snapshot_ms > mp_.esdf_warn_ms_)
   {
@@ -2265,9 +2519,55 @@ void GridMap::commitAsyncESDFResult()
   const double result_age_ms = std::max(
       0.0, (ros::SteadyTime::now() - result.captured_steady).toSec() * 1000.0);
   const ros::SteadyTime commit_start = ros::SteadyTime::now();
-  const bool finite_result = expected_size == result.distance_all.size() &&
+  const Eigen::Vector3i write_min = mp_.incremental_esdf_ ? esdf_write_min_ : result.min_index;
+  const Eigen::Vector3i write_max = mp_.incremental_esdf_ ? esdf_write_max_ : result.max_index;
+  bool finite_result = expected_size == result.distance_all.size() &&
       std::all_of(result.distance_all.begin(), result.distance_all.end(),
                   [](double distance) { return std::isfinite(distance); });
+  if (!result.patches.empty())
+  {
+    finite_result = valid_bounds && mp_.incremental_esdf_ &&
+        esdf_occupancy_epoch_ == esdf_map_epoch_ &&
+        esdf_committed_occupancy_.size() == md_.occupancy_buffer_inflate_.size() &&
+        result.distance_all.empty() && result.patches.size() <= 8;
+    for (const auto &patch : result.patches)
+    {
+      const bool bounds = validIndexBounds(patch.min_index, patch.max_index,
+                                           mp_.map_voxel_num_) &&
+          (patch.min_index.array() >= write_min.array()).all() &&
+          (patch.max_index.array() <= write_max.array()).all() &&
+          (patch.min_index.array() >= result.min_index.array()).all() &&
+          (patch.max_index.array() <= result.max_index.array()).all();
+      const std::size_t count = bounds ?
+          (patch.max_index - patch.min_index + Eigen::Vector3i::Ones())
+              .cast<std::size_t>().prod() : 0;
+      finite_result = finite_result && bounds && count == patch.distance_all.size() &&
+          std::all_of(patch.distance_all.begin(), patch.distance_all.end(),
+                      [](double d) { return std::isfinite(d); });
+    }
+    if (finite_result)
+    {
+      // A partial result must cover the complete influence of EVERY changed
+      // site, including removed obstacles. Validate the whole batch before
+      // writing anything or advancing its occupancy baseline/version.
+      const int radius = static_cast<int>(std::ceil(
+          mp_.esdf_distance_cap_ / mp_.resolution_)) + 1;
+      const Eigen::Vector3i pad = Eigen::Vector3i::Constant(radius);
+      const Eigen::Vector3i last = mp_.map_voxel_num_ - Eigen::Vector3i::Ones();
+      const int nz = mp_.map_voxel_num_.z(), yz = mp_.map_voxel_num_.y() * nz;
+      finite_result = visitChangedOccupancy(md_.occupancy_buffer_inflate_,
+          esdf_committed_occupancy_, [&](std::size_t i) {
+            const Eigen::Vector3i p(i / yz, (i % yz) / nz, i % nz);
+            const Eigen::Vector3i lo = (p - pad).cwiseMax(Eigen::Vector3i::Zero());
+            const Eigen::Vector3i hi = (p + pad).cwiseMin(last);
+            return std::any_of(result.patches.begin(), result.patches.end(),
+                [&](const plan_env::ESDFPatch &patch) {
+                  return (patch.min_index.array() <= lo.array()).all() &&
+                         (patch.max_index.array() >= hi.array()).all();
+                });
+          });
+    }
+  }
 
   if (!valid_bounds || !finite_result ||
       result_age_ms > mp_.async_esdf_max_result_age_ * 1000.0)
@@ -2307,29 +2607,64 @@ void GridMap::commitAsyncESDFResult()
     return;
   }
 
-  const std::size_t nz = static_cast<std::size_t>(size.z());
-  const std::size_t compact_yz =
-      static_cast<std::size_t>(size.y()) * nz;
-  for (int x = result.min_index.x(); x <= result.max_index.x(); ++x)
-    for (int y = result.min_index.y(); y <= result.max_index.y(); ++y)
-    {
-      const std::size_t compact_address =
-          static_cast<std::size_t>(x - result.min_index.x()) * compact_yz +
-          static_cast<std::size_t>(y - result.min_index.y()) * nz;
-      const int map_address =
-          x * mp_.map_voxel_num_.y() * mp_.map_voxel_num_.z() +
-          y * mp_.map_voxel_num_.z() + result.min_index.z();
-      std::copy_n(result.distance_all.begin() + compact_address, nz,
-                  md_.distance_buffer_all_.begin() + map_address);
-    }
+  const auto write = [&](const Eigen::Vector3i &origin, const Eigen::Vector3i &shape,
+                         const Eigen::Vector3i &lo, const Eigen::Vector3i &hi,
+                         const std::vector<double> &distance) {
+    const std::size_t nz = static_cast<std::size_t>(shape.z());
+    const std::size_t yz = static_cast<std::size_t>(shape.y()) * nz;
+    for (int x = lo.x(); x <= hi.x(); ++x)
+      for (int y = lo.y(); y <= hi.y(); ++y)
+      {
+        const std::size_t source = (x - origin.x()) * yz +
+            (y - origin.y()) * nz + lo.z() - origin.z();
+        const int destination = x * mp_.map_voxel_num_.y() * mp_.map_voxel_num_.z() +
+            y * mp_.map_voxel_num_.z() + lo.z();
+        const int count = hi.z() - lo.z() + 1;
+        if (mp_.incremental_esdf_)
+          for (int z = 0; z < count; ++z)
+            md_.distance_buffer_all_[destination + z] = std::max(-mp_.esdf_distance_cap_,
+                std::min(mp_.esdf_distance_cap_, distance[source + z]));
+        else
+          std::copy_n(distance.data() + source, count,
+                      md_.distance_buffer_all_.data() + destination);
+      }
+  };
+  if (result.patches.empty())
+    write(result.min_index, size, write_min, write_max, result.distance_all);
+  else
+    for (const auto &patch : result.patches)
+      write(patch.min_index, patch.max_index - patch.min_index + Eigen::Vector3i::Ones(),
+            patch.min_index, patch.max_index, patch.distance_all);
+  finishIncrementalESDF();
 
   const double commit_ms =
       (ros::SteadyTime::now() - commit_start).toSec() * 1000.0;
   esdf_committed_request_id_ = result.request_id;
   md_.esdf_observation_seq_ =
       std::max(md_.esdf_observation_seq_, result.observation_seq);
+  ++read_distance_revision_;
   ++md_.async_esdf_committed_count_;
   recordESDFTiming(result.compute_ms, commit_ms, result_age_ms, true);
+  if (mp_.enable_performance_diagnostics_)
+    ROS_DEBUG_NAMED("latency",
+        "[MapTrace] stage=commit epoch=%lu obs=%lu id=%lu rev=%lu fusion=%.9f start_mono=%.9f done_mono=%.9f queue_ms=%.3f compute_ms=%.3f ready_wait_ms=%.3f commit_ms=%.3f prepare_ms=%.3f partition_ms=%.3f positive_zyx_ms=%.3f,%.3f,%.3f near_free_ms=%.3f negative_zyx_ms=%.3f,%.3f,%.3f negative_apply_ms=%.3f negative_fallbacks=%zu regions=%zu compute_cells=%zu input_cells=%zu",
+        static_cast<unsigned long>(result.map_epoch), static_cast<unsigned long>(result.observation_seq),
+        static_cast<unsigned long>(result.request_id), static_cast<unsigned long>(read_distance_revision_),
+        md_.last_occ_update_time_.toSec(), result.compute_started_steady.toSec(),
+        result.compute_completed_steady.toSec(), result.queue_wait_ms, result.compute_ms,
+        result.compute_completed_steady.isZero() ? -1.0
+            : (commit_start - result.compute_completed_steady).toSec() * 1e3,
+        commit_ms, result.prepare_ms, result.partition_ms,
+        result.positive_ms[0], result.positive_ms[1], result.positive_ms[2], result.near_free_ms,
+        result.negative_ms[0], result.negative_ms[1], result.negative_ms[2],
+        result.negative_apply_ms, result.negative_fallback_count,
+        result.patches.empty() ? std::size_t(1) : result.patches.size(),
+        result.computed_voxels, expected_size);
+  if (mp_.enable_performance_diagnostics_)
+    ROS_INFO_THROTTLE(5.0,
+        "[GridMap][LocalESDF] committed regions=%zu compute=%zu/%zu input-bound voxels, worker=%.2fms commit=%.2fms.",
+        result.patches.empty() ? std::size_t(1) : result.patches.size(),
+        result.computed_voxels, expected_size, result.compute_ms, commit_ms);
 
   if (mp_.show_esdf_time_)
   {
@@ -2363,8 +2698,8 @@ void GridMap::updateESDFCallback(const ros::TimerEvent& /*event*/)
   }
 
   // Results must be drained even when no newer occupancy update is waiting.
-  // This callback runs on the same default queue as all planning queries, so
-  // the patch copy below is an atomic generation boundary to those readers.
+  // This callback shares the sole map-writer queue with occupancy fusion.
+  // Readers receive an immutable generation after the complete callback.
   commitAsyncESDFResult();
 
   if (esdf_worker_ && !async_esdf_fallback_to_sync_)
@@ -2406,6 +2741,9 @@ void GridMap::updateESDFCallback(const ros::TimerEvent& /*event*/)
     return;
   }
 
+  if (!prepareIncrementalESDF())
+    return;
+
   const bool static_or_initial_update =
       md_.static_map_esdf_pending_ || md_.global_esdf_pending_;
   if (mp_.async_esdf_enable_ && !async_esdf_fallback_to_sync_ &&
@@ -2443,11 +2781,13 @@ void GridMap::updateESDFCallback(const ros::TimerEvent& /*event*/)
       md_.dynamic_observation_seq_;
   const ros::SteadyTime wall_start = ros::SteadyTime::now();
   updateESDF3d();
+  finishIncrementalESDF();
   const double wall_ms =
       (ros::SteadyTime::now() - wall_start).toSec() * 1000.0;
 
   md_.esdf_observation_seq_ =
       std::max(md_.esdf_observation_seq_, computed_observation_seq);
+  ++read_distance_revision_;
   recordESDFTiming(wall_ms, wall_ms, 0.0, false);
 
   if (mp_.show_esdf_time_)
@@ -3427,9 +3767,9 @@ void GridMap::publishMapInflate(bool all_info)
   // ROS_INFO("pub map");
 }
 
-bool GridMap::odomValid() { return md_.has_odom_; }
+bool GridMap::odomValid() { const auto v=readSnapshot(); return v ? v->has_odom : md_.has_odom_; }
 
-bool GridMap::hasDepthObservation() { return md_.has_first_depth_; }
+bool GridMap::hasDepthObservation() { const auto v=readSnapshot(); return v ? v->has_depth : md_.has_first_depth_; }
 
 Eigen::Vector3d GridMap::getOrigin() { return mp_.map_origin_; }
 
@@ -3507,47 +3847,19 @@ void GridMap::cloudOdomCallback(const sensor_msgs::PointCloud2ConstPtr &cloud,
   if (!liveLidarMessageStampFresh(cloud->header.stamp, "synchronized"))
     return;
 
-  // Look up cloud_frame → world transform at the exact scan timestamp.
-  // This is critical during rotation: using a later timestamp would apply
-  // extra rotation, making point clouds appear to rotate with the robot.
-  // Two-step fallback: (1) cloud stamp → (2) latest TF → (3) odometry.
+  // Both perception consumers use the scan epoch. A latest/planar fallback
+  // would corrupt deskewed world -> sensor -> world point transformations.
   try {
-    geometry_msgs::TransformStamped tf_stamped;
-    try {
-      // Best: exact scan timestamp for accurate orientation
-      tf_stamped = tf_buffer_->lookupTransform("world", cloud->header.frame_id,
-                                                cloud->header.stamp, ros::Duration(0.02));
-    } catch (tf2::ExtrapolationException &ex) {
-      // Cloud stamp slightly ahead of TF data (<1ms) — use latest available
-      tf_stamped = tf_buffer_->lookupTransform("world", cloud->header.frame_id,
-                                                ros::Time(0), ros::Duration(0.05));
-    }
-    const auto &t = tf_stamped.transform.translation;
-    const auto &q = tf_stamped.transform.rotation;
-    md_.camera_pos_(0) = t.x;
-    md_.camera_pos_(1) = t.y;
-    md_.camera_pos_(2) = t.z;
-    md_.camera_r_m_ = Eigen::Quaterniond(q.w, q.x, q.y, q.z).toRotationMatrix();
+    const auto transform = tf_buffer_->lookupTransform(
+        "world", cloud->header.frame_id, cloud->header.stamp, ros::Duration(0.02));
+    const auto &t = transform.transform.translation;
+    const auto &q = transform.transform.rotation;
+    md_.camera_pos_ = Eigen::Vector3d(t.x, t.y, t.z);
+    md_.camera_r_m_ = Eigen::Quaterniond(q.w, q.x, q.y, q.z).normalized().toRotationMatrix();
   } catch (tf2::TransformException &ex) {
-    ROS_WARN_THROTTLE(2.0, "[GridMap] TF lookup %s→world failed: %s. Falling back to odom.",
+    ROS_WARN_THROTTLE(2.0, "[GridMap] Exact scan TF %s -> world unavailable: %s; keep the previous map.",
                       cloud->header.frame_id.c_str(), ex.what());
-    // Last resort: use the synced odometry
-    Eigen::Quaterniond body_q = Eigen::Quaterniond(odom->pose.pose.orientation.w,
-                                                   odom->pose.pose.orientation.x,
-                                                   odom->pose.pose.orientation.y,
-                                                   odom->pose.pose.orientation.z);
-    Eigen::Matrix3d body_r_m = body_q.toRotationMatrix();
-    Eigen::Matrix4d body2world;
-    body2world.block<3, 3>(0, 0) = body_r_m;
-    body2world(0, 3) = odom->pose.pose.position.x;
-    body2world(1, 3) = odom->pose.pose.position.y;
-    body2world(2, 3) = odom->pose.pose.position.z;
-    body2world(3, 3) = 1.0;
-    Eigen::Matrix4d cam_T = body2world * md_.cam2body_;
-    md_.camera_pos_(0) = cam_T(0, 3);
-    md_.camera_pos_(1) = cam_T(1, 3);
-    md_.camera_pos_(2) = cam_T(2, 3);
-    md_.camera_r_m_ = cam_T.block<3, 3>(0, 0);
+    return;
   }
   Eigen::Vector3d base_pos(odom->pose.pose.position.x,
                            odom->pose.pose.position.y,
@@ -3595,7 +3907,7 @@ void GridMap::cloudOdomCallback(const sensor_msgs::PointCloud2ConstPtr &cloud,
 
     if (fabs(pt.x) < mp_.local_update_range_(0) && fabs(pt.y) < mp_.local_update_range_(1) &&
         fabs(pt.z) < mp_.local_update_range_(2)){
-      if(pt.x > -0.3){  // keep forward points, discard only points behind LiDAR (robot body)
+      {  // Upstream geometry-based self filtering preserves all directions.
           // ====== 过滤世界坐标系中 z=0.05 以下的地面点云 ======
           if (pt_world(2) < mp_.ground_height_ + 0.15) continue;
 
@@ -3837,12 +4149,19 @@ void GridMap::updateESDF3d (){
         const int y = min_esdf.y() + static_cast<int>(yz_index / nz);
         const int z = min_esdf.z() + static_cast<int>(yz_index % nz);
         const int index = address(x, y, z);
-        md_.distance_buffer_all_[index] = md_.distance_buffer_[index];
+        if (mp_.incremental_esdf_ && incremental_patch_ready_ &&
+            (x < esdf_write_min_.x() || x > esdf_write_max_.x() ||
+             y < esdf_write_min_.y() || y > esdf_write_max_.y() ||
+             z < esdf_write_min_.z() || z > esdf_write_max_.z()))
+          return;  // Halo is input support, never a replacement output field.
+        double distance = md_.distance_buffer_[index];
         if (md_.distance_buffer_neg_[index] > 0.0)
         {
-          md_.distance_buffer_all_[index] +=
-              -md_.distance_buffer_neg_[index] + mp_.resolution_;
+          distance += -md_.distance_buffer_neg_[index] + mp_.resolution_;
         }
+        md_.distance_buffer_all_[index] = mp_.incremental_esdf_
+            ? std::max(-mp_.esdf_distance_cap_, std::min(mp_.esdf_distance_cap_, distance))
+            : distance;
       });
 }
 
@@ -4128,6 +4447,16 @@ pair<double, Eigen::Vector3d> GridMap::evaluatePlanningEDTWithGrad(
 }
 
 double GridMap::getDynamicObstacleDistance(const Eigen::Vector3d& pos, double max_search_distance){
+  return getDynamicObstacleDistance(pos, max_search_distance, nullptr);
+}
+
+double GridMap::getDynamicObstacleDistance(const Eigen::Vector3d& pos, double max_search_distance,
+                                           DynamicObstacleHit *hit){
+  if (hit)
+    *hit = DynamicObstacleHit{};
+  const auto view = readSnapshot();
+  const auto &occupancy = view ? view->occupancy->occupancy : md_.occupancy_buffer_;
+  const auto &fixed = view ? view->occupancy->fixed : md_.static_occupancy_;
   if (!isInMap(pos))
     return max_search_distance;
 
@@ -4142,14 +4471,14 @@ double GridMap::getDynamicObstacleDistance(const Eigen::Vector3d& pos, double ma
 
   const auto matches_static_map = [&](const Eigen::Vector3i& dynamic_id) {
     if (static_match_step == 0)
-      return md_.static_occupancy_[toAddress(dynamic_id)] != 0;
+      return fixed[toAddress(dynamic_id)] != 0;
 
     for (int sx = -static_match_step; sx <= static_match_step; ++sx)
       for (int sy = -static_match_step; sy <= static_match_step; ++sy)
         for (int sz = -static_match_step; sz <= static_match_step; ++sz)
         {
           const Eigen::Vector3i static_id = dynamic_id + Eigen::Vector3i(sx, sy, sz);
-          if (!isInMap(static_id) || !md_.static_occupancy_[toAddress(static_id)])
+          if (!isInMap(static_id) || !fixed[toAddress(static_id)])
             continue;
           if ((static_id - dynamic_id).cast<double>().squaredNorm() * mp_.resolution_ * mp_.resolution_ <=
               static_match_radius_sq)
@@ -4167,7 +4496,7 @@ double GridMap::getDynamicObstacleDistance(const Eigen::Vector3d& pos, double ma
           continue;
 
         const int idx = toAddress(id);
-        if (md_.occupancy_buffer_[idx] <= mp_.min_occupancy_log_ || matches_static_map(id))
+        if (occupancy[idx] <= mp_.min_occupancy_log_ || matches_static_map(id))
           continue;
 
         Eigen::Vector3d voxel_center;
@@ -4176,7 +4505,17 @@ double GridMap::getDynamicObstacleDistance(const Eigen::Vector3d& pos, double ma
         // Keep the live layer on the same convention so a trajectory accepted
         // by fresh ESDF data is not rejected by a second, larger implicit margin.
         const double dist = (voxel_center - pos).norm();
-        min_dist = std::min(min_dist, dist);
+        if (dist < min_dist) {
+          min_dist = dist;
+          if (hit) {
+            hit->valid = true;
+            hit->voxel = id;
+            hit->center = voxel_center;
+            hit->distance = dist;
+            hit->occupancy = occupancy[idx];
+            hit->occupancy_threshold = mp_.min_occupancy_log_;
+          }
+        }
       }
 
   return min_dist;

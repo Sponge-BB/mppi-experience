@@ -2,13 +2,13 @@
 """
 FAST-LIO2 /Odometry (camera_init→body) → /odom (odom→base_link).
 
-FAST-LIO2 body = IMU/LiDAR frame.  LiDAR is mounted 0.28 m forward and
-0.115 m above the robot's base_link.  We subtract this offset so /odom
-represents the base_link centre, matching the URDF and collision model.
+FAST-LIO2 body is the IMU frame. The real-robot entry point uses FAST-LIO's
+LiDAR-to-IMU calibration for the perception TF, while base_link stays planar.
+Other entry points retain the previous body-as-LiDAR convention by default.
 """
 import math
 import rospy
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import Quaternion, TransformStamped
 from nav_msgs.msg import Odometry
 import tf2_ros
 
@@ -26,6 +26,30 @@ class FastLIOToOdomBridge:
             rospy.get_param('~lidar_offset_y', 0.0),
             rospy.get_param('~lidar_offset_z', 0.002),
         )
+        self.publish_lidar_tf = rospy.get_param('~publish_lidar_tf', False)
+        self.lidar_extrinsic_translation = (0.0, 0.0, 0.0)
+        self.lidar_extrinsic_rotation = Quaternion(0.0, 0.0, 0.0, 1.0)
+        if self.publish_lidar_tf:
+            lidar_frame = str(rospy.get_param('~lidar_frame', 'livox_frame')).strip()
+            if (not lidar_frame or lidar_frame.startswith('/') or
+                    lidar_frame in ('body', 'base_link', 'odom', 'camera_init',
+                                    'map', 'world')):
+                raise ValueError('lidar_frame must be a distinct TF child frame')
+            translation, rotation = self.validate_lidar_extrinsic(
+                rospy.get_param('/mapping/extrinsic_T'),
+                rospy.get_param('/mapping/extrinsic_R'))
+            self.lidar_extrinsic_translation = translation
+            self.lidar_extrinsic_rotation = rotation
+            self.static_lidar_broadcaster = tf2_ros.StaticTransformBroadcaster()
+            lidar_tf = TransformStamped()
+            lidar_tf.header.stamp = rospy.Time.now()
+            lidar_tf.header.frame_id = 'body'
+            lidar_tf.child_frame_id = lidar_frame
+            (lidar_tf.transform.translation.x,
+             lidar_tf.transform.translation.y,
+             lidar_tf.transform.translation.z) = translation
+            lidar_tf.transform.rotation = rotation
+            self.static_lidar_broadcaster.sendTransform(lidar_tf)
         self.twist_filter_alpha = min(
             1.0, max(0.01, rospy.get_param('~twist_filter_alpha', 0.35)))
         self.max_derived_linear_speed = max(
@@ -35,6 +59,55 @@ class FastLIOToOdomBridge:
         rospy.Subscriber('/Odometry', Odometry, self.cb, queue_size=1, tcp_nodelay=True)
         rospy.loginfo("[fastlio_to_odom] /Odometry → /odom (body→base_link corrected), planar=%s",
                       self.planar_base_link)
+
+    @staticmethod
+    def validate_lidar_extrinsic(translation, rotation):
+        """Read the same p_IMU = R_LI * p_lidar + T_LI used by FAST-LIO."""
+        if len(translation) != 3 or len(rotation) != 9:
+            raise ValueError('FAST-LIO extrinsic_T/R must contain 3/9 values')
+        t = tuple(float(value) for value in translation)
+        r = tuple(float(value) for value in rotation)
+        if not all(math.isfinite(value) for value in t + r):
+            raise ValueError('FAST-LIO extrinsic_T/R must be finite')
+        for row in range(3):
+            for other in range(3):
+                dot = sum(r[3 * row + k] * r[3 * other + k] for k in range(3))
+                if abs(dot - (1.0 if row == other else 0.0)) > 1e-5:
+                    raise ValueError('FAST-LIO extrinsic_R must be orthonormal')
+        determinant = (r[0] * (r[4] * r[8] - r[5] * r[7]) -
+                       r[1] * (r[3] * r[8] - r[5] * r[6]) +
+                       r[2] * (r[3] * r[7] - r[4] * r[6]))
+        if abs(determinant - 1.0) > 1e-5:
+            raise ValueError('FAST-LIO extrinsic_R must be a right-handed rotation')
+
+        # Matrix-to-quaternion conversion without importing NumPy into this
+        # small bridge. All branches include valid rotations near 180 degrees.
+        trace = r[0] + r[4] + r[8]
+        if trace > 0.0:
+            scale = 2.0 * math.sqrt(trace + 1.0)
+            q = Quaternion((r[7] - r[5]) / scale,
+                           (r[2] - r[6]) / scale,
+                           (r[3] - r[1]) / scale, 0.25 * scale)
+        else:
+            axis = max(range(3), key=lambda index: r[4 * index])
+            other, last = (axis + 1) % 3, (axis + 2) % 3
+            scale = 2.0 * math.sqrt(
+                1.0 + r[4 * axis] - r[4 * other] - r[4 * last])
+            xyz = [0.0, 0.0, 0.0]
+            xyz[axis] = 0.25 * scale
+            xyz[other] = (r[3 * axis + other] + r[3 * other + axis]) / scale
+            xyz[last] = (r[3 * axis + last] + r[3 * last + axis]) / scale
+            q = Quaternion(*xyz, (r[3 * last + other] -
+                                  r[3 * other + last]) / scale)
+        return t, q
+
+    @staticmethod
+    def compose_rotation(first, second):
+        return Quaternion(
+            first.w * second.x + first.x * second.w + first.y * second.z - first.z * second.y,
+            first.w * second.y - first.x * second.z + first.y * second.w + first.z * second.x,
+            first.w * second.z + first.x * second.y - first.y * second.x + first.z * second.w,
+            first.w * second.w - first.x * second.x - first.y * second.y - first.z * second.z)
 
     @staticmethod
     def normalize_angle(angle):
@@ -94,12 +167,17 @@ class FastLIOToOdomBridge:
         return self._filtered_twist
 
     def cb(self, msg):
+        if self.publish_lidar_tf and msg.child_frame_id != 'body':
+            rospy.logerr_throttle(2.0, '[fastlio_to_odom] Expected FAST-LIO body odometry')
+            return
         if msg.header.stamp == self._last_stamp:
             return
         self._last_stamp = msg.header.stamp
 
         p = msg.pose.pose.position
-        q = msg.pose.pose.orientation
+        body_q = msg.pose.pose.orientation
+        body_to_lidar = self.rotate_vector(body_q, self.lidar_extrinsic_translation)
+        q = self.compose_rotation(body_q, self.lidar_extrinsic_rotation)
         yaw = self.yaw_from_quaternion(q)
 
         if self.planar_base_link:
@@ -117,9 +195,11 @@ class FastLIOToOdomBridge:
             q_out = (q.x, q.y, q.z, q.w)
             rotated_offset = self.rotate_vector(q, self.lidar_offset)
 
-        # body ≈ LiDAR;  base_link = body - R * LIDAR_OFFSET
-        base_x = p.x - rotated_offset[0]
-        base_y = p.y - rotated_offset[1]
+        # FAST-LIO estimates the IMU pose. First locate the actual LiDAR with
+        # full 3D attitude, then subtract the configured base-to-LiDAR offset
+        # in the planar heading used by the chassis controller.
+        base_x = p.x + body_to_lidar[0] - rotated_offset[0]
+        base_y = p.y + body_to_lidar[1] - rotated_offset[1]
         # Chassis z = 0.115 (matches original real_odom_publisher.py).
         # Collision model CarState2T() hardcodes z=0.
         # URDF wheels: joint z≈-0.03 + radius 0.08 → bottom at base_z-0.11.
@@ -133,7 +213,7 @@ class FastLIOToOdomBridge:
         odom.header.stamp = msg.header.stamp
         odom.header.frame_id = "odom"
         odom.child_frame_id = "base_link"
-        odom.pose = msg.pose
+        odom.pose.covariance = list(msg.pose.covariance)
         odom.pose.pose.position.x = base_x
         odom.pose.pose.position.y = base_y
         odom.pose.pose.position.z = base_z

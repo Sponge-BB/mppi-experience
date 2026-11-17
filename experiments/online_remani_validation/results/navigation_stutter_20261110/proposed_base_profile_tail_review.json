@@ -1,0 +1,143 @@
+{
+  "proposed_base_limits": {
+    "vmax": 0.15,
+    "wmax": 0.45,
+    "accel": 0.25,
+    "angular_accel": 0.8,
+    "track": 0.37,
+    "wheel_v": 0.2296,
+    "wheel_a": 0.2975
+  },
+  "applied": false,
+  "horizon_s": 0.8,
+  "dynamic_max_prediction_s": 2.0,
+  "maximum_source_age_s": 0.35,
+  "command_hold_s": 0.3,
+  "arm_velocity_limits_rad_s": [
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15,
+    0.15
+  ],
+  "arm_acceleration_limits_rad_s2": [
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35,
+    0.35
+  ],
+  "base_tail_grid": {
+    "points": 10185,
+    "max_brake_s": 0.9500000000000001,
+    "worst_initial_v_w": [
+      -0.144,
+      -0.45
+    ],
+    "max_brake_travel_m": 0.05831176372271257,
+    "full_horizon_plus_brake_plus_max_source_age_s": 2.1,
+    "command_hold_plus_brake_plus_max_source_age_s": 1.6,
+    "all_stopped": true,
+    "scope": "Deterministic feasible velocity grid under current predictor, not a proof over all states or measured hardware braking."
+  },
+  "arm_zero_intent_tail": [
+    {
+      "initial_dq_rad_s": 0.15,
+      "zero_intent_brake_s": 0.45,
+      "full_horizon_plus_this_tail_plus_age_s": 1.6,
+      "brake_q_motion_rad": 0.03225
+    },
+    {
+      "initial_dq_rad_s": 0.3,
+      "zero_intent_brake_s": 0.8500000000000001,
+      "full_horizon_plus_this_tail_plus_age_s": 2.0,
+      "brake_q_motion_rad": 0.1285625
+    },
+    {
+      "initial_dq_rad_s": 0.3175,
+      "zero_intent_brake_s": 0.9,
+      "full_horizon_plus_this_tail_plus_age_s": 2.0500000000000003,
+      "brake_q_motion_rad": 0.14400000000000002
+    },
+    {
+      "initial_dq_rad_s": 0.35,
+      "zero_intent_brake_s": 1.0,
+      "full_horizon_plus_this_tail_plus_age_s": 2.15,
+      "brake_q_motion_rad": 0.17500000000000004
+    },
+    {
+      "initial_dq_rad_s": 0.5,
+      "zero_intent_brake_s": 1.4500000000000002,
+      "full_horizon_plus_this_tail_plus_age_s": 2.6,
+      "brake_q_motion_rad": 0.35724999999999973
+    },
+    {
+      "initial_dq_rad_s": 0.6,
+      "zero_intent_brake_s": 1.75,
+      "full_horizon_plus_this_tail_plus_age_s": 2.9,
+      "brake_q_motion_rad": 0.5143750000000001
+    },
+    {
+      "initial_dq_rad_s": 1.0,
+      "zero_intent_brake_s": 2.85,
+      "full_horizon_plus_this_tail_plus_age_s": 4.0,
+      "brake_q_motion_rad": 1.428562500000002
+    }
+  ],
+  "source_sha256": "980eadfd09349c0171db3cda55dc8dda9c99d5cf7f8481f692b534ad62e17c32",
+  "limitations": [
+    "No ROS/CAN or hardware calls; no production/runtime edits.",
+    "Arm cases start at horizon endpoint; normal bounded arm speeds stop within .45s. High measured velocity can dominate early rollout or violate joint limits and is not erased.",
+    "Crop remains +/-2m; predicted translation over .8s plus sampled worst base brake is <=.15*.8+max_brake_travel_m; full robot geometry and map boundary remain separately checked.",
+    "Actual base acceleration and fixed_vel=1 arm response remain uncalibrated."
+  ],
+  "additional_candidates": [
+    {
+      "limits": {
+        "vmax": 0.12,
+        "wmax": 0.35,
+        "accel": 0.25,
+        "angular_accel": 0.8,
+        "track": 0.37,
+        "wheel_v": 0.2296,
+        "wheel_a": 0.2975
+      },
+      "points": 22801,
+      "max_brake_s": 0.8,
+      "worst_initial_v_w": [
+        -0.12,
+        -0.35
+      ],
+      "H_plus_tail_plus_age_s": 1.9500000000000002,
+      "all_stopped": true,
+      "analytic_base_brake_bound": {
+        "weighted_deceleration_time_bound_s": 0.6210084033613446,
+        "half_step_s": 0.05,
+        "after_16_steps_max_abs_v_or_w_bound": 0.0027031135201142868,
+        "quiet_threshold": 0.003,
+        "reason": "For zero base command all (v,w) components share one positive scale; B=max(|v|/a,|w|/alpha,|v-hw|/wheel_a,|v+hw|/wheel_a) obeys B_next=B-min(.05,.05*B/.12). For the full proposed rectangle B<=.621009. The bound proves <.003 by .8s when initial measured speeds lie within the proposed v/w caps; it is not a hardware deceleration proof."
+      }
+    },
+    {
+      "limits": {
+        "vmax": 0.15,
+        "wmax": 0.45,
+        "accel": 0.2975,
+        "angular_accel": 1.0,
+        "track": 0.37,
+        "wheel_v": 0.2296,
+        "wheel_a": 0.2975
+      },
+      "points": 22777,
+      "max_brake_s": 0.9500000000000001,
+      "worst_initial_v_w": [
+        -0.146,
+        -0.45
+      ],
+      "H_plus_tail_plus_age_s": 2.1,
+      "all_stopped": true
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "scope": "approximate_offline_replay_no_ros_no_hardware",
+  "change": "two np.clip expressions in advance replaced with minimum(maximum)",
+  "baseline": "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261106_stationary_07/core/active_arm_mppi.py",
+  "baseline_sha256": "c65fc227e61bb7d28de16c1d1da50562e06ee6f0ca55ce8a16b9ce8cd100419d",
+  "optimized": "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261106_distributed_08/runtime/active_arm_mppi.py",
+  "optimized_sha256": "7233920ae8ae8a8c9e778c32fd118b4131bd79a08a252fba9470437bef2defb0",
+  "equivalence_cases": 240,
+  "maximum_advance_error": 0.0,
+  "replay_iterations": 16,
+  "maximum_control_error": 0.0,
+  "maximum_trajectory_error": 0.0,
+  "maximum_final_gap_error": 0.0,
+  "timing_ms": {
+    "before": {
+      "final_ms": {
+        "median": 9.100811501411954,
+        "maximum": 9.271377999539254
+      },
+      "plan_ms": {
+        "median": 51.48322099921643,
+        "maximum": 56.17913600144675
+      }
+    },
+    "after": {
+      "final_ms": {
+        "median": 8.36036900000181,
+        "maximum": 9.112332001677714
+      },
+      "plan_ms": {
+        "median": 49.04572399937024,
+        "maximum": 51.997382997797104
+      }
+    }
+  },
+  "median_total_saving_ms": 3.1779395012563327,
+  "peak_rss_mib": 57.609375,
+  "address_space_limit_mib": 512,
+  "numerical_threads": 1,
+  "checkpoints_deadlines_and_source_stamps_changed": false,
+  "continuous_live_delivery_passed": false,
+  "limitations": [
+    "recorded state plus final saved cloud snapshot, not one synchronized live cohort",
+    "synthetic clock; proposed control, not captured post-guard output",
+    "does not measure ROS contention, physical response or remote RViz load"
+  ]
+}

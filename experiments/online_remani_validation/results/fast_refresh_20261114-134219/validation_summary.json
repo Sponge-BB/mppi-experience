@@ -1,0 +1,172 @@
+{
+  "offline_passed": true,
+  "hardware_validation": false,
+  "purpose": "MPPI实际交付的避障事件触发一次原生慢层提前更新；失败保留已发布轨迹和目标，不传递快层前缀",
+  "previous_fix": {
+    "version": "20261114-134215-obstacle-recovery",
+    "parent": "20261114-132800-before-obstacle-recovery",
+    "purpose": "实时占据紧停后保留目标，经新完整地图、节流和两阶段验收恢复，避免五次失败永久取消导航"
+  },
+  "baseline": "20261114-134219-before-fast-refresh",
+  "validation": {
+    "historical_python_tests": {
+      "command_modules": [
+        "test_mppi_native_phase",
+        "test_mppi_reference_wait",
+        "test_mppi_deadline_priority",
+        "test_mppi_execution_gate",
+        "test_mppi_startup"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 1.833692891001192,
+      "hardware": false
+    },
+    "new_refresh_tests": {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_mppi_refresh_event"
+      ],
+      "cwd": "/home/l/remani_ws/src/mm_remani/test",
+      "elapsed_s": 3.455,
+      "exit_code": 0,
+      "environment": {
+        "PYTHONNOUSERSITE": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1"
+      },
+      "expected_unittest_methods": 10,
+      "python_methods": 9,
+      "native_case_processes": 7,
+      "native_cases": [
+        "success_duplicate_reference_restart",
+        "failure_restores_metadata_and_trajectory",
+        "positive_limit_preserved_success_and_failure",
+        "independent_stop_survives_failure",
+        "owners_and_readiness_block",
+        "identity_sources_schema",
+        "cooldown_pending_expiry"
+      ],
+      "test_sha256": "9fd0ce52e1fdd02f83180dccb96c76ad28a29b4f2c51f647dc445d0047dc4f37"
+    },
+    "recovery_terminal_regression": {
+      "command_modules": [
+        "test_transient_obstacle_recovery",
+        "test_perception_recovery",
+        "test_goal_terminal"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 7.545184058999439,
+      "hardware": false,
+      "production_cpp_behaviour_scenarios": 29
+    },
+    "recorder_topic_check": {
+      "syntax_valid": true,
+      "refresh_topic_count": 1,
+      "hardware_started": false
+    },
+    "source_freeze_verification": {
+      "runtime_sources_unchanged_during_build": true,
+      "post_build_changes": [
+        "src/mm_remani/test/test_mppi_refresh_event.py"
+      ],
+      "why": "Only test fixture finalized after compile; all six runtime/recorder source hashes are unchanged."
+    },
+    "planner_build_result": {
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cmake",
+        "--build",
+        "/tmp/remani_fast_refresh_build_20261114-134219",
+        "--parallel",
+        "1",
+        "--target",
+        "remani_planner_node"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 153.1201863160004,
+      "peak_build_group_rss_mib": 1688.51171875,
+      "lowest_available_mib": 1664.21875,
+      "stop_reason": null,
+      "jobs": 1,
+      "clean_build": true,
+      "build_dir": "/tmp/remani_fast_refresh_build_20261114-134219",
+      "runtime_destination_untouched": true
+    },
+    "deployment_result": {
+      "hardware_started": false,
+      "host_process_check": {
+        "pid1": "systemd",
+        "active": []
+      },
+      "source_sha256": {
+        "src/mm_remani/scripts/mppi/mppi_refresh_event.py": "84db0b5484ce05960d47300114ec8e19a62e8c5829385ac5f8944564b35111af",
+        "src/mm_remani/scripts/whole_body_mppi.py": "b1e3dd642bee0af683dfb2339d4e1ee1c2ff9595bc74173512842c8f0a8577ae",
+        "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_refresh_event.hpp": "d2855202c5903802d9bdda2559eaaaae58845fb236de14f7d4f0ab2ea05af35e",
+        "src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h": "9660375f58421fcafd6ca20723ec929fe0632ec55732e5106461e9a5a870362e",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "e61e815a647b55af866494da0bc82301dbe7f01234c6eb3028268724c2fb9d8e",
+        "src/mm_remani/test/test_mppi_refresh_event.py": "9fd0ce52e1fdd02f83180dccb96c76ad28a29b4f2c51f647dc445d0047dc4f37",
+        "experiments/online_remani_validation/record_latency_session.py": "de1dbdc837312f6db2d050c0cb05d93a2f15fd209fadbbdd88949cebbeafa471"
+      },
+      "deployed": {
+        "devel/lib/remani_planner/remani_planner_node": {
+          "stage": "/tmp/remani_fast_refresh_devel_20261114-134219/lib/remani_planner/remani_planner_node",
+          "sha256": "b8f02e48ce0dd7df558a15469799402fe8b96a47cc773021fda99b0e97b2f7bd",
+          "stage_sha256": "b8f02e48ce0dd7df558a15469799402fe8b96a47cc773021fda99b0e97b2f7bd",
+          "before_sha256": "df7efa141da9f695d66f9cfd8429e0cb24666086abf65f6de825af43e2323369",
+          "mode": 509
+        }
+      },
+      "link_check_passed": true,
+      "rpath": [
+        " 0x000000000000001d (RUNPATH)            Library runpath: [/home/l/remani_ws/devel/lib:/opt/ros/noetic/lib]"
+      ],
+      "atomic_replace": true,
+      "only_planner_binary_replaced": true
+    },
+    "independent_stage2_review": {
+      "reviewer": "audit_candidate_failure",
+      "blocking_findings": [],
+      "checked": [
+        "生产callReboundReplan失败恢复last_published_trajectory",
+        "tryMppiRefresh失败恢复local_target/start与两global游标",
+        "不写回exec_state、不清安全owner、不进入普通20次retry",
+        "goal与reference头戳相同、旧消息被拒",
+        "terminal/finish先于refresh执行",
+        "实际交付启动episode、4clear复位、拒绝打断clear、换参考不重复、源时间区分进程重启"
+      ],
+      "considered_not_adopted": {
+        "suggestion": "用mppi_terminal_control_限制事件",
+        "decision": "不采用；该开关负责终点策略，事件不应依赖它。无MPPI执行节点时无事件发布，仍需同目标/参考/来源有效性门。"
+      },
+      "limitations": [
+        "优化同步运行，额外耗时须实测",
+        "不是前缀注入",
+        "测试求解/几何/通信边界有桩，实车未验"
+      ]
+    }
+  },
+  "test_scope": "90项历史Python方法、9项新增Python方法、7个快慢事件与29个恢复/终点生产C++行为场景；C++求解、几何和通信边界使用测试替身，不能代替实车验证。",
+  "known_limits": [
+    "本次为事件协同，尚未将MPPI预测前缀作为REMANI多项式初值或交接轨迹。",
+    "原参考碰撞触发的紧停权限保留；未证明历史碰撞格属于误占据。",
+    "地图处理活动段约80ms及少量交付超时仍需优化；本轮没有宣称消除全部卡顿。",
+    "慢层更新仍同步求解，新增事件的实车计算开销尚未测量。",
+    "机械臂单独避障、原地180度调头、往返与动态绕障连续性仍缺当前版本实车验证。"
+  ],
+  "unchanged_boundaries": [
+    "未修改驱动、CAN、外部SDK或固件",
+    "未放宽输入时效或关闭碰撞检查",
+    "未启动ROS或发送运动指令"
+  ],
+  "next_hardware_evidence": [
+    "紧停后目标是否保留且障碍清除后恢复，停止原因与目标修订一致",
+    "同一避障事件的实际控制交付、一次慢层尝试、验收换轨时间及失败后的旧参考是否连续",
+    "同代地图源时间、MPPI实际拒绝原因与速度零脉冲，区分感知与规划取消"
+  ]
+}

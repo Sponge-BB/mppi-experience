@@ -1,0 +1,51 @@
+{
+  "scope": "Read-only frequency history audit; no ROS, SDK or CAN commands issued in this turn; runtime unchanged.",
+  "can_measurements": [
+    {
+      "source": "experiments/online_remani_validation/results/arm_startup_abnormal_20261110/can_startup_1794312523.jsonl",
+      "label": "2026-11-10 abnormal startup, internal sender",
+      "movej15_count": 57,
+      "observed_rate_hz": 4.711988274647053,
+      "interval_ms": {
+        "min": 200.1640796661377,
+        "median": 215.42274951934814,
+        "max": 222.883939743042
+      },
+      "gaps_over_300ms": 0
+    },
+    {
+      "source": "experiments/online_remani_validation/results/arm_startup_abnormal_20261110/can_startup_1794363256.jsonl",
+      "label": "2026-11-11 independent original driver script",
+      "movej15_count": 38,
+      "observed_rate_hz": 5.000168767387826,
+      "interval_ms": {
+        "min": 199.71847534179688,
+        "median": 199.99170303344727,
+        "max": 200.17552375793457
+      },
+      "gaps_over_300ms": 0
+    }
+  ],
+  "source_facts": {
+    "git_baseline_mm_controller_loop_hz": 100,
+    "git_baseline_bridge_min_interval_s": 0.2,
+    "pre_regression_internal_startup_sender_min_interval_s": 0.2,
+    "pre_regression_internal_watchdog_wait_s": 0.02,
+    "1938_speed_change_modified_startup_sender": false,
+    "1938_speed_change_modified_mppi_rate_hz": false,
+    "mppi_rate_hz": 10,
+    "current_startup_sender": "original bridge with minimum .2s interval and additional freshness gates",
+    "source_path_changed_during_history": true
+  },
+  "limits": [
+    "No raw CAN baseline for normal 2026-11-10 19:20 startup; actual normal-to-abnormal timing equivalence cannot be established.",
+    "Differences in measured timing do not establish causality for wrist jitter.",
+    "Emergency-stop sample from later manual test does not explain earlier jitter."
+  ],
+  "evidence": [
+    "experiments/online_remani_validation/results/native_startup_restore_20261109/source_changes.diff",
+    "experiments/online_remani_validation/results/original_arm_startup_20261110/change.diff",
+    "experiments/online_remani_validation/results/arm_startup_abnormal_20261110/1938_changes_exact.diff",
+    "experiments/online_remani_validation/results/arm_startup_abnormal_20261110/native_startup_source_review.json"
+  ]
+}

@@ -1,0 +1,62 @@
+Capacity design only; no runtime files were changed by this draft.
+Parent must save a capacity baseline AFTER unified-guidance stage is sealed.
+Expected baseline inventory: baseline_files.json (7 paths).
+Source draft: capacity.patch and its complete candidate files.
+
+The original max_feedforward_omega=.55 only clips a separate /car_cmd signal;
+it does not constrain the MPPI current phase. MPPI hard speed envelope is
+vmax=.25,wmax=.35,wheel_v=.25,track=.37. Feedforward .55 is left unchanged.
+
+New controller flag is explicitly set true or false by exp0_real.launch.
+Shared limits are read once from /whole_body_mppi/base_limits at startup.
+Missing or invalid enabled limits abort this controller startup; there is no
+silent default mismatch. False retains legacy clock even if old parameters
+remain on the ROS master. No new node or runtime parameter polling is added.
+
+Current unscaled polynomial derivatives are used. Raw speed <= yaw_hold_speed
+(default .04) uses omega=0, matching existing controller and unified guide.
+Zero/undefined-tangent phases do not acquire enormous curvature from epsilon
+regularization. Invalid enabled reference returns zero phase capability.
+The speed ratios constrain target_scale AND final scale after rise/fall
+smoothing, while all existing perception/odom/joint/safety freezes remain.
+This is a current-phase VELOCITY envelope, not a guarantee of full reference
+acceleration feasibility or physical plant behavior. Native/MPPI actuation
+limits and braking/collision checks remain authoritative.
+
+Build recipe (NOT executed here):
+Create fresh /tmp/remani_controller_capacity_<version>/{recipe,build,devel}.
+Copy CMakeLists.txt.recipe as recipe/CMakeLists.txt, not runtime CMakeLists.txt.
+Configure with env PYTHONNOUSERSITE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+MALLOC_ARENA_MAX=2 CMAKE_PREFIX_PATH=/home/l/remani_ws/devel:/opt/ros/noetic:
+cmake -S <recipe> -B <build> -DCATKIN_DEVEL_PREFIX=<devel> \
+  -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_ENABLE_TESTING=ON
+nice -n 15 cmake --build <build> --parallel 1 --target \
+  mm_controller_node test_execution_capacity test_feedback_source
+Use existing bounded build monitor: kill ONLY own process group if available
+RAM<1500MiB or own build RSS>1800MiB; no system process killing.
+Inspect final generated flags and build log confirm -O1 -g0 are last.
+Run only test executables, no ROS node or hardware.
+Validate readelf/ldd: deployed RUNPATH references production devel/lib, never
+/tmp. New mm_controller_node and libcontroller_utils.so MUST both be deployed
+because the private class member layout changed. Atomic per-file replacement
+only while robot nodes are stopped; source and both products sealed together.
+
+Unit draft covers 9 actual C++ helper tests: zero/tangent threshold, signed
+forward/reverse, angular .35 envelope, both-wheel combination, boundary,
+increasing-curvature publication guard, world-frame invariance, disabled legacy mode, invalid data and limits.
+Integration review must additionally check final clipping remains after the
+existing rise/fall smoothing and all force_freeze branches remain intact.
+Full coupled clock test must use this same formula and include recorded
+command-delivery interruptions. Offline pass must not be called hardware pass.
+
+Publication-pair correction: old-phase capacity bounds the current tick's
+integration. After phase advances, capacity is recomputed at the new phase
+and final published scale is min(previously integrated scale,new-phase cap).
+No second phase integration occurs. This prevents publishing a new, tighter
+curvature sample with an old excessive scale. Added actual C++ helper case
+with x=.1*t,y=t^3/6 where the old cap demonstrably violates .35 at the new
+phase; 9 helper cases total. Source integration placement must be inspected
+separately: the helper test alone does not execute a ROS FSM instance.
+Adapter reception extrapolation and future H samples are not a hard all-time
+capacity guarantee; actuation clamps remain in place and full coupled tests
+must cover the slow-phase/fast-guide interaction.

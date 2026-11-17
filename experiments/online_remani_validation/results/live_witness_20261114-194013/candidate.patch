@@ -1,0 +1,341 @@
+--- a/src/mm_remani_planner/plan_env/include/plan_env/grid_map.h
++++ b/src/mm_remani_planner/plan_env/include/plan_env/grid_map.h
+@@ -304,6 +304,16 @@
+ public:
+   GridMap() {}
+   ~GridMap();
++
++  // Optional evidence from the same live-occupancy query; no shared last-hit state.
++  struct DynamicObstacleHit {
++    bool valid = false;
++    Eigen::Vector3i voxel = Eigen::Vector3i::Zero();
++    Eigen::Vector3d center = Eigen::Vector3d::Zero();
++    double distance = 0.0;
++    double occupancy = 0.0;
++    double occupancy_threshold = 0.0;
++  };
+ 
+   // One default-queue callback/solver reads a fixed generation. The map writer
+   // continues independently; refresh only at an explicit delivery boundary.
+@@ -519,6 +529,8 @@
+   }
+   double getPreciseDistance(const Eigen::Vector3d& pos);
+   double getDynamicObstacleDistance(const Eigen::Vector3d& pos, double max_search_distance);
++  double getDynamicObstacleDistance(const Eigen::Vector3d& pos, double max_search_distance,
++                                    DynamicObstacleHit *hit);
+   void getSurroundPts(const Eigen::Vector3d& pos, Eigen::Vector3d pts[2][2][2], Eigen::Vector3d& diff);
+   void getSurroundDistance(Eigen::Vector3d pts[2][2][2], double dists[2][2][2]);
+   void interpolateTrilinearEDT(double values[2][2][2], const Eigen::Vector3d& diff, double& value);
+--- a/src/mm_remani_planner/plan_env/src/grid_map.cpp
++++ b/src/mm_remani_planner/plan_env/src/grid_map.cpp
+@@ -4447,6 +4447,13 @@
+ }
+ 
+ double GridMap::getDynamicObstacleDistance(const Eigen::Vector3d& pos, double max_search_distance){
++  return getDynamicObstacleDistance(pos, max_search_distance, nullptr);
++}
++
++double GridMap::getDynamicObstacleDistance(const Eigen::Vector3d& pos, double max_search_distance,
++                                           DynamicObstacleHit *hit){
++  if (hit)
++    *hit = DynamicObstacleHit{};
+   const auto view = readSnapshot();
+   const auto &occupancy = view ? view->occupancy->occupancy : md_.occupancy_buffer_;
+   const auto &fixed = view ? view->occupancy->fixed : md_.static_occupancy_;
+@@ -4498,7 +4505,17 @@
+         // Keep the live layer on the same convention so a trajectory accepted
+         // by fresh ESDF data is not rejected by a second, larger implicit margin.
+         const double dist = (voxel_center - pos).norm();
+-        min_dist = std::min(min_dist, dist);
++        if (dist < min_dist) {
++          min_dist = dist;
++          if (hit) {
++            hit->valid = true;
++            hit->voxel = id;
++            hit->center = voxel_center;
++            hit->distance = dist;
++            hit->occupancy = occupancy[idx];
++            hit->occupancy_threshold = mp_.min_occupancy_log_;
++          }
++        }
+       }
+ 
+   return min_dist;
+--- a/src/mm_remani_planner/mm_config/include/mm_config/mm_config.hpp
++++ b/src/mm_remani_planner/mm_config/include/mm_config/mm_config.hpp
+@@ -22,6 +22,16 @@
+         MMConfig() {}
+         ~MMConfig() {}
+ 
++        struct DynamicCollisionEvidence {
++            GridMap::DynamicObstacleHit hit;
++            Eigen::Vector3d query = Eigen::Vector3d::Zero();
++            double threshold = 0.0;
++            int collision_type = -1;
++            int base_sphere = -1;
++            int arm_link = -1;
++            int arm_point = -1;
++        };
++
+         int getManiDof() const {
+             return manipulator_dof_;
+         }
+@@ -68,7 +78,11 @@
+         bool checkCarPlanningObsCollision(Eigen::Vector3d car_state, bool precise, bool safe, double &min_dist);
+         bool checkManiPlanningObsCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, double &min_dist);
+         bool checkCarDynamicObsCollision(Eigen::Vector3d car_state, bool safe, double &min_dist);
++        bool checkCarDynamicObsCollision(Eigen::Vector3d car_state, bool safe, double &min_dist,
++                                         DynamicCollisionEvidence *evidence);
+         bool checkManiDynamicObsCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, double &min_dist);
++        bool checkManiDynamicObsCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, double &min_dist,
++                                          DynamicCollisionEvidence *evidence);
+         bool checkCarPredictedDynamicObsCollision(
+             Eigen::Vector3d car_state, const ros::Time &query_time,
+             const plan_env::DynamicPointSnapshot &snapshot, bool safe,
+@@ -85,6 +99,8 @@
+         bool checkcollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type /*0: car, 1: mani, 2: car-mani, 3: mani-mani*/);
+         bool checkPlanningCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type);
+         bool checkDynamicObstacleCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type);
++        bool checkDynamicObstacleCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type,
++                                           DynamicCollisionEvidence *evidence);
+         bool checkPredictedDynamicObstacleCollision(
+             Eigen::Vector3d car_state, Eigen::VectorXd mani_state,
+             const ros::Time &query_time,
+--- a/src/mm_remani_planner/mm_config/src/mm_config.cpp
++++ b/src/mm_remani_planner/mm_config/src/mm_config.cpp
+@@ -893,15 +893,29 @@
+ }
+ 
+ bool MMConfig::checkCarDynamicObsCollision(Eigen::Vector3d car_state, bool safe, double &min_dist){
++    return checkCarDynamicObsCollision(car_state, safe, min_dist, nullptr);
++}
++
++bool MMConfig::checkCarDynamicObsCollision(Eigen::Vector3d car_state, bool safe, double &min_dist,
++                                          DynamicCollisionEvidence *evidence){
++    if (evidence)
++        *evidence = DynamicCollisionEvidence{};
+     std::vector<Eigen::Vector3d> car_pts;
+     getCarPts(car_state, car_pts);
+     const double extra_distance = (safe ? car_safe_margin_ : 0.0) + map_resolution_;
+     for(std::size_t i = 0; i < car_pts.size(); ++i){
+         const auto &pt = car_pts[i];
+         const double safe_dist = getBaseSphereRadius(i) + extra_distance;
+-        const double dist = grid_map_->getDynamicObstacleDistance(pt, safe_dist);
++        const double dist = grid_map_->getDynamicObstacleDistance(
++            pt, safe_dist, evidence ? &evidence->hit : nullptr);
+         if(dist < safe_dist){
+             min_dist = dist;
++            if (evidence) {
++                evidence->query = pt;
++                evidence->threshold = safe_dist;
++                evidence->collision_type = 0;
++                evidence->base_sphere = static_cast<int>(i);
++            }
+             return true;
+         }
+     }
+@@ -910,6 +924,13 @@
+ }
+ 
+ bool MMConfig::checkManiDynamicObsCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, double &min_dist){
++    return checkManiDynamicObsCollision(car_state, mani_state, safe, min_dist, nullptr);
++}
++
++bool MMConfig::checkManiDynamicObsCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, double &min_dist,
++                                           DynamicCollisionEvidence *evidence){
++    if (evidence)
++        *evidence = DynamicCollisionEvidence{};
+     Eigen::Matrix4d T_q = Eigen::Matrix4d::Identity();
+     T_q(0, 0) = cos(car_state(2));
+     T_q(0, 1) = -sin(car_state(2));
+@@ -926,9 +947,17 @@
+         const int pts_size = manipulator_link_pts_[i].cols();
+         for(int j = 0; j < pts_size; ++j){
+             const Eigen::Vector3d pt_on_link = (T_now * manipulator_link_pts_[i].col(j)).head(3);
+-            const double dist = grid_map_->getDynamicObstacleDistance(pt_on_link, safe_dist);
++            const double dist = grid_map_->getDynamicObstacleDistance(
++                pt_on_link, safe_dist, evidence ? &evidence->hit : nullptr);
+             if(dist < safe_dist){
+                 min_dist = dist;
++                if (evidence) {
++                    evidence->query = pt_on_link;
++                    evidence->threshold = safe_dist;
++                    evidence->collision_type = 1;
++                    evidence->arm_link = i;
++                    evidence->arm_point = j;
++                }
+                 return true;
+             }
+         }
+@@ -1092,12 +1121,17 @@
+ }
+ 
+ bool MMConfig::checkDynamicObstacleCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type){
++    return checkDynamicObstacleCollision(car_state, mani_state, safe, coll_type, nullptr);
++}
++
++bool MMConfig::checkDynamicObstacleCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type,
++                                            DynamicCollisionEvidence *evidence){
+     double min_dist;
+-    if(checkCarDynamicObsCollision(car_state, safe, min_dist)){
++    if(checkCarDynamicObsCollision(car_state, safe, min_dist, evidence)){
+         coll_type = 0;
+         return true;
+     }
+-    if(checkManiDynamicObsCollision(car_state, mani_state, safe, min_dist)){
++    if(checkManiDynamicObsCollision(car_state, mani_state, safe, min_dist, evidence)){
+         coll_type = 1;
+         return true;
+     }
+--- a/src/mm_remani_planner/traj_opt/include/optimizer/poly_traj_optimizer.hpp
++++ b/src/mm_remani_planner/traj_opt/include/optimizer/poly_traj_optimizer.hpp
+@@ -162,6 +162,8 @@
+     bool checkCollision(const SingulTrajData &traj, double t, int &coll_type);
+     bool checkPlanningCollision(const SingulTrajData &traj, double t, int &coll_type);
+     bool checkDynamicObstacleCollision(const SingulTrajData &traj, double t, int &coll_type);
++    bool checkDynamicObstacleCollision(const SingulTrajData &traj, double t, int &coll_type,
++                                       MMConfig::DynamicCollisionEvidence *evidence);
+     bool checkPredictedDynamicObstacleCollision(
+         const SingulTrajData &traj, double t,
+         const plan_env::DynamicPointSnapshot &snapshot,
+--- a/src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp
++++ b/src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp
+@@ -499,10 +499,16 @@
+ 
+   bool PolyTrajOptimizer::checkDynamicObstacleCollision(const SingulTrajData &traj, double t, int &coll_type)
+   {
++    return checkDynamicObstacleCollision(traj, t, coll_type, nullptr);
++  }
++
++  bool PolyTrajOptimizer::checkDynamicObstacleCollision(const SingulTrajData &traj, double t, int &coll_type,
++                                                       MMConfig::DynamicCollisionEvidence *evidence)
++  {
+     Eigen::VectorXd pos = traj.getPos(t);
+     double yaw = traj.getCarAngle(t);
+     return mm_config_->checkDynamicObstacleCollision(Eigen::Vector3d(pos(0), pos(1), yaw),
+-                                                     pos.tail(manipulator_dof_), false, coll_type);
++                                                     pos.tail(manipulator_dof_), false, coll_type, evidence);
+   }
+ 
+   bool PolyTrajOptimizer::checkPredictedDynamicObstacleCollision(
+--- a/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp
++++ b/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp
+@@ -1,6 +1,7 @@
+ #include <plan_manage/remani_replan_fsm.h>
+ 
+ #include <cmath>
++#include <iomanip>
+ #include <limits>
+ #include <tuple>
+ 
+@@ -1449,6 +1450,7 @@
+     bool occ = false;
+     bool collision_is_dynamic = false;
+     bool collision_from_point_flow = false;
++    MMConfig::DynamicCollisionEvidence live_collision_evidence;
+     std::uint64_t collision_dynamic_observation_seq = 0;
+     bool point_flow_emergency = false;
+     bool point_flow_requires_stop_for_planning = false;
+@@ -1659,7 +1661,8 @@
+           if (within_time_horizon || far_sample_due){
+             if (!within_time_horizon)
+               next_far_sample_distance = scanned_path_distance + global_plan_dynamic_far_sample_distance_;
+-            if (planner_manager_->ploy_traj_opt_->checkDynamicObstacleCollision(*info, t_check, dynamic_coll_type)){
++            if (planner_manager_->ploy_traj_opt_->checkDynamicObstacleCollision(
++                    *info, t_check, dynamic_coll_type, &live_collision_evidence)){
+               dynamic_collision_time = t_check;
+               dynamic_collision_path_distance = scanned_path_distance;
+               dynamic_collision_position = dynamic_position;
+@@ -1887,6 +1890,40 @@
+       }
+       if (collision_is_dynamic && !collision_from_point_flow &&
+           dynamic_collision_path_distance <= dynamic_emergency_distance){
++        // Record only the raw hit selected for this stop, from this callback's
++        // pinned Latest map. Optimizer probes and rejected candidates never log.
++        const auto version = map->getReadESDFVersion();
++        const auto &evidence = live_collision_evidence;
++        const Eigen::VectorXd query_state = info->getPos(t_temp);
++        ROS_ERROR_STREAM(std::setprecision(17)
++            << "[LiveCollisionStop] source=raw_latest checked_at=" << now.toSec()
++            << " obs=" << map->getDynamicObservationSeq()
++            << " esdf=" << map->getESDFObservationSeq()
++            << " epoch=" << version.first << " revision=" << version.second
++            << " fusion_stamp=" << map->getReadFusionTime().toSec()
++            << " traj_id=" << info->traj_id << " traj_start=" << info->start_time
++            << " phase=" << t_cur << " query_phase=" << t_temp
++            << " gear=" << info->getSingul(t_temp)
++            << " raw_speed=" << info->getVel(t_temp).head(2).norm()
++            << " reference_xy_q=[" << query_state.transpose() << "]"
++            << " reference_yaw=" << info->getCarAngle(t_temp)
++            << " path_distance=" << dynamic_collision_path_distance
++            << " stop_threshold=" << dynamic_emergency_distance
++            << " hit_valid=" << evidence.hit.valid
++            << " collision_type=" << evidence.collision_type
++            << " base_sphere=" << evidence.base_sphere
++            << " arm_link=" << evidence.arm_link << " arm_point=" << evidence.arm_point
++            << " query=[" << evidence.query.transpose() << "]"
++            << " voxel=[" << evidence.hit.voxel.transpose() << "]"
++            << " voxel_center=[" << evidence.hit.center.transpose() << "]"
++            << " distance=" << evidence.hit.distance << " threshold=" << evidence.threshold
++            << " occupancy=" << evidence.hit.occupancy
++            << " occupancy_threshold=" << evidence.hit.occupancy_threshold
++            << " actual_xy_q=[" << mm_state_pos_.transpose() << "]"
++            << " actual_yaw=" << mm_car_yaw_
++            << " actual_vxy=[" << mm_state_vel_.head(2).transpose() << "]"
++            << " odom_stamp=" << perception_odom_stamp_.toSec()
++            << " joint_stamp=" << perception_joint_stamp_.toSec());
+         ROS_ERROR_THROTTLE(1.0,
+                            "[FSM] Dynamic obstacle only %.2f m ahead (stop threshold %.2f m); stop before replanning.",
+                            dynamic_collision_path_distance, dynamic_emergency_distance);
+--- a/src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp
++++ b/src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp
+@@ -1193,6 +1193,49 @@
+ }
+ 
+ }  // namespace
++
++#ifndef MAP_BENCHMARK_OLD_ABI
++TEST(GridMapOccupancy, LiveHitEvidenceMatchesDistanceAndResetsWhenNoHit)
++{
++  ensureRosInitialized();
++  GridMap map;
++  GridMapParallelTestAccessor::configureOccupancyUpdate(map);
++  GridMap::DynamicObstacleHit hit;
++  const Eigen::Vector3d query(.875, .75, .75);
++  const double radius = .4;
++  EXPECT_DOUBLE_EQ(radius, map.getDynamicObstacleDistance(query, radius, &hit));
++  EXPECT_FALSE(hit.valid);
++  EXPECT_DOUBLE_EQ(map.getDynamicObstacleDistance(query, radius),
++                   map.getDynamicObstacleDistance(query, radius, &hit));
++
++  GridMapParallelTestAccessor::seedDynamicAndStaticOccupancy(map);
++  const double distance = map.getDynamicObstacleDistance(query, radius, &hit);
++  ASSERT_TRUE(hit.valid);
++  EXPECT_DOUBLE_EQ(.125, distance);
++  EXPECT_DOUBLE_EQ(map.getDynamicObstacleDistance(query, radius), distance);
++  EXPECT_TRUE(hit.voxel == Eigen::Vector3i(1, 1, 1));
++  EXPECT_TRUE(hit.center == Eigen::Vector3d(.75, .75, .75));
++  EXPECT_DOUBLE_EQ(distance, hit.distance);
++  EXPECT_DOUBLE_EQ(distance, (query - hit.center).norm());
++  EXPECT_DOUBLE_EQ(2., hit.occupancy);
++  EXPECT_DOUBLE_EQ(0., hit.occupancy_threshold);
++
++  // A static-map voxel is excluded, and must not retain the previous live hit.
++  const Eigen::Vector3d static_query(1.75, 1.75, 1.75);
++  EXPECT_DOUBLE_EQ(radius, map.getDynamicObstacleDistance(static_query, radius, &hit));
++  EXPECT_FALSE(hit.valid);
++  EXPECT_DOUBLE_EQ(map.getDynamicObstacleDistance(static_query, radius),
++                   map.getDynamicObstacleDistance(static_query, radius, &hit));
++
++  // Equality to the search limit remains a non-hit, just like the old API.
++  const Eigen::Vector3d boundary_query(1., .75, .75);
++  EXPECT_DOUBLE_EQ(.25, map.getDynamicObstacleDistance(boundary_query, .25, &hit));
++  EXPECT_FALSE(hit.valid);
++  EXPECT_DOUBLE_EQ(map.getDynamicObstacleDistance(boundary_query, .25),
++                   map.getDynamicObstacleDistance(boundary_query, .25, &hit));
++}
++
++#endif
+ 
+ TEST(GridMapDistanceCopy, InclusiveBoundariesAndRandomCropsMatchScalarQueries)
+ {

@@ -1,0 +1,66 @@
+{
+  "scope": "Offline native reference, controller progress and MPPI recovery audit. No ROS nodes, CAN, enable, reset or motion commands were started.",
+  "changed_files": [
+    "src/mm_remani/scripts/whole_body_mppi.py",
+    "src/mm_remani/test/test_mppi_collision.py",
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+    "src/mm_remani/test/test_planner_virtual_progress.py"
+  ],
+  "confirmed_fixed_defect": {
+    "mechanism": "All three stale native progress statuses previously emitted tracking_fault=True after a command for this goal had been delivered. Planner treats that as excessive tracking error, cancels the reference and replans, although source age alone does not invalidate the spatial path.",
+    "implementation": "Classify native_progress_stale, native_progress_stale_during_plan and native_progress_stale_before_delivery as exact local retry reasons. Zero base and no arm command remain mandatory. No artificial progress stamp, timeout extension, hold heartbeat, fault clear or geometry bypass.",
+    "before": "The real Adapter->WholeBodyNode cycle with progress stamp 99.7 and current time 100.0 emits zero base and tracking_fault=True. Regression failed before production edit.",
+    "after": "Same stale cycle emits zero base, no arm and no tracking fault. A fresh valid progress sample resumes the identical native object/revision, through normal delivery validation. Only successful delivery publishes fault=False.",
+    "preserved": [
+      "invalid_native_progress",
+      "native_progress_reversed",
+      "actual collision/no feasible within deadline",
+      "latched driver stop"
+    ],
+    "historical_attribution_limit": "Nov10 17:18 post-restart navigation record contains zero stale-progress events; this defect must not be described as the cause of all historic stop-go motion."
+  },
+  "validation": {
+    "command": "PYTHONNOUSERSITE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /usr/bin/python3 -m unittest test_mppi_collision test_mppi_native_phase test_mppi_reference_wait test_mppi_rejection_diagnostics -v",
+    "tests": 62,
+    "result": "PASS",
+    "before_log": "progress_retry_before.txt",
+    "after_log": "progress_retry_after.txt"
+  },
+  "known_unmodified_coupling_limits": [
+    {
+      "source": "src/mm_controller/src/mm_controller_fsm.cpp:469-500; src/mm_remani/scripts/mppi/native_reference_adapter.py:190-194",
+      "finding": "Controller slows/freezes the common virtual phase when actual arm differs from slow native reference by >=0.25 rad and resumes only <=0.06 rad. It does not distinguish intentional MPPI avoidance from tracking error. A sustained large arm-only deviation can therefore eventually slow/stop nominal base progress.",
+      "risk_of_naive_fix": "Removing the hold without an approved safe MPPI deviation signal also removes protection against genuine actuator tracking failure.",
+      "status": "Structural limitation, not established as observed historical cause; not changed."
+    }
+  ],
+  "hardware_validation": "PENDING",
+  "planner_phase_fix": {
+    "source": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:getCurrentTrajectoryTime/getCurrentTrajectoryScale",
+    "reproduction": {
+      "trajectory_start": 10.0,
+      "duration": 5.0,
+      "now": 100.0,
+      "progress_stamp": 99.4,
+      "reported_phase": 0.4,
+      "reported_scale": 0.5,
+      "before": {
+        "phase": 5.0,
+        "scale": 1.0
+      },
+      "after": {
+        "phase": 0.4,
+        "scale": 0.0
+      }
+    },
+    "mechanism": "At source expiry the slow planner used to jump from virtual controller phase to elapsed wall time. A slow/paused five-second curve could instantly appear finished. Local replan would additionally predict forward with scale 1 while the MPPI side had already stopped on stale progress.",
+    "change": "Matched but expired progress now retains the bounded reported phase and returns zero scale. More than 5 ms future progress also cannot extrapolate forward. Fresh matching progress resumes normally. Missing or different trajectory progress preserves legacy fallback.",
+    "downstream_review": "EXEC_TRAJ completion and static trajectory scanning retain the reported phase. Local handoff no longer extrapolates missing progress. Dynamic prediction independently checks matching source freshness when dynamic points are present; actual robot collision checks and MPPI command input expiry remain active. No timestamp restamping or timeout extension.",
+    "validation": "7 compiled-fixture tests pass. Fixture extracts exact production C++ methods and links real ros::Time; no ROS graph or controller is started. Covers stale/long-gap/paused/future cases, 0.5 s boundary, new feedback recovery and unchanged no-match behavior.",
+    "logs": [
+      "planner_phase_before.txt",
+      "planner_phase_after.txt"
+    ],
+    "production_build": "Pending root single-object rebuild and atomic planner executable installation at time of this report."
+  }
+}

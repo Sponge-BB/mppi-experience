@@ -1,0 +1,8 @@
+<launch>
+  <!-- Perception only: no drivers, control bridges, robot enable, or actuator topics. -->
+  <node pkg="standby_hardware_trial" type="private_dynamic_obstacle_tracker_node"
+        ns="/standby_trial_20261105_01/perception"
+        name="dynamic_obstacle_tracker" output="screen" required="true">
+    <rosparam command="load" file="$(dirname)/private_tracker_slow_target.yaml" />
+  </node>
+</launch>

@@ -1,0 +1,20 @@
+# One 10 Hz whole-body sampling controller; original drivers remain the sinks.
+rate_hz: 10.0
+deadline_s: 0.095
+# Keep rollout + model braking + maximum source age within the 2 s forecast.
+horizon: 5
+random_samples: 4
+base_limits:
+  vmax: 0.25
+  wmax: 0.35
+  accel: 0.25
+  angular_accel: 0.80
+  track: 0.37
+  wheel_v: 0.25
+  wheel_a: 0.2975
+arm_velocity: [0.15, 0.15, 0.15, 0.15, 0.15, 0.15]
+arm_acceleration: [0.35, 0.35, 0.35, 0.35, 0.35, 0.35]
+# Current posture and the REMANI reference are always candidates as well.
+postures:
+  - [0.0, 2.4434609528, -1.0471975512, 0.0, 0.2617993878, 0.0]
+standby: {}

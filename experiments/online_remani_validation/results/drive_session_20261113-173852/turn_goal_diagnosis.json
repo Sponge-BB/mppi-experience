@@ -1,0 +1,271 @@
+{
+  "scope": "Offline read-only diagnosis of recorded goals and yaw behavior; no production code edit and no robot command.",
+  "deployed_version": {
+    "version": "20261113-172845-map-latency",
+    "parent": "20261113-165655-before-map-latency",
+    "files_sha256": {
+      "src/mm_remani_planner/plan_env/src/esdf_worker.cpp": "e79616ba233b0dd8ca16399ddedbc56085ea82afe83b789962ebcb007460ebfe",
+      "src/mm_remani_planner/plan_env/src/grid_map.cpp": "5d989cf676a9aeba7c5b1800ee8bb6fe880ef413bfbc791cd37b6d00e5ecd236",
+      "src/mm_remani_planner/plan_env/include/plan_env/grid_map.h": "c474929e9de92f9fe4331f085e66c4319e8b41536b67a17566c4016007c74f2c",
+      "src/mm_remani_planner/plan_env/test/test_esdf_worker.cpp": "fef0fb8de4dd5e881b3dde897b72c12189b6ba454adba586e566768c8133ec01",
+      "src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp": "2d7e1539ec7f49f31d07b8e20c98b6b6a32c0330acde6795e2838072511a1e96",
+      "devel/lib/libplan_env.so": "848bc188be959a6998f4b0fa7d1d817242959e82800bd5950281215f524319c2"
+    },
+    "deployment": {
+      "version": "20261113-172845-map-latency",
+      "parent_version": "20261113-165655-before-map-latency",
+      "source": "/tmp/remani_map_latency_devel_20261113/lib/libplan_env.so",
+      "destination": "/home/l/remani_ws/devel/lib/libplan_env.so",
+      "sha256": "848bc188be959a6998f4b0fa7d1d817242959e82800bd5950281215f524319c2",
+      "mode": "0o775",
+      "atomic_replace": true,
+      "old_library_users": [],
+      "planner_binary_unchanged": true,
+      "motion_commands_sent": false,
+      "hardware_started": false
+    },
+    "hardware_motion_sent_by_recorder": false
+  },
+  "evidence": {
+    "bag": "capture.bag",
+    "geometry": "goal_geometry_analysis.json",
+    "topic_summary": "turn_goal_summary.json",
+    "source_timeline": "turn_goal_timeline.jsonl",
+    "source_master_log": "runtime_logs/hai_goal_completion_windows.log",
+    "joint_samples": "goal_completion_joint_samples.json"
+  },
+  "source_hashes": {
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "751dbbf78d9438156fb2bc69d2866e4138d3ab0879475ed03e779e23b13ee1bd",
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": "01859364dde415be76925042769eaa8c20a28d2660b1b842963de90bec5a25a8",
+    "src/mm_remani/scripts/whole_body_mppi.py": "5fa768b8b461e740ce23793df636d8dcb3f5c54a1d440a1153ebb945629539fd",
+    "src/mm_controller/src/mm_controller_fsm.cpp": "ebb9c4ada2815beb876996ba0388ee1cfd9d1a598b3fcda4bd22058ce1e9f8b6"
+  },
+  "goals_geometry": [
+    {
+      "source": 1794563113.126941,
+      "receipt": 1794563113.1342318,
+      "clock": "17:45:13.126",
+      "frame": "world",
+      "x": 0.617774486541748,
+      "y": -1.2898898124694824,
+      "yaw": -1.5078611373901365,
+      "odom_before": {
+        "source": 1794563113.0826623,
+        "receipt": 1794563113.1067152,
+        "x": -0.27150002894927217,
+        "y": -0.046450569910167924,
+        "yaw": -0.015336914608180754
+      },
+      "distance": 1.5287087079748944,
+      "yaw_error": -1.4925242227819557
+    },
+    {
+      "source": 1794563136.935839,
+      "receipt": 1794563136.94502,
+      "clock": "17:45:36.935",
+      "frame": "world",
+      "x": 0.6929194927215576,
+      "y": -1.5455669164657593,
+      "yaw": 1.5977861881256104,
+      "odom_before": {
+        "source": 1794563136.8828416,
+        "receipt": 1794563136.899969,
+        "x": 0.6108316194266571,
+        "y": -1.277370700923879,
+        "yaw": -1.4745410410378161
+      },
+      "distance": 0.2804775017235185,
+      "yaw_error": 3.0723272291634265
+    },
+    {
+      "source": 1794563184.1771302,
+      "receipt": 1794563184.192083,
+      "clock": "17:46:24.177",
+      "frame": "world",
+      "x": 0.4957064688205719,
+      "y": -1.2968875169754028,
+      "yaw": 1.5392996072769165,
+      "odom_before": {
+        "source": 1794563184.0827947,
+        "receipt": 1794563184.0999024,
+        "x": 0.6044551155213514,
+        "y": -1.5984912240546327,
+        "yaw": 0.5791321561921885
+      },
+      "distance": 0.3206104556672862,
+      "yaw_error": 0.960167451084728
+    },
+    {
+      "source": 1794563200.682124,
+      "receipt": 1794563200.6829174,
+      "clock": "17:46:40.682",
+      "frame": "world",
+      "x": 0.4447011649608612,
+      "y": 1.4370858669281006,
+      "yaw": 1.5513086318969724,
+      "odom_before": {
+        "source": 1794563200.5828784,
+        "receipt": 1794563200.6070635,
+        "x": 0.49236002988197763,
+        "y": -1.3091552932587476,
+        "yaw": 1.6611863168706447
+      },
+      "distance": 2.746654670196087,
+      "yaw_error": -0.10987768497367223
+    }
+  ],
+  "recording_finish_evidence": {
+    "planning_finish_messages": 0,
+    "caveat": "No finish message was observed during this recorded window; this is not a claim about events after the recorder ended."
+  },
+  "confirmed": [
+    {
+      "goal": 1,
+      "layer": "Native FSM endpoint completion and replan selection",
+      "facts": [
+        "177 delivered controls included31 terminal_yaw_alignment controls: final alignment is enabled in this installation.",
+        "Master log source17:45:33.557483: reference ended with base_error=.026m,yaw_error=.014rad,arm_error=.120rad(rounded); FSM chose GOAL_FEEDBACK instead of completion.",
+        "The source explicitly selects the not-actual-at-goal branch. Since base/yaw were below their configured .15m/.15rad limits, the arm comparison was the blocking condition.",
+        "Subsequent solver logs show Success but native collision verification rejects car collision at8.04..8.08s; no replacement ADD follows this endpoint event before goal2.",
+        "Filtered joint source17:45:34.759675 and17:45:36.884639 gives maximum error .1125737368rad versus goal1 endpoint, below .12rad; yet GEN_NEW_TRAJ only retries planning and does not recheck measured goal arrival."
+      ],
+      "source_locations": [
+        {
+          "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 531,
+          "meaning": "GEN_NEW_TRAJ plans without the EXEC_TRAJ actual-arrival checks"
+        },
+        {
+          "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 706,
+          "meaning": "Compute actual arm error and compare against goal_arm_tolerance"
+        },
+        {
+          "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 830,
+          "meaning": "Expired reference with actual_at_goal false enters GEN_NEW_TRAJ"
+        },
+        {
+          "path": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+          "line": 338,
+          "meaning": "Expired-endpoint yaw intent has zero arm controls, not endpoint arm convergence"
+        }
+      ],
+      "limits": "The nearest joint sample to the failure log is2.155ms later and error .118647rad; it must not be substituted for the FSM sample that triggered the rounded .120rad error."
+    },
+    {
+      "goal": 2,
+      "layer": "Short native translation+turn path tracking, progress freezes, then raw occupancy cancellation; terminal alignment never entered",
+      "facts": [
+        "Requested translation .2804775m and yaw change3.0723272rad(176.03deg), so the RViz request was not exactly an in-place rotation.",
+        "Native reference ADD source17:45:37.4411879 has duration10.1537947s and endpoint yaw1.5977862rad.",
+        "Controller source17:45:41.517 and17:45:45.707 freezes progress at yaw tracking errors .554/.562rad; threshold is .55rad.",
+        "Near17:45:53.185 progress is7.862602/10.153795s, so it is not expired even though robot position is already about .049m from goal and yaw is still1.1565rad away.",
+        "Source17:45:53.351 and17:45:54.695 logs detect raw live-map base collision at0.00m/0.05s and stop before replanning; ABORT receipts17:45:53.352 and17:45:54.711 agree.",
+        "Multiple repair candidates/cancellations follow; source17:46:20.458 gives up the current target. Across this goal there are zero terminal_yaw_alignment controls and157 native_reference_cancelled statuses."
+      ],
+      "source_locations": [
+        {
+          "path": "src/mm_controller/src/mm_controller_fsm.cpp",
+          "line": 394,
+          "meaning": "Yaw tracking error can freeze controller virtual phase"
+        },
+        {
+          "path": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+          "line": 353,
+          "meaning": "terminal_yaw_command requires phase>=native endpoint"
+        },
+        {
+          "path": "src/mm_remani/scripts/whole_body_mppi.py",
+          "line": 575,
+          "meaning": "Only native_reference_expired selects terminal alignment"
+        },
+        {
+          "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 1712,
+          "meaning": "Near raw obstacle collision enters emergency stop"
+        },
+        {
+          "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 3278,
+          "meaning": "Emergency stop publishes ACTION_ABORT"
+        },
+        {
+          "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 573,
+          "meaning": "Planning failure budget discards current target"
+        }
+      ],
+      "limits": "The recorded collision decision is confirmed; whether that geometry was a real obstacle, self return or residual occupancy is not established by this goal analysis and must not be assumed."
+    },
+    {
+      "goal": 3,
+      "layer": "Arrival succeeded, but optional standby restoration is coupled to navigation completion and fails whole-body planning",
+      "facts": [
+        "Source17:46:32.715: Position and arm reached; waiting for final yaw(error .153rad).",
+        "Master source17:46:32.808: Manual target reached. Planning arm restore to stand-by pose. arm_error=.1732.",
+        "The filtered joint samples near32.715/32.819 differ from the navigation endpoint by only .0077144rad, confirming this is not an uncompleted navigation arm goal.",
+        "At32.818 it enters GEN_NEW_TRAJ for restoration;25 optimizer successes are then rejected at car-collision times5.83..11.33s across5 planning attempts.",
+        "Source17:46:38.436: Failed to generate new trajectory(5/5), then Give up current target. No planning/finish is emitted.",
+        "The adapter remains active without a finish signal;60 terminal_yaw_alignment controls were observed during goal3."
+      ],
+      "source_locations": [
+        {
+          "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 765,
+          "meaning": "Manual arrival branches to optional standby restoration before publishing finish"
+        },
+        {
+          "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 781,
+          "meaning": "Confirmed log and planNextWaypoint restoration call"
+        },
+        {
+          "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 788,
+          "meaning": "Only immediate global-waypoint failure is treated as finished; later GEN failures are not"
+        },
+        {
+          "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 573,
+          "meaning": "Later optimization failures discard the restoration/navigation target without finish"
+        },
+        {
+          "path": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+          "line": 87,
+          "meaning": "Adapter returns to standby only when planner finish callback calls finish"
+        }
+      ],
+      "limits": "The later car collision validation failed; this report does not establish why its occupancy was present or whether the candidate base excursion was physically necessary."
+    }
+  ],
+  "not_proven": [
+    "No evidence that terminal yaw alignment is globally disabled: goals1 and3 actively used it.",
+    "Goal2 was not exactly zero translation; calling it a pure in-place input would misstate the recorded goal.",
+    "No evidence that every collision was a ghost or that reducing collision margins is justified.",
+    "No evidence that the current map computation optimization caused these endpoint workflow problems.",
+    "No fresh reproduction is required to establish the three source/log paths above; remaining geometry causes are outside this completed diagnostic scope."
+  ],
+  "minimal_fix_suggestions": [
+    {
+      "priority": 1,
+      "scope": "Endpoint-only convergence and fresh measured arrival recheck",
+      "recommendation": "Before repeating a full-body global replan for an expired endpoint, recheck current measured arrival; a small arm endpoint error alone should use bounded stationary endpoint convergence rather than create a new base route. Use current collision/feedback checks; do not blindly widen arm tolerance.",
+      "addresses": "Goal1 boundary-triggered replan continues even after measured arm error is back inside tolerance."
+    },
+    {
+      "priority": 2,
+      "scope": "Separate requested near-goal yaw alignment from virtual-phase expiry",
+      "recommendation": "When the final reference is associated with the current goal and measured position/arm are already within the agreed envelope, allow a coordinated terminal pose mode with zero translation and bounded yaw before waiting indefinitely for virtual progress to expire. Preserve collision braking checks and independent stop owners, and synchronize the FSM completion criterion. Keep the initial .28m translation request unless actually within position tolerance.",
+      "addresses": "Goal2 can be physically near its point but remain in curved native path tracking, with terminal mode unreachable until progress completes."
+    },
+    {
+      "priority": 3,
+      "scope": "Navigation completion versus optional arm-standby restoration",
+      "recommendation": "Record navigation arrival independently from optional standby restoration. If standby restoration is required, attempt a checked arm-only transition with the base held; restoration failure must report that separate failure and retain a safe posture, rather than repeatedly regenerate a mobile-base path and label the already reached navigation goal unreachable.",
+      "addresses": "Goal3 explicitly reached its requested pose, then restoration whole-body planning failed and suppressed finish.",
+      "implementation_constraint": "Do not merely publish the existing planning/finish early and then reuse the current native restore trajectory: NativeReferenceAdapter.finish clears goal association, so later native trajectories would be ignored. The minimal behavior choice is to skip optional restoration and finish at the reached safe pose, or implement restoration with explicitly separate arm-only execution ownership."
+    }
+  ],
+  "validation_boundary": "Diagnosis only. No code modification, deployment, motion command, or new real-vehicle validation was performed by this task."
+}

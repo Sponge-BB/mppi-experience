@@ -1,0 +1,104 @@
+{
+  "scope": "Read-only review of the second-goal dynamic trial; first goal was relocation. No new robot test or runtime edits.",
+  "review_date": "2026-11-16 Asia/Shanghai",
+  "parent_review": "review_summary.json",
+  "new_first_stop_evidence": {
+    "mapping_receive_gap_s": 1.1919891834259033,
+    "mapping_gap_receipts": [
+      1794792714.6169295,
+      1794792715.8089187
+    ],
+    "mapping_gap_source_stamps": [
+      1794792714.5701177,
+      1794792715.7701535
+    ],
+    "dynamic_receive_gap_s": 1.1980922,
+    "self_filter_warning_source": 1794792714.8692877,
+    "self_filter_warning": "Robot self-filter suppressed cloud: self-filter joint feedback unavailable or stale",
+    "joint_topics_window": [
+      1794792713.5,
+      1794792716.5
+    ],
+    "joint_states_single_max_receipt_gap_s": 0.7719080448150635,
+    "mm_joint_states_max_receipt_gap_s": 1.1710071563720703,
+    "odom_max_receipt_gap_s": 0.11921191215515137,
+    "first_lidar_timeout_source": 1794792715.3830771,
+    "first_lidar_timeout_age_s": 0.755,
+    "interpretation": "Joint-feedback loss/staleness and self-filter cloud suppression are directly logged, and independent mapping/tracker output gaps align with the first stop. This is more specific than generic ESDF delay. CAN hardware vs driver vs scheduling origin is unproven. Missing cloud callbacks do not establish no physical LiDAR returns.",
+    "self_filter_joint_max_age_s": 0.15,
+    "self_filter_joint_source": "/mm/joint_states",
+    "self_filter_gate_source": "src/mm_remani/scripts/velodyne_transformer.py:217-220,314-317,340-344"
+  },
+  "corrections_to_previous_review": [
+    {
+      "claim": "All sampled tracker health values were true, therefore perception was uninterrupted",
+      "status": "invalid inference",
+      "evidence": "Tracker health is latched and updated by callbacks; no independent health timer. Both dynamic and mapping outputs had a ~1.2s gap. Successfully processed input-age distributions exclude missing frames.",
+      "source": "src/mm_remani/src/dynamic_obstacle_tracker_node.cpp:272-278,410-447,692-696"
+    },
+    {
+      "claim": "The person passed residual/clustering/association and was rejected specifically by motion qualification",
+      "status": "not established",
+      "evidence": "Aggregate residual/cluster/confirmed counts do not identify the person. Existing tracks may represent background; the person may have been lost earlier. Direct observation is 1795 empty dynamic-point messages and zero current qualified count.",
+      "limits": "No exact entry/exit timestamps, corresponding person cluster/track, or exact tracker input cloud was recorded. 1795 counts include pre-entry and post-abort samples."
+    },
+    {
+      "claim": "All moving planning always fails / 700ms was all optimization",
+      "status": "overbroad",
+      "evidence": "Contradiction applies to successful existing-local-trajectory moving dynamic repair that does not use stopped/perception rebase. Wall duration includes explicit wait; actual sleep duration is not separately recorded."
+    },
+    {
+      "claim": "Slow phase mismatch proves a false collision",
+      "status": "not established",
+      "evidence": "Slow phase7.62484 vs nearby controller6.27817 is observed; exact failed freshness/match predicate and a same-map actual-phase collision recheck are missing."
+    }
+  ],
+  "confirmed_core_findings": [
+    {
+      "issue": "Moving repair consumes activation lead before requiring it",
+      "source": [
+        "src/mm_remani_planner/plan_manage/src/planner_manager.cpp:551",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:3392"
+      ],
+      "evidence": "Three pre-long-stop moving repairs succeeded in optimization but were rejected with <20ms activation lead."
+    },
+    {
+      "issue": "Execution phase fallback reverts to unscaled wall time",
+      "source": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1123",
+      "evidence": "Slow phase ahead by about1.347s; slow odom818ms old while fast feedback fresh. Exact progress fallback predicate unobserved."
+    },
+    {
+      "issue": "No anticipatory dynamic input was delivered in the recorded output frames",
+      "evidence": "All1795 /dynamic_points messages for goal2-to-recording-end were empty. Static/live occupancy remained active, so this does not mean MPPI had no obstacle perception."
+    },
+    {
+      "issue": "Key stop was native reference cancellation, not a demonstrated infeasible MPPI search",
+      "evidence": "27 nominal command deliveries in approach window, then raw occupancy stop/ABORT and32.948741s zero commands. Native recovery later abandoned the goal. Existing raw-hit evidence is bottom collision_type0, sphere46, not arm-only collision."
+    }
+  ],
+  "handoff_fix_review_constraints": [
+    "Do not remove the safety stop or retimestamp a future-state candidate to now.",
+    "Removing manager sleep is necessary for the affected branch but insufficient to establish a correct end-to-end handoff.",
+    "Recheck activation lead after final validation, immediately before publication; current gate precedes validation.",
+    "Validate the actual old execution/bridge before activation and the candidate after activation. Current predicted validator checks a hold at future traj(0), which is not the actual bridge for moving repair.",
+    "MPPI native_reference_adapter supports future pending and old-reference continuation; C++ controller clears/reinitializes on new id1 and holds before activation. Verify the active execution route and progress continuity, rather than assume all controllers behave identically."
+  ],
+  "remaining_experiment_limits": [
+    "No exact person entry/exit timestamp or associated cluster/track identity.",
+    "Sparse mapping cloud is not the denser tracker input, so it is not exact tracker replay evidence.",
+    "No complete time series of the same occupied voxel/map layer through person departure; persistent occupancy remains unproven.",
+    "No matched REMANI-only control run in this experiment; cannot quantify that MPPI made avoidance worse.",
+    "Recorded main executable/source hashes do not establish full source provenance of every loaded library.",
+    "This trial hit a base collision guard, and cannot validate the arm-only avoidance research case."
+  ],
+  "next_focused_steps": [
+    "First repair the future-handoff lifecycle and verify old/new command and phase continuity offline; preserve safety acceptance.",
+    "Address phase fallback in a separate traceable change; replay slowdown/stale-progress conditions.",
+    "Use targeted cluster/track rejection evidence with matching input to locate person loss, rather than loosen all tracker thresholds.",
+    "Resolve the joint-feedback to self-filter interruption from existing source/receipt timing before attributing to LiDAR or ESDF."
+  ],
+  "runtime_code_modified": false,
+  "robot_control_published": false,
+  "recordings_unchanged": true,
+  "peer_crosscheck": "analysis/causal_crosscheck.json"
+}

@@ -1,0 +1,295 @@
+--- a/mm_remani/include/mm_remani/dynamic_obstacle_tracker_core.h
++++ b/mm_remani/include/mm_remani/dynamic_obstacle_tracker_core.h
+@@ -94,6 +94,27 @@
+   MOTION_EXIT_SPEED = 1u << 12,
+   MOTION_EXIT_EFFICIENCY = 1u << 13,
+   MOTION_EXIT_DIRECTION = 1u << 14
++};
++
++struct SurfaceDirectionDiagnostic
++{
++  bool evaluated = false;
++  std::size_t samples = 0;
++  double stationary_squared = -1.0;
++  double translated_squared = -1.0;
++  bool stationary_distinct = false;
++  bool translated_close = false;
++  bool translation_improves = false;
++};
++
++struct SurfaceTranslationDiagnostic
++{
++  bool evaluated = false;
++  std::size_t previous_points = 0, current_points = 0;
++  double first_stamp = 0.0, last_stamp = 0.0;
++  double translation_x = 0.0, translation_y = 0.0;
++  double tolerance = 0.0;
++  SurfaceDirectionDiagnostic forward, reverse;
+ };
+ 
+ struct MotionQualificationDiagnostic
+@@ -123,6 +144,7 @@
+   // Distance to the first matching anchor, not a nearest-anchor query.
+   double matching_background_distance = -1.0;
+   MotionSurfaceResult surface = MotionSurfaceResult::NOT_EVALUATED;
++  SurfaceTranslationDiagnostic surface_details;
+   std::uint32_t rejection_mask = 0;
+ };
+ 
+@@ -154,6 +176,8 @@
+     // World-space nearest-surface error below this scale is consistent with
+     // scan sampling noise, not evidence that an obstacle translated.
+     double surface_motion_tolerance = 0.04;
++    // Optional evidence collection; never changes classification predicates.
++    bool collect_surface_diagnostics = false;
+     double direction_consistency_cosine = 0.30;
+     double minimum_motion_duration = 0.25;
+     double motion_history_duration = 0.60;
+--- a/mm_remani/src/dynamic_obstacle_tracker_core.cpp
++++ b/mm_remani/src/dynamic_obstacle_tracker_core.cpp
+@@ -62,8 +62,17 @@
+     const std::vector<Eigen::Vector3f> &previous,
+     const std::vector<Eigen::Vector3f> &current,
+     const Eigen::Vector2d &translation,
+-    double tolerance)
+-{
++    double tolerance, SurfaceTranslationDiagnostic *diagnostic = nullptr)
++{
++  if (diagnostic != nullptr)
++  {
++    diagnostic->evaluated = true;
++    diagnostic->previous_points = previous.size();
++    diagnostic->current_points = current.size();
++    diagnostic->translation_x = translation.x();
++    diagnostic->translation_y = translation.y();
++    diagnostic->tolerance = tolerance;
++  }
+   if (previous.size() < 3 || current.size() < 3)
+     return false;
+ 
+@@ -74,8 +83,11 @@
+   const auto direction_supports_translation =
+       [tolerance_squared](const std::vector<Eigen::Vector3f> &source,
+                           const std::vector<Eigen::Vector3f> &target,
+-                          const Eigen::Vector3f &offset)
+-      {
++                          const Eigen::Vector3f &offset,
++                          SurfaceDirectionDiagnostic *evidence)
++      {
++        // Qualification tests planar motion, matching the XY history/shift.
++        // Height sampling may change; retain all original XYZ collision points.
+         // Query at most 64 observed points against the complete bounded
+         // surface. Keeping all target neighbours prevents sampling itself
+         // from turning a changing visible subset into apparent movement.
+@@ -93,9 +105,9 @@
+           for (const Eigen::Vector3f &neighbour : target)
+           {
+             stationary = std::min(
+-                stationary, static_cast<double>((point - neighbour).squaredNorm()));
++                stationary, static_cast<double>((point - neighbour).head<2>().squaredNorm()));
+             moving = std::min(
+-                moving, static_cast<double>((translated - neighbour).squaredNorm()));
++                moving, static_cast<double>((translated - neighbour).head<2>().squaredNorm()));
+           }
+           stationary_errors.push_back(stationary);
+           translated_errors.push_back(moving);
+@@ -112,12 +124,26 @@
+                          translated_errors.end());
+         const double stationary = stationary_errors[median];
+         const double moving = translated_errors[median];
++        if (evidence != nullptr)
++        {
++          evidence->evaluated = true;
++          evidence->samples = count;
++          evidence->stationary_squared = stationary;
++          evidence->translated_squared = moving;
++          evidence->stationary_distinct = stationary > tolerance_squared;
++          evidence->translated_close = moving <= tolerance_squared;
++          evidence->translation_improves = moving < 0.25 * stationary;
++        }
+         return stationary > tolerance_squared &&
+                moving <= tolerance_squared &&
+                moving < 0.25 * stationary;
+       };
+-  return direction_supports_translation(previous, current, shift) &&
+-         direction_supports_translation(current, previous, -shift);
++  // Evidence follows the original short circuit; an unvisited direction
++  // remains evaluated=false. No extra nearest-neighbour search is introduced.
++  return direction_supports_translation(previous, current, shift,
++             diagnostic != nullptr ? &diagnostic->forward : nullptr) &&
++         direction_supports_translation(current, previous, -shift,
++             diagnostic != nullptr ? &diagnostic->reverse : nullptr);
+ }
+ 
+ }  // namespace
+@@ -731,13 +757,21 @@
+                           three_dimensional_speed;
+     };
+ 
++    SurfaceTranslationDiagnostic surface_details;
+     const bool surface_evaluated = !track.motion_qualified && coherent_motion;
+     const bool supported_surface_motion =
+         surface_evaluated &&
+         surfaceSupportsTranslation(
+             track.motion_history.front().surface,
+             track.motion_history.back().surface,
+-            history_net, parameters_.surface_motion_tolerance);
++            history_net, parameters_.surface_motion_tolerance,
++            diagnostics != nullptr && parameters_.collect_surface_diagnostics
++                ? &surface_details : nullptr);
++    if (surface_evaluated && diagnostics != nullptr)
++    {
++      surface_details.first_stamp = track.motion_history.front().stamp_seconds;
++      surface_details.last_stamp = track.motion_history.back().stamp_seconds;
++    }
+     if (!track.motion_qualified && supported_surface_motion)
+     {
+       track.motion_qualified = true;
+@@ -852,6 +886,7 @@
+       evidence.motion_evaluated = true;
+       evidence.inside_stationary_background = inside_stationary_background;
+       evidence.matching_background_distance = matching_background_distance;
++      evidence.surface_details = surface_details;
+       if (surface_evaluated)
+         evidence.surface = supported_surface_motion ?
+             MotionSurfaceResult::PASSED : MotionSurfaceResult::REJECTED;
+--- a/mm_remani/src/dynamic_obstacle_tracker_node.cpp
++++ b/mm_remani/src/dynamic_obstacle_tracker_node.cpp
+@@ -80,6 +80,28 @@
+   return text.str();
+ }
+ 
++std::string surfaceDiagnosticSummary(const MotionQualificationDiagnostic &d)
++{
++  const auto &x = d.surface_details;
++  std::ostringstream out;
++  out << std::setprecision(17) << "source_stamp=" << d.stamp_seconds
++      << " id=" << d.track_id << " xyz=" << d.observed_position.transpose()
++      << " first=" << x.first_stamp << " last=" << x.last_stamp
++      << " previous_points=" << x.previous_points << " current_points=" << x.current_points
++      << " dx=" << x.translation_x << " dy=" << x.translation_y
++      << " tolerance=" << x.tolerance << " accepted=" << d.motion_qualified;
++  const auto direction = [&](const char *name, const SurfaceDirectionDiagnostic &v) {
++    out << " " << name << "={evaluated=" << v.evaluated << ",samples=" << v.samples
++        << ",stationary_squared=" << v.stationary_squared
++        << ",translated_squared=" << v.translated_squared
++        << ",stationary_distinct=" << v.stationary_distinct
++        << ",translated_close=" << v.translated_close
++        << ",translation_improves=" << v.translation_improves << "}";
++  };
++  direction("forward", x.forward); direction("reverse", x.reverse);
++  return out.str();
++}
++
+ sensor_msgs::PointField makeField(const std::string &name,
+                                   std::uint32_t offset,
+                                   std::uint8_t datatype)
+@@ -137,6 +159,7 @@
+                       maximum_cluster_points_, 1200);
+     private_nh_.param("maximum_cluster_extent",
+                       maximum_cluster_extent_, 2.20);
++    private_nh_.param("surface_diagnostics", surface_diagnostics_, false);
+     private_nh_.param("maximum_residual_points",
+                       maximum_residual_points_, 4000);
+     private_nh_.param("maximum_output_points",
+@@ -159,6 +182,7 @@
+         stable_motion_center_parameters_.minimum_stable_core_points, 8);
+ 
+     DynamicObstacleTrackerCore::Parameters tracker_parameters;
++    tracker_parameters.collect_surface_diagnostics = surface_diagnostics_;
+     private_nh_.param("association_gate",
+                       tracker_parameters.association_gate, 0.75);
+     private_nh_.param("association_position_allowance",
+@@ -628,6 +652,11 @@
+     const std::vector<TrackedDetection> tracked = tracker_->update(
+         detections, message->header.stamp.toSec(), &qualification_diagnostics);
+ 
++    if (surface_diagnostics_)
++      for (const auto &evidence : qualification_diagnostics)
++        if (evidence.surface_details.evaluated)
++          ROS_INFO_STREAM("[SurfaceEvidence] " << surfaceDiagnosticSummary(evidence));
++
+     int confirmed_count = 0;
+     int motion_qualified_count = 0;
+     int stationary_confirmed_count = 0;
+@@ -871,6 +900,7 @@
+   std::string static_map_topic_;
+   std::string output_topic_;
+   std::string world_frame_;
++  bool surface_diagnostics_ = false;
+   bool require_static_map_ = true;
+   bool static_map_ready_ = false;
+   double tf_timeout_ = 0.03;
+--- a/mm_remani/test/test_dynamic_obstacle_tracker_core.cpp
++++ b/mm_remani/test/test_dynamic_obstacle_tracker_core.cpp
+@@ -164,7 +164,9 @@
+ TEST(MotionQualificationDiagnostics, DoesNotChangeTrackingBitsOrPersistentMemory)
+ {
+   DynamicObstacleTrackerCore plain(productionMotionParameters());
+-  DynamicObstacleTrackerCore observed(productionMotionParameters());
++  auto observed_parameters = productionMotionParameters();
++  observed_parameters.collect_surface_diagnostics = true;
++  DynamicObstacleTrackerCore observed(observed_parameters);
+   std::vector<MotionQualificationDiagnostic> diagnostics;
+   for (int frame = 0; frame < 70; ++frame)
+   {
+@@ -228,9 +230,45 @@
+   EXPECT_TRUE(qualified);
+ }
+ 
++TEST(MotionQualificationDiagnostics, ReportsBothDirectionsWithoutChangingDecision)
++{
++  auto parameters = productionMotionParameters();
++  parameters.collect_surface_diagnostics = true;
++  DynamicObstacleTrackerCore tracker(parameters);
++  std::vector<MotionQualificationDiagnostic> diagnostics;
++  bool saw_surface = false;
++  for (int frame = 0; frame < 8; ++frame)
++  {
++    tracker.update({frontFace(2.0 + .04 * frame)}, 230.0 + .1 * frame, &diagnostics);
++    ASSERT_EQ(diagnostics.size(), 1u);
++    const auto &d = diagnostics.front();
++    if (!d.surface_details.evaluated) continue;
++    saw_surface = true;
++    const auto &x = d.surface_details;
++    EXPECT_TRUE(d.motion_qualified);
++    EXPECT_EQ(x.previous_points, 20u);
++    EXPECT_EQ(x.current_points, 20u);
++    EXPECT_DOUBLE_EQ(x.last_stamp, d.stamp_seconds);
++    EXPECT_NEAR(x.last_stamp-x.first_stamp, d.history_duration, 1e-12);
++    for (const auto *v : {&x.forward, &x.reverse})
++    {
++      EXPECT_TRUE(v->evaluated);
++      EXPECT_EQ(v->samples, 20u);
++      EXPECT_NEAR(v->stationary_squared, d.net_displacement*d.net_displacement, 1e-7);
++      EXPECT_LT(v->translated_squared, 1e-12);
++      EXPECT_TRUE(v->stationary_distinct);
++      EXPECT_TRUE(v->translated_close);
++      EXPECT_TRUE(v->translation_improves);
++    }
++  }
++  EXPECT_TRUE(saw_surface);
++}
++
+ TEST(MotionQualificationDiagnostics, SurfaceRejectionIsDistinctFromUnevaluated)
+ {
+-  DynamicObstacleTrackerCore tracker(productionMotionParameters());
++  auto parameters = productionMotionParameters();
++  parameters.collect_surface_diagnostics = true;
++  DynamicObstacleTrackerCore tracker(parameters);
+   std::vector<MotionQualificationDiagnostic> diagnostics;
+   bool saw_surface_rejection = false;
+   for (int frame = 0; frame < 14; ++frame)
+@@ -247,6 +285,12 @@
+     if (diagnostics.front().surface == MotionSurfaceResult::REJECTED)
+     {
+       saw_surface_rejection = true;
++      const auto &x = diagnostics.front().surface_details;
++      EXPECT_TRUE(x.evaluated);
++      EXPECT_TRUE(x.forward.evaluated);
++      EXPECT_FALSE(x.forward.stationary_distinct);
++      EXPECT_FALSE(x.reverse.evaluated);  // Original short circuit is retained.
++      EXPECT_DOUBLE_EQ(x.reverse.stationary_squared, -1.0);
+       EXPECT_EQ(diagnostics.front().rejection_mask,
+                 static_cast<std::uint32_t>(MOTION_SURFACE));
+       EXPECT_EQ(motionRejectionReasons(diagnostics.front().rejection_mask),

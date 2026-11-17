@@ -1,0 +1,141 @@
+{
+  "case": "/home/l/remani_ws/experiments/online_remani_validation/results/dynamic_crossing_20261116-195203/navigation_segment",
+  "report_local": "2026-11-16T20:28:15.171909",
+  "version": "20261116-125759-tracker-reasons",
+  "runtime_code_changes_this_audit": [],
+  "analysis_only_no_motion_publication": true,
+  "scope": {
+    "recorded_goals": [
+      {
+        "bag_time": 1794830561.9990513,
+        "source_time": 1794830561.9942093,
+        "x": 0.5622382760047913,
+        "y": -1.8947161436080933
+      },
+      {
+        "bag_time": 1794830793.1842046,
+        "source_time": 1794830793.1739757,
+        "x": 0.48923540115356445,
+        "y": -1.4658339023590088
+      }
+    ],
+    "finish_events": [
+      {
+        "t": 1794830870.8415194,
+        "value": true
+      }
+    ],
+    "intentional_dynamic_crossing": false,
+    "strict_navigation_scope": "First recorded goal through last successful finish. Perception report initially also includes post-finish idle; see its explicit scope.",
+    "goal1_replaced_before_finish": true
+  },
+  "confirmed_findings": [
+    {
+      "issue": "早期停走由快层拒绝交付后主动发零速度",
+      "evidence": "20:02:43.704候选可行、外部间隙约0.352m；capture map age335.4ms，加50.3ms到postplan385.9ms超过350ms；明确先于首次ABORT及raw collision",
+      "before_first_abort": {
+        "status_cycles": 175,
+        "state_counts": {
+          "command_delivered": 78,
+          "collision_snapshot_unavailable": 40,
+          "inputs_expired_before_delivery": 16,
+          "collision_snapshot_expired_during_plan": 21,
+          "delivery_deadline_exceeded": 13,
+          "planning_deadline_exceeded": 5,
+          "waiting_explicit_arm_enable_or_normal_status": 1,
+          "delta without identical cached ESDF": 1
+        }
+      },
+      "source": "src/mm_remani/scripts/whole_body_mppi.py:556-562,623-639,733-744"
+    },
+    {
+      "issue": "地图时效与控制交付预算是独立门槛",
+      "all_inputs_fresh_delivery_deadline_cycles": 76,
+      "delivery_deadline_ms": 95,
+      "fresh_input_delivery_deadline_planning_ms_p50": 78.747,
+      "fresh_input_delivery_extra_ms_p50": 23.9,
+      "fresh_input_delivery_total_ms_p50": 104.049,
+      "fresh_input_planning_deadline_and_original_map_still_fresh_cycles": 17,
+      "limit": "Recorded elapsed times are wall durations, not isolated solver CPU",
+      "strict_navigation_perception": {
+        "commits": 1648,
+        "all_single_region": true,
+        "changed_voxels_typical_about": 1600,
+        "compute_cells_p50": 1982580,
+        "compute_cells_p95": 2304000,
+        "compute_ms_p50": 104.051,
+        "compute_ms_p95": 163.495,
+        "lidar_heartbeat_timeouts_before_finish": 0,
+        "scope": "First goal1794830561.9990513 through goal2 finish1794830870.8415194; postfinish excluded"
+      }
+    },
+    {
+      "issue": "依赖完整帧的增量ESDF协议与latest-only接收队列冲突，缓存失配又被误升级跟踪故障",
+      "source_time_sequence": {
+        "decode_error": 1794830579.7247643,
+        "tracking_fault_true": 1794830579.7262704,
+        "fsm_tracking_warning": 1794830579.7294927,
+        "ACTION_ABORT": 1794830579.7353747
+      },
+      "deterministic_reproduction": "Actual full+delta packets passed together through installed rospy.deserialize_messages(queue_size=1) retain only delta and fail original decoder; preserving both succeeds",
+      "limit": "The actual failed callback does not log wire_seq, so exact dropped/failed packet and network cause are not proven",
+      "source": "src/mm_remani/scripts/whole_body_mppi.py:423-444,561-579; src/mm_remani/scripts/mppi/active_arm_mppi.py:73-99"
+    },
+    {
+      "issue": "后续另有19次实时占据近距离停车",
+      "trajectory_abort_count": 21,
+      "tracking_fault_episodes": 2,
+      "raw_latest_collision_stop_count": 19,
+      "first_raw_stop": 1794830670.4466357,
+      "physical_point_evidence": {
+        "matched_in_recorded_mapping_input": 19,
+        "near_body_cluster_count": 12,
+        "near_body_x_m": [
+          0.1877872029707841,
+          0.201628340271798
+        ],
+        "near_body_z_m": [
+          0.19397057605523388,
+          0.2080355922729647
+        ],
+        "physical_sphere_gap_m": [
+          0.010037613966065617,
+          0.013852656476824599
+        ],
+        "filter_padding_m": 0.01,
+        "fixed_sphere_planning_inflation_m": 0.05
+      },
+      "limit": "Near-body point motion and filter-boundary clustering strongly suggest self/near-field returns but do not prove a particular physical reflector or permit blindly enlarging self-filter masks. Other seven points must remain separately classified."
+    }
+  ],
+  "prior_repairs_why_insufficient": [
+    "deadline/local retry patch avoids discarding reference for listed expiry reasons, but every rejected cycle still publishes Twist zero; this can preserve the goal yet retain stop-go behavior",
+    "snapshot decode cache exception was not covered by local-retry classification and triggered generic tracking fault; previous isolated tests did not cover actual ROS latest-only batch behavior",
+    "map distance transform optimizations were actually loaded, but this scene still computes one expanded region of about two million cells; speedup did not establish end-to-end freshness headroom",
+    "feedback-phase repair is present: first raw stop used phase about10.46s matching controller, not90s wall elapsed; it does not remove real input occupancy",
+    "retaining/retrying accepted goal after collision stops prevents permanent give-up, but does not prevent repeated new raw occupancy stops"
+  ],
+  "excluded_as_primary_explanation": [
+    "No driver stop_latched=true in20186 execution-state messages",
+    "Optional MPPI-triggered refresh began after early stutter and first cancellation",
+    "Current actual loaded libplan_env path/hash matches deployed optimized version; not another workspace or stale preoptimization library",
+    "Strict navigation period had zero LiDAR heartbeat>750ms events; the two later heartbeat timeouts occurred after navigation finish"
+  ],
+  "next_fix_order": [
+    "Repair full/delta cache transport contract and classify resynchronization as input availability rather than geometric tracking fault; do not accept mismatched field versions",
+    "Reduce actual ESDF work region/copy cost and establish headroom against source-based map TTL; do not call 20Hz repeated cache publication a20Hz new map",
+    "Separate planning and final-validation timing; reserve measured first-step validation budget and distinguish performance budget from stale-input safety",
+    "Resolve identified near-body returns with exact geometry/source-time evidence; preserve external obstacle coverage"
+  ],
+  "evidence_files": [
+    "mppi_navigation_audit.json",
+    "planner_navigation_audit.json",
+    "perception_navigation_audit.json",
+    "first_fault_cache_protocol_audit.json",
+    "collision_witness_audit.json",
+    "collision_geometry_body_audit.json",
+    "collision_prior_pcd_audit.json",
+    "perception_strict_navigation.json"
+  ],
+  "status": "已定位重复停车的多条实际软件触发链；本轮仅分析，未修改生产代码，未宣称导航已修复或实车验证通过"
+}

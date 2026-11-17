@@ -1,0 +1,70 @@
+{
+  "sdk_version": "0.6.1",
+  "sources": [
+    {
+      "path": "/home/l/.local/lib/python3.8/site-packages/piper_sdk/interface/piper_interface.py",
+      "sha256": "ee63f0fa68286f7d0970ac9b53828c407f135ee68624064404fc419b0acede92",
+      "claim": "ConnectPort defaults piper_init=True and calls PiperInit; PiperInit sends motor limit/firmware queries",
+      "line_start": 587,
+      "line_end": 728
+    },
+    {
+      "path": "/home/l/.local/lib/python3.8/site-packages/piper_sdk/protocol/protocol_v2/piper_protocol_v2.py",
+      "sha256": "e244ce3ef8742e468df4d0e37b1c845cffb4e7e3cf65a9405ccbf5a3edd5c867",
+      "claim": "IDs 0x2A5/2A6/2A7 decode consecutive signed int32 angle pairs",
+      "line_start": 98,
+      "line_end": 112
+    },
+    {
+      "path": "/home/l/.local/lib/python3.8/site-packages/piper_sdk/protocol/piper_protocol_base.py",
+      "sha256": "fdd4161d2c03551cef70da733f90f51ced7fa64fa41c4c32668d8cd878dfc5fd",
+      "claim": "ConvertBytesToInt defaults to big-endian",
+      "line_start": 395,
+      "line_end": 402
+    },
+    {
+      "path": "/home/l/.local/lib/python3.8/site-packages/piper_sdk/piper_msgs/msg_v2/feedback/arm_feedback_joint_states.py",
+      "sha256": "fd5e4ebecf56a812ef2048a9d536eb4ca6e59bcf00159ec1d5ff6914acf25680",
+      "claim": "Angles use 0.001 degrees",
+      "line_start": 8,
+      "line_end": 35
+    },
+    {
+      "path": "/home/l/.local/lib/python3.8/site-packages/piper_sdk/piper_msgs/msg_v2/can_id.py",
+      "sha256": "2cc2507b12aabaf3a1f62cb8bd4d22ef6f800dd0eadc790b004d4ce4b233405e",
+      "claim": "Joint feedback IDs",
+      "line_start": 22,
+      "line_end": 24
+    },
+    {
+      "path": "/home/l/remani_ws/src/piper_ros/can_activate.sh",
+      "sha256": "60151c2e57790fa440fdab35e5542f46052bd849cef445e4838f14156ab3b9fe",
+      "claim": "Default CAN bitrate 1000000; existing activation script mutates interface and is NOT invoked by receiver",
+      "line_start": 7,
+      "line_end": 7
+    }
+  ],
+  "joint_feedback": {
+    "ids": [
+      "0x2A5",
+      "0x2A6",
+      "0x2A7"
+    ],
+    "dlc": 8,
+    "payload": "two signed int32 big-endian",
+    "units": "0.001 degrees",
+    "radians_scale": "pi / 180000",
+    "joint_order": [
+      "joint1",
+      "joint2",
+      "joint3",
+      "joint4",
+      "joint5",
+      "joint6"
+    ]
+  },
+  "application_can_tx_calls": 0,
+  "sdk_imported": false,
+  "interface_configuration_by_receiver": false,
+  "electrical_listen_only": "Receiver does not set controller mode; operator must verify already-UP LISTEN-ONLY interface separately. Normal CAN adapters may otherwise acknowledge frames."
+}

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="47" failures="0" disabled="0" errors="0" time="13.13" timestamp="2026-11-08T19:59:14" name="AllTests">
+  <testsuite name="GridMapParallel" tests="10" failures="0" disabled="0" errors="0" time="3.034" timestamp="2026-11-08T19:59:14">
+    <testcase name="TimeVaryingRadiusSelectsMinimumClearanceNotNearestCenter" status="run" result="completed" time="0.215" timestamp="2026-11-08T19:59:14" classname="GridMapParallel" />
+    <testcase name="MatchesSingleThreadDistanceField" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:15" classname="GridMapParallel" />
+    <testcase name="AsyncSnapshotCommitMatchesSynchronousGeneration" status="run" result="completed" time="0.312" timestamp="2026-11-08T19:59:15" classname="GridMapParallel" />
+    <testcase name="SameGenerationSecondRequestSupersedesFirstRequest" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:15" classname="GridMapParallel" />
+    <testcase name="PendingLidarDoesNotInvalidateCurrentOccupancyResult" status="run" result="completed" time="0.314" timestamp="2026-11-08T19:59:16" classname="GridMapParallel" />
+    <testcase name="NewerFusedGenerationRejectsOlderAsyncResult" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:16" classname="GridMapParallel" />
+    <testcase name="MovedBoundsRejectHistoricalResultBeforeCopy" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:16" classname="GridMapParallel" />
+    <testcase name="FusedFullMapOdometryCannotInvalidateAsyncESDFWindow" status="run" result="completed" time="0.314" timestamp="2026-11-08T19:59:17" classname="GridMapParallel" />
+    <testcase name="InvalidESDFBoundsFailClosedWithoutWorkerJoin" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:17" classname="GridMapParallel" />
+    <testcase name="WorkerFaultRequestsDeferredFallbackWithoutWorkerJoin" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:17" classname="GridMapParallel" />
+  </testsuite>
+  <testsuite name="GridMapImmutable" tests="8" failures="0" disabled="0" errors="0" time="2.406" timestamp="2026-11-08T19:59:17">
+    <testcase name="WriterContinuesWhileReaderPinsOneGeneration" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:17" classname="GridMapImmutable" />
+    <testcase name="PlanningUsesCompletePairAndDeliverySeesLiveOccupancy" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:18" classname="GridMapImmutable" />
+    <testcase name="DistanceRefreshDoesNotNeedNewLidarSequence" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:18" classname="GridMapImmutable" />
+    <testcase name="OldEpochCannotAuthorizePlanAndFallbackIsOnlyRequested" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:18" classname="GridMapImmutable" />
+    <testcase name="ExplicitCompleteExportScopeOverridesOnlyItsWriterReads" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:19" classname="GridMapImmutable" />
+    <testcase name="CompleteExportRetainsFusionStampUntilNewGeneration" status="run" result="completed" time="0.213" timestamp="2026-11-08T19:59:19" classname="GridMapImmutable" />
+    <testcase name="CompleteExportRejectsResetEpochAndVersionsSameSeqRecompute" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:19" classname="GridMapImmutable" />
+    <testcase name="LegacyExportCannotUseIncompleteRawGeneration" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:20" classname="GridMapImmutable" />
+  </testsuite>
+  <testsuite name="GridMapOccupancy" tests="22" failures="0" disabled="0" errors="0" time="5.785" timestamp="2026-11-08T19:59:20">
+    <testcase name="FilteredEmptyLidarPreservesPreviousGeneration" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:20" classname="GridMapOccupancy" />
+    <testcase name="FilteredEmptyLidarDoesNotReplacePendingValidScan" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:20" classname="GridMapOccupancy" />
+    <testcase name="CoalescedScanPublishesNewestAcceptedGeneration" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:20" classname="GridMapOccupancy" />
+    <testcase name="StaleLiveEndpointExpiresAfterConfiguredMisses" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:21" classname="GridMapOccupancy" />
+    <testcase name="ReobservedLiveEndpointDoesNotExpire" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:21" classname="GridMapOccupancy" />
+    <testcase name="RaycastFilteredScanDoesNotAgeLiveOccupancy" status="run" result="completed" time="0.214" timestamp="2026-11-08T19:59:21" classname="GridMapOccupancy" />
+    <testcase name="InFlightESDFDefersOccupancyUntilResultCommits" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:22" classname="GridMapOccupancy" />
+    <testcase name="StalePendingLidarIsDiscardedBeforeFusion" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:22" classname="GridMapOccupancy" />
+    <testcase name="StalePendingMessageStampIsRecheckedBeforeFusion" status="run" result="completed" time="0.213" timestamp="2026-11-08T19:59:22" classname="GridMapOccupancy" />
+    <testcase name="NonLidarMutationAdvancesCoherentRevision" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:22" classname="GridMapOccupancy" />
+    <testcase name="LiveLidarStartupGraceAvoidsImmediateTimeout" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:23" classname="GridMapOccupancy" />
+    <testcase name="StaticGlobalMapDoesNotMaskLiveLidarTimeout" status="run" result="completed" time="0.213" timestamp="2026-11-08T19:59:23" classname="GridMapOccupancy" />
+    <testcase name="FilteredFiniteLidarRefreshesHealthWithoutMutation" status="run" result="completed" time="0.212" timestamp="2026-11-08T19:59:23" classname="GridMapOccupancy" />
+    <testcase name="SynchronizedFilteredLidarRefreshesHealthWithoutMutation" status="run" result="completed" time="0.213" timestamp="2026-11-08T19:59:24" classname="GridMapOccupancy" />
+    <testcase name="PlanningReadinessChecksLiveAgeWithoutTimerOrdering" status="run" result="completed" time="0.212" timestamp="2026-11-08T19:59:24" classname="GridMapOccupancy" />
+    <testcase name="FreshIsolatedHealthPreventsFalseTimeoutDuringPlannerQueueStall" status="run" result="completed" time="0.313" timestamp="2026-11-08T19:59:24" classname="GridMapOccupancy" />
+    <testcase name="StaleIsolatedHealthCannotMaskRealLidarTimeout" status="run" result="completed" time="0.213" timestamp="2026-11-08T19:59:24" classname="GridMapOccupancy" />
+    <testcase name="IsolatedHealthRequiresTransformOrValidOdometryFallback" status="run" result="completed" time="0.212" timestamp="2026-11-08T19:59:24" classname="GridMapOccupancy" />
+    <testcase name="RawEmptyLidarIsNotAccepted" status="run" result="completed" time="0.213" timestamp="2026-11-08T19:59:25" classname="GridMapOccupancy" />
+    <testcase name="FusedFullMapRaycastKeepsIndependentESDFWindow" status="run" result="completed" time="0.212" timestamp="2026-11-08T19:59:25" classname="GridMapOccupancy" />
+    <testcase name="LiveOnlyRaycastStillOwnsESDFWindow" status="run" result="completed" time="0.213" timestamp="2026-11-08T19:59:25" classname="GridMapOccupancy" />
+    <testcase name="InvalidBoundsFailClosedWithoutAdvancingGeneration" status="run" result="completed" time="0.312" timestamp="2026-11-08T19:59:25" classname="GridMapOccupancy" />
+  </testsuite>
+  <testsuite name="GridMapIncremental" tests="7" failures="0" disabled="0" errors="0" time="1.905" timestamp="2026-11-08T19:59:26">
+    <testcase name="EmptyAndFullyOccupiedInitializationMatchCappedGlobalEDT" status="run" result="completed" time="0.315" timestamp="2026-11-08T19:59:26" classname="GridMapIncremental" />
+    <testcase name="InsertionRemovalAndOutsideNeighborPreserveBoundaryDistances" status="run" result="completed" time="0.215" timestamp="2026-11-08T19:59:26" classname="GridMapIncremental" />
+    <testcase name="ExcavatingAndRefillingSolidObstacleMatchesSignedGlobalEDT" status="run" result="completed" time="0.214" timestamp="2026-11-08T19:59:26" classname="GridMapIncremental" />
+    <testcase name="ActualStaticAndPerimeterClearingPreserveDistancesUntilCommit" status="run" result="completed" time="0.315" timestamp="2026-11-08T19:59:26" classname="GridMapIncremental" />
+    <testcase name="SeededMultiFrameChangesAcrossMapMatchEveryGlobalVoxel" status="run" result="completed" time="0.415" timestamp="2026-11-08T19:59:27" classname="GridMapIncremental" />
+    <testcase name="UnchangedBinaryAdvancesSequenceButEpochInvalidationRecomputes" status="run" result="completed" time="0.214" timestamp="2026-11-08T19:59:27" classname="GridMapIncremental" />
+    <testcase name="AsyncCallbackAndUnchangedReusePreservePinnedSnapshot" status="run" result="completed" time="0.217" timestamp="2026-11-08T19:59:27" classname="GridMapIncremental" />
+  </testsuite>
+</testsuites>

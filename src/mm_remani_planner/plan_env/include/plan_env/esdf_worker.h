@@ -6,6 +6,7 @@
 #include <ros/time.h>
 
 #include <atomic>
+#include <array>
 #include <chrono>
 #include <condition_variable>
 #include <cstddef>
@@ -37,6 +38,20 @@ struct ESDFJob
   double resolution = 0.0;
   ros::SteadyTime captured_steady;
   std::vector<char> occupancy;
+  // Optional capped-field maintenance. Changed cells are world-grid indices
+  // relative to the last committed occupancy, never a newer queued request.
+  // Zero cap or an empty list retains the original dense calculation.
+  double distance_cap = 0.0;
+  std::vector<Eigen::Vector3i> changed_cells;
+  // Constant-size phase timing only; never changes work or cancellation rules.
+  bool trace_timing = false;
+};
+
+struct ESDFPatch
+{
+  Eigen::Vector3i min_index = Eigen::Vector3i::Zero();
+  Eigen::Vector3i max_index = Eigen::Vector3i::Constant(-1);
+  std::vector<double> distance_all;
 };
 
 /** Result corresponding to exactly one ESDFJob snapshot. */
@@ -51,6 +66,19 @@ struct ESDFResult
   std::vector<double> distance_all;
   double queue_wait_ms = 0.0;
   double compute_ms = 0.0;
+  // Dense results use distance_all and leave patches empty. Sparse results
+  // contain all patches of one immutable job, with distance_all empty. Values
+  // are native signed distances; the map owner applies its original cap.
+  std::vector<ESDFPatch> patches;
+  std::size_t computed_voxels = 0;
+  ros::SteadyTime compute_started_steady, compute_completed_steady;
+  double prepare_ms = 0.0, partition_ms = 0.0, near_free_ms = 0.0;
+  double negative_apply_ms = 0.0;
+  // Transform order is z, y, x. Sparse batches sum their leaf timings.
+  std::array<double, 3> positive_ms{{0.0, 0.0, 0.0}};
+  std::array<double, 3> negative_ms{{0.0, 0.0, 0.0}};
+  std::size_t negative_fallback_count = 0;
+  std::size_t exact_float_scratch_count = 0;
 };
 
 struct ESDFWorkerStats
@@ -115,6 +143,8 @@ public:
   void stop();
 
 private:
+  friend class ESDFWorkerTestAccessor;
+
   struct QueuedJob
   {
     ESDFJob job;
@@ -125,6 +155,7 @@ private:
 
   static bool validateJob(const ESDFJob &job, std::string *reason);
   bool compute(const ESDFJob &job, ESDFResult *result);
+  bool computeDense(const ESDFJob &job, ESDFResult *result);
   bool parallelFor(std::size_t item_count,
                    int parallel_threshold,
                    const std::function<void(std::size_t)> &function);
@@ -170,6 +201,8 @@ private:
   // allocation of the two large EDT intermediate grids.
   std::vector<double> tmp_buffer1_;
   std::vector<double> tmp_buffer2_;
+  std::vector<float> compact_buffer1_;
+  std::vector<float> compact_buffer2_;
 };
 
 }  // namespace plan_env

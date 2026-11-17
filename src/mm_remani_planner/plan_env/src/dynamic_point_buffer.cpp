@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstring>
 #include <limits>
+#include <utility>
 
 #include <geometry_msgs/TransformStamped.h>
 #include <sensor_msgs/PointField.h>
@@ -107,7 +108,6 @@ void DynamicPointBuffer::init(
   nh.param("dynamic_point_flow/velocity_uncertainty", velocity_uncertainty_, 0.15);
   nh.param("dynamic_point_flow/acceleration_bound", acceleration_bound_, 0.5);
   nh.param("dynamic_point_flow/max_points", max_points_, 2000);
-  nh.param("dynamic_point_flow/empty_clear_frames", empty_clear_frames_, 3);
   nh.param("dynamic_point_flow/require_world_frame", require_world_frame_, true);
 
   max_age_ = std::max(0.01, max_age_);
@@ -120,7 +120,6 @@ void DynamicPointBuffer::init(
   velocity_uncertainty_ = std::max(0.0, velocity_uncertainty_);
   acceleration_bound_ = std::max(0.0, acceleration_bound_);
   max_points_ = std::max(1, max_points_);
-  empty_clear_frames_ = std::max(1, empty_clear_frames_);
 
   if (!enabled_)
   {
@@ -155,18 +154,54 @@ DynamicPointSnapshot DynamicPointBuffer::getSnapshot(const ros::Time &now) const
     }
   }
 
+  return checkSnapshotAge(std::move(snapshot), now, max_age_,
+                          future_stamp_tolerance_);
+}
+
+DynamicPointSnapshot DynamicPointBuffer::checkSnapshotAge(
+    DynamicPointSnapshot snapshot, const ros::Time &now,
+    double max_age, double future_stamp_tolerance)
+{
   const double age = (now - snapshot.stamp).toSec();
-  if (age > max_age_)
+  if (age > max_age)
   {
     snapshot.valid = false;
     snapshot.invalid_reason = "stale";
   }
-  else if (age < -future_stamp_tolerance_)
+  else if (age < -future_stamp_tolerance)
   {
     snapshot.valid = false;
     snapshot.invalid_reason = "future_stamp";
   }
   return snapshot;
+}
+
+DynamicPointSnapshot DynamicPointBuffer::applyObservation(
+    const DynamicPointSnapshot &previous,
+    const DynamicPointSnapshot &incoming)
+{
+  // Predictions describe current measured motion, not persistent occupancy.
+  // Never keep an old velocity alive solely to recover its track ID.
+  DynamicPointSnapshot accepted = incoming;
+  accepted.sequence = previous.sequence + 1;
+  if (accepted.valid)
+    accepted.invalid_reason = accepted.points.empty() ? "no_dynamic_detected" : "";
+  return accepted;
+}
+
+void DynamicPointBuffer::recordObservation(
+    const DynamicPointSnapshot &candidate)
+{
+  // Reject invalid source epochs before advancing the monotonic watermark.
+  // One future packet must not poison every subsequent normal observation.
+  if (!candidate.valid || candidate.stamp.isZero() ||
+      !checkSnapshotAge(candidate, candidate.receive_time,
+                        max_age_, future_stamp_tolerance_).valid ||
+      (received_observation_ && candidate.stamp <= latest_input_stamp_))
+    return;
+  latest_input_stamp_ = candidate.stamp;
+  received_observation_ = true;
+  latest_snapshot_ = applyObservation(latest_snapshot_, candidate);
 }
 
 bool DynamicPointBuffer::predictPosition(
@@ -444,6 +479,7 @@ void DynamicPointBuffer::pointCloudCallback(
   candidate.stamp = msg->header.stamp;
   candidate.receive_time = ros::Time::now();
   candidate.frame_id = world_frame_;
+  candidate.has_track_ids = field_track != nullptr;
   candidate.valid = true;
   candidate.points.reserve(std::min(total_points, static_cast<std::size_t>(max_points_)));
 
@@ -505,64 +541,23 @@ void DynamicPointBuffer::pointCloudCallback(
     return;
   }
 
-  int accepted_empty_count = 0;
-  bool held_last_valid_snapshot = false;
+  std::string observation_state;
   {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (received_observation_ && candidate.stamp < latest_snapshot_.stamp)
+    if (received_observation_ && candidate.stamp <= latest_input_stamp_)
     {
       ROS_WARN_THROTTLE(1.0, "[DynamicPointFlow] Reject out-of-order observation.");
       return;
     }
-    if (candidate.points.empty())
-    {
-      ++consecutive_empty_observations_;
-      accepted_empty_count = consecutive_empty_observations_;
-      if (!emptyObservationConfirmed(consecutive_empty_observations_,
-                                     empty_clear_frames_))
-      {
-        // A single detector miss is not evidence that a moving obstacle has
-        // vanished. Keep the last immutable prediction (and its original
-        // timestamp) until either the empty-frame hysteresis confirms CLEAR
-        // or getSnapshot() invalidates it by max_age. Preserving the original
-        // stamp is important: holding a dropout must never make stale data
-        // look fresh.
-        held_last_valid_snapshot = shouldRetainLastValidSnapshot(
-            consecutive_empty_observations_, empty_clear_frames_,
-            received_observation_ && latest_snapshot_.valid &&
-                !latest_snapshot_.points.empty());
-        if (!held_last_valid_snapshot)
-        {
-          candidate.valid = false;
-          candidate.invalid_reason = "empty_dropout_unconfirmed_without_history";
-        }
-      }
-    }
-    else
-    {
-      consecutive_empty_observations_ = 0;
-    }
-    if (!held_last_valid_snapshot)
-    {
-      candidate.sequence = latest_snapshot_.sequence + 1;
-      latest_snapshot_ = candidate;
-    }
-    received_observation_ = true;
+    recordObservation(candidate);
+    observation_state = checkSnapshotAge(latest_snapshot_, candidate.receive_time,
+                                         max_age_, future_stamp_tolerance_).invalid_reason;
   }
 
-  if (held_last_valid_snapshot)
+  if (observation_state == "no_dynamic_detected")
   {
-    ROS_WARN_THROTTLE(
-        1.0,
-        "[DynamicPointFlow] Empty observation is an unconfirmed detector dropout (%d/%d); retain the last valid prediction with its original timestamp.",
-        accepted_empty_count, empty_clear_frames_);
-  }
-  else if (candidate.points.empty() && !candidate.valid)
-  {
-    ROS_WARN_THROTTLE(
-        1.0,
-        "[DynamicPointFlow] Empty observation is treated as an unconfirmed detector dropout (%d/%d), not as immediate CLEAR.",
-        accepted_empty_count, empty_clear_frames_);
+    ROS_INFO_THROTTLE(5.0,
+        "[DynamicPointFlow] no_dynamic_detected: no qualified motion points; this does not certify sensor blind regions as free.");
   }
 
   if (malformed_points > 0)

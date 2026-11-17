@@ -1,0 +1,529 @@
+{
+  "scope": "Five recorded states/maps, one identical zero-intent candidate per state.\n\nNo ROS init/master, bag scan, control publication or runtime-file changes.\nThis is a counterfactual velocity-input comparison, NOT replay of the original\nnavigation reference, candidate set, previous control or complete execution.\n",
+  "estimator_window_s": 0.05,
+  "acceptance": "Actual phase-specific evaluate method, actual recorded map and state; only dq changes.",
+  "limitations": [
+    "Not an original full MPPI candidate/reference/previous-command replay.",
+    "Recorded observed_samples may omit messages; interpolation uses only saved source-time positions.",
+    "Conditioned velocity is an estimate, not proof of true physical speed.",
+    "No wall-clock freshness gates or hardware execution exercised.",
+    "Stationary reference affects cost only; no cost improvement claim."
+  ],
+  "events": [
+    {
+      "seq": 8143,
+      "phase": "standby",
+      "estimator_stamp": 1794456370.4853032,
+      "same_q": true,
+      "same_base": true,
+      "same_map_header": true,
+      "map_files": [
+        "map_events/event01_seq8143_version2710_full.msg",
+        "map_events/event01_seq8143_version2710_packet.msg"
+      ],
+      "observed_samples_before_or_at_event": 38,
+      "max_observed_source_gap_s": 0.025010108947753906,
+      "original_dq": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.1676519649205452
+      ],
+      "window_dq": [
+        0.0,
+        0.00714402362209654,
+        0.0,
+        0.0,
+        0.0,
+        -0.11623892818282233
+      ],
+      "original": {
+        "valid": false,
+        "min_gap_m": 0.0030000000000000304,
+        "external_gap_m": 0.3705064267704874,
+        "horizon_final_q": [
+          -0.002600540585471551,
+          0.5319414494228317,
+          -1.0521193796872217,
+          0.0,
+          0.9287420548637425,
+          -0.5458879288694136
+        ],
+        "configuration_gaps": 0.0030000000000000304,
+        "first_external_violation_s": null,
+        "braking_tail_s": 2.0,
+        "checked_duration_s": 2.5,
+        "terminal_arm_delta": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.5400759824602726
+        ],
+        "bounds_valid": false,
+        "braking_stopped": false
+      },
+      "window": {
+        "valid": true,
+        "min_gap_m": 0.002999999999999961,
+        "external_gap_m": 0.3705064267704874,
+        "horizon_final_q": [
+          -0.002600540585471551,
+          0.5321200500133841,
+          -1.0521193796872217,
+          0.0,
+          0.9287420548637425,
+          -0.025214598068558376
+        ],
+        "configuration_gaps": 0.002999999999999961,
+        "first_external_violation_s": null,
+        "braking_tail_s": 0.05,
+        "checked_duration_s": 0.55,
+        "terminal_arm_delta": [
+          0.0,
+          0.0001786005905524135,
+          0.0,
+          0.0,
+          0.0,
+          -0.019402651659417257
+        ],
+        "bounds_valid": true,
+        "braking_stopped": true
+      }
+    },
+    {
+      "seq": 8762,
+      "phase": "standby",
+      "estimator_stamp": 1794456401.4303858,
+      "same_q": true,
+      "same_base": true,
+      "same_map_header": true,
+      "map_files": [
+        "map_events/event02_seq8762_version2901_full.msg",
+        "map_events/event02_seq8762_version2901_packet.msg"
+      ],
+      "observed_samples_before_or_at_event": 36,
+      "max_observed_source_gap_s": 0.01502847671508789,
+      "original_dq": [
+        0.0,
+        0.0,
+        0.0,
+        -1.0844840160908742,
+        0.0,
+        0.0
+      ],
+      "window_dq": [
+        -0.03560471674068432,
+        0.0,
+        0.0,
+        0.0010428837947868905,
+        0.0,
+        0.0
+      ],
+      "original": {
+        "valid": false,
+        "min_gap_m": 0.0029999999999999055,
+        "external_gap_m": 0.3659223029081031,
+        "horizon_final_q": [
+          -0.0012740903539558606,
+          0.5403015765398845,
+          -1.0734473031465925,
+          -0.5039199820191396,
+          0.9307142769184961,
+          0.0
+        ],
+        "configuration_gaps": 0.0029999999999999055,
+        "first_external_violation_s": null,
+        "braking_tail_s": 2.0,
+        "checked_duration_s": 2.5,
+        "terminal_arm_delta": [
+          0.0,
+          0.0,
+          0.0,
+          -0.4984920080454372,
+          0.0,
+          0.0
+        ],
+        "bounds_valid": true,
+        "braking_stopped": false
+      },
+      "window": {
+        "valid": true,
+        "min_gap_m": 0.0029999999999999333,
+        "external_gap_m": 0.3659223029081031,
+        "horizon_final_q": [
+          -0.003099679946541401,
+          0.5403015765398845,
+          -1.0734473031465925,
+          -0.005401901878832692,
+          0.9307142769184961,
+          0.0
+        ],
+        "configuration_gaps": 0.0029999999999999333,
+        "first_external_violation_s": null,
+        "braking_tail_s": 0.05,
+        "checked_duration_s": 0.55,
+        "terminal_arm_delta": [
+          -0.0018255895925855404,
+          0.0,
+          0.0,
+          2.6072094869672262e-05,
+          0.0,
+          0.0
+        ],
+        "bounds_valid": true,
+        "braking_stopped": true
+      }
+    },
+    {
+      "seq": 10468,
+      "phase": "navigation",
+      "estimator_stamp": 1794456486.7255826,
+      "same_q": true,
+      "same_base": true,
+      "same_map_header": true,
+      "map_files": [
+        "map_events/event04_seq10468_version3464_full.msg"
+      ],
+      "observed_samples_before_or_at_event": 36,
+      "max_observed_source_gap_s": 0.01997852325439453,
+      "original_dq": [
+        0.0,
+        0.0,
+        0.0,
+        -1.134870957575352,
+        0.0,
+        0.0
+      ],
+      "window_dq": [
+        0.0,
+        0.0,
+        0.04328416544945757,
+        -0.1658062789394613,
+        0.0,
+        0.0
+      ],
+      "original": {
+        "valid": false,
+        "min_gap_m": 0.0029999999999998916,
+        "external_gap_m": 0.40524594571704164,
+        "horizon_final_q": [
+          0.0216071761396898,
+          0.568174484694234,
+          -1.0837971056109188,
+          -0.5236854787876759,
+          0.9405928404847841,
+          0.0
+        ],
+        "configuration_gaps": 0.0029999999999998916,
+        "bounds_valid": true,
+        "braking_stopped": false,
+        "first_external_violation_s": null,
+        "braking_tail_s": 2.0,
+        "checked_duration_s": 2.5,
+        "terminal_arm_delta": [
+          0.0,
+          0.0,
+          0.0,
+          -0.5236854787876759,
+          0.0,
+          0.0
+        ]
+      },
+      "window": {
+        "valid": true,
+        "min_gap_m": 0.0029999999999999333,
+        "external_gap_m": 0.40524594571704164,
+        "horizon_final_q": [
+          0.0216071761396898,
+          0.568174484694234,
+          -1.0810115849297368,
+          -0.03938298249624412,
+          0.9405928404847841,
+          0.0
+        ],
+        "configuration_gaps": 0.0029999999999999333,
+        "bounds_valid": true,
+        "braking_stopped": true,
+        "first_external_violation_s": null,
+        "braking_tail_s": 0.05,
+        "checked_duration_s": 0.55,
+        "terminal_arm_delta": [
+          0.0,
+          0.0,
+          0.0027855206811819855,
+          -0.03938298249624412,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "seq": 10597,
+      "phase": "navigation",
+      "estimator_stamp": 1794456493.1906126,
+      "same_q": true,
+      "same_base": true,
+      "same_map_header": true,
+      "map_files": [
+        "map_events/event06_seq10597_version3502_full.msg"
+      ],
+      "observed_samples_before_or_at_event": 30,
+      "max_observed_source_gap_s": 0.034893035888671875,
+      "original_dq": [
+        0.0,
+        0.0,
+        0.0,
+        0.40080497440489166,
+        0.5018775331678643,
+        0.0
+      ],
+      "window_dq": [
+        0.0,
+        0.0,
+        0.0,
+        0.04014257279586956,
+        0.05026548245743667,
+        0.0
+      ],
+      "original": {
+        "valid": false,
+        "min_gap_m": 0.002999999999999864,
+        "external_gap_m": 0.3812704537374879,
+        "horizon_final_q": [
+          0.0216071761396898,
+          0.5681919379867539,
+          -1.0837971056109188,
+          0.1649951610269787,
+          1.1506963069195468,
+          0.0
+        ],
+        "configuration_gaps": 0.002999999999999864,
+        "bounds_valid": false,
+        "braking_stopped": true,
+        "first_external_violation_s": null,
+        "braking_tail_s": 0.9500000000000001,
+        "checked_duration_s": 1.4500000000000002,
+        "terminal_arm_delta": [
+          0.0,
+          0.0,
+          0.0,
+          0.1566524872024458,
+          0.20718876658393226,
+          0.0
+        ]
+      },
+      "window": {
+        "valid": true,
+        "min_gap_m": 0.002999999999999947,
+        "external_gap_m": 0.38131194027479276,
+        "horizon_final_q": [
+          0.0216071761396898,
+          0.5681919379867539,
+          -1.0837971056109188,
+          0.01073549542401659,
+          0.9471657256427941,
+          0.0
+        ],
+        "configuration_gaps": 0.002999999999999947,
+        "bounds_valid": true,
+        "braking_stopped": true,
+        "first_external_violation_s": null,
+        "braking_tail_s": 0.05,
+        "checked_duration_s": 0.55,
+        "terminal_arm_delta": [
+          0.0,
+          0.0,
+          0.0,
+          0.002392821599483695,
+          0.00365818530717954,
+          0.0
+        ]
+      }
+    },
+    {
+      "seq": 10674,
+      "phase": "navigation",
+      "estimator_stamp": 1794456497.0406299,
+      "same_q": true,
+      "same_base": true,
+      "same_map_header": true,
+      "map_files": [
+        "map_events/event07_seq10674_version3522_full.msg",
+        "map_events/event07_seq10674_version3522_packet.msg"
+      ],
+      "observed_samples_before_or_at_event": 32,
+      "max_observed_source_gap_s": 0.03501582145690918,
+      "original_dq": [
+        0.0,
+        0.0,
+        0.0,
+        -1.314986871167457,
+        0.0,
+        0.0
+      ],
+      "window_dq": [
+        0.0,
+        0.0,
+        0.0,
+        -0.13194689145077132,
+        0.0,
+        0.0
+      ],
+      "original": {
+        "valid": false,
+        "min_gap_m": 0.0029999999999998778,
+        "external_gap_m": 0.3738601380053437,
+        "horizon_final_q": [
+          0.0216071761396898,
+          0.5649805321630844,
+          -1.0837971056109188,
+          -0.6137434355837285,
+          0.9416574913285006,
+          0.0
+        ],
+        "configuration_gaps": 0.0029999999999998778,
+        "bounds_valid": false,
+        "braking_stopped": false,
+        "first_external_violation_s": null,
+        "braking_tail_s": 2.0,
+        "checked_duration_s": 2.5,
+        "terminal_arm_delta": [
+          0.0,
+          0.0,
+          0.0,
+          -0.6137434355837285,
+          0.0,
+          0.0
+        ]
+      },
+      "window": {
+        "valid": true,
+        "min_gap_m": 0.002999999999999947,
+        "external_gap_m": 0.3738601380053437,
+        "horizon_final_q": [
+          0.0216071761396898,
+          0.5649805321630844,
+          -1.0837971056109188,
+          -0.024980084294039244,
+          0.9416574913285006,
+          0.0
+        ],
+        "configuration_gaps": 0.002999999999999947,
+        "bounds_valid": true,
+        "braking_stopped": true,
+        "first_external_violation_s": null,
+        "braking_tail_s": 0.05,
+        "checked_duration_s": 0.55,
+        "terminal_arm_delta": [
+          0.0,
+          0.0,
+          0.0,
+          -0.024980084294039244,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  ],
+  "synthetic_sustained_speed": {
+    "kind": "synthetic constant joint4 speed ending at recorded pose",
+    "expected_dq_rad_s": 1.2,
+    "estimated_dq": [
+      0.0,
+      0.0,
+      0.0,
+      1.1999988555908203,
+      0.0,
+      0.0
+    ],
+    "evaluation": {
+      "valid": false,
+      "min_gap_m": 0.0029999999999999194,
+      "external_gap_m": 0.40524594571704164,
+      "horizon_final_q": [
+        0.0216071761396898,
+        0.568174484694234,
+        -1.0837971056109188,
+        0.55624942779541,
+        0.9405928404847841,
+        0.0
+      ],
+      "configuration_gaps": 0.0029999999999999194,
+      "bounds_valid": false,
+      "braking_stopped": false,
+      "first_external_violation_s": null,
+      "braking_tail_s": 2.0,
+      "checked_duration_s": 2.5,
+      "terminal_arm_delta": [
+        0.0,
+        0.0,
+        0.0,
+        0.55624942779541,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "summary": {
+    "original_valid": 0,
+    "window_valid": 5,
+    "cases": 5
+  },
+  "parameters": {
+    "horizon": 5,
+    "step": 0.1,
+    "qmin": [
+      -2.618,
+      -0.05,
+      -2.697,
+      -1.832,
+      -1.25,
+      -0.35
+    ],
+    "qmax": [
+      2.618,
+      3.14,
+      0.05,
+      1.832,
+      1.25,
+      0.35
+    ],
+    "arm_acceleration": [
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35
+    ],
+    "arm_command_velocity": [
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "arm_position_servo": false
+  },
+  "code_sha256": {
+    "src/mm_remani/scripts/filter_joint_states.py": "c0eda8496e5e764cb7f14d5a8a6df54c7ca3274e39adf7d9aaa929fca0512927",
+    "src/mm_remani/scripts/mppi/active_arm_model.py": "b57c6fe63a6155055949d60554d6ea01644f727d8370c511fdd30c7a4e759fa5",
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "0f6766c8a5d96f563b14db97cb1725aaede55df4526a1ad0b27a53dccff72125",
+    "src/mm_remani/scripts/mppi/standby_whole_body_mppi.py": "f97e19f1373b2c552bbf5f9f97862db3e858c833ef5957d1b374325cbdd204dd",
+    "src/my_description/robot/mm.urdf": "a60563d176db315181fd2aa11d5e61a9aa3f4722ff5d96d75bdfdf3325941069",
+    "src/mm_remani/config/mppi_shoulder_wrist_proxy.json": "78e555a843adab034ed808d93577f6fca31b7f87fef008cb43b1c9dd17448e84",
+    "devel/lib/libmppi_position_servo.so": "2e0692b187fbd220954c82a37498473d3b46c64074b4bfa7e23f0b59dacee604"
+  },
+  "input_sha256": {
+    "dq_root_cause_analysis.json": "fc2aecfc2bd9c46f12d090af4181658cffc7dc86a9f3dbf023ecbeec80c2fc17",
+    "original_geometry_failure_audit.json": "de9bdc74c0c18d4cb8b1924e0c18bfcc9d3cef25a1a82729f21db194dbe443a0",
+    "runtime_parameters.json": "d897504677890fa06b49a526394b8d495719c3732583e1c487b32a1bf92e4e94"
+  },
+  "wall_seconds": 0.4118784210004378,
+  "peak_rss_mib": 78.58984375
+}

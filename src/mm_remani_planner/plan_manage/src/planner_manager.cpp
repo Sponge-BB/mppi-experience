@@ -1,5 +1,6 @@
 // #include <fstream>
 #include <plan_manage/planner_manager.h>
+#include <plan_manage/mppi_collision_export.hpp>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -50,6 +51,7 @@ namespace remani_planner
 
     mm_config_.reset(new MMConfig);
     mm_config_->setParam(nh, grid_map_);
+    mppi_collision_export::initialize(nh, grid_map_, mm_config_);
 
     pp_.max_vel_ = mm_config_->getBaseMaxVel();
     pp_.max_acc_ = mm_config_->getBaseMaxAcc();
@@ -414,7 +416,8 @@ namespace remani_planner
       const Eigen::VectorXd &local_target_pt, const Eigen::VectorXd &local_target_vel,
       const Eigen::VectorXd &local_target_acc, double local_target_yaw, const bool local_target_gripper,
       const bool flag_polyInit, const bool flag_randomPolyTraj,
-      const bool have_local_traj, double &init_time, double &opt_time)
+      const bool have_local_traj, double &init_time, double &opt_time,
+      const bool wait_for_start)
   {
     static int count = 0;
 
@@ -549,7 +552,10 @@ namespace remani_planner
     double traj_start_time;
     if(have_local_traj){
       double delta_replan_time = trajectory_start_time - ros::Time::now().toSec();
-      if (delta_replan_time > 0) ros::Duration(delta_replan_time).sleep();
+      // Moving MPPI repairs are published ahead of activation. Its adapter
+      // retains the old reference until this unchanged future start stamp.
+      if (wait_for_start && delta_replan_time > 0)
+        ros::Duration(delta_replan_time).sleep();
       traj_start_time = trajectory_start_time;
     }
     else{

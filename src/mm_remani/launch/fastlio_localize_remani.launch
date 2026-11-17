@@ -11,9 +11,12 @@
   <arg name="publish_icp_tf" default="false" />
   <arg name="enable_transform_fusion" default="true" />
   <arg name="publish_body_cloud" default="true" />
+  <arg name="lidar_blind" default="0.5" />
   <arg name="lidar_offset_x" default="0.28" />
   <arg name="lidar_offset_y" default="0.0" />
   <arg name="lidar_offset_z" default="0.002" />
+  <arg name="publish_lidar_tf" default="false" />
+  <arg name="lidar_frame" default="livox_frame" />
   <arg name="initial_x" default="0" />
   <arg name="initial_y" default="0" />
   <arg name="initial_z" default="0" />
@@ -21,6 +24,7 @@
   <arg name="initial_pose_topic" default="/fast_lio_initialpose" />
 
   <rosparam command="load" file="$(find fast_lio_localization)/config/mid360.yaml" />
+  <param name="preprocess/blind" type="double" value="$(arg lidar_blind)" />
   <param name="feature_extract_enable" type="bool" value="0"/>
   <param name="point_filter_num" type="int" value="3"/>
   <param name="max_iteration" type="int" value="3" />
@@ -38,6 +42,8 @@
 
   <!-- 2. Bridge: /Odometry → /odom -->
   <node pkg="mm_remani" type="fastlio_to_odom.py" name="fastlio_to_odom" output="screen">
+    <param name="publish_lidar_tf" value="$(arg publish_lidar_tf)" />
+    <param name="lidar_frame" value="$(arg lidar_frame)" />
     <param name="planar_base_link" value="true" />
     <param name="base_z" value="0.115" />
     <param name="lidar_offset_x" value="$(arg lidar_offset_x)" />

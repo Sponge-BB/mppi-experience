@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "version": "standby_20261106_stationary_07",
+  "namespace": "/standby_trial_20261106_stationary_07",
+  "mode": "shadow",
+  "hardware_motion_enabled": false,
+  "world_frame": "standby_feedback_02_odom",
+  "base_frame": "standby_feedback_02_base_link",
+  "topics": {
+    "odom": "/standby_trial_20261105_feedback_02/sensors/odom",
+    "joints": "/standby_trial_20261105_feedback_02/sensors/joint_states",
+    "raw_cloud": "/standby_trial_20261105_feedback_02/sensors/lidar_pcl2",
+    "filtered_cloud": "/standby_trial_20261106_stationary_07/perception/filtered_points",
+    "dynamic_cloud": "/standby_trial_20261106_stationary_07/perception/dynamic_points",
+    "perception_health": "/standby_trial_20261106_stationary_07/perception/dynamic_obstacle_tracker/perception_healthy",
+    "static_cloud": "/standby_trial_20261106_stationary_07/perception/background"
+  },
+  "model": {
+    "parameters": "model/parameters.yaml",
+    "urdf": "model/mm.urdf"
+  },
+  "max_age_s": 0.25,
+  "cloud_max_points": 4000,
+  "static_max_points": 15000,
+  "rate_hz": 10.0,
+  "horizon": 8,
+  "step": 0.1,
+  "random_samples": 4,
+  "deadline_s": 0.095,
+  "seed": 11,
+  "postures": [
+    [
+      0.0,
+      2.443460952792061,
+      -1.0471975511965976,
+      0.0,
+      0.2617993877991494,
+      0.0
+    ]
+  ],
+  "kernel_config": {},
+  "joint_limit_overrides": {
+    "joint6": [
+      -0.35,
+      0.35
+    ]
+  },
+  "arm_limits": {
+    "lower": [
+      -2.618,
+      -0.05,
+      -2.697,
+      -1.832,
+      -1.25,
+      -0.35
+    ],
+    "upper": [
+      2.618,
+      3.14,
+      0.05,
+      1.832,
+      1.25,
+      0.35
+    ],
+    "velocity": [
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "acceleration": [
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35
+    ]
+  },
+  "joint_frames": [
+    "standby_feedback_02_base_link"
+  ],
+  "input_availability_note": "Original PCL filtering and actual locally observed background. Raw retained for freshness/visibility; no free-space or hardware-motion certification.",
+  "odom_validation": {
+    "max_age_s": 0.25,
+    "future_tolerance_s": 0.02,
+    "max_gap_s": 0.5,
+    "max_linear_speed_m_s": 1.0,
+    "position_noise_m": 0.02,
+    "max_angular_speed_rad_s": 3.0,
+    "angle_noise_rad": 0.05,
+    "initial_origin_xy": [
+      0.0,
+      0.0
+    ],
+    "max_initial_radius_m": 2.0
+  },
+  "limits": {
+    "vmax": 0.05,
+    "wmax": 0.15,
+    "accel": 0.1,
+    "angular_accel": 0.3,
+    "track": 0.37,
+    "wheel_v": 0.2296,
+    "wheel_a": 0.29750000000000004,
+    "margin": 0.1,
+    "max_age": 0.35,
+    "max_prediction": 3.0,
+    "pos_unc": 0.0,
+    "vel_unc": 0.0,
+    "acc_unc": 0.0,
+    "goal_pos": 0.05,
+    "goal_yaw": 0.1,
+    "goal_speed": 0.05
+  },
+  "original_filter_shadow_only": true
+}

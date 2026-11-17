@@ -1,0 +1,25 @@
+{
+  "scope": "Offline real function calls with fake inputs and mocked publishers; no ROS node, master, sockets or hardware started",
+  "environment": "PYTHONNOUSERSITE=1, identical to production MPPI launch",
+  "cases": [
+    {
+      "case": "dynamic_disabled_rejected_even_with_fresh_static_inputs",
+      "confirmed": true,
+      "dynamic_enabled": false,
+      "fresh_with_exporter_h4_zero": false,
+      "fresh_even_if_only_h4_forced_healthy": false
+    },
+    {
+      "case": "future_reference_replaces_usable_reference_before_activation",
+      "confirmed": true,
+      "reference_status": "native_reference_not_started",
+      "remaining_wait_seconds": 0.67,
+      "configured_arm_command_timeout_seconds": 0.3,
+      "base_stop_calls": 1,
+      "arm_publications": 0,
+      "navigation_fault_publications": 0,
+      "limit": "Driver watchdog inspected in source; no driver or real CAN executed."
+    }
+  ],
+  "peak_rss_kib": 55048
+}

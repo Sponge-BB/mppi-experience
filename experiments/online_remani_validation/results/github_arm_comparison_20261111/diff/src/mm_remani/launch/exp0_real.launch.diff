@@ -1,0 +1,233 @@
+--- github/src/mm_remani/launch/exp0_real.launch
++++ current/src/mm_remani/launch/exp0_real.launch
+@@ -1,6 +1,14 @@
+ <launch>
+   <!-- 实车不使用模拟时间 -->
+   <param name="/use_sim_time" value="false" />
++
++  <!-- Keep the original distributed ROS graph and drivers. MPPI replaces
++       only the two command bridges; mm_controller still supplies progress. -->
++  <arg name="use_mppi" default="true"/>
++  <arg name="use_local_esdf" default="$(arg use_mppi)"/>
++  <param name="/remani_planner_node/mppi/enable" value="$(arg use_mppi)" type="bool"/>
++  <arg name="hardware_enabled" default="true"/>
++  <arg name="can_port" default="can1"/>
+ 
+   <!-- Load planner parameter file purely by reference -->
+   <arg name="exp_param_file" value="$(find remani_planner)/config/exp0_param.yaml"/>
+@@ -17,15 +25,18 @@
+   <arg name="enable_fastlio_body_cloud" default="false"/>
+   <arg name="enable_heavy_visualization" default="false"/>
+   <arg name="enable_auto_icp_adjust" default="false"/>
+-  <!-- The producer can remain in shadow for A/B tests. Active avoidance is a
+-       separate rollback switch and defaults on for this fast-avoidance build. -->
++  <!-- Standard startup runs MPPI. use_mppi:=false restores the native command
++       bridges and keeps predictive avoidance in shadow for a clear baseline. -->
+   <arg name="enable_dynamic_tracker_shadow" default="true"/>
+-  <arg name="enable_dynamic_avoidance" default="true"/>
++  <arg name="enable_dynamic_avoidance" default="$(arg use_mppi)"/>
+   <arg name="dynamic_points_topic" default="/dynamic_points"/>
+   <arg name="planner_pcd_file" default="$(find mm_remani)/maps/exp0_planner.pcd"/>
+   <arg name="planner_pcd_preprocessed" default="true"/>
+   <arg name="real_lidar_topic" default="/livox/lidar"/>
+   <arg name="real_lidar_frame" default="livox_frame"/>
++  <!-- Reuse FAST-LIO's already deskewed full-pose cloud. The raw bridge is
++       available explicitly as perception_cloud_topic:=/livox/lidar_pcl2. -->
++  <arg name="perception_cloud_topic" default="/cloud_registered"/>
+   <arg name="lidar_offset_x" default="0.28"/>
+   <arg name="lidar_offset_y" default="0.0"/>
+   <arg name="lidar_offset_z" default="0.002"/>
+@@ -45,10 +56,21 @@
+     <arg name="lidar_offset_z" value="$(arg lidar_offset_z)"/>
+   </include>
+ 
++  <!-- One global static initialization, then exact local maintenance of a
++       signed distance field truncated at 0.6m (beyond collision/cost margins).
++       false restores the full-map EDT for a direct timing comparison. -->
++  <param name="/remani_planner_node/grid_map/incremental_esdf"
++         value="$(arg use_local_esdf)" type="bool"/>
++  <param name="/remani_planner_node/grid_map/esdf_distance_cap"
++         value="0.6" type="double"/>
++  <!-- One geometry-based upstream filter is shared by mapping and tracking. -->
++  <param name="/remani_planner_node/grid_map/self_filter_enable" value="false" type="bool"/>
++
+   <!-- Override the shared planner defaults for this real-robot experiment.
+        Qualified moving tracks drive a short-horizon swept planning overlay.
+-       Prediction loss falls back to the independent live occupancy/ESDF
+-       safety chain instead of becoming another unconditional stop owner. -->
++       The prediction layer accepts the latest real frame; missing IDs never
++       invalidate unrelated targets or clear the persistent live occupancy.
++       MPPI still rejects genuinely stale enabled perception streams. -->
+   <param name="/remani_planner_node/dynamic_point_flow/enable"
+          value="$(eval arg('enable_dynamic_tracker_shadow') or arg('enable_dynamic_avoidance'))" type="bool"/>
+   <param name="/remani_planner_node/dynamic_point_flow/isolated_worker_enable"
+@@ -93,8 +115,6 @@
+          value="0.75" type="double"/>
+   <param name="/remani_planner_node/dynamic_point_flow/max_points"
+          value="240" type="int"/>
+-  <param name="/remani_planner_node/dynamic_point_flow/empty_clear_frames"
+-         value="3" type="int"/>
+   <param name="/remani_planner_node/dynamic_point_flow/require_world_frame"
+          value="true" type="bool"/>
+   <param name="/remani_planner_node/dynamic_point_flow/planning_overlay_enable"
+@@ -116,7 +136,7 @@
+        ========================================================= -->
+   <!-- 1. 雷达数据由下方 nodelet 过滤管线处理后输出到 /velodyne_points，不再需要 raw relay -->
+   
+-  <!-- 2. 雷达 TF 在文件末尾只发布一次 base_link -> real_lidar_frame。 -->
++  <!-- 2. fastlio_to_odom 从已加载外参发布唯一 body -> real_lidar_frame。 -->
+ 
+   <!-- =========================================================
+        单独发布 world 坐标系的变换，将规划器的 world 链接到实车的 map
+@@ -167,6 +187,11 @@
+        统一全车限速配置 (覆盖原生环境中的死速度)
+        ========================================================= -->
+   <rosparam file="$(find mm_remani)/config/real_speed.yaml" command="load" />
++  <group if="$(arg use_mppi)">
++    <!-- Original controller/bridge performs standby motion. MPPI takes over
++         only after measured arrival and driver acknowledgement. -->
++    <param name="/mm_controller_node/fsm/capture_startup_standby" value="false" type="bool"/>
++  </group>
+ 
+   <!-- =========================================================
+        预建三维地图: 全局规划
+@@ -239,7 +264,19 @@
+        启动刚才咱们写的实车轨迹追踪节点 (Planner指令 => Cmd_vel)
+        并赋予速度和参数覆盖
+        ========================================================= -->
+-  <node pkg="mm_remani" type="real_base_tracker.py" name="real_base_tracker" output="screen" />
++  <node unless="$(arg use_mppi)" pkg="mm_remani" type="real_base_tracker.py" name="real_base_tracker" output="screen">
++    <param name="execute" value="$(arg hardware_enabled)" type="bool"/>
++  </node>
++  <!-- The distributed master survives relaunches; discard obsolete private
++       modes before loading this profile (e.g. startup_to_standby=true). -->
++  <node if="$(arg use_mppi)" pkg="mm_remani" type="whole_body_mppi.py" name="whole_body_mppi" output="screen" clear_params="true">
++    <rosparam file="$(find mm_remani)/config/mppi.yaml" command="load"/>
++    <param name="execute" value="$(arg hardware_enabled)" type="bool"/>
++    <param name="native_arm_startup" value="true" type="bool"/>
++    <env name="PYTHONNOUSERSITE" value="1"/>
++    <env name="OPENBLAS_NUM_THREADS" value="1"/>
++    <env name="OMP_NUM_THREADS" value="1"/>
++  </node>
+ 
+   <!-- =========================================================
+        补充四个轮子的静态 TF（因为真实底盘通常
+@@ -260,7 +297,7 @@
+   <!-- Boot RViz (Using the exact same RViz setting file as planner for seamless visual debugging without duplicate files) -->
+   <!-- Note: Make sure the target Rviz fixed frame is set to Map or Odom -->
+   <node if="$(arg enable_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find mm_remani)/rviz/exp0_gazebo.rviz"/>
+-  <node pkg="mm_controller" type="base_control.py" name="real_base_controller" output="screen">
++  <node if="$(arg hardware_enabled)" pkg="mm_controller" type="base_control.py" name="real_base_controller" output="screen">
+     <param name="read_timeout" value="0.02" />
+     <param name="write_timeout" value="0.05" />
+     <param name="send_rate" value="50.0" />
+@@ -283,9 +320,13 @@
+     <arg name="publish_icp_tf" value="false" />
+     <arg name="enable_transform_fusion" value="$(arg enable_transform_fusion)" />
+     <arg name="publish_body_cloud" value="$(arg enable_fastlio_body_cloud)" />
++    <!-- Preserve nearby returns for whole-body avoidance after deskewing. -->
++    <arg name="lidar_blind" value="0.10" />
+     <arg name="lidar_offset_x" value="$(arg lidar_offset_x)" />
+     <arg name="lidar_offset_y" value="$(arg lidar_offset_y)" />
+     <arg name="lidar_offset_z" value="$(arg lidar_offset_z)" />
++    <arg name="publish_lidar_tf" value="true" />
++    <arg name="lidar_frame" value="$(arg real_lidar_frame)" />
+   </include>
+   
+   <!-- =========================================================
+@@ -293,18 +334,26 @@
+        此节点会将规划器的 joint_cmd 包装为您源码中 piper 期待的 joint_ctrl_single
+        ========================================================= -->
+   <node pkg="mm_controller" type="joint_cmd_bridge.py" name="joint_cmd_bridge" output="screen">
++    <param name="execute" value="$(arg hardware_enabled)" type="bool"/>
++    <!-- The driver closes this startup input permanently on MPPI handoff. -->
++    <remap from="/joint_ctrl_single" to="$(eval '/piper_startup_joint_ctrl' if arg('use_mppi') else '/joint_ctrl_single')"/>
+     <param name="clamp_joint6" value="true" />
+     <param name="joint6_min" value="-0.35" />
+     <param name="joint6_max" value="0.35" />
+   </node>
+   <!-- =========================================================
+-       启动真实 Piper 机械臂底层 CAN 驱动 (需先手动 sudo bash src/piper_ros/can_activate.sh can1)
+-       ========================================================= -->
+-  <include file="$(find piper)/launch/start_single_piper.launch">
+-    <arg name="can_port" value="can1" />
+-    <arg name="fixed_vel" value="15" />
++       启动真实 Piper 机械臂底层 CAN 驱动（CAN 接口由 can_port 指定）
++       ========================================================= -->
++  <include if="$(arg hardware_enabled)" file="$(find piper)/launch/start_single_piper.launch">
++    <arg name="can_port" value="$(arg can_port)" />
++    <arg name="fixed_vel" value="$(eval 1 if arg('use_mppi') else 15)" />
++    <arg name="native_startup_to_standby" value="$(arg use_mppi)" />
++    <arg name="auto_enable" value="true" />
+     <arg name="auto_reenable_on_drop" value="true" />
+     <arg name="auto_reenable_interval" value="1.0" />
++    <arg name="gripper_exist" value="true" />
++    <arg name="command_timeout" value="$(eval 0.30 if arg('use_mppi') else 0.0)" />
++    <arg name="max_command_age" value="$(eval 0.30 if arg('use_mppi') else 0.0)" />
+   </include>
+ 
+   <!-- =========================================================
+@@ -330,7 +379,8 @@
+        ========================================================= -->
+ 
+   <!-- 0x. C++ bridge: retain the scan stamp and keep only the newest frame. -->
+-  <node pkg="mm_remani" type="livox_custom_to_pcl" name="custom_to_pcl" output="log">
++  <node if="$(eval arg('perception_cloud_topic') == '/livox/lidar_pcl2')"
++        pkg="mm_remani" type="livox_custom_to_pcl" name="custom_to_pcl" output="log">
+     <param name="input_topic" value="$(arg real_lidar_topic)" />
+     <param name="output_topic" value="/livox/lidar_pcl2" />
+     <param name="subscriber_queue_size" value="1" />
+@@ -348,8 +398,10 @@
+   <!-- 考虑到雷达原点离地高度可能在 0.15~0.2 米左右，通过限制 z 轴将其下方的点（地面）剔除 -->
+   <!-- 注意：这里的 filter_limit_min 取决于你雷达到地面的距离，一般在 -0.1 到 -0.15 左右属于地面 -->
+   <node pkg="nodelet" type="nodelet" name="passthrough_z" args="load pcl/PassThrough pcl_manager_filter" output="log">
+-    <remap from="~input" to="/livox/lidar_pcl2" />
++    <remap from="~input" to="$(arg perception_cloud_topic)" />
+     <remap from="~output" to="/livox/lidar_no_ground" />
++    <param name="input_frame" value="$(arg real_lidar_frame)" />
++    <param name="output_frame" value="$(arg real_lidar_frame)" />
+     <param name="max_queue_size" value="1" />
+     <param name="filter_field_name" value="z" />
+     <param name="filter_limit_min" value="0.01" /> <!-- 设置最低高度阈值，低于此值认为是地面，此值根据实际偏置调节 -->
+@@ -357,22 +409,16 @@
+     <param name="filter_limit_negative" value="false" /> <!-- false表示保留在[min, max]范围内的点 -->
+   </node>
+ 
+-  <!-- B) CropBox 滤波器：剔除包围自身车体的"矩形盲区"内的点云 -->
+-  <node pkg="nodelet" type="nodelet" name="crop_box_filter" args="load pcl/CropBox pcl_manager_filter" output="log">
++  <!-- B) Reuse native collision geometry and measured joints for self returns.
++       Fixed rectangles must not delete external obstacles near the arm. -->
++  <node pkg="mm_remani" type="velodyne_transformer.py" name="robot_self_filter" output="log">
+     <remap from="~input" to="/livox/lidar_no_ground" />
+     <remap from="~output" to="/velodyne_points" />
+-    <param name="max_queue_size" value="1" />
+-
+-    <!-- 这里的过滤框尺寸表示机器人本体（以及可能造成干扰的近处连杆）在雷达视野内的位置。请根据实车尺寸调整 -->
+-    <param name="min_x" value="-0.8" />  <!-- 雷达后方 -->
+-    <param name="max_x" value="0.05" />   <!-- 雷达前方 -->
+-    <param name="min_y" value="-0.90" />  <!-- 雷达右侧/机械臂自车点 -->
+-    <param name="max_y" value="0.40" />   <!-- 雷达左侧 -->
+-    <param name="min_z" value="-0.01" />  <!-- 机器人的最下方 -->
+-    <param name="max_z" value="0.7" />   <!-- 机器人的最上方 -->
+-
+-    <!-- negative 为 true 代表只剔除设定"框内"的点，保留框外所有点云 -->
+-    <param name="negative" value="true" />
++    <param name="filter_self" value="true" type="bool"/>
++    <param name="target_frame" value="$(arg real_lidar_frame)"/>
++    <env name="PYTHONNOUSERSITE" value="1"/>
++    <env name="OPENBLAS_NUM_THREADS" value="1"/>
++    <env name="OMP_NUM_THREADS" value="1"/>
+   </node>
+ 
+   <!-- Separate process and queue from the planner. It removes static PCD
+@@ -467,8 +513,6 @@
+     <param name="health_degradation_frames" value="3" type="int"/>
+   </node>
+ 
+-  <!-- Real LiDAR has one parent only. Do not attach it through the URDF's
+-       legacy VLP16 frames: doing so made velodyne alternate between two TFs. -->
+-  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_real_lidar_tf"
+-        args="$(arg lidar_offset_x) $(arg lidar_offset_y) $(arg lidar_offset_z) 0 0 0 base_link $(arg real_lidar_frame)" />
++  <!-- fastlio_to_odom publishes the unique body->LiDAR calibrated TF from
++       FAST-LIO's mapping/extrinsic_T/R. No second planar parent is published. -->
+ </launch>

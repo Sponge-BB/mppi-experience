@@ -1,0 +1,58 @@
+2026-11-09 机械臂启动锁停排查
+
+当前结论：起臂问题尚未修好。本轮观察用户运行的实车程序，并修改离线源码与测试；另发送一次厂商定义的固件版本读取请求。没有重启、使能、复位、发布运动目标或改变驱动时限。
+
+已确认的运行事实
+用户启动的是原工程 MPPI 实车模式，can_port=can1，execute=true，驱动 command_timeout/max_command_age 均为0.30秒。
+驱动日志在09:39:45.264报告 command/feedback expired 并锁定快停。旧日志将两类超时合并，且没有记录首条指令是否已收到，无法仅凭这条日志还原第一次超时的具体触发项。
+事后6秒采样：关节反馈继续更新，六电机使能标志均为1，arm_status=1（快停状态），stop_latched=true；底盘命令全为0，没有收到新的 joint_ctrl_single。MPPI状态61条：50条no_feasible_candidate、8条startup_waiting_stationary_base、3条collision_snapshot_unavailable。这是锁停后的数据，不是超时瞬间的回放。
+
+当前候选为何不可行
+保存真实关节、定位、运行参数和地图后，在独立只读进程重算同一启动候选。
+外部地图未检出违规，关节位置范围及制动停止检查通过，但当前肩部—腕部自碰撞检查拒绝。因此当前无法通过规划验收；不能据此断言它是最初超时的唯一原因。
+当前关节角约[-2.343,-1.960,1.256,5.970,26.698,-5.864]度。
+原细化几何证书从昨天的+1.083mm变为-1.508mm；粗球对[0,18]保留-9.207mm拒绝值，该数值不是网格穿透深度。
+使用原始URDF碰撞网格、原变换和经SHA256核对的mesh进一步检查：昨天link1/link5表面分离1.355mm，当前模型表面相交，命中三角形8604/15784。其余三组肩部/腕部网格仍分离。
+这证明URDF模型发生相交，不能直接证明实物发生碰撞。用户随后确认这两处实物有可见间隙，因此模型、反馈姿态与实物的对应关系仍需核对。没有缩小小球、放宽容差或关闭碰撞检测来强行通过。
+
+后续模型核对
+通过can1仅发送一次0x4AF固件版本读取请求（01 00 00 00 00 00 00 00），读取到S-V1.8-2；未调用SDK使能或运动接口。当前模型使用对应的新关节坐标约定，不能用旧版本2度偏移来修正。
+当前DH与URDF链的相关位置差异约0.02至0.03毫米，未发现足以解释当前相交的坐标变换错误。
+原visual DAE与collision STL分别复核。初次DAE离线载入保留了Assimp附加的Rx(-90度)，与RViz加载约定不一致，得到的12.74毫米间隙无效。按RViz去掉根旋转后，visual DAE在当前姿态也相交（面2602/13354）；昨天visual间隙1.638毫米。已明确标记初次结果无效，不能据它替换碰撞模型。
+当前没有证据确定应改关节零位还是局部外壳几何；实物可见间隙不能单独给出校准量。shoulder_wrist_location.png标出原碰撞网格相关区域用于实物对应核对，二维投影重叠不是穿透量。
+
+本轮最小代码调整
+1. whole_body_mppi.py：收到驱动停止锁定后优先报告arm_stop_latched并停止重复求解，避免被后续“无候选”提示掩盖；初始化候选拒绝时附配置、外障碍和制动诊断。
+2. piper_ctrl_single_node.py：分别报告command expired和joint feedback expired；记录是否收到过第一条有效关节指令，并增加使能请求/首条关节指令时间日志。
+3. 增加新实测模型相交姿态的拒绝回归，防止后续将它作为普通球包络误报直接放行。
+驱动0.30秒指令期限、0.15秒反馈期限、地图0.35秒时限、停止锁定与禁止自动恢复规则均未改变。运行中的Python进程仍使用启动时加载的旧代码，本轮没有让修改在实车上重新执行。
+
+离线验证
+startup 19项通过；execution gate 10项通过；driver 21组通过；shoulder support 7项通过。测试不连接ROS master、SDK或CAN；未整工程编译。
+原始网格核查复用已有二进制，峰值RSS约87MB；所有临时采集和离线检查进程已退出，用户自行启动的实车程序保持原状态。
+
+需继续处理
+用户已确认实物有间隙，下一步需核对模型所指的局部区域与实物是否对应，再依据实际几何/零位证据修正；不能仅凭一个姿态放行。还需验证使能到首条指令及后续交付的连续性；代码中从EnableArm请求起就计0.30秒，下一周期重新规划和输入波动也可能导致启动超时，但本轮没有足够的超时前数据确认其贡献。额外源码复核未证实本次失败存在确定的握手bug，因此未修改启动握手、期限或版本验收规则。
+
+证据文件
+driver_before.log、mppi_before.log：原始启动日志副本。
+live_after_stop.json：锁停后只读消息采样。
+preview_startup.json、snapshot.npz、parameters.json：当前状态和地图的候选复现。
+mesh_comparison.json：原始三角网格新旧姿态对照及资源信息。
+before_sources.tar.gz：本轮修改前源码。
+firmware_read.json：单次固件读取的原始应答。
+rviz_visual_comparison.json：按RViz坐标约定纠正后的原visual网格检查。
+visual_collision_comparison.json：保留最初诊断，已明确将未纠正的DAE结果标为无效。
+shoulder_wrist_location.png：模型中需与实物核对的局部区域图。
+
+按用户要求新增可视化
+在hai桌面打开独立RViz arm_model_inspection，读取共享robot_description和真实反馈TF；另复用原fake_mm/model_vis及当前libmm_config，仅在arm_inspection_spheres命名空间复制运行中的几何参数并显示碰撞球，publish_tf=false。该节点TF广播器构造会注册/tf发布者，但关闭了发布定时器；没有控制话题发布者。没有重启控制节点、复位或发运动命令。
+碰撞球已在RViz中勾选并截图验证，默认开关已保存。显示的是原规划器粗碰撞球，不代表MPPI肩腕细化分离证书。RobotModel的link7/link8报缺少TF，六轴机械臂模型正常显示，未为缺失夹爪反馈编造位置。
+本机配置：src/mm_remani/rviz/arm_inspection.rviz；hai端：/home/hai/remani_ws/arm_model_inspection_20261109.rviz。显示进程PID记在rviz_inspection_processes.json。最新可视化截图：rviz_with_spheres.png。
+
+蓝色碰撞球位置核对
+用户指出第一根长杆蓝球与外壳不齐。代码蓝色为DH组1/sphere3至7/URDF link2，沿DH轴间直线采样；离线原网格截面核对显示中段球心与外壳截面偏离。该诊断先去除了native/URDF安装平移差异，不是实际世界坐标校准；详见blue_link2_alignment.json。另发现原URDF安装高度与当前native安装高度在base_z=0.115配置下相差8mm，尚未擅自修改安装参数。
+当前拒绝pair0/18是绿色肩部球与紫色腕部球；绿/蓝、蓝/灰相邻长杆球已排除自碰撞检查。因此蓝球需要校准，但不能把当前拒绝归因于相邻两根长杆的包络重叠，亦未证实最初超时的唯一原因。原MMConfig::checkManiManiCollision对Piper直接返回false，MPPI额外执行了自碰撞验收，这解释了原工程与MPPI版本行为差异的一部分。
+
+原启动方式核对与用户最新要求
+用户授权暂时忽略肩腕重叠后，进一步质疑为何不沿用原工程启动。尚未实现或启用任何新的碰撞排除。当前原生分支由mm_controller持续发布固定待机目标，joint_cmd_bridge限至5Hz；Piper fixed_vel=15、auto_enable=true、command_timeout=0。MPPI分支关闭该桥，fixed_vel=1、auto_enable=false、command_timeout=0.30，且startup_to_standby=true。因此启动超时路径是新分支引入，原初始化并不依赖MPPI每轮求解。尚未恢复原起臂及待机后的控制权交接，也未重启运行程序。后续应优先处理启动流程，而非继续扩大全局碰撞排除。

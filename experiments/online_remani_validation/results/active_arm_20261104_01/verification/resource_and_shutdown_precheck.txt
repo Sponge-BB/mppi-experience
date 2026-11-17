@@ -1,0 +1,116 @@
+Active-arm scene / runner / resource review, 2026-11-04
+
+Delivered new files (no old project files modified by this agent):
+experiments/online_remani_validation/active_arm_scene.py
+experiments/online_remani_validation/test_active_arm_scene.py
+Precheck output: /tmp/active_arm_scene_precheck.json
+
+Scene API and contract:
+SCENE='active_arm_elevated_obstacle'. scene_definition() is a fresh JSON-ready dict;
+register_scene() installs compatibility CASES/SCENES in memory for preparation;
+actors_at(elapsed,scene) is legacy x,y,r,id,vx,vy; actors_3d_at includes z_min/z_max;
+obstacle_points(elapsed,scene) generates actual finite cylinder side/cap points;
+cylinder_gaps(spheres_world,actors) / sphere_clearance implement physical 3D truth;
+straight_path_precheck(model,scene) records same-base-path obstruction and both escape options.
+No actor geometry or truth gap should be fed to controller. Only the synthetic
+sensor's point cloud reaches planner/MPPI; q_start/q_retract are predeclared joint
+posture configuration, not a command selected from future ground truth.
+
+Declared A/B scene:
+q_start_deg=[0,110,-60,0,30,0], q_retract_deg=[0,140,-60,0,15,0].
+Both groups share q_start, map, observer, collision model, goal, actor and timing.
+High cylinder: x=1.6, y=0, radius=.14, z=[1.05,1.30], stationary after appearance
+at measured-motion-anchor+2s. Goal=(3,0); arena[-1.5,4.5]x[-2,2].
+A locks q=q_start but has same feasible base-action candidates. B includes arm
+velocity trajectories under the same base/safety constraints. A may detour;
+the setup intentionally has both fixed-arm base detour and active-arm clearance.
+
+Native-model geometry precheck, not an executed navigation trial:
+121 base positions x0..3 at y=yaw=0. Fixed structure minimum gap=.242354 m.
+Starting arm minimum cylinder gap=-.054724 m; retracted arm gap=+.055340 m.
+257 joint-interpolation samples: all model.check valid. Min arm self gap=.003 m,
+base-arm gap=.111478 m, ground gap=.443454 m. At initial base pose all transition
+states retain external gap>=1.09735 m. Trapezoidal .45rad/s/.9rad/s² lower bound
+for rest-to-rest joint transition=1.66355s; this is a rate bound, not an observed
+trajectory duration. Do not blindly add 1cm to self-pair margin: .003m is a
+native wrist-geometry characteristic with explicitly documented exclusions.
+301-point smooth fixed-arm bypass reaches y=-.30m and has cylinder gap>=.133260m.
+The bypass is only a geometry witness, not a generated control or tested wheel-
+acceleration-feasible reference. q_start/retract and cylinder are frozen before
+online A/B; no after-result scene tuning to manufacture a win.
+
+Critical existing assumptions the new prepare hook must replace:
+1. simulator.py initial q is fixed and qd published as zeros; arm() only measures
+   disagreement and run() terminates on invalid_fixed_arm. Active run must
+   integrate authorized qdot with measured q/dq feedback and shared command lease.
+2. simulator.cloud hardcodes cylinder z=.15..1.4. Do not just register actor rows:
+   use obstacle_points for these elevated actor returns, preserving real sensor
+   transform/FOV and detector path.
+3. native_collision_runtime.sampled_truth_clearance hardcodes identical full
+   height; replace actor branch with scene cylinder_gaps and real measured-q
+   geometry at each <=5ms integration substep. Keep boundary-wall checks.
+4. native_collision_3d_body.json is a fixed-pose snapshot. It cannot certify the
+   active future trajectory. Recompute moving arm sphere centers at every
+   prediction/validation point and record q provenance/freshness.
+5. Generic 2D truth monitor would falsely collide under elevated obstacles.
+   Retain it only as diagnostic; 3D independent truth decides physical contact.
+
+Lowest-cost execution path:
+Use existing lifecycle.run_trial with a new build directory/result directory and
+prepare hook; do not overwrite any history or production src/devel. Latest
+short_prefix child is23MB; prior A/B results64MB, delivery_window pair52MB.
+Use copytree(parent/source,new/source), then hardlink only immutable unchanged
+objects/libraries. Recompile all translation units whose source/header/ABI
+dependencies changed; do not hardlink a target you will overwrite in-place.
+Current build_short_prefix_rejoin.py and build_delivery_window.py demonstrate
+per-TU recipes, compile/ar/link, parent hashes, reused hashes, source inventory,
+prepared_only, compiled hashes, and production validation. Preserve this pattern.
+If altering MMConfig class layout, every object including affected header must
+be rebuilt; the inexpensive rebuild strategy is dependency-aware, not merely
+choosing visibly edited cpp files. If Python model only, preserve native binaries
+and record new Python hashes plus per-state geometry matching evidence.
+Compile one TU at a time; no compilation or plotting during timed online runs.
+Prefer one empty/low-speed active-arm smoke, then declared A and B sequentially,
+followed by a repeat only if needed to verify mechanism activation or failures.
+No rosbag/full-map snapshot duplication by default; retain compact state and
+control JSONL plus one representative candidate/reference per causal event.
+Freeze inputs/hashes and keep every failure. Normal ROS service must remain
+localhost:11441, never production master/hardware driver.
+
+Resources:
+Filesystem /home/l/remani_ws and /tmp share root disk; 5.6GB free out of233GB.
+Memory7.3GiB total, only2.7GiB available (not7.3GiB free), swap3.6GiB.
+Host heavy processes: editor MainThread~1.56GB, codex~.54GB, cpptools~.46GB;
+do not stop user editor or unrelated services. Sequential compile/run recommended.
+Existing lifecycle enforces150MiB hard floor but practical reserve should stay
+>=1GiB+per-trial allowance here; planned work should fit<500MB if no full map
+archive. Never delete old results automatically to make space.
+
+Required experiment records:
+- manifest: exact q_start/retract, per-joint limits, parent/source/runtime hashes,
+  47fixed+20arm model, self-pair exclusions, margins, sensor data route, unique AB
+  switch and same initial planning/goal configuration.
+- measured t,x,y,yaw,v,w,q[6],dq[6]; commanded base and qdot; command generation,
+  reference id, lease time, q timestamp; stale/mismatch/failed approvals.
+- candidate type and actual active-arm selection counts; q excursion and whether
+  it preceded the obstacle. Enabled flag without selection is inconclusive.
+- selected full-state prediction and recheck result; rollout mean and fallback
+  verification, collision min link/sphere, joint speed/acceleration bounds.
+- 3D physical truth min gap by fixed/arm, self/ground violations with timestamps;
+  baseline straight-arm obstruction and bypass witness are separate from online.
+- request->native->latest->consumed->valid combined base/arm control chain;
+  overall goal result, route length, duration, stalls, control P95/max deadlines.
+- if B works, report active arm effect with same A/B configuration; do not claim
+  a statistical benefit from one asynchronous pair or a general safety proof.
+
+Shutdown read-only audit (no shutdown attempted):
+Default tool sandbox has separate PID namespace and blocks host D-Bus; its
+systemctl/sudo failures do not directly indicate host privilege. Read-only
+escalated check on host succeeded: loginctl sessions1(user l,seat0,tty2) and3(l);
+login1.CanPowerOff returned string "challenge". sudo -n -l required a password.
+Thus unattended poweroff authority is not yet established; final poweroff may
+require Polkit authentication. Do not claim host has shut down without actual
+success. Do not queue timers while experiments are ongoing. User authorized
+poweroff after work, but this audit never requested PowerOff or stopped services.
+Running host services were normal desktop/system services inclDocker/SSH/Sunlogin;
+no ROS service unit was listed. Recheck only task-owned ROS PIDs at cleanup.

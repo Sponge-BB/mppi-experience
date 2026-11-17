@@ -1,0 +1,22 @@
+{
+  "offline_passed": true,
+  "hardware_validation": false,
+  "deployed": true,
+  "tests_passed": 45,
+  "baseline_replay_frames": 4836,
+  "baseline_six_metrics_exact": true,
+  "candidate_output_frames": 4822,
+  "candidate_nonempty_frames": 51,
+  "unchanged_geometry_metrics": [
+    "cluster_count",
+    "residual_point_count",
+    "stationary_background_anchor_count"
+  ],
+  "changes": "仅表面运动资格距离投影到XY；保留完整3D碰撞点、既有速度与关联分支和所有容差",
+  "known_issues": [
+    "51帧分为五段，仍有约0.4秒重新关联空档，不等于持续跟踪已解决",
+    "缺逐帧人身份真值，不把全部运动候选称为已证实的人",
+    "离线回放检验几何/分类，不复现实时调度与交付截止",
+    "MPPI实际接管和绕行效果仍待实车验收"
+  ]
+}

@@ -1,0 +1,35 @@
+--- before/whole_body_mppi.py
+
++++ src/mm_remani/scripts/whole_body_mppi.py
+
+@@ -111,14 +111,22 @@
+
+         end = states[2].copy()
+         end[5:11] = target
+     else:
+-        middle = kernel.advance(state, control, half)
+-        end = kernel.advance(middle, control, half)
++        # MOVEJ consumes a position intent, not the inertial predicted pose.
++        # Keep measured velocity in the separate stopping envelope below.
++        lead = np.clip(np.clip(control[2:], -kernel.vmax, kernel.vmax)*kernel.dt, -.03, .03)
++        target = np.clip(state[5:11]+lead, kernel.qmin, kernel.qmax)
+         velocity_states = kernel.lease_brake_states(state, control[None], lease=.30)
+-        position_states = velocity_states.copy()
+-        position_states[2:, 5:11] = end[5:11]
+-        position_states[2:, 11:17] = 0.
+-        states = np.concatenate((velocity_states, position_states))
+-        times = now + np.tile(np.arange(len(velocity_states))*half, 2)
++        end = velocity_states[2].copy()
++        end[5:11] = target
++        # Check the start, midpoint and delivered target at every base/time
++        # sample: fixed_vel does not establish when MOVEJ reaches the target.
++        # This is a discrete geometric envelope, not a calibrated servo model.
++        position_states = np.repeat(velocity_states[None], 3, axis=0)
++        position_states[:, :, 5:11] = np.stack((state[5:11],
++            (state[5:11]+target)/2, target))[:, None, :]
++        position_states[:, :, 11:17] = 0.
++        states = np.concatenate((velocity_states, position_states.reshape((-1, 17))))
++        times = now + np.tile(np.arange(len(velocity_states))*half, 4)
+     spheres = kernel.spheres(states)
+     gaps, _ = snapshot.query(spheres, times)
+     if (np.any(gaps < 0) or np.any(kernel.model.configuration_gaps_batch(states[:, 5:11]) < 0)

@@ -1,0 +1,34 @@
+{
+  "review_only": true,
+  "runtime_modified": false,
+  "hardware_commands_sent": false,
+  "version": "20261114-165513-phase-capacity",
+  "disk_products": {
+    "devel/lib/libcontroller_utils.so": {
+      "actual_sha256": "5839785b35e54ec6426826b492859bcaee07e14820e6a93337bd1815ea73893d",
+      "expected_sha256": "5839785b35e54ec6426826b492859bcaee07e14820e6a93337bd1815ea73893d",
+      "matches": true
+    },
+    "devel/lib/mm_controller/mm_controller_node": {
+      "actual_sha256": "ad52bec45c40c0c21c6be0f73685554550f637c32ae9d51029f2b03c68a54fd8",
+      "expected_sha256": "ad52bec45c40c0c21c6be0f73685554550f637c32ae9d51029f2b03c68a54fd8",
+      "matches": true
+    }
+  },
+  "source_findings": [
+    "No-trajectory advanceTrajectoryClock returns before capacity computation (exec_traj!=1 or empty).",
+    "Stage2 leaves init_state conversion, update_stay_state, cal_stay_ctrl_input, process, and startup sequencing unchanged.",
+    "Constructor only adds explicit MPPI capacity flag and shared-limit validation; missing/invalid enabled limits cause a specific FATAL and throw before initialization. Check running log/process to accept or exclude this path.",
+    "Actual native arm startup target comes directly from /remani_planner_node/fsm/init_state inside Piper driver. The driver sends MotionCtrl_2(1,1,15,0) and fixed JointCtrl every .20 seconds until handoff, independently of native trajectory phase.",
+    "MPPI native_startup_gate waits for source-valid enabled feedback and all joints within .015 rad and .02 rad/s before any takeover solve; it does not move the arm toward standby.",
+    "New BaseExecutionLimits increases MMControllerFSM layout. Both deployed node and library match the final rebuilt version on disk; a running old process or an alternate library selected by LD_LIBRARY_PATH could still mismatch until actual /proc/exe and maps are checked.",
+    "Node and library RUNPATH list /opt/ros/noetic/lib:/home/l/remani_ws/devel/lib, with no /tmp path."
+  ],
+  "unverified_by_this_agent": [
+    "actual running process executable inode/hash",
+    "actual loaded controller_utils library mapping/hash",
+    "current driver feedback/state and target publication",
+    "current ROS init_state and startup flags"
+  ],
+  "conclusion": "No source path found by which the new trajectory capacity limiter itself prevents the no-trajectory native arm startup. This is not a diagnosis of hardware; verify the specific constructor-abort and loaded-ABI possibilities plus current driver feedback before attributing the symptom."
+}

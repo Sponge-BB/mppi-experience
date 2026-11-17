@@ -1,0 +1,66 @@
+{
+  "stage": "/home/l/remani_ws/rollback/.staging-20261111-114240-pre020",
+  "checks": [
+    {
+      "check": "Python AST and launch XML syntax",
+      "exit_code": 0
+    },
+    {
+      "check": "piper_callbacks",
+      "exit_code": 0,
+      "log": "/home/l/remani_ws/experiments/online_remani_validation/results/pre020_restore_20261111/piper_callbacks.log"
+    },
+    {
+      "check": "mppi_suite",
+      "exit_code": 0,
+      "log": "/home/l/remani_ws/experiments/online_remani_validation/results/pre020_restore_20261111/mppi_suite.log"
+    }
+  ],
+  "hardware_test": false,
+  "motion_sent": false,
+  "passed": true,
+  "post_apply": {
+    "vmax_mps": 0.12,
+    "horizon": 8,
+    "rate_hz": 10.0,
+    "critical_file_hashes": [
+      {
+        "file": "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+        "sha256": "8c11814f639a78543fa0e6e33c37c5d1922bf431452d96c35be57fb894a02fc5"
+      },
+      {
+        "file": "devel/lib/libplan_env.so",
+        "sha256": "70d8f68810af26124567357d9aaccfbf2cfe6fdab6a64fc2d1422882c835d5e9"
+      },
+      {
+        "file": "devel/lib/remani_planner/remani_planner_node",
+        "sha256": "c56990a636a0bca353af1bbc54e8617b86b7fed8a5fc0121d9729500a414e9e6"
+      }
+    ],
+    "deployment_dependencies": [
+      {
+        "file": "devel/lib/remani_planner/remani_planner_node",
+        "exit_code": 0,
+        "missing_dependencies": false,
+        "key_resolved_libraries": [
+          "libplan_env.so => /home/l/remani_ws/devel/lib/libplan_env.so (0x0000ffff99fa3000)"
+        ]
+      },
+      {
+        "file": "devel/lib/libplan_env.so",
+        "exit_code": 0,
+        "missing_dependencies": false,
+        "key_resolved_libraries": []
+      },
+      {
+        "file": "devel/lib/mm_controller/mm_controller_node",
+        "exit_code": 0,
+        "missing_dependencies": false,
+        "key_resolved_libraries": [
+          "libcontroller_utils.so => /home/l/remani_ws/devel/lib/libcontroller_utils.so (0x0000ffff81919000)"
+        ]
+      }
+    ],
+    "hardware_test": false
+  }
+}

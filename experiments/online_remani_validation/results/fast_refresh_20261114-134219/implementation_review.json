@@ -1,0 +1,42 @@
+{
+  "baseline": "20261114-134219-before-fast-refresh",
+  "scope": "Post-delivery avoidance event -> one optional native warm refresh; no predicted-prefix initialization",
+  "runtime_frozen": true,
+  "source_sha256": {
+    "src/mm_remani/scripts/mppi/mppi_refresh_event.py": "84db0b5484ce05960d47300114ec8e19a62e8c5829385ac5f8944564b35111af",
+    "src/mm_remani/scripts/whole_body_mppi.py": "b1e3dd642bee0af683dfb2339d4e1ee1c2ff9595bc74173512842c8f0a8577ae",
+    "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_refresh_event.hpp": "d2855202c5903802d9bdda2559eaaaae58845fb236de14f7d4f0ab2ea05af35e",
+    "src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h": "9660375f58421fcafd6ca20723ec929fe0632ec55732e5106461e9a5a870362e",
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "e61e815a647b55af866494da0bc82301dbe7f01234c6eb3028268724c2fb9d8e",
+    "src/mm_remani/test/test_mppi_refresh_event.py": "9fd0ce52e1fdd02f83180dccb96c76ad28a29b4f2c51f647dc445d0047dc4f37"
+  },
+  "wire_fields": [
+    "schema",
+    "checked_at",
+    "accepted_goal_header_stamp",
+    "native_reference_start",
+    "odom_source_stamp",
+    "joint_source_stamp",
+    "map_h3_source_stamp",
+    "dynamic_h18_source_stamp",
+    "dynamic_required",
+    "episode_first_source_stamp"
+  ],
+  "guarantees": [
+    "Publishing occurs only after arm and base publication and every existing delivery gate",
+    "Rejected, startup, reference-hold, terminal-alignment and observe-only cycles publish no request",
+    "Four explicitly normal delivered navigation cycles reopen an episode; reference replacement alone does not",
+    "Receiver only caches; executed request is one native warm attempt with no random retry and dynamic_repair=true",
+    "On failure existing production handler restores published trajectory; optional wrapper restores start/local-target metadata and global cursors",
+    "Positive existing safety limit survives successful/failed refresh; zero limit and stop/recovery owners block attempts",
+    "Optional notification failure cannot reject an already delivered action",
+    "No new configuration switch, driver change, search replacement or stop permission"
+  ],
+  "tested": "10 unittest methods: 9 Python delivery/protocol methods and one extracted-production C++ harness executing 7 distinct cases; exit 0",
+  "limitations": [
+    "No real hardware verification yet",
+    "Events do not carry a fast trajectory prefix or actual MOVEJ joint-time model",
+    "One optional warm deformation may fail; existing safety/recovery remains authoritative",
+    "Optimizer budget is not a hard bound on all initialization/acceptance time; actual elapsed_ms is logged"
+  ]
+}

@@ -1,0 +1,2386 @@
+{
+  "schema": 1,
+  "frame_count": 13,
+  "navigation_frame_count": 12,
+  "tf_identity_checks": {
+    "world->map": {
+      "count": 1,
+      "all_identity": true,
+      "last_xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "last_quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    "map->camera_init": {
+      "count": 1,
+      "all_identity": true,
+      "last_xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "last_quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    "camera_init->odom": {
+      "count": 1,
+      "all_identity": true,
+      "last_xyz": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "last_quaternion": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  },
+  "scope": "Independent scipy EDT of same-generation inflated occupancy; XY crop margin>0.65m; complete native z; no synthetic occupied padding; actual source-stamped preceding odom and joints.",
+  "sphere_policy": "0-based indices; fixed spheres use native ground-frame z (odom.z is not added), hard radius=physical+0.05m for first47; arm radius as deployed. No dynamic layer included.",
+  "conclusion": "Every checked same-generation field agrees with independently recomputed signed EDT within numerical precision.",
+  "caveat": "Diagnostics at 1Hz are not guaranteed to be exactly the rejected-command generation. Occupied voxels are confirmed map state, not proof of real physical obstacles. Latest preceding odom/q may differ from exact exporter sample; ages are recorded. No dynamic obstacle term is included.",
+  "elapsed_s": 9.669089634000102,
+  "peak_rss_MiB": 154.73046875,
+  "frames": [
+    {
+      "label": "stationary_baseline",
+      "acquisition_ros": 1794447783.5326538,
+      "fusion_ros": 1794447783.2816663,
+      "seq": 371,
+      "epoch": 2,
+      "revision": 370,
+      "export_version": 373,
+      "raw_occupied": 6598,
+      "inflated_occupied": 13322,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447783.5133588,
+      "odom_age_ms": 19.29497718811035,
+      "base_pose_xyyaw": [
+        -0.267627452841818,
+        -0.04149558516592001,
+        -0.014384118678093433
+      ],
+      "joint_source_ros": 1794447783.5249646,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        -0.004677482395344803,
+        0.5369330910835355,
+        -1.0501471576324681,
+        0.0,
+        0.9847322172677205,
+        0.0
+      ],
+      "min_hard_gap_m": 0.3668894808726074,
+      "base_min_hard_gap_m": 0.3668894808726074,
+      "arm_min_hard_gap_m": 0.5106130017568636,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            -0.0454286911036167,
+            0.022815419851121115,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.44471735759577224,
+          "nearest_occupied_center_m": 0.9855710017754966,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.012343581255794212,
+            -0.0455229995118358,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.6000000000000001,
+          "independent_esdf_m": 0.6000000000000001,
+          "hard_gap_m": 0.48716861850953785,
+          "nearest_occupied_center_m": 1.003030909605132,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 0,
+          "xyz": [
+            -0.49176800928946673,
+            -0.24079301723399876,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.522172123276835,
+          "independent_esdf_m": 0.522172123276835,
+          "hard_gap_m": 0.3668894808726074,
+          "nearest_occupied_center_m": 0.5210659454833072,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 1,
+          "xyz": [
+            -0.4898262120080272,
+            -0.10580641138752503,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.5615447436031502,
+          "independent_esdf_m": 0.5615447436031503,
+          "hard_gap_m": 0.4062621011989226,
+          "nearest_occupied_center_m": 0.5604917491497488,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 18,
+          "xyz": [
+            -0.4605638283111964,
+            -0.2443079320095891,
+            0.08499924
+          ],
+          "physical_radius": 0.0854400374531753,
+          "hard_radius": 0.1354400374531753,
+          "esdf_m": 0.5543832686453674,
+          "independent_esdf_m": 0.5543832686453672,
+          "hard_gap_m": 0.41894323119219207,
+          "nearest_occupied_center_m": 0.5534551546513036,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 21,
+          "xyz": [
+            -0.33906234117871964,
+            -0.1059763721448623,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5977124536098418,
+          "independent_esdf_m": 0.5977124536098418,
+          "hard_gap_m": 0.4293725200892094,
+          "nearest_occupied_center_m": 0.6267111814127453,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 22,
+          "xyz": [
+            -0.33906234117871964,
+            -0.1059763721448623,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5988914441680262,
+          "independent_esdf_m": 0.5988914441680262,
+          "hard_gap_m": 0.4305515106473938,
+          "nearest_occupied_center_m": 0.6333796215800542,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        }
+      ]
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447871.9815338,
+      "fusion_ros": 1794447871.7700722,
+      "seq": 880,
+      "epoch": 2,
+      "revision": 879,
+      "export_version": 925,
+      "raw_occupied": 6626,
+      "inflated_occupied": 13350,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447871.9142706,
+      "odom_age_ms": 67.26312637329102,
+      "base_pose_xyyaw": [
+        -0.2746761780101527,
+        -0.05060279440062755,
+        -0.03383929651415868
+      ],
+      "joint_source_ros": 1794447871.975418,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "min_hard_gap_m": 0.3572165497456684,
+      "base_min_hard_gap_m": 0.3572165497456684,
+      "arm_min_hard_gap_m": 0.3630843500640003,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            -0.05126836338812334,
+            0.009373396292853386,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.44471735759577236,
+          "nearest_occupied_center_m": 0.9756748878523692,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.005163523568772865,
+            -0.06007598922697252,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.48716861850953774,
+          "nearest_occupied_center_m": 0.9923404327960952,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 0,
+          "xyz": [
+            -0.5026514391413835,
+            -0.24550209092511255,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.512499192149896,
+          "independent_esdf_m": 0.512499192149896,
+          "hard_gap_m": 0.3572165497456684,
+          "nearest_occupied_center_m": 0.5112994917144658,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 55,
+          "xyz": [
+            -0.5085827007750697,
+            -0.04290995189590125,
+            0.9942859091256071
+          ],
+          "physical_radius": 0.034,
+          "hard_radius": 0.034,
+          "esdf_m": 0.39708435006400034,
+          "independent_esdf_m": 0.39708435006400045,
+          "hard_gap_m": 0.3630843500640003,
+          "nearest_occupied_center_m": 0.3956133910559611,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 61,
+          "xyz": [
+            -0.507974617258135,
+            -0.04292996312836729,
+            0.9947244681148062
+          ],
+          "physical_radius": 0.034,
+          "hard_radius": 0.034,
+          "esdf_m": 0.39772402528582745,
+          "independent_esdf_m": 0.39772402528582745,
+          "hard_gap_m": 0.3637240252858275,
+          "nearest_occupied_center_m": 0.396246927647369,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 50,
+          "xyz": [
+            -0.49573461492350035,
+            -0.04333276558112599,
+            0.9764521160759418
+          ],
+          "physical_radius": 0.034,
+          "hard_radius": 0.034,
+          "esdf_m": 0.40558045741854803,
+          "independent_esdf_m": 0.40558045741854803,
+          "hard_gap_m": 0.37158045741854806,
+          "nearest_occupied_center_m": 0.40475401565078045,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 56,
+          "xyz": [
+            -0.49572526406043516,
+            -0.04333307330578772,
+            0.9764391366050178
+          ],
+          "physical_radius": 0.034,
+          "hard_radius": 0.034,
+          "esdf_m": 0.4055867135167557,
+          "independent_esdf_m": 0.4055867135167557,
+          "hard_gap_m": 0.37158671351675565,
+          "nearest_occupied_center_m": 0.4047610278692788,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447872.0042007
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447873.0320492,
+      "fusion_ros": 1794447872.8933764,
+      "seq": 887,
+      "epoch": 2,
+      "revision": 886,
+      "export_version": 933,
+      "raw_occupied": 6619,
+      "inflated_occupied": 13343,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447873.0142531,
+      "odom_age_ms": 17.796039581298828,
+      "base_pose_xyyaw": [
+        -0.2593848797831738,
+        -0.0582410314345346,
+        -0.15605944991344894
+      ],
+      "joint_source_ros": 1794447873.0254238,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9754645189396308,
+        0.0
+      ],
+      "min_hard_gap_m": 0.3549353450797197,
+      "base_min_hard_gap_m": 0.3549353450797197,
+      "arm_min_hard_gap_m": 0.3863786273850438,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            -0.030331532770583883,
+            -0.025949247547268628,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.44471735759577236,
+          "nearest_occupied_center_m": 0.9831540899665855,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.01721239735010277,
+            -0.10176052456643364,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.48716861850953763,
+          "nearest_occupied_center_m": 0.9934539182126574,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 0,
+          "xyz": [
+            -0.5094209006065804,
+            -0.2238926048179137,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.5102179874839473,
+          "independent_esdf_m": 0.5102179874839473,
+          "hard_gap_m": 0.3549353450797197,
+          "nearest_occupied_center_m": 0.5095661282247868,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 55,
+          "xyz": [
+            -0.4906086744012975,
+            -0.022088603851134612,
+            0.9942859091256071
+          ],
+          "physical_radius": 0.034,
+          "hard_radius": 0.034,
+          "esdf_m": 0.4203786273850438,
+          "independent_esdf_m": 0.4203786273850438,
+          "hard_gap_m": 0.3863786273850438,
+          "nearest_occupied_center_m": 0.4194509786269243,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 61,
+          "xyz": [
+            -0.49000756662958783,
+            -0.022182600977595238,
+            0.9947244681148062
+          ],
+          "physical_radius": 0.034,
+          "hard_radius": 0.034,
+          "esdf_m": 0.42096593620037054,
+          "independent_esdf_m": 0.42096593620037054,
+          "hard_gap_m": 0.38696593620037056,
+          "nearest_occupied_center_m": 0.4200402750336406,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 50,
+          "xyz": [
+            -0.47790797779978217,
+            -0.024074652012174676,
+            0.9764521160759418
+          ],
+          "physical_radius": 0.034,
+          "hard_radius": 0.034,
+          "esdf_m": 0.42806010918324566,
+          "independent_esdf_m": 0.42806010918324566,
+          "hard_gap_m": 0.39406010918324563,
+          "nearest_occupied_center_m": 0.4279110363253048,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 56,
+          "xyz": [
+            -0.47789873420691353,
+            -0.02407609746207354,
+            0.9764391366050178
+          ],
+          "physical_radius": 0.034,
+          "hard_radius": 0.034,
+          "esdf_m": 0.4280657786068048,
+          "independent_esdf_m": 0.4280657786068048,
+          "hard_gap_m": 0.3940657786068048,
+          "nearest_occupied_center_m": 0.4279175439572657,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447873.0692842
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447874.0821495,
+      "fusion_ros": 1794447873.7985663,
+      "seq": 892,
+      "epoch": 2,
+      "revision": 891,
+      "export_version": 940,
+      "raw_occupied": 5983,
+      "inflated_occupied": 12707,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447874.0139918,
+      "odom_age_ms": 68.15767288208008,
+      "base_pose_xyyaw": [
+        -0.2027507164402531,
+        -0.057137386842622914,
+        -0.40584927140158467
+      ],
+      "joint_source_ros": 1794447874.0754316,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0009424777960769379,
+        0.5187293069852347,
+        -1.05573221123885,
+        0.0,
+        0.9416923979135405,
+        0.0
+      ],
+      "min_hard_gap_m": 0.39174448573632425,
+      "base_min_hard_gap_m": 0.39174448573632425,
+      "arm_min_hard_gap_m": 0.4748282508778553,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            0.027176361318906175,
+            -0.0824698560753162,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.44471735759577224,
+          "nearest_occupied_center_m": 1.0208768973718068,
+          "nearest_occupied_xyz": [
+            -0.9249999999999994,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.054504165887371336,
+            -0.1676811588001607,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.48716861850953763,
+          "nearest_occupied_center_m": 1.0166259151168504,
+          "nearest_occupied_xyz": [
+            -0.9249999999999994,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 0,
+          "xyz": [
+            -0.4859758393253598,
+            -0.15583888247621613,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.5470271281405519,
+          "independent_esdf_m": 0.5470271281405519,
+          "hard_gap_m": 0.39174448573632425,
+          "nearest_occupied_center_m": 0.5459731157839319,
+          "nearest_occupied_xyz": [
+            -0.9249999999999994,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 31,
+          "xyz": [
+            -0.16383756541741498,
+            -0.14515148706868405,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.7775175276519359,
+          "nearest_occupied_xyz": [
+            -0.8749999999999996,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 30,
+          "xyz": [
+            -0.16383756541741498,
+            -0.14515148706868405,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.7884092813205567,
+          "nearest_occupied_xyz": [
+            -0.9249999999999994,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 29,
+          "xyz": [
+            -0.16383756541741498,
+            -0.14515148706868405,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.7830621653146466,
+          "nearest_occupied_xyz": [
+            -0.9249999999999994,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 23,
+          "xyz": [
+            -0.2933838311904818,
+            -0.08948477733708524,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.6659435297741758,
+          "nearest_occupied_xyz": [
+            -0.8749999999999996,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447874.1249712
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447875.081531,
+      "fusion_ros": 1794447874.8978024,
+      "seq": 898,
+      "epoch": 2,
+      "revision": 897,
+      "export_version": 947,
+      "raw_occupied": 5195,
+      "inflated_occupied": 11919,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447875.013871,
+      "odom_age_ms": 67.66009330749512,
+      "base_pose_xyyaw": [
+        -0.18244937146087625,
+        -0.08195461854544261,
+        -0.5455972316854656
+      ],
+      "joint_source_ros": 1794447875.07544,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0030368728984701333,
+        0.5187293069852347,
+        -1.05573221123885,
+        0.0,
+        0.9139940226843905,
+        0.0
+      ],
+      "min_hard_gap_m": 0.40404690425258294,
+      "base_min_hard_gap_m": 0.40404690425258294,
+      "arm_min_hard_gap_m": 0.5080575672174341,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            0.04170752906940816,
+            -0.13906748074782221,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.44471735759577224,
+          "nearest_occupied_center_m": 1.0226550221339494,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.05689953486240329,
+            -0.22725465654216842,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.6000000000000001,
+          "independent_esdf_m": 0.6000000000000001,
+          "hard_gap_m": 0.48716861850953785,
+          "nearest_occupied_center_m": 1.0114501822782438,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 0,
+          "xyz": [
+            -0.47666185128626637,
+            -0.14024245765950166,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.5593295466568106,
+          "independent_esdf_m": 0.5593295466568106,
+          "hard_gap_m": 0.40404690425258294,
+          "nearest_occupied_center_m": 0.558454466241077,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 31,
+          "xyz": [
+            -0.15617537476603838,
+            -0.1745310316257137,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.7839640460470237,
+          "nearest_occupied_xyz": [
+            -0.8749999999999996,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 29,
+          "xyz": [
+            -0.15617537476603838,
+            -0.1745310316257137,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.7843499411192257,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 28,
+          "xyz": [
+            -0.15617537476603838,
+            -0.1745310316257137,
+            0.19887533315457406
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.8029645777250545,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.3249999999999995,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 23,
+          "xyz": [
+            -0.27670469864320424,
+            -0.1013620516287137,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.6791688882643918,
+          "nearest_occupied_xyz": [
+            -0.8749999999999996,
+            -0.1749999999999996,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447875.1049001
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447876.131533,
+      "fusion_ros": 1794447875.969039,
+      "seq": 904,
+      "epoch": 2,
+      "revision": 903,
+      "export_version": 954,
+      "raw_occupied": 4929,
+      "inflated_occupied": 11653,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447876.1139553,
+      "odom_age_ms": 17.577648162841797,
+      "base_pose_xyyaw": [
+        -0.13646880121958854,
+        -0.12370927529571835,
+        -0.6945557356654845
+      ],
+      "joint_source_ros": 1794447876.1254704,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0031590459461097366,
+        0.5187293069852347,
+        -1.05573221123885,
+        0.0,
+        0.8842361589378871,
+        0.0
+      ],
+      "min_hard_gap_m": 0.43166006647936744,
+      "base_min_hard_gap_m": 0.43166006647936744,
+      "arm_min_hard_gap_m": 0.5565976922759899,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            0.07672980637681284,
+            -0.21345641342974184,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.44471735759577236,
+          "nearest_occupied_center_m": 1.0449315246203086,
+          "nearest_occupied_xyz": [
+            -0.32499999999999973,
+            -1.1749999999999998,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.07866587417189388,
+            -0.30292163938983296,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.6000000000000001,
+          "independent_esdf_m": 0.6000000000000001,
+          "hard_gap_m": 0.48716861850953785,
+          "nearest_occupied_center_m": 0.9612270426467804,
+          "nearest_occupied_xyz": [
+            -0.32499999999999973,
+            -1.1749999999999998,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 33,
+          "xyz": [
+            -0.040378391944356364,
+            -0.11850667501442722,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.9092125703192406,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 23,
+          "xyz": [
+            -0.23256058514581202,
+            -0.12891352577060122,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.7160607017463166,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.17499999999999982,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 20,
+          "xyz": [
+            -0.23256058514581202,
+            -0.12891352577060122,
+            0.19887533315457406
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.7409063010197301,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 35,
+          "xyz": [
+            -0.040378391944356364,
+            -0.11850667501442722,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 0.8931266920888956,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.17499999999999982,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 31,
+          "xyz": [
+            -0.12422486151210467,
+            -0.21915979180332473,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 0.8070620348736485,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.4249999999999998,
+            0.8250000000000001
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447876.1586225
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447877.1323278,
+      "fusion_ros": 1794447876.8673894,
+      "seq": 909,
+      "epoch": 2,
+      "revision": 908,
+      "export_version": 961,
+      "raw_occupied": 4865,
+      "inflated_occupied": 11589,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447877.1141982,
+      "odom_age_ms": 18.129587173461914,
+      "base_pose_xyyaw": [
+        -0.0860833474586177,
+        -0.1593412858131377,
+        -0.7255227742263247
+      ],
+      "joint_source_ros": 1794447877.1254506,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0031590459461097366,
+        0.5187293069852347,
+        -1.05573221123885,
+        0.0,
+        0.9042899920433021,
+        0.0
+      ],
+      "min_hard_gap_m": 0.43166006647936744,
+      "base_min_hard_gap_m": 0.43166006647936744,
+      "arm_min_hard_gap_m": 0.5659999999999998,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            0.12423428518811101,
+            -0.25564646990084655,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.44471735759577236,
+          "nearest_occupied_center_m": 1.0261341731146192,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.12339939442495418,
+            -0.3451287473193998,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.48716861850953774,
+          "nearest_occupied_center_m": 0.943524740240728,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 33,
+          "xyz": [
+            0.010122075565422071,
+            -0.1571163397162454,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.950847429887689,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 31,
+          "xyz": [
+            -0.07680062542117569,
+            -0.255125137441191,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.8433832691960549,
+          "nearest_occupied_xyz": [
+            -0.8749999999999996,
+            -0.4249999999999996,
+            0.8250000000000001
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 23,
+          "xyz": [
+            -0.18229019556802714,
+            -0.16156783875038527,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.7602090895486296,
+          "nearest_occupied_xyz": [
+            -0.8749999999999996,
+            -0.17499999999999982,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 22,
+          "xyz": [
+            -0.18229019556802714,
+            -0.16156783875038527,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.7669441833531322,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 21,
+          "xyz": [
+            -0.18229019556802714,
+            -0.16156783875038527,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.7614463475873195,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447877.157467
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447878.1315622,
+      "fusion_ros": 1794447877.971104,
+      "seq": 915,
+      "epoch": 2,
+      "revision": 914,
+      "export_version": 967,
+      "raw_occupied": 4886,
+      "inflated_occupied": 11610,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447878.1130333,
+      "odom_age_ms": 18.52893829345703,
+      "base_pose_xyyaw": [
+        -0.07530567927590434,
+        -0.16765777606201296,
+        -0.7208035321535454
+      ],
+      "joint_source_ros": 1794447878.1254396,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0031590459461097366,
+        0.5187293069852347,
+        -1.05573221123885,
+        0.0,
+        0.9327214055582895,
+        0.0
+      ],
+      "min_hard_gap_m": 0.43166006647936744,
+      "base_min_hard_gap_m": 0.43166006647936744,
+      "arm_min_hard_gap_m": 0.5659999999999998,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            0.13546409714690577,
+            -0.2629693515970468,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.44471735759577236,
+          "nearest_occupied_center_m": 1.0245760456535187,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.13505150264164192,
+            -0.3524545726135451,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.48716861850953774,
+          "nearest_occupied_center_m": 0.9427189335624894,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 33,
+          "xyz": [
+            0.020888172422559526,
+            -0.16497883974652172,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.9600957357377068,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 35,
+          "xyz": [
+            0.020888172422559526,
+            -0.16497883974652172,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.9490029530300725,
+          "nearest_occupied_xyz": [
+            -0.8749999999999996,
+            -0.17499999999999982,
+            0.925
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 34,
+          "xyz": [
+            0.020888172422559526,
+            -0.16497883974652172,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.9644618509339093,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 32,
+          "xyz": [
+            0.020888172422559526,
+            -0.16497883974652172,
+            0.19887533315457406
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.9753620377732417,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 30,
+          "xyz": [
+            -0.06557103510253255,
+            -0.2633967538294154,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.8673456987225966,
+          "nearest_occupied_xyz": [
+            -0.9249999999999996,
+            -0.32499999999999973,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447878.1552567
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447879.181564,
+      "fusion_ros": 1794447879.0096033,
+      "seq": 921,
+      "epoch": 2,
+      "revision": 920,
+      "export_version": 975,
+      "raw_occupied": 4766,
+      "inflated_occupied": 11490,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447879.113987,
+      "odom_age_ms": 67.57712364196777,
+      "base_pose_xyyaw": [
+        -0.015324716361987595,
+        -0.21733622527574947,
+        -0.7123432166342475
+      ],
+      "joint_source_ros": 1794447879.1702144,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0031590459461097366,
+        0.5188340267403544,
+        -1.05573221123885,
+        0.0,
+        0.9615891513862759,
+        0.0
+      ],
+      "min_hard_gap_m": 0.43166006647936744,
+      "base_min_hard_gap_m": 0.43166006647936744,
+      "arm_min_hard_gap_m": 0.5659999999999998,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            0.19624387336030055,
+            -0.3108612322375987,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.44471735759577236,
+          "nearest_occupied_center_m": 1.012106699120674,
+          "nearest_occupied_xyz": [
+            -0.32499999999999973,
+            -1.175,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.19658835779372336,
+            -0.4003467413721644,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.48716861850953774,
+          "nearest_occupied_center_m": 0.9341481191913182,
+          "nearest_occupied_xyz": [
+            -0.32499999999999973,
+            -1.175,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 35,
+          "xyz": [
+            0.08084302835018968,
+            -0.21384356420687695,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 1.0017677193216707,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.4249999999999998,
+            0.8250000000000001
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 34,
+          "xyz": [
+            0.08084302835018968,
+            -0.21384356420687695,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 1.0168340112073428,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999996,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 28,
+          "xyz": [
+            -0.004780448277781978,
+            -0.31298941953343096,
+            0.19887533315457406
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 0.9198765317556109,
+          "nearest_occupied_xyz": [
+            -0.32499999999999973,
+            -1.175,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 22,
+          "xyz": [
+            -0.11149386485893521,
+            -0.2208305118268756,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 0.8261470629539918,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999996,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 23,
+          "xyz": [
+            -0.11149386485893521,
+            -0.2208305118268756,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 0.8185001078505406,
+          "nearest_occupied_xyz": [
+            -0.8749999999999998,
+            -0.4249999999999998,
+            0.8250000000000001
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447879.2006407
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447880.2321265,
+      "fusion_ros": 1794447879.9763744,
+      "seq": 927,
+      "epoch": 2,
+      "revision": 926,
+      "export_version": 982,
+      "raw_occupied": 4688,
+      "inflated_occupied": 11412,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447880.2138896,
+      "odom_age_ms": 18.236875534057617,
+      "base_pose_xyyaw": [
+        0.02823751723623258,
+        -0.2491021796304305,
+        -0.7223137287061541
+      ],
+      "joint_source_ros": 1794447880.2204564,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0031590459461097366,
+        0.5188340267403544,
+        -1.05573221123885,
+        0.0,
+        0.9867218926149941,
+        0.0
+      ],
+      "min_hard_gap_m": 0.43166006647936744,
+      "base_min_hard_gap_m": 0.43166006647936744,
+      "arm_min_hard_gap_m": 0.5659999999999998,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            0.2388631141503622,
+            -0.3447319501459892,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.44471735759577224,
+          "nearest_occupied_center_m": 1.0065861269891925,
+          "nearest_occupied_xyz": [
+            -0.32499999999999973,
+            -1.175,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.2383153798946795,
+            -0.4342164460197575,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.6000000000000001,
+          "independent_esdf_m": 0.6000000000000001,
+          "hard_gap_m": 0.48716861850953785,
+          "nearest_occupied_center_m": 0.9309001630537432,
+          "nearest_occupied_xyz": [
+            -0.32499999999999973,
+            -1.175,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 26,
+          "xyz": [
+            0.018646048861327938,
+            -0.1533502212233999,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.9642649882344351,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999996,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 30,
+          "xyz": [
+            0.03782756568952029,
+            -0.34485574944269876,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.8928190676583285,
+          "nearest_occupied_xyz": [
+            -0.2749999999999997,
+            -1.175,
+            0.5750000000000001
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 31,
+          "xyz": [
+            0.03782756568952029,
+            -0.34485574944269876,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.8879070064884135,
+          "nearest_occupied_xyz": [
+            -0.2749999999999997,
+            -1.175,
+            0.5750000000000001
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 33,
+          "xyz": [
+            0.12443530495921548,
+            -0.2465685179378523,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 1.0315581702054044,
+          "nearest_occupied_xyz": [
+            -0.32499999999999973,
+            -1.175,
+            0.325
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 25,
+          "xyz": [
+            0.018646048861327938,
+            -0.1533502212233999,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 0.9598979776047147,
+          "nearest_occupied_xyz": [
+            -0.9249999999999998,
+            -0.32499999999999996,
+            0.375
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447880.2678652
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447881.2816935,
+      "fusion_ros": 1794447881.1199546,
+      "seq": 934,
+      "epoch": 2,
+      "revision": 933,
+      "export_version": 991,
+      "raw_occupied": 4456,
+      "inflated_occupied": 11180,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447881.213143,
+      "odom_age_ms": 68.55034828186035,
+      "base_pose_xyyaw": [
+        0.10691291455742755,
+        -0.3215756002499254,
+        -0.7813181625370279
+      ],
+      "joint_source_ros": 1794447881.2655,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0031590459461097366,
+        0.5188340267403544,
+        -1.05573221123885,
+        0.0,
+        1.0116975542110331,
+        0.0
+      ],
+      "min_hard_gap_m": 0.43166006647936744,
+      "base_min_hard_gap_m": 0.43166006647936744,
+      "arm_min_hard_gap_m": 0.5659999999999998,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            0.31153266197422924,
+            -0.42945958447082866,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.44471735759577236,
+          "nearest_occupied_center_m": 0.9833276798131855,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.3057089620977522,
+            -0.5187560543581989,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.48716861850953763,
+          "nearest_occupied_center_m": 0.9104617144954212,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 24,
+          "xyz": [
+            0.10298465015095715,
+            -0.22542466399280214,
+            0.19887533315457406
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 1.0418417399256283,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 22,
+          "xyz": [
+            0.01073161265371285,
+            -0.31843357459187766,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.9085559534733408,
+          "nearest_occupied_xyz": [
+            -0.2749999999999997,
+            -1.1749999999999996,
+            0.5750000000000001
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 33,
+          "xyz": [
+            0.20309270398566054,
+            -0.3247191507758872,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 1.0009967906291142,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.325
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 23,
+          "xyz": [
+            0.01073161265371285,
+            -0.31843357459187766,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 0.9037294314056503,
+          "nearest_occupied_xyz": [
+            -0.2749999999999997,
+            -1.1749999999999996,
+            0.5750000000000001
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 21,
+          "xyz": [
+            0.01073161265371285,
+            -0.31843357459187766,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 0.9200852705924235,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.325
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447881.2992346
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447882.3315837,
+      "fusion_ros": 1794447882.0049024,
+      "seq": 939,
+      "epoch": 2,
+      "revision": 938,
+      "export_version": 996,
+      "raw_occupied": 4476,
+      "inflated_occupied": 11200,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447882.3138938,
+      "odom_age_ms": 17.689943313598633,
+      "base_pose_xyyaw": [
+        0.12041077105933282,
+        -0.340902724569795,
+        -0.8870613861744532
+      ],
+      "joint_source_ros": 1794447882.3204632,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0031590459461097366,
+        0.5188340267403544,
+        -1.05573221123885,
+        0.0,
+        1.0118022739661527,
+        0.0
+      ],
+      "min_hard_gap_m": 0.43166006647936744,
+      "base_min_hard_gap_m": 0.43166006647936744,
+      "arm_min_hard_gap_m": 0.5659999999999998,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            0.3125008408182502,
+            -0.469780962392579,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.44471735759577224,
+          "nearest_occupied_center_m": 0.9537663225273201,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.2972847605029317,
+            -0.5579639874849123,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.48716861850953774,
+          "nearest_occupied_center_m": 0.8766198642483009,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 28,
+          "xyz": [
+            0.11416705605522118,
+            -0.4369325698475875,
+            0.19887533315457406
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.859174758771018,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 30,
+          "xyz": [
+            0.11416705605522118,
+            -0.4369325698475875,
+            0.4743753261584788
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.8404283752683424,
+          "nearest_occupied_xyz": [
+            -0.2749999999999997,
+            -1.1749999999999996,
+            0.5750000000000001
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 31,
+          "xyz": [
+            0.11416705605522118,
+            -0.4369325698475875,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.8352082486141491,
+          "nearest_occupied_xyz": [
+            -0.2749999999999997,
+            -1.1749999999999996,
+            0.5750000000000001
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 33,
+          "xyz": [
+            0.21572154794168297,
+            -0.3541801344998749,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 0.9829853469394724,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.325
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 24,
+          "xyz": [
+            0.12665282109193565,
+            -0.24487423600645772,
+            0.19887533315457406
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.43166006647936755,
+          "nearest_occupied_center_m": 1.0342602376472352,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999996,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447882.353706
+    },
+    {
+      "label": "navigation_diagnostic",
+      "acquisition_ros": 1794447883.3823366,
+      "fusion_ros": 1794447883.0655677,
+      "seq": 945,
+      "epoch": 2,
+      "revision": 944,
+      "export_version": 1003,
+      "raw_occupied": 4550,
+      "inflated_occupied": 11274,
+      "comparison_voxels": 188160,
+      "esdf_max_error_m": 1.1102230246251565e-16,
+      "esdf_mismatches_gt_1e8": 0,
+      "odom_source_ros": 1794447883.3140273,
+      "odom_age_ms": 68.30930709838867,
+      "base_pose_xyyaw": [
+        0.1475327050693674,
+        -0.36615809615658557,
+        -1.0474029976180148
+      ],
+      "joint_source_ros": 1794447883.3703485,
+      "joint_age_ms": 0.0,
+      "model_joint_q": [
+        0.0031590459461097366,
+        0.5187816668627946,
+        -1.05573221123885,
+        0.0,
+        1.0090446537480018,
+        0.0
+      ],
+      "min_hard_gap_m": 0.43166006647936744,
+      "base_min_hard_gap_m": 0.43166006647936744,
+      "arm_min_hard_gap_m": 0.5659999999999997,
+      "focus_spheres": [
+        {
+          "index_zero_based": 14,
+          "xyz": [
+            0.31658268478051527,
+            -0.5240514128104337,
+            0.09800009779632092
+          ],
+          "physical_radius": 0.10528264240422765,
+          "hard_radius": 0.15528264240422765,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.44471735759577236,
+          "nearest_occupied_center_m": 0.9172193791638082,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999998,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 46,
+          "xyz": [
+            0.28748288400552374,
+            -0.6086739665975484,
+            0.15285
+          ],
+          "physical_radius": 0.06283138149046223,
+          "hard_radius": 0.11283138149046223,
+          "esdf_m": 0.6,
+          "independent_esdf_m": 0.6,
+          "hard_gap_m": 0.48716861850953774,
+          "nearest_occupied_center_m": 0.8344765316107324,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999998,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "worst_spheres": [
+        {
+          "index_zero_based": 29,
+          "xyz": [
+            0.1260373917168238,
+            -0.45995930438444,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.8454898422824024,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999998,
+            0.325
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 24,
+          "xyz": [
+            0.16902615820047262,
+            -0.272357961418572,
+            0.19887533315457406
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 1.0292689280911942,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999998,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 25,
+          "xyz": [
+            0.16902615820047262,
+            -0.272357961418572,
+            0.3366253296565265
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 1.0290576480889575,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999998,
+            0.325
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 32,
+          "xyz": [
+            0.23950110083873227,
+            -0.3944820786445407,
+            0.19887533315457406
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.963555784549306,
+          "nearest_occupied_xyz": [
+            -0.3249999999999995,
+            -1.1749999999999998,
+            0.17500000000000002
+          ],
+          "nearest_occupied_code": 3
+        },
+        {
+          "index_zero_based": 31,
+          "xyz": [
+            0.1260373917168238,
+            -0.45995930438444,
+            0.6121253226604313
+          ],
+          "physical_radius": 0.11833993352063243,
+          "hard_radius": 0.16833993352063242,
+          "esdf_m": 0.5999999999999999,
+          "independent_esdf_m": 0.5999999999999999,
+          "hard_gap_m": 0.43166006647936744,
+          "nearest_occupied_center_m": 0.8206658732541872,
+          "nearest_occupied_xyz": [
+            -0.2749999999999997,
+            -1.1749999999999998,
+            0.5750000000000001
+          ],
+          "nearest_occupied_code": 3
+        }
+      ],
+      "bag_receive_ros": 1794447883.4017718
+    }
+  ]
+}

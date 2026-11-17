@@ -1,0 +1,74 @@
+{
+  "state_source": "/home/l/remani_ws/experiments/online_remani_validation/results/standby_candidate_followup_20261106/servo_empty/mppi_status.jsonl",
+  "state_status_elapsed_s": 4.0,
+  "state_original_plan_time": 1010.12,
+  "snapshot_source": "/home/l/remani_ws/experiments/online_remani_validation/results/standby_candidate_followup_20261106/audit_zero_uncertainty/first_dynamic_snapshot.npy",
+  "time_alignment": "Keep recorded snapshot stamps; set query now to snapshot acquisition + 0.05 s. State is time-shifted without changing values.",
+  "query_now": 1004.915,
+  "dynamic_points": 38,
+  "horizon": 8,
+  "random_samples": 4,
+  "dt": 0.1,
+  "arm_position_servo": true,
+  "warmup": {
+    "plan_ms": 90.33897599874763,
+    "check_ms": 4.678600998886395,
+    "total_ms": 95.01757699763402,
+    "selection": "structured",
+    "structured_candidates": 21,
+    "checked_first_step": "passed"
+  },
+  "profiled": {
+    "plan_ms": 101.97379600140266,
+    "check_ms": 5.1616900018416345,
+    "total_ms": 107.1354860032443,
+    "selection": "structured",
+    "structured_candidates": 22,
+    "checked_first_step": "passed"
+  },
+  "scope": "One warmup + one cProfile run. No ROS nodes. cProfile overhead included in profiled timings; warmup and profiled candidate histories differ by the previous-plan candidate."
+}
+
+Top 12 cumulative seconds
+         11067 function calls (10664 primitive calls) in 0.107 seconds
+
+   Ordered by: cumulative time
+   List reduced from 236 to 12 due to restriction <12>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.107    0.107 <stdin>:19(run_once)
+        1    0.001    0.001    0.102    0.102 standby_whole_body_mppi.py:216(plan)
+        3    0.003    0.001    0.092    0.031 standby_whole_body_mppi.py:136(evaluate)
+        4    0.005    0.001    0.030    0.007 active_arm_mppi.py:62(query)
+       96    0.026    0.000    0.029    0.000 active_arm_mppi.py:140(_advance_position_arm)
+       62    0.000    0.000    0.028    0.000 active_arm_mppi.py:158(advance)
+        4    0.018    0.005    0.019    0.005 {method 'query' of 'scipy.spatial.ckdtree.cKDTree' objects}
+ 1138/735    0.003    0.000    0.018    0.000 {built-in method numpy.core._multiarray_umath.implement_array_function}
+       34    0.000    0.000    0.016    0.000 active_arm_mppi.py:173(advance_position_brake)
+       96    0.010    0.000    0.014    0.000 active_arm_mppi.py:117(_advance_base)
+        3    0.000    0.000    0.013    0.004 active_arm_mppi.py:256(configuration_gap)
+        4    0.003    0.001    0.013    0.003 active_arm_model.py:377(configuration_gaps_batch)
+
+
+
+Top 12 self seconds
+         11067 function calls (10664 primitive calls) in 0.107 seconds
+
+   Ordered by: internal time
+   List reduced from 236 to 12 due to restriction <12>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       96    0.026    0.000    0.029    0.000 active_arm_mppi.py:140(_advance_position_arm)
+        4    0.018    0.005    0.019    0.005 {method 'query' of 'scipy.spatial.ckdtree.cKDTree' objects}
+       96    0.010    0.000    0.014    0.000 active_arm_mppi.py:117(_advance_base)
+      468    0.008    0.000    0.008    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+        4    0.005    0.001    0.030    0.007 active_arm_mppi.py:62(query)
+        4    0.004    0.001    0.004    0.001 {built-in method scipy.ndimage._nd_image.geometric_transform}
+        4    0.003    0.001    0.013    0.003 active_arm_model.py:377(configuration_gaps_batch)
+        8    0.003    0.000    0.004    0.000 active_arm_model.py:327(native_transforms)
+ 1138/735    0.003    0.000    0.018    0.000 {built-in method numpy.core._multiarray_umath.implement_array_function}
+        3    0.003    0.001    0.092    0.031 standby_whole_body_mppi.py:136(evaluate)
+        8    0.002    0.000    0.002    0.000 {built-in method numpy.core._multiarray_umath.c_einsum}
+       10    0.002    0.000    0.005    0.000 linalg.py:2325(norm)
+
+

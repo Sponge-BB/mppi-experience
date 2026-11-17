@@ -1,0 +1,92 @@
+{
+  "group": "native",
+  "seed": 11,
+  "scene": "navigation_arm_enter_blind",
+  "source": "current main project; native control means MPPI disabled, not untouched upstream",
+  "physical_base_locked": false,
+  "controller_profile": {
+    "rate_hz": 10.0,
+    "deadline_s": 0.095,
+    "horizon": 8,
+    "random_samples": 4,
+    "base_limits": {
+      "vmax": 0.05,
+      "wmax": 0.15,
+      "accel": 0.1,
+      "angular_accel": 0.3,
+      "track": 0.37,
+      "wheel_v": 0.2296,
+      "wheel_a": 0.2975
+    },
+    "arm_velocity": [
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "arm_acceleration": [
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35
+    ],
+    "postures": [
+      [
+        0.0,
+        2.4434609528,
+        -1.0471975512,
+        0.0,
+        0.2617993878,
+        0.0
+      ]
+    ],
+    "standby": {}
+  },
+  "duration_s": 16.0,
+  "navigation_goal": [
+    0.45,
+    0.0,
+    0.0
+  ],
+  "uncertainty_scale": 1.0,
+  "arm_execution_model": "position_servo",
+  "sensor_model": "mid360",
+  "sensor_geometry": {
+    "base_link_ground_z_m": 0.115,
+    "base_to_lidar_xyz_m": [
+      0.28,
+      0.0,
+      0.002
+    ],
+    "lidar_ground_z_m": 0.117,
+    "base_to_lidar_rpy_rad": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "source_parameters": [
+      "/fastlio_to_odom/base_z",
+      "/remani_planner_node/grid_map/lidar_offset_{x,y,z}",
+      "/fastlio_to_odom/lidar_offset_{x,y,z}"
+    ],
+    "elevation_deg": [
+      -7.0,
+      52.0
+    ],
+    "minimum_range_m": 0.1,
+    "cylinder_occlusion": true,
+    "robot_occlusion": false,
+    "static_map_is_complete_known_prior": true,
+    "physical_calibration_performed": false,
+    "limitations": "geometric envelope only; no scan pattern, reflectivity or range noise; ideal emits full sampled surfaces with no visibility filtering"
+  },
+  "command_topics": [
+    "/sim/cmd_vel",
+    "/sim/joint_ctrl_single"
+  ],
+  "master": "http://127.0.0.1:11466"
+}

@@ -1,0 +1,121 @@
+--- a/src/mm_remani_planner/plan_env/src/esdf_worker.cpp
++++ b/src/mm_remani_planner/plan_env/src/esdf_worker.cpp
+@@ -990,37 +990,89 @@
+     return false;
+   finish_phase(result->positive_ms[0]);
+ 
+-  if (!parallelFor(
+-          static_cast<std::size_t>(nx) * static_cast<std::size_t>(nz),
+-          lineThreshold(ny),
+-          [&](std::size_t line) {
+-            const int x = static_cast<int>(line / static_cast<std::size_t>(nz));
+-            const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
+-            fillDistanceTransform(
+-                ny, job.min_index.y(),
+-                [&](int y) { return tmp_buffer1_[address(x, y, z)]; },
+-                [&](int y, double value) {
+-                  tmp_buffer2_[address(x, y, z)] = value;
+-                });
+-          }))
+-    return false;
++  // Keep whole-axis lines contiguous between stages. Every transpose uses
++  // bounded 32x32 stack scratch and reuses the two existing full-size buffers.
++  // All copies and transforms remain inside the recorded positive phase time.
++  const int tile_size = 32;
++  const int tx = (nx + tile_size - 1) / tile_size;
++  const int ty = (ny + tile_size - 1) / tile_size;
++  const int tz = (nz + tile_size - 1) / tile_size;
++  const int tile_threshold = lineThreshold(tile_size * tile_size);
++  const auto y_address = [ny, nz](int x, int y, int z) {
++    return (static_cast<std::size_t>(x) * nz + z) * ny + y;
++  };
++  const auto x_address = [nx, ny](int x, int y, int z) {
++    return (static_cast<std::size_t>(z) * ny + y) * nx + x;
++  };
++
++  // XYZ -> XZY: input z is contiguous, output y is contiguous.
++  if (!parallelFor(static_cast<std::size_t>(nx) * ty * tz, tile_threshold,
++      [&](std::size_t task) {
++        double tile[tile_size * tile_size];
++        const int x = static_cast<int>(task / (ty * tz));
++        const int y0 = static_cast<int>((task / tz) % ty) * tile_size;
++        const int z0 = static_cast<int>(task % tz) * tile_size;
++        const int sy = std::min(tile_size, ny - y0);
++        const int sz = std::min(tile_size, nz - z0);
++        for (int y = 0; y < sy; ++y)
++          for (int z = 0; z < sz; ++z)
++            tile[y * tile_size + z] = tmp_buffer1_[address(x, y0+y, z0+z)];
++        for (int z = 0; z < sz; ++z)
++          for (int y = 0; y < sy; ++y)
++            tmp_buffer2_[y_address(x, y0+y, z0+z)] = tile[y * tile_size + z];
++      })) return false;
++  if (!parallelFor(static_cast<std::size_t>(nx) * nz, lineThreshold(ny),
++      [&](std::size_t line) {
++        const std::size_t begin = line * ny;
++        // The helper gathers the whole line before writing, so in-place
++        // evaluation cannot destroy a source needed by this or another line.
++        fillDistanceTransform(ny, job.min_index.y(),
++            [&](int y) { return tmp_buffer2_[begin+y]; },
++            [&](int y, double value) { tmp_buffer2_[begin+y] = value; });
++      })) return false;
+   finish_phase(result->positive_ms[1]);
+ 
+-  if (!parallelFor(
+-          static_cast<std::size_t>(ny) * static_cast<std::size_t>(nz),
+-          lineThreshold(nx),
+-          [&](std::size_t line) {
+-            const int y = static_cast<int>(line / static_cast<std::size_t>(nz));
+-            const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
+-            fillDistanceTransform(
+-                nx, job.min_index.x(),
+-                [&](int x) { return tmp_buffer2_[address(x, y, z)]; },
+-                [&](int x, double value) {
+-                  result->distance_all[address(x, y, z)] =
+-                      job.resolution * std::sqrt(value);
+-                });
+-          }))
+-    return false;
++  // XZY -> ZYX: input y is contiguous, output x is contiguous.
++  if (!parallelFor(static_cast<std::size_t>(nz) * tx * ty, tile_threshold,
++      [&](std::size_t task) {
++        double tile[tile_size * tile_size];
++        const int z = static_cast<int>(task / (tx * ty));
++        const int x0 = static_cast<int>((task / ty) % tx) * tile_size;
++        const int y0 = static_cast<int>(task % ty) * tile_size;
++        const int sx = std::min(tile_size, nx - x0);
++        const int sy = std::min(tile_size, ny - y0);
++        for (int x = 0; x < sx; ++x)
++          for (int y = 0; y < sy; ++y)
++            tile[x * tile_size + y] = tmp_buffer2_[y_address(x0+x, y0+y, z)];
++        for (int y = 0; y < sy; ++y)
++          for (int x = 0; x < sx; ++x)
++            tmp_buffer1_[x_address(x0+x, y0+y, z)] = tile[x * tile_size + y];
++      })) return false;
++  if (!parallelFor(static_cast<std::size_t>(ny) * nz, lineThreshold(nx),
++      [&](std::size_t line) {
++        const std::size_t begin = line * nx;
++        fillDistanceTransform(nx, job.min_index.x(),
++            [&](int x) { return tmp_buffer1_[begin+x]; },
++            [&](int x, double value) { tmp_buffer1_[begin+x] = value; });
++      })) return false;
++
++  // ZYX -> XYZ, fusing the unchanged final square-root/scale operation.
++  if (!parallelFor(static_cast<std::size_t>(ny) * tz * tx, tile_threshold,
++      [&](std::size_t task) {
++        double tile[tile_size * tile_size];
++        const int y = static_cast<int>(task / (tz * tx));
++        const int z0 = static_cast<int>((task / tx) % tz) * tile_size;
++        const int x0 = static_cast<int>(task % tx) * tile_size;
++        const int sz = std::min(tile_size, nz - z0);
++        const int sx = std::min(tile_size, nx - x0);
++        for (int z = 0; z < sz; ++z)
++          for (int x = 0; x < sx; ++x)
++            tile[z * tile_size + x] = tmp_buffer1_[x_address(x0+x, y, z0+z)];
++        for (int x = 0; x < sx; ++x)
++          for (int z = 0; z < sz; ++z)
++            result->distance_all[address(x0+x, y, z0+z)] =
++                job.resolution * std::sqrt(tile[z * tile_size + x]);
++      })) return false;
+   finish_phase(result->positive_ms[2]);
+ 
+   // All integer offsets within radius two, ordered by squared distance.

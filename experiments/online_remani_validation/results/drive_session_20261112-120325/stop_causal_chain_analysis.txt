@@ -1,0 +1,82 @@
+本轮55次非零→零的因果链核对（只读）
+活动窗口37.27秒：非零指令18.22秒、期间零指令19.03秒；之后连续停止193.41秒。
+分类是零速区间内的证据，不等于每条初始零指令均能唯一归因。没有源时间/cycle id且状态存在延迟，逐行写明边界。
+区间首个相关证据：地图/输入新鲜度46段；机械臂执行资格等待5段；MPPI无解3段；原生碰撞停止/恢复1段。
+已记录6条主动交付零速：首次规划前3条，恢复限速为0时3条；均发生在已经零速的区间内，未构成这55次切换起点。
+最重要链路：4次tracking_fault=true实际callerid都是/whole_body_mppi，FSM统一当成轨迹跟踪故障，发限速0→EMERGENCY_STOP→ABORT→重规划。不能根据FSM文案就说底盘偏离轨迹。
+3次无解：外部间隙均为正，自碰/地面配置最小间隙+.003m。q4=-1.1349rad/s导致尾段刹不住；q4/q5=.4008/.5019导致预测越界；q4=-1.315导致两者同时失败。这里只证明估计进入预测后的拒绝机制，不证明机械臂真实以该速度运动。
+源码确定漏洞：result=None在deadline之前直接抛无解。本轮cycle_ms215.55/105.73/152.94包含reject额外耗时，不能冒充精确solve耗时，不能仅据此断言三次求解分支时都已超95ms。
+12:08:09交付复核失败的具体外部碰撞/自碰/地面/限位子原因未记录；不能根据先前nominal可行把复核拒绝直接判假。
+驱动健康包1770条：未录到enabled=false/feedback_valid=false/stop_latched=true；执行资格等待不能直接称机械臂失能。
+最终恢复候选在相对0.05s违反左轮速度/加速度约束，重试计数耗尽。FSM源12:08:20.063709明确清除目标并返回WAIT_TARGET；不是到达。
+逐次零速区间：
+#01 12:07:40.759 map_or_input_freshness_rejection statusΔ=3.4ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#02 12:07:40.946 map_or_input_freshness_rejection statusΔ=14.4ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#03 12:07:41.672 map_or_input_freshness_rejection statusΔ=77.0ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#04 12:07:42.089 map_or_input_freshness_rejection statusΔ=106.1ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#05 12:07:42.660 map_or_input_freshness_rejection statusΔ=38.4ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#06 12:07:42.862 map_or_input_freshness_rejection statusΔ=35.2ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#07 12:07:43.059 map_or_input_freshness_rejection statusΔ=56.1ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#08 12:07:43.995 map_or_input_freshness_rejection statusΔ=13.6ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#09 12:07:44.139 map_or_input_freshness_rejection statusΔ=16.5ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#10 12:07:44.354 map_or_input_freshness_rejection statusΔ=-1.2ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#11 12:07:44.541 map_or_input_freshness_rejection statusΔ=51.1ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#12 12:07:44.941 map_or_input_freshness_rejection statusΔ=132.6ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#13 12:07:45.586 map_or_input_freshness_rejection statusΔ=267.7ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#14 12:07:46.172 map_or_input_freshness_rejection statusΔ=144.7ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#15 12:07:46.954 map_or_input_freshness_rejection statusΔ=137.6ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#16 12:07:47.757 map_or_input_freshness_rejection statusΔ=105.0ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#17 12:07:48.395 map_or_input_freshness_rejection statusΔ=53.3ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#18 12:07:49.081 map_or_input_freshness_rejection statusΔ=80.4ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#19 12:07:49.255 map_or_input_freshness_rejection statusΔ=39.8ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#20 12:07:49.454 map_or_input_freshness_rejection statusΔ=210.3ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#21 12:07:50.608 map_or_input_freshness_rejection statusΔ=154.0ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#22 12:07:50.880 arm_execution_qualification_wait statusΔ=187.3ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#23 12:07:52.393 map_or_input_freshness_rejection statusΔ=31.4ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#24 12:07:53.188 native_collision_stop_recovery statusΔ=171.9ms；native collision event/ABORT follows onset; exact zero publisher branch not timestamped
+#25 12:07:54.688 map_or_input_freshness_rejection statusΔ=102.7ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#26 12:07:54.860 map_or_input_freshness_rejection statusΔ=64.5ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#27 12:07:55.075 map_or_input_freshness_rejection statusΔ=0.3ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#28 12:07:55.244 map_or_input_freshness_rejection statusΔ=50.3ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#29 12:07:55.748 map_or_input_freshness_rejection statusΔ=66.4ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#30 12:07:56.440 map_or_input_freshness_rejection statusΔ=104.7ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#31 12:07:56.767 arm_execution_qualification_wait statusΔ=-0.0ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#32 12:07:56.941 map_or_input_freshness_rejection statusΔ=35.0ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#33 12:07:57.739 map_or_input_freshness_rejection statusΔ=133.9ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#34 12:07:58.945 map_or_input_freshness_rejection statusΔ=15.7ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#35 12:07:59.944 map_or_input_freshness_rejection statusΔ=33.7ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#36 12:08:00.659 map_or_input_freshness_rejection statusΔ=8.5ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#37 12:08:01.776 map_or_input_freshness_rejection statusΔ=35.4ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#38 12:08:01.984 map_or_input_freshness_rejection statusΔ=201.7ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#39 12:08:02.230 arm_execution_qualification_wait statusΔ=39.2ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#40 12:08:03.031 map_or_input_freshness_rejection statusΔ=0.5ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#41 12:08:03.155 map_or_input_freshness_rejection statusΔ=8.2ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#42 12:08:03.653 map_or_input_freshness_rejection statusΔ=81.9ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#43 12:08:04.954 map_or_input_freshness_rejection statusΔ=142.8ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#44 12:08:05.254 arm_execution_qualification_wait statusΔ=-0.7ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#45 12:08:05.446 map_or_input_freshness_rejection statusΔ=37.1ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#46 12:08:05.769 map_or_input_freshness_rejection statusΔ=12.7ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#47 12:08:06.176 map_or_input_freshness_rejection statusΔ=51.8ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#48 12:08:06.557 map_or_input_freshness_rejection statusΔ=75.8ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#49 12:08:06.954 whole_body_no_feasible_rejection statusΔ=27.7ms；same_publisher_fault_within_5ms; status identifies rejection, receipt delayed
+#50 12:08:09.072 map_or_input_freshness_rejection statusΔ=73.5ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#51 12:08:12.051 map_or_input_freshness_rejection statusΔ=183.7ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#52 12:08:12.773 map_or_input_freshness_rejection statusΔ=29.0ms；status_receipt_within_30ms; consistent with reject->zero code; no cycle id
+#53 12:08:13.302 whole_body_no_feasible_rejection statusΔ=129.5ms；same_publisher_fault_within_5ms; status identifies rejection, receipt delayed
+#54 12:08:15.996 arm_execution_qualification_wait statusΔ=493.8ms；episode-level association only; onset uniquely unresolved due delayed/missing source-stamped status
+#55 12:08:17.200 whole_body_no_feasible_rejection statusΔ=169.0ms；same_publisher_fault_within_5ms; status identifies rejection, receipt delayed
+ABORT链路：
+12:07:53.212 Native safety collision event (latched ESDF seq3356, adjacent hard car collision type0 gap0.004m); no tracking_fault=true recorded around this abort. Exact scan geometry/source point not determined here.
+12:08:06.962 WholeBody MPPI publisher sent tracking_fault=true; FSM interpreted undifferentiated bool as trajectory tracking fault and entered emergency stop/replan.
+12:08:09.198 WholeBody MPPI publisher sent tracking_fault=true; FSM interpreted undifferentiated bool as trajectory tracking fault and entered emergency stop/replan.
+12:08:13.306 WholeBody MPPI publisher sent tracking_fault=true; FSM interpreted undifferentiated bool as trajectory tracking fault and entered emergency stop/replan.
+12:08:17.209 WholeBody MPPI publisher sent tracking_fault=true; FSM interpreted undifferentiated bool as trajectory tracking fault and entered emergency stop/replan.
+最小修复顺序：
+1. Verify actual deployed source/version, then repair deadline precedence before no-feasible fault escalation and current-time checks under locks. Add only regression of these control branches. The recorded code still checks no-feasible before deadline and uses old cycle time for capture/qualification. Do not assume previously reviewed fixes remain deployed; do not replace entire version blindly.
+2. Fix and validate source-timed arm velocity estimation/interpretation before letting isolated estimates invalidate all base candidates. Distinguish arm estimate/command-check failure from base reference spatial failure when deciding recovery. Three rejected candidate sets have positive external and configuration gaps. q4/q5 speed samples cause stopping/bounds infeasibility. Current undifferentiated tracking_fault bool aborts entire navigation. Do not simply zero/clamp real velocity or bypass collision/braking checks.
+3. Reduce map processing/delivery age using measured pipeline bottlenecks, retain source deadlines and latest-state collision recheck. 46 zero episodes contain map/input freshness rejection evidence. These repeatedly stop base even without a navigation abort. Extending validity blindly would hide stale perception.
+4. Replay final recovery initialization and its first0.05s wheel constraints; correct boundary/gear/near-goal initialization before increasing retry count. Explicitly report retry exhaustion as failed/waiting goal rather than arrived. Final persistent standstill follows bounded retry exhaustion, not a continuing MPPI optimization or successful arrival.
+5. Independently inspect first native base-hard-collision event against recorded map/geometry. First ABORT has no tracking_fault and carries a separate native collision event. Joint-velocity repairs alone cannot explain that abort.
+
+根代理受控离线复现已证明截止分支错误：同样120ms耗时、95ms期限，返回无解会发tracking_fault=true；返回可行则只按planning_deadline本地重试。50ms真正无解仍发fault。见deadline_branch_reproduction.json；这不替代本轮未记录的真实solve耗时。
+#50零速区间先出现地图过期拒绝，之后12:08:09.189才由交付复核失败升级tracking_fault和ABORT；它不是第56次非零→零。#24原生碰撞事件确认发生于区间内，起始零指令比已记录限速0/ABORT早约21/24ms，不能唯一证明起始脉冲由该事件生成。

@@ -1,0 +1,232 @@
+{
+  "schema": "cache_protocol_audit_v1",
+  "real_first_error": {
+    "bag_time": 1794830579.7442648,
+    "cycle_source": 1794830579.7247643,
+    "last_successful_snapshot_callback": {
+      "enter": 1794830579.6122918,
+      "adopted": 1794830579.6173084,
+      "read_lock_wait_ms": 0.004,
+      "decode_ms": 4.93,
+      "write_lock_wait_ms": 0.007,
+      "wire_seq": 4116.0
+    },
+    "snapshot_absent_at_capture": true
+  },
+  "observer_wire_sequence": [
+    {
+      "observer_receive": 1794830579.60425,
+      "seq": 4116.0,
+      "field": 1174.0,
+      "full": 1.0,
+      "origin": [
+        -2.05,
+        -2.3499999999999996,
+        0.0
+      ],
+      "valid": 1.0
+    },
+    {
+      "observer_receive": 1794830579.6647644,
+      "seq": 4117.0,
+      "field": 1175.0,
+      "full": 1.0,
+      "origin": [
+        -2.05,
+        -2.4,
+        0.0
+      ],
+      "valid": 1.0
+    },
+    {
+      "observer_receive": 1794830579.6818185,
+      "seq": 4118.0,
+      "field": 1175.0,
+      "full": 0.0,
+      "origin": [
+        -2.05,
+        -2.4,
+        0.0
+      ],
+      "valid": 1.0
+    },
+    {
+      "observer_receive": 1794830579.7320771,
+      "seq": 4119.0,
+      "field": 1175.0,
+      "full": 0.0,
+      "origin": [
+        -2.05,
+        -2.4,
+        0.0
+      ],
+      "valid": 1.0
+    },
+    {
+      "observer_receive": 1794830579.8012624,
+      "seq": 4120.0,
+      "field": 1176.0,
+      "full": 1.0,
+      "origin": [
+        -2.05,
+        -2.4,
+        0.0
+      ],
+      "valid": 1.0
+    },
+    {
+      "observer_receive": 1794830579.851284,
+      "seq": 4121.0,
+      "field": 1177.0,
+      "full": 1.0,
+      "origin": [
+        -1.9999999999999998,
+        -2.4,
+        0.0
+      ],
+      "valid": 1.0
+    },
+    {
+      "observer_receive": 1794830579.8838692,
+      "seq": 4122.0,
+      "field": 1177.0,
+      "full": 0.0,
+      "origin": [
+        -1.9999999999999998,
+        -2.4,
+        0.0
+      ],
+      "valid": 1.0
+    }
+  ],
+  "actual_saved_packet_replay": {
+    "files": [
+      {
+        "path": "map_events/event08_status_referenced_full.msg",
+        "sha256": "0b79ecc8053a9c2a2c438e74a39c054ec6755a051835c13a53b59fc4de2c1eb4",
+        "seq": 4078.0,
+        "field": 1164.0,
+        "full": 1.0,
+        "origin": [
+          -2.05,
+          -2.3499999999999996,
+          0.0
+        ]
+      },
+      {
+        "path": "map_events/event09_status_referenced_full.msg",
+        "sha256": "26c52bd33b91dc18495328b599aa52fb501776f0a40e059b61b983cfa97c3019",
+        "seq": 4121.0,
+        "field": 1177.0,
+        "full": 1.0,
+        "origin": [
+          -1.9999999999999998,
+          -2.4,
+          0.0
+        ]
+      },
+      {
+        "path": "map_events/event09_status_referenced_packet.msg",
+        "sha256": "35167191f0724f9eb0410667c97a6b7f08d016a2d3c5895d25ea7209983c8cd5",
+        "seq": 4122.0,
+        "field": 1177.0,
+        "full": 0.0,
+        "origin": [
+          -1.9999999999999998,
+          -2.4,
+          0.0
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "action": "decode actual old full",
+        "accepted": true,
+        "field": 1164.0
+      },
+      {
+        "action": "skip new full, feed actual new delta",
+        "accepted": false,
+        "reason": "delta without identical cached ESDF"
+      },
+      {
+        "action": "after production-style snapshot=None, feed same actual delta",
+        "accepted": false,
+        "reason": "delta without identical cached ESDF"
+      },
+      {
+        "action": "feed actual matching new full",
+        "accepted": true,
+        "field": 1177.0
+      },
+      {
+        "action": "feed actual matching delta after full",
+        "accepted": true,
+        "field": 1177.0,
+        "reuses_identical_distance_array": true
+      }
+    ],
+    "scope": "Uses actual saved packets at field1164/1177 to exercise identical cache protocol. Exact field1174/1175 payloads were not saved, so this is not a replay of missing wire4117.",
+    "observed_outcome": "Dropping required full deterministically rejects next delta; clearing live snapshot/cache causes repeated delta failure until full arrives."
+  },
+  "confirmed": [
+    "Control last successful adoption is seq4116/field1174 before first error.",
+    "Independent observer received seq4117 full field1175 followed by seq4118/4119 deltas.",
+    "First error left no active snapshot; next control cycle repeated decode mismatch; later full restored normal adoption."
+  ],
+  "unknown": [
+    "Exact failed incoming wire sequence was not logged.",
+    "Observer and controller are different subscriptions: observer receipt does not prove controller transport receipt or where an unadopted full was lost.",
+    "Queue-size=1 discard under callback scheduling is consistent with evidence but not directly observed; do not claim packet loss proven."
+  ],
+  "source": {
+    "decode": "src/mm_remani/scripts/mppi/active_arm_mppi.py:72-94",
+    "on_snapshot": "src/mm_remani/scripts/whole_body_mppi.py:421-444"
+  },
+  "resource_peak_rss_mib": 79.18359375,
+  "actual_rospy_receive_queue_counterexample": {
+    "runtime_function": "/opt/ros/noetic/lib/python3/dist-packages/rospy/msg.py:164-225 deserialize_messages",
+    "runtime_function_source_sha256": "fe4fec18afb214d4836de5500df4bfac432758bc339b93c79c7b30e10f01f7db",
+    "data_class": "rospy.numpy_msg.numpy_msg(std_msgs.msg.Float64MultiArray)",
+    "input": "Actual saved matching full seq4121 + delta seq4122, each prefixed with little-endian uint32 payload length, concatenated in one BytesIO. Previous cache is actual old full seq4078/field1164.",
+    "batch_bytes": 3235568,
+    "results": [
+      {
+        "queue_size": 1,
+        "deserialized_count": 1,
+        "steps": [
+          {
+            "seq": 4122.0,
+            "field": 1177.0,
+            "full": 0.0,
+            "accepted": false,
+            "reason": "delta without identical cached ESDF"
+          }
+        ]
+      },
+      {
+        "queue_size": 2,
+        "deserialized_count": 2,
+        "steps": [
+          {
+            "seq": 4121.0,
+            "field": 1177.0,
+            "full": 1.0,
+            "accepted": true
+          },
+          {
+            "seq": 4122.0,
+            "field": 1177.0,
+            "full": 0.0,
+            "accepted": true
+          }
+        ]
+      }
+    ],
+    "proven": "For a valid full+delta receive batch, queue_size=1 deterministically prunes the prerequisite full before deserialization and gives the callback only an undecodable delta. queue_size=2 retains both and decoding succeeds. This is an incompatible latest-only queue and dependent-delta protocol.",
+    "not_proven": "Does not prove the exact wire4117 transport callback batch during the actual run. It proves a concrete failure mode in the actual ROS receive function with actual recorded payloads, without assuming network loss.",
+    "resource_peak_rss_mib": 67.734375,
+    "replay_script": "analysis/replay_rospy_snapshot_queue.py",
+    "decode_source_sha256": "e5ac13e9387138c0464607996ae362297925a6b2abca34bcf0a51f65d38b303d"
+  }
+}

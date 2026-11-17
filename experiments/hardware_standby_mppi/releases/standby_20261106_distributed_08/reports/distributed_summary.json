@@ -1,0 +1,54 @@
+{
+  "stage": "distributed_stationary_reference_integration_passed_not_motion_acceptance",
+  "run": "distributed_07",
+  "native_reference_cycles": 630,
+  "native_candidate_cycles": 558,
+  "native_reference_status_counts": {
+    "waiting_native_reference_after_goal": 2,
+    "native_reference_ready": 559,
+    "native_reference_expired_during_plan": 6,
+    "native_reference_expired": 56,
+    "native_reference_quiet_interval": 7
+  },
+  "native_trajectory_results": {
+    "replace": 26
+  },
+  "goal_to_l_receipt_ms": 8.065223693847656,
+  "goal_forward_result": "accepted",
+  "native_candidate_solve_ms": {
+    "median": 33.202122500370024,
+    "max": 86.29277799991542
+  },
+  "hai_received": {
+    "path": 354,
+    "filtered": 727,
+    "status": 729,
+    "joints": 4008,
+    "odom": 660,
+    "markers": 183,
+    "reference_status": 22
+  },
+  "hai_final_path_points": 56,
+  "hai_tf_successes": 365,
+  "maximum_tree_rss_mib": 808.6328125,
+  "minimum_available_mib": 2927.90234375,
+  "can_tx_packet_delta": 0,
+  "actuator_publishers": [],
+  "owned_processes_remaining": [],
+  "hardware_commands_sent": false,
+  "offline_adapter_tests_passed": 13,
+  "continuous_command_gateway_timing_passed": false,
+  "fast_to_slow_prefix_enabled": false,
+  "full_map_navigation_validated": false,
+  "all_native_cycles_have_dynamic_obstacle_points": false,
+  "limitations": [
+    "Base MPPI reference uses geometric path progress; joint reference uses original polynomial wall-clock phase. Unified phase tracking not implemented.",
+    "Native received prefix has no atomic bundle terminator or goal ID; association uses original timestamps and 30ms quiet interval.",
+    "Native planner repeatedly replans while physical robot stays still. Expired references remain rejected.",
+    "Trial uses current local 6x6x2.5m map; world is local odometry, not original prebuilt map.",
+    "No command gateway or actuator nodes in this observation entry; prior07 continuous gateway deadline remains unpassed.",
+    "Static foam and folded-arm observations do not validate moving-obstacle avoidance or physical stopping."
+  ],
+  "image": "reports/distributed_07/rviz.png",
+  "image_scope": "Actual hai RViz view before test goal; not an executed trajectory image"
+}

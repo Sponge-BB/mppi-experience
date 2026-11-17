@@ -1,0 +1,41 @@
+{
+  "scope": "Read-only review of current real-robot run; no motion commands or runtime edits.",
+  "runtime_version": "20261112-155239-joint-velocity-window",
+  "verified_configuration": {
+    "velocity_window_s": 0.05,
+    "mppi_input": "/mm/joint_states",
+    "slow_input": "/mm/joint_states",
+    "mppi_enabled": true
+  },
+  "confirmed_events": [
+    "1794470196.980737408 INFO /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp:2901(refreshDynamicPointPlanningOverlay)] [DynamicPointFlow][overlay] Full time-aware uncertainty reaches 1.088 m; bound only the search guide at 0.300 m and retain the full envelope for final validation.",
+    "1794470196.992964260 WARN /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:2875(REMANIReplanFSM::updateDynamicPointFlowDecision)] [DynamicPointFlow][active] collision type=0 TTC=0.60 s, path=0.13 m, confirm=1/1, speed<=0.10 m/s, seq=1061.",
+    "1794470197.224872364 ERROR /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:830(REMANIReplanFSM::trackingFaultCallback)] [FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry.",
+    "1794470197.238180875 WARN /whole_body_mppi [whole_body_mppi.py:504(WholeBodyNode.reject)] MPPI command rejected: no_feasible_candidate (cycle=79.85 ms; snapshot={})",
+    "1794470197.260441303 WARN /whole_body_mppi [whole_body_mppi.py:504(WholeBodyNode.reject)] MPPI command rejected: native_reference_cancelled (cycle=13.32 ms; snapshot={})",
+    "1794470201.430174688 ERROR /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:474(REMANIReplanFSM::execFSMCallback)] [FSM] Give up current target and return to WAIT_TARGET. Please send a new goal.",
+    "1794470202.031461895 INFO /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp:2901(refreshDynamicPointPlanningOverlay)] [DynamicPointFlow][overlay] Full time-aware uncertainty reaches 1.109 m; bound only the search guide at 0.300 m and retain the full envelope for final validation.",
+    "1794470207.080568471 INFO /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp:2901(refreshDynamicPointPlanningOverlay)] [DynamicPointFlow][overlay] Full time-aware uncertainty reaches 1.084 m; bound only the search guide at 0.300 m and retain the full envelope for final validation.",
+    "1794470216.280591565 INFO /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp:2901(refreshDynamicPointPlanningOverlay)] [DynamicPointFlow][overlay] Full time-aware uncertainty reaches 1.067 m; bound only the search guide at 0.300 m and retain the full envelope for final validation.",
+    "1794470238.298116179 ERROR /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1592(REMANIReplanFSM::checkCollisionCallback)] [FSM] Dynamic obstacle only 0.05 m ahead (stop threshold 0.15 m); stop before replanning.",
+    "1794470238.308356523 WARN /whole_body_mppi [whole_body_mppi.py:504(WholeBodyNode.reject)] MPPI command rejected: native_reference_cancelled (cycle=0.56 ms; snapshot={})",
+    "1794470240.622734271 ERROR /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1592(REMANIReplanFSM::checkCollisionCallback)] [FSM] Dynamic obstacle only 0.00 m ahead (stop threshold 0.15 m); stop before replanning.",
+    "1794470240.715120553 WARN /whole_body_mppi [whole_body_mppi.py:504(WholeBodyNode.reject)] MPPI command rejected: native_reference_cancelled (cycle=0.48 ms; snapshot={})",
+    "1794470241.777401598 ERROR /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1592(REMANIReplanFSM::checkCollisionCallback)] [FSM] Dynamic obstacle only 0.00 m ahead (stop threshold 0.15 m); stop before replanning.",
+    "1794470241.813058376 WARN /whole_body_mppi [whole_body_mppi.py:504(WholeBodyNode.reject)] MPPI command rejected: native_reference_cancelled (cycle=0.66 ms; snapshot={})"
+  ],
+  "causal_interpretation": [
+    "15:56:36.992 point-flow collision warning TTC0.60s and original-path distance0.13m; dynamic obstacle perception did produce a nonempty prediction.",
+    "15:56:37.007 native dynamic local target search fails; MPPI deadline113.57ms then no-feasible79.85ms around tracking fault/ABORT. Fault is published before reject log by code; rosout timestamps alone do not define transport order.",
+    "Native adapter receives ABORT and refuses further navigation solving without a valid replacement.",
+    "15:56:41.430 native planner reaches5/5 failures, clears target and returns WAIT_TARGET.",
+    "15:57:18,20,21 subsequent target experiences additional original-path live occupancy collision stops, followed by replacement trajectories.",
+    "Runtime native_reference_adapter explicitly has no fast-to-slow prefix injection."
+  ],
+  "unknowns": [
+    "No historical candidate_diagnostics bag was recording at the intrusion, so exact geometric/braking/dynamic rejection reasons for the79.85ms no-feasible cycle are not available. Do not attribute to prior joint velocity spikes.",
+    "Cannot certify that a safe detour physically existed at the recorded close collision warning.",
+    "Full prediction uncertainty1.088m appears in log but this alone does not prove excessive inflation caused the candidate failure."
+  ],
+  "priority": "Separate transient blocked navigation from goal cancellation; retain target and retry with fresh observations, and integrate qualified fast-layer safe prefix with slow planning while retaining actual imminent collision stops."
+}

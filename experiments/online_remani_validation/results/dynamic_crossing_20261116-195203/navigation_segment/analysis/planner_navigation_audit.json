@@ -1,0 +1,1922 @@
+{
+  "schema": "planner_navigation_audit_v1",
+  "scope": {
+    "case": "/home/l/remani_ws/experiments/online_remani_validation/results/dynamic_crossing_20261116-195203/navigation_segment",
+    "bag": "core.bag",
+    "read_mode": "closed indexed bag streamed by selected topics/windows; no cloud messages loaded",
+    "navigation_scope": "goal1 publication through goal2 finish; dynamic crossing cancelled by user",
+    "source_and_receipt": "source=message header/log source stamp; receipt=rosbag record stamp, cross-topic receipt order need not equal program order",
+    "production_code_modified": false,
+    "robot_commands_sent": false
+  },
+  "version": {
+    "version": "20261116-125759-tracker-reasons",
+    "rollback_parent": "20261116-125246-before-tracker-reasons",
+    "capture_source_hashes": {
+      "src/mm_remani_planner/plan_manage/include/plan_manage/planner_manager.h": {
+        "sha256": "7469d7cd37e546769e311d363a31720da60e7208ba549a76a429ae80b68f6ed6",
+        "mode": 509,
+        "size": 3758,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani_planner/plan_manage/src/planner_manager.cpp": {
+        "sha256": "c2e92c8475320b7f5ad033a2cc4d37bbff6b53c2aab699772f31ff37bca1590b",
+        "mode": 509,
+        "size": 31003,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h": {
+        "sha256": "5207a33e2abdb78f6f8fcf525c59ba524169630ba8d0c4cb4571fe765ab4ca69",
+        "mode": 436,
+        "size": 17685,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": {
+        "sha256": "0193ccfb67d43eb62ed8e69e9fee3317cc73b26f0a2c690fa0240112791994e0",
+        "mode": 436,
+        "size": 167685,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani_planner/plan_manage/include/plan_manage/moving_handoff_timing.hpp": {
+        "sha256": "05722343ef98bb24ed234eb40a4eb2ccf6d8739ce13ca92ee45afc6461420ca2",
+        "mode": 436,
+        "size": 2379,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani_planner/plan_manage/test/test_moving_handoff_timing.cpp": {
+        "sha256": "06fcd9b9d09d1fcae8003392c88e07c6c73c7ac5e72ca0194a9c85a02a27c58d",
+        "mode": 436,
+        "size": 4199,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/test/test_mppi_future_handoff.py": {
+        "sha256": "e764e70dada943f001662f146b28d20488c4c88665a65dd29e0859c6a79f0d3a",
+        "mode": 436,
+        "size": 5147,
+        "matches_prior_capture": true
+      },
+      "devel/lib/remani_planner/remani_planner_node": {
+        "sha256": "52c085b1135ed041af471015a2395047a6771997c49db2eca7ec1b0accd30a1c",
+        "mode": 509,
+        "size": 1091520,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/test/test_mppi_refresh_event.py": {
+        "sha256": "07476afcb60b1203cc43a970edb0b42e1eaa8394a12f1cc08889d65c80d934d0",
+        "mode": 436,
+        "size": 20038,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/test/test_fsm_feedback_phase.py": {
+        "sha256": "03073beed7efffc0de1867174806d8d8748b231f0d381d58c864ffcc19814b42",
+        "mode": 436,
+        "size": 18767,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/include/mm_remani/dynamic_obstacle_tracker_core.h": {
+        "sha256": "2fd52840cb34a7dea8b4392f837dbfcb72eca6e9bd7b4aaa2de16cab087e772e",
+        "mode": 436,
+        "size": 10559,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/src/dynamic_obstacle_tracker_core.cpp": {
+        "sha256": "1ecd5d84340c09e5c12092576914ebb5bb25018037ee8bfcee2a95f45281921e",
+        "mode": 436,
+        "size": 42322,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/src/dynamic_obstacle_tracker_node.cpp": {
+        "sha256": "c137d600285bef11677725900840dcba15e43f44bfedafb2c0006deaafdf9b3d",
+        "mode": 436,
+        "size": 38527,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/test/test_dynamic_obstacle_tracker_core.cpp": {
+        "sha256": "7e4f0f817cc0fc17c7af5a6a3c9ce59ef803b3eeed094781b852a7021e415911",
+        "mode": 436,
+        "size": 44031,
+        "matches_prior_capture": true
+      },
+      "devel/lib/libdynamic_obstacle_tracker_core.so": {
+        "sha256": "9ee6ed67b633e25478fb4f56694945710ac98f1eee406cf1b77c4eeb42082f62",
+        "mode": 509,
+        "size": 73096,
+        "matches_prior_capture": true
+      },
+      "devel/lib/mm_remani/dynamic_obstacle_tracker_node": {
+        "sha256": "b57fe1c72004e2eca21ea9151cf7cdb37c831e999ff3cb20ec81f2ea00d41cc7",
+        "mode": 509,
+        "size": 337048,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/launch/exp0_real.launch": {
+        "sha256": "631e1eb2a966d67e874d59942d81fe0faea8b4333b5cf04a5158dfc8d5eef116",
+        "mode": 436,
+        "size": 34144,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/launch/run_planner_gazebo.launch": {
+        "sha256": "31d0848570057142ed1da98357c201da67f55e42907061b6ffa64849290eda37",
+        "mode": 436,
+        "size": 4016,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/config/mppi.yaml": {
+        "sha256": "44034906e3142eb990d9270e634c2c3272879e21be3833911965763fa85cf99b",
+        "mode": 436,
+        "size": 605,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/config/real_speed.yaml": {
+        "sha256": "f636b271c2278e6fc0404bf9204a2862d1707caf8df43666577e009eee948df0",
+        "mode": 436,
+        "size": 10142,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/scripts/whole_body_mppi.py": {
+        "sha256": "87813ae8097c1d92ea71b05d43489fdafe557aa87ac60e812c17bf7d0e4b5e28",
+        "mode": 509,
+        "size": 54244,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/scripts/velodyne_transformer.py": {
+        "sha256": "9fcd3a8c3025ed56deae40ef7a630cdaf8f0f4bc8570b0abca34e20072b4000c",
+        "mode": 509,
+        "size": 21180,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani_planner/plan_manage/config/piper_param.yaml": {
+        "sha256": "0a80105ed6adc5aec2c54b6c49b77b54a0f81fb9137248732b33a47413a862a3",
+        "mode": 509,
+        "size": 1951,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani_planner/plan_manage/config/exp0_param.yaml": {
+        "sha256": "c55b18e65cc862e6f33e650814ad9682e79e1917b34b7ccc0dd628535f208188",
+        "mode": 509,
+        "size": 649,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani_planner/plan_manage/config/fixed_collision_spheres_b.yaml": {
+        "sha256": "db5825318c6307c506d93081d112aa8a45bcda8459114dbbbd0e8e3ee27b59f7",
+        "mode": 436,
+        "size": 4489,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/maps/exp0_planner.pcd": {
+        "sha256": "0b624438bb865a9296bcc92120b21e74b065a1ac6395e4687ace1e73f747e78a",
+        "mode": 420,
+        "size": 338006,
+        "matches_prior_capture": true
+      },
+      "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py": {
+        "sha256": "63d5c809a2686abb1c297c1f3459676dfba6f6ed83aa9b520b3d89d0aa81933f",
+        "mode": 493,
+        "size": 59452,
+        "matches_prior_capture": true
+      },
+      "rollback/VERSIONS.tsv": {
+        "sha256": "191d24d4f8dd44727bfcc581854f0ee2e1c24bf301a5e74991fb6b3fc78643f6",
+        "mode": 436,
+        "size": 16271,
+        "matches_prior_capture": true
+      },
+      "src/mm_remani/scripts/mppi/active_arm_model.py": {
+        "sha256": "b57c6fe63a6155055949d60554d6ea01644f727d8370c511fdd30c7a4e759fa5",
+        "mode": 436,
+        "size": 37464
+      },
+      "src/mm_remani/scripts/mppi/active_arm_mppi.py": {
+        "sha256": "e5ac13e9387138c0464607996ae362297925a6b2abca34bcf0a51f65d38b303d",
+        "mode": 436,
+        "size": 38211
+      },
+      "src/mm_remani/scripts/mppi/mppi_refresh_event.py": {
+        "sha256": "84db0b5484ce05960d47300114ec8e19a62e8c5829385ac5f8944564b35111af",
+        "mode": 436,
+        "size": 1867
+      },
+      "src/mm_remani/scripts/mppi/native_reference.py": {
+        "sha256": "1bdd107857b42f24cdc59004d4860040d5bda4bfbb058f603624d374d1a11455",
+        "mode": 436,
+        "size": 4961
+      },
+      "src/mm_remani/scripts/mppi/native_reference_adapter.py": {
+        "sha256": "7e6685aaee4d3a32c624636ad4712372f8b0bd4d44811e594daeee1ac6f11d6a",
+        "mode": 436,
+        "size": 27311
+      },
+      "src/mm_remani/scripts/mppi/prediction_visualization.py": {
+        "sha256": "36659d023a71fc0f71356c8c432db6a0fae41ee55ca03f16d7a004bbf38cb4f0",
+        "mode": 436,
+        "size": 2080
+      },
+      "src/mm_remani/scripts/mppi/standby_whole_body_mppi.py": {
+        "sha256": "f97e19f1373b2c552bbf5f9f97862db3e858c833ef5957d1b374325cbdd204dd",
+        "mode": 436,
+        "size": 16554
+      },
+      "/home/l/.local/lib/python3.8/site-packages/piper_sdk/interface/piper_interface.py": {
+        "sha256": "ee63f0fa68286f7d0970ac9b53828c407f135ee68624064404fc419b0acede92",
+        "mode": 436,
+        "size": 169979
+      },
+      "/home/l/.local/lib/python3.8/site-packages/piper_sdk/hardware_port/can_encapsulation_v0_4_0.py": {
+        "sha256": "9a75a19d92073f2842b02cdc53475306345013160840401b9f58e297b273e4d3",
+        "mode": 436,
+        "size": 13374
+      }
+    },
+    "current_review_source_sha256": {
+      "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "0193ccfb67d43eb62ed8e69e9fee3317cc73b26f0a2c690fa0240112791994e0",
+      "src/mm_remani/scripts/whole_body_mppi.py": "87813ae8097c1d92ea71b05d43489fdafe557aa87ac60e812c17bf7d0e4b5e28",
+      "src/mm_remani/scripts/mppi/active_arm_mppi.py": "e5ac13e9387138c0464607996ae362297925a6b2abca34bcf0a51f65d38b303d",
+      "src/mm_controller/src/mm_controller_fsm.cpp": "8f35fd4171b4e06a22e7b70797c20e9d0db33ed228d9728d57dc320b3fbc5023"
+    }
+  },
+  "goals": [
+    {
+      "receipt": 1794830561.9990513,
+      "source": 1794830561.9942093,
+      "x": 0.5622382760047913,
+      "y": -1.8947161436080933,
+      "q": [
+        0.0,
+        0.0,
+        0.7253464656392793,
+        0.6883839806275317
+      ],
+      "local": "2026-11-16T20:02:41.994+08:00",
+      "receipt_local": "2026-11-16T20:02:41.999+08:00"
+    },
+    {
+      "receipt": 1794830793.1842046,
+      "source": 1794830793.1739757,
+      "x": 0.48923540115356445,
+      "y": -1.4658339023590088,
+      "q": [
+        0.0,
+        0.0,
+        0.6816972852205687,
+        0.7316343426349713
+      ],
+      "local": "2026-11-16T20:06:33.173+08:00",
+      "receipt_local": "2026-11-16T20:06:33.184+08:00"
+    }
+  ],
+  "goal_outcomes": {
+    "goal1": "Replaced by goal2 before a finish flag; do not call completed.",
+    "goal1_error_when_goal2_arrived_m": 0.43303109064721595,
+    "goal1_nearest_odometry_at_replacement": {
+      "receipt": 1794830793.1848478,
+      "source": 1794830793.164892,
+      "x": 0.12951604505760836,
+      "y": -1.9110684006758594,
+      "yaw": -1.3548997709959216,
+      "v": 0.005114421560428572,
+      "w": 0.000505347205127904,
+      "offset_s": -0.019312620162963867
+    },
+    "goal2_finish": {
+      "receipt": 1794830870.8415194,
+      "value": true,
+      "local": "2026-11-16T20:07:50.841+08:00",
+      "receipt_local": "2026-11-16T20:07:50.841+08:00"
+    },
+    "goal2_nearest_odometry_at_finish": {
+      "receipt": 1794830870.9094653,
+      "source": 1794830870.8640351,
+      "x": 0.4726540495220729,
+      "y": -1.5497249226393008,
+      "yaw": 1.3914641278472224,
+      "v": 0.062117839278204544,
+      "w": 0.1342157482411186,
+      "offset_s": 0.02251577377319336
+    },
+    "goal2_position_error_at_nearest_odometry_m": 0.0855140018102038,
+    "finish_boundary": "One finish=true in bag, after goal2. Nearest odometry is offset from flag and nonzero velocity; finish does not mean exact centre or certified physical rest."
+  },
+  "initial_motion": {
+    "initial_reference_add_blocks": [
+      {
+        "receipt": 1794830562.9730546,
+        "source": 1794830562.916517,
+        "action": 1,
+        "trajectory_id": 1,
+        "singul": 1,
+        "pieces": 3,
+        "duration": 8.21682439960322,
+        "progress_at_receipt": {
+          "receipt": 1794830562.9684758,
+          "source": 1794830562.9675999,
+          "reference": 0.0,
+          "phase": 0.0,
+          "scale": 0.0
+        },
+        "local": "2026-11-16T20:02:42.916+08:00",
+        "receipt_local": "2026-11-16T20:02:42.973+08:00"
+      },
+      {
+        "receipt": 1794830562.973202,
+        "source": 1794830562.916517,
+        "action": 1,
+        "trajectory_id": 2,
+        "singul": -1,
+        "pieces": 3,
+        "duration": 8.270783785583424,
+        "progress_at_receipt": {
+          "receipt": 1794830562.9684758,
+          "source": 1794830562.9675999,
+          "reference": 0.0,
+          "phase": 0.0,
+          "scale": 0.0
+        },
+        "local": "2026-11-16T20:02:42.916+08:00",
+        "receipt_local": "2026-11-16T20:02:42.973+08:00"
+      }
+    ],
+    "first_nonzero_cmd": {
+      "receipt": 1794830563.1668317,
+      "v": 0.05151415576929447,
+      "w": -0.046813256988793385,
+      "local": "2026-11-16T20:02:43.166+08:00",
+      "receipt_local": "2026-11-16T20:02:43.166+08:00"
+    },
+    "early_zero_command_bouts": [
+      {
+        "begin_receipt": 1794830563.5858953,
+        "last_zero_receipt": 1794830563.5858953,
+        "samples": 1,
+        "next_nonzero_receipt": 1794830563.699465,
+        "duration_to_next_nonzero_s": 0.11356973648071289,
+        "begin_local": "2026-11-16T20:02:43.585+08:00"
+      },
+      {
+        "begin_receipt": 1794830563.7562332,
+        "last_zero_receipt": 1794830564.3122165,
+        "samples": 6,
+        "next_nonzero_receipt": 1794830564.4087324,
+        "duration_to_next_nonzero_s": 0.6524991989135742,
+        "begin_local": "2026-11-16T20:02:43.756+08:00"
+      },
+      {
+        "begin_receipt": 1794830564.5087047,
+        "last_zero_receipt": 1794830564.5087047,
+        "samples": 1,
+        "next_nonzero_receipt": 1794830564.589291,
+        "duration_to_next_nonzero_s": 0.08058643341064453,
+        "begin_local": "2026-11-16T20:02:44.508+08:00"
+      },
+      {
+        "begin_receipt": 1794830564.8236885,
+        "last_zero_receipt": 1794830565.2970474,
+        "samples": 6,
+        "next_nonzero_receipt": 1794830565.4573576,
+        "duration_to_next_nonzero_s": 0.6336691379547119,
+        "begin_local": "2026-11-16T20:02:44.823+08:00"
+      },
+      {
+        "begin_receipt": 1794830565.494338,
+        "last_zero_receipt": 1794830565.494338,
+        "samples": 1,
+        "next_nonzero_receipt": 1794830565.666492,
+        "duration_to_next_nonzero_s": 0.17215394973754883,
+        "begin_local": "2026-11-16T20:02:45.494+08:00"
+      },
+      {
+        "begin_receipt": 1794830565.8966377,
+        "last_zero_receipt": 1794830565.8966377,
+        "samples": 1,
+        "next_nonzero_receipt": 1794830566.0597665,
+        "duration_to_next_nonzero_s": 0.16312885284423828,
+        "begin_local": "2026-11-16T20:02:45.896+08:00"
+      }
+    ],
+    "zero_definition": "Both published cmd_vel.linear.x and angular.z absolute <=1e-6; command pulses do not alone measure wheel stop.",
+    "conclusion": "Intermittent zero output already occurs about 16s before the first slow ABORT and about 112s before first optional MPPI refresh. Later collision recovery and optional solves cannot explain the beginning of this symptom. See mppi_navigation_audit.json for input age/cycle rejection causes."
+  },
+  "first_abort": {
+    "fault_true_receipt": 1794830579.7262704,
+    "fault_true_local": "2026-11-16T20:02:59.726+08:00",
+    "fault_topic_publisher": "/whole_body_mppi, confirmed by latest_graph.json; not /MMctrl",
+    "mppi_error_status_receipt": 1794830579.7442648,
+    "mppi_error_reason": "delta without identical cached ESDF",
+    "fault_log": {
+      "receipt": 1794830579.7362099,
+      "source": 1794830579.7294927,
+      "node": "/remani_planner_node",
+      "level": 8,
+      "message": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry.",
+      "local": "2026-11-16T20:02:59.729+08:00",
+      "receipt_local": "2026-11-16T20:02:59.736+08:00"
+    },
+    "abort": {
+      "receipt": 1794830579.7353747,
+      "source": 0.0,
+      "action": 2,
+      "trajectory_id": 0,
+      "singul": 0,
+      "pieces": 0,
+      "duration": 0,
+      "progress_at_receipt": {
+        "receipt": 1794830579.7282038,
+        "source": 1794830579.727745,
+        "reference": 1794830562.916517,
+        "phase": 3.814733278747311,
+        "scale": 0.0
+      },
+      "local": "1970-01-01T08:00:00.000+08:00",
+      "receipt_local": "2026-11-16T20:02:59.735+08:00"
+    },
+    "causal_evidence": "MPPI capture has no active snapshot after a delta/cache decode exception. reject(reason) publishes zero and, for an active goal that already received commands, raises tracking_fault because this raw decoder reason is absent from LOCAL_RETRY_REJECTIONS. FSM consumes the Boolean and logs the generic excessive-error text, then EMERGENCY_STOP publishes ABORT. The generic FSM text is not evidence that a measured tracking-error threshold caused this episode.",
+    "ordering_boundary": "reject publishes fault before log/status. Fault receipt before the MPPI warning/status is consistent with this source order; cross-topic stamps cannot alone reverse the cause.",
+    "cache_protocol_evidence": "first_fault_cache_protocol_audit.json and first_fault_snapshot_trace.json",
+    "cache_protocol_boundary": "Independent observer received a new full before its deltas, and controller last successful adoption remained previous full. The exact failed incoming sequence is not logged; queue drop/scheduling is consistent, not directly proven."
+  },
+  "abort_summary": {
+    "total": 21,
+    "tracking_fault_callback": 2,
+    "raw_live_occupancy_near_stop": 19,
+    "goal1": 13,
+    "goal2": 8,
+    "unknown_cause": 0,
+    "events": [
+      {
+        "abort": {
+          "receipt": 1794830579.7353747,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830579.7282038,
+            "source": 1794830579.727745,
+            "reference": 1794830562.916517,
+            "phase": 3.814733278747311,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:02:59.735+08:00"
+        },
+        "cause": {
+          "receipt": 1794830579.7362099,
+          "source": 1794830579.7294927,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry.",
+          "local": "2026-11-16T20:02:59.729+08:00",
+          "receipt_local": "2026-11-16T20:02:59.736+08:00"
+        },
+        "classification": "tracking_fault_callback",
+        "next_add": {
+          "receipt": 1794830580.380821,
+          "source": 1794830580.3170319,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 7.501844756435679,
+          "progress_at_receipt": {
+            "receipt": 1794830580.3692732,
+            "source": 1794830580.367597,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:03:00.317+08:00",
+          "receipt_local": "2026-11-16T20:03:00.380+08:00"
+        },
+        "abort_to_next_add_s": 0.6454463005065918,
+        "next_stop_owner_clear": {
+          "receipt": 1794830580.531376,
+          "value": -1.0,
+          "local": "2026-11-16T20:03:00.531+08:00",
+          "receipt_local": "2026-11-16T20:03:00.531+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830670.4566708,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830670.449144,
+            "source": 1794830670.4476845,
+            "reference": 1794830580.3170319,
+            "phase": 10.45542611351137,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:04:30.456+08:00"
+        },
+        "cause": {
+          "receipt": 1794830670.5150943,
+          "source": 1794830670.4466357,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830670.4417636 obs=1620 esdf=1619 epoch=2 revision=1619 fusion_stamp=1794830670.379221 traj_id=2 traj_start=1794830580.3170319 phase=10.458737075237197 query_phase=10.508737075237198 gear=-1 raw_speed=0.14963813122754821 reference_xy_q=[   0.3299308565584953   -1.2749594329423515 0.0094768489272531835   0.52575505212560025   -1.0446574726303632 0.0085920365954898284   0.96506203460681372                     0] reference_yaw=1.6386213265878513 path_distance=0.0074082790655661378 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=13 arm_link=-1 arm_point=-1 query=[0.38228102493478883 -1.0496426985099481 0.09800009779632092] voxel=[157  80   4] voxel_center=[               0.375 -0.97499999999999964  0.22500000000000001] distance=0.14749074860713171 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[  0.32027391283276491   -1.1720983945632508  0.012182398178920421   0.52379076181601825   -1.0418044838079352 0.0064228116473391324   0.96207784357683435                     0] actual_yaw=1.4585969626582533 actual_vxy=[-0.0077259898026241476   -0.11368547625455409] odom_stamp=1794830670.3645647 joint_stamp=1794830670.4347115",
+          "local": "2026-11-16T20:04:30.446+08:00",
+          "receipt_local": "2026-11-16T20:04:30.515+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830671.3255727,
+          "source": 1794830671.3089082,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": -1,
+          "pieces": 2,
+          "duration": 5.555673460606599,
+          "progress_at_receipt": {
+            "receipt": 1794830671.3235738,
+            "source": 1794830671.3181436,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:04:31.308+08:00",
+          "receipt_local": "2026-11-16T20:04:31.325+08:00"
+        },
+        "abort_to_next_add_s": 0.8689019680023193,
+        "next_stop_owner_clear": {
+          "receipt": 1794830671.345403,
+          "value": -1.0,
+          "local": "2026-11-16T20:04:31.345+08:00",
+          "receipt_local": "2026-11-16T20:04:31.345+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830675.9415317,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830675.938814,
+            "source": 1794830675.938259,
+            "reference": 1794830671.3089082,
+            "phase": 3.8326592383741938,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:04:35.941+08:00"
+        },
+        "cause": {
+          "receipt": 1794830675.9530587,
+          "source": 1794830675.9295242,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry.",
+          "local": "2026-11-16T20:04:35.929+08:00",
+          "receipt_local": "2026-11-16T20:04:35.953+08:00"
+        },
+        "classification": "tracking_fault_callback",
+        "next_add": {
+          "receipt": 1794830681.1658423,
+          "source": 1794830681.1313934,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 14.3791476917341,
+          "progress_at_receipt": {
+            "receipt": 1794830681.1589026,
+            "source": 1794830681.157585,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:04:41.131+08:00",
+          "receipt_local": "2026-11-16T20:04:41.165+08:00"
+        },
+        "abort_to_next_add_s": 5.224310636520386,
+        "next_stop_owner_clear": {
+          "receipt": 1794830681.328294,
+          "value": -1.0,
+          "local": "2026-11-16T20:04:41.328+08:00",
+          "receipt_local": "2026-11-16T20:04:41.328+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830700.9114537,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830700.90827,
+            "source": 1794830700.907598,
+            "reference": 1794830687.2206807,
+            "phase": 3.1299057781427377,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:05:00.911+08:00"
+        },
+        "cause": {
+          "receipt": 1794830701.0909812,
+          "source": 1794830700.9080818,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830700.9041553 obs=1811 esdf=1810 epoch=2 revision=1810 fusion_stamp=1794830700.8521879 traj_id=1 traj_start=1794830687.2206807 phase=3.1299057781427377 query_phase=3.1799057781427376 gear=1 raw_speed=0.11152893778685463 reference_xy_q=[ 0.077953014574960358   -1.8969865998109643 0.0026903102256864921   0.52743994371332459   -1.2138692743870461 0.0083733698230082122    0.9169245655799132                     0] reference_yaw=-1.2224013817458688 path_distance=0.0055666387904994398 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=9 arm_link=-1 arm_point=-1 query=[0.03968567354194491 -1.9893499394274978 0.09800009779632092] voxel=[150  59   4] voxel_center=[0.025000000000000355  -2.0249999999999999  0.22500000000000001] distance=0.1327236640013667 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[0.081146467792091281  -1.8319378344749218 0.011065387457644049  0.51703633761080015  -1.0503740504352275                    0  0.93282612531340936                    0] actual_yaw=-1.6416307684787883 actual_vxy=[-0.0035387610513499855  -0.049874614486945648] odom_stamp=1794830700.8643057 joint_stamp=1794830700.8947577",
+          "local": "2026-11-16T20:05:00.908+08:00",
+          "receipt_local": "2026-11-16T20:05:01.090+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830705.5499854,
+          "source": 1794830705.51812,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 6.63038863511909,
+          "progress_at_receipt": {
+            "receipt": 1794830705.5417695,
+            "source": 1794830705.5375993,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:05:05.518+08:00",
+          "receipt_local": "2026-11-16T20:05:05.549+08:00"
+        },
+        "abort_to_next_add_s": 4.638531684875488,
+        "next_stop_owner_clear": {
+          "receipt": 1794830705.5760727,
+          "value": -1.0,
+          "local": "2026-11-16T20:05:05.576+08:00",
+          "receipt_local": "2026-11-16T20:05:05.576+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830711.9450312,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830711.937978,
+            "source": 1794830711.9376018,
+            "reference": 1794830705.51812,
+            "phase": 1.2626623519761,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:05:11.945+08:00"
+        },
+        "cause": {
+          "receipt": 1794830711.9623044,
+          "source": 1794830711.9359162,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830711.9347768 obs=1863 esdf=1862 epoch=2 revision=1862 fusion_stamp=1794830711.82042 traj_id=1 traj_start=1794830705.5181201 phase=1.2626623519761 query_phase=1.3126623519761 gear=1 raw_speed=0.076593500909086065 reference_xy_q=[   0.1022848735536963   -1.8962725643966085  0.010932653943793167   0.51733962956167912   -1.0502889124155845 0.0063100176389027382   0.93391410996341018                     0] reference_yaw=-1.0253407016267806 path_distance=0.0037625654017196999 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=9 arm_link=-1 arm_point=-1 query=[0.082841757531122884  -1.9943406077858237  0.09800009779632092] voxel=[151  59   4] voxel_center=[0.075000000000000178  -2.0249999999999999  0.22500000000000001] distance=0.13088340861951778 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[ 0.095343550360464463   -1.8459664107914486 0.0093200582056497203   0.51878166686279459   -1.0522415527348614                     0   0.93231997983033088                     0] actual_yaw=-1.5387902955844746 actual_vxy=[0.0016000283534202001 -0.049974392535260009] odom_stamp=1794830711.8646586 joint_stamp=1794830711.9247465",
+          "local": "2026-11-16T20:05:11.935+08:00",
+          "receipt_local": "2026-11-16T20:05:11.962+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830715.2551904,
+          "source": 1794830715.2136724,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 4.69864540401589,
+          "progress_at_receipt": {
+            "receipt": 1794830715.2480073,
+            "source": 1794830715.2475493,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:05:15.213+08:00",
+          "receipt_local": "2026-11-16T20:05:15.255+08:00"
+        },
+        "abort_to_next_add_s": 3.310159206390381,
+        "next_stop_owner_clear": {
+          "receipt": 1794830715.2855933,
+          "value": -1.0,
+          "local": "2026-11-16T20:05:15.285+08:00",
+          "receipt_local": "2026-11-16T20:05:15.285+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830721.2616358,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830721.2590356,
+            "source": 1794830721.2575977,
+            "reference": 1794830715.2136724,
+            "phase": 1.8269326817543154,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:05:21.261+08:00"
+        },
+        "cause": {
+          "receipt": 1794830721.308369,
+          "source": 1794830721.2553566,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830721.2535551 obs=1907 esdf=1906 epoch=2 revision=1906 fusion_stamp=1794830721.1637433 traj_id=2 traj_start=1794830715.2136724 phase=1.8269326817543154 query_phase=1.8769326817543155 gear=1 raw_speed=0.16454271436790155 reference_xy_q=[   0.16462856102804385    -2.0202853020290186  0.0092018471869279653    0.51914724220542707    -1.0523388857092921 2.9338479440560207e-07    0.93385156642891609 1.5329114464789948e-08] reference_yaw=-0.9857969938904716 path_distance=0.0082152091618734081 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=12 arm_link=-1 arm_point=-1 query=[0.11797555325176899 -2.3165654943116261 0.09800009779632092] voxel=[153  53   3] voxel_center=[0.17500000000000071 -2.3249999999999997 0.17500000000000002] distance=0.096186866840152707 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[  0.12676909549719409    -1.920085862117086 0.0075223690760955605   0.51686180468560072   -1.0522764593199012                     0   0.93575827845675974                     0] actual_yaw=-1.3755009604202983 actual_vxy=[0.0097028147499724961  -0.04904951973187624] odom_stamp=1794830721.1649654 joint_stamp=1794830721.2450008",
+          "local": "2026-11-16T20:05:21.255+08:00",
+          "receipt_local": "2026-11-16T20:05:21.308+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830721.7577176,
+          "source": 1794830721.7271955,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": -1,
+          "pieces": 2,
+          "duration": 6.361410702874464,
+          "progress_at_receipt": {
+            "receipt": 1794830721.748268,
+            "source": 1794830721.7476025,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:05:21.727+08:00",
+          "receipt_local": "2026-11-16T20:05:21.757+08:00"
+        },
+        "abort_to_next_add_s": 0.4960818290710449,
+        "next_stop_owner_clear": {
+          "receipt": 1794830722.1004121,
+          "value": -1.0,
+          "local": "2026-11-16T20:05:22.100+08:00",
+          "receipt_local": "2026-11-16T20:05:22.100+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830722.8100758,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830722.8088377,
+            "source": 1794830722.8075917,
+            "reference": 1794830721.7271955,
+            "phase": 0.20450792150961647,
+            "scale": 0.5680362152
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:05:22.810+08:00"
+        },
+        "cause": {
+          "receipt": 1794830722.8170218,
+          "source": 1794830722.8092272,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830722.8058434 obs=1916 esdf=1915 epoch=2 revision=1915 fusion_stamp=1794830722.6714516 traj_id=1 traj_start=1794830721.7271955 phase=0.20344960499765166 query_phase=0.25344960499765168 gear=-1 raw_speed=0.05015467978119012 reference_xy_q=[   0.12044749588336631    -1.9080196508638625  0.0075223014031106121    0.50608795085006808    -1.0522759537958051 2.8228415633449681e-23    0.91109300737047816                      0] reference_yaw=-1.3668973714755814 path_distance=0.0025058448694916208 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=46 arm_link=-1 arm_point=-1 query=[0.17714442899894575  -2.182219318579357 0.15285000000000001] voxel=[153  54   3] voxel_center=[0.17500000000000071 -2.2749999999999999 0.17500000000000002] distance=0.095412137176621004 threshold=0.11283138149046223 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[  0.11870949462469693   -1.9098001400523776 0.0095469510084089815   0.51639056578756226   -1.0522764593199012                     0   0.93760832746387379                     0] actual_yaw=-1.3498800171822245 actual_vxy=[ 0.010956187777710276 -0.048784853688204829] odom_stamp=1794830722.76478 joint_stamp=1794830722.784771",
+          "local": "2026-11-16T20:05:22.809+08:00",
+          "receipt_local": "2026-11-16T20:05:22.817+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830725.5973039,
+          "source": 1794830725.5244699,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 5.962487085181799,
+          "progress_at_receipt": {
+            "receipt": 1794830725.588228,
+            "source": 1794830725.5876641,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:05:25.524+08:00",
+          "receipt_local": "2026-11-16T20:05:25.597+08:00"
+        },
+        "abort_to_next_add_s": 2.7872281074523926,
+        "next_stop_owner_clear": {
+          "receipt": 1794830725.642386,
+          "value": -1.0,
+          "local": "2026-11-16T20:05:25.642+08:00",
+          "receipt_local": "2026-11-16T20:05:25.642+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830725.8397975,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830725.8380148,
+            "source": 1794830725.8375928,
+            "reference": 1794830725.5244699,
+            "phase": 0.015256599809517801,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:05:25.839+08:00"
+        },
+        "cause": {
+          "receipt": 1794830725.87583,
+          "source": 1794830725.8326266,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830725.8307583 obs=1932 esdf=1931 epoch=2 revision=1931 fusion_stamp=1794830725.7483926 traj_id=2 traj_start=1794830725.5244699 phase=0.015658077130608888 query_phase=0.065658077130608894 gear=1 raw_speed=0.050006071704607843 reference_xy_q=[   0.11942909717316043    -1.9130033089957881  0.0095469501855960526    0.51639056882294132    -1.0522764575134196 8.7237616636510658e-26    0.93760833638471441                      0] reference_yaw=-1.3496093607136785 path_distance=0.0025001003945916431 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=46 arm_link=-1 arm_point=-1 query=[0.18085768852298961  -2.186181873610173 0.15285000000000001] voxel=[154  54   3] voxel_center=[0.22500000000000053 -2.2749999999999999 0.17500000000000002] distance=0.1016259107606555 threshold=0.11283138149046223 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[  0.11683345996967234   -1.9075935524703918 0.0095469510084089815    0.5181533483320766   -1.0522764593199012                     0   0.93963290939618715                     0] actual_yaw=-1.3553964631983926 actual_vxy=[ 0.010686903426445175 -0.048844550311716806] odom_stamp=1794830725.7646511 joint_stamp=1794830725.8097868",
+          "local": "2026-11-16T20:05:25.832+08:00",
+          "receipt_local": "2026-11-16T20:05:25.875+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830744.0575151,
+          "source": 1794830743.9926357,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 7.389279234907605,
+          "progress_at_receipt": {
+            "receipt": 1794830744.0536523,
+            "source": 1794830744.0475426,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:05:43.992+08:00",
+          "receipt_local": "2026-11-16T20:05:44.057+08:00"
+        },
+        "abort_to_next_add_s": 18.21771764755249,
+        "next_stop_owner_clear": {
+          "receipt": 1794830744.090081,
+          "value": -1.0,
+          "local": "2026-11-16T20:05:44.090+08:00",
+          "receipt_local": "2026-11-16T20:05:44.090+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830744.4966068,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830744.4893894,
+            "source": 1794830744.4885988,
+            "reference": 1794830743.9926357,
+            "phase": 0.06593261567936144,
+            "scale": 0.3208003832
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:05:44.496+08:00"
+        },
+        "cause": {
+          "receipt": 1794830744.5101964,
+          "source": 1794830744.4935813,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830744.4861565 obs=2039 esdf=2038 epoch=2 revision=2038 fusion_stamp=1794830744.4086423 traj_id=2 traj_start=1794830743.9926357 phase=0.065076307534352687 query_phase=1.2650763075343532 gear=1 raw_speed=0.073881606300344474 reference_xy_q=[   0.14856264633876087    -1.9764547946432096   0.009494213861287841    0.51831541856465257    -1.0525763821402028 6.8077354127762103e-19    0.94006214925611842                      0] reference_yaw=-0.96116375152584932 path_distance=0.068612452798884171 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=12 arm_link=-1 arm_point=-1 query=[ 0.1092213959958917 -2.2737941991880022 0.09800009779632092] voxel=[153  53   4] voxel_center=[0.17500000000000071 -2.3249999999999997 0.22500000000000001] distance=0.15191390305456379 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[  0.13157982317238837   -1.9059723960410813 0.0095469510084089815    0.5181533483320766   -1.0522764593199012                     0   0.93963290939618715                     0] actual_yaw=-1.3534049892493125 actual_vxy=[ 0.010784154819694674 -0.048823170778072744] odom_stamp=1794830744.3649228 joint_stamp=1794830744.479841",
+          "local": "2026-11-16T20:05:44.493+08:00",
+          "receipt_local": "2026-11-16T20:05:44.510+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830755.8825564,
+          "source": 1794830755.856209,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": -1,
+          "pieces": 2,
+          "duration": 6.332594231343623,
+          "progress_at_receipt": {
+            "receipt": 1794830755.879009,
+            "source": 1794830755.8783891,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:05:55.856+08:00",
+          "receipt_local": "2026-11-16T20:05:55.882+08:00"
+        },
+        "abort_to_next_add_s": 11.385949611663818,
+        "next_stop_owner_clear": {
+          "receipt": 1794830755.9052987,
+          "value": -1.0,
+          "local": "2026-11-16T20:05:55.905+08:00",
+          "receipt_local": "2026-11-16T20:05:55.905+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830756.4032729,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830756.4002867,
+            "source": 1794830756.3975906,
+            "reference": 1794830755.856209,
+            "phase": 0.09801755048264828,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:05:56.403+08:00"
+        },
+        "cause": {
+          "receipt": 1794830756.5029147,
+          "source": 1794830756.3946478,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830756.3933995 obs=2117 esdf=2116 epoch=2 revision=2116 fusion_stamp=1794830756.3039424 traj_id=1 traj_start=1794830755.856209 phase=0.10029049768421293 query_phase=0.15029049768421293 gear=-1 raw_speed=0.050036062817831788 reference_xy_q=[    0.12557713801116013     -1.8974033630340563   0.0095465183915037465     0.51815473401675216     -1.0522776497620121 -3.1767881801677795e-07     0.93963223795414208 -3.4876307086412626e-07] reference_yaw=-1.3564941685135206 path_distance=0.0025011088153885368 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=13 arm_link=-1 arm_point=-1 query=[ 0.1066734298332512 -2.1279479807578996 0.09800009779632092] voxel=[153  57   4] voxel_center=[0.17500000000000071              -2.125 0.22500000000000001] distance=0.14424349531623512 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[  0.12620276875057795   -1.9039028765685733 0.0095469510084089815    0.5181533483320766   -1.0522764593199012                     0   0.93963290939618715                     0] actual_yaw=-1.3562905389944082 actual_vxy=[ 0.010643228430659509 -0.048854085689661632] odom_stamp=1794830756.36483 joint_stamp=1794830756.3848107",
+          "local": "2026-11-16T20:05:56.394+08:00",
+          "receipt_local": "2026-11-16T20:05:56.502+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830768.688278,
+          "source": 1794830768.6605499,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": -1,
+          "pieces": 2,
+          "duration": 6.3549172395317655,
+          "progress_at_receipt": {
+            "receipt": 1794830768.688209,
+            "source": 1794830768.687847,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:06:08.660+08:00",
+          "receipt_local": "2026-11-16T20:06:08.688+08:00"
+        },
+        "abort_to_next_add_s": 12.28500509262085,
+        "next_stop_owner_clear": {
+          "receipt": 1794830768.7095532,
+          "value": -1.0,
+          "local": "2026-11-16T20:06:08.709+08:00",
+          "receipt_local": "2026-11-16T20:06:08.709+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830769.0515184,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830769.0482414,
+            "source": 1794830769.0479033,
+            "reference": 1794830768.6605499,
+            "phase": 0.04769270560533314,
+            "scale": 0.2722570368000001
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:06:09.051+08:00"
+        },
+        "cause": {
+          "receipt": 1794830769.428129,
+          "source": 1794830769.0509238,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830769.0495162 obs=2199 esdf=2198 epoch=2 revision=2198 fusion_stamp=1794830769.0119007 traj_id=1 traj_start=1794830768.6605499 phase=0.048131817272935279 query_phase=0.098131817272935282 gear=-1 raw_speed=0.050010316526778807 reference_xy_q=[   0.12653261704357691    -1.9044807959705581  0.0095469456327412945    0.51815336485242125    -1.0522764476825119 8.4281895812803992e-25    0.93963296383655459                      0] reference_yaw=-1.3578684807782428 path_distance=0.0025002426058019079 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=46 arm_link=-1 arm_point=-1 query=[0.18570292437534008 -2.1781573838078532 0.15285000000000001] voxel=[153  54   3] voxel_center=[0.17500000000000071 -2.2749999999999999 0.17500000000000002] distance=0.099918303634137395 threshold=0.11283138149046223 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[  0.12857226558074358   -1.9075726997752351 0.0095469510084089815    0.5181533483320766   -1.0522764593199012                     0   0.93963290939618715                     0] actual_yaw=-1.3578374036313472 actual_vxy=[ 0.010567645069769805 -0.048870490868001014] odom_stamp=1794830768.9640512 joint_stamp=1794830769.0398445",
+          "local": "2026-11-16T20:06:09.050+08:00",
+          "receipt_local": "2026-11-16T20:06:09.428+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830775.6818767,
+          "source": 1794830775.6170342,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 12.988849309043532,
+          "progress_at_receipt": {
+            "receipt": 1794830775.6779127,
+            "source": 1794830775.6775787,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:06:15.617+08:00",
+          "receipt_local": "2026-11-16T20:06:15.681+08:00"
+        },
+        "abort_to_next_add_s": 6.6303582191467285,
+        "next_stop_owner_clear": {
+          "receipt": 1794830775.708866,
+          "value": -1.0,
+          "local": "2026-11-16T20:06:15.708+08:00",
+          "receipt_local": "2026-11-16T20:06:15.708+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830775.9114568,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830775.908492,
+            "source": 1794830775.907769,
+            "reference": 1794830775.6170342,
+            "phase": 0.01520934218755875,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:06:15.911+08:00"
+        },
+        "cause": {
+          "receipt": 1794830775.9094927,
+          "source": 1794830775.9048653,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830775.9018199 obs=2243 esdf=2242 epoch=2 revision=2242 fusion_stamp=1794830775.8687534 traj_id=2 traj_start=1794830775.6170342 phase=0.015822503352287839 query_phase=0.065822503352287842 gear=1 raw_speed=0.049999467474029689 reference_xy_q=[    0.12795035616027903     -1.9122002500851136   0.0077667065542930958     0.51991613007751458     -1.0522764600971062 -8.5842236941862565e-09     0.93963290398320554  4.8747685169531141e-10] reference_yaw=-1.3587375912414561 path_distance=0.0024999912500483445 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=46 arm_link=-1 arm_point=-1 query=[0.18688278598872732 -2.1859281600879394 0.15285000000000001] voxel=[153  54   3] voxel_center=[0.17500000000000071 -2.2749999999999999 0.17500000000000002] distance=0.092550611927602111 threshold=0.11283138149046223 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[  0.12832653525601215    -1.906489720912492 0.0077667151713747655   0.51991613087659083   -1.0522764593199012                     0   0.93963290939618715                     0] actual_yaw=-1.3582756497846706 actual_vxy=[ 0.010546226751012135 -0.048875117404628667] odom_stamp=1794830775.8649685 joint_stamp=1794830775.8798482",
+          "local": "2026-11-16T20:06:15.904+08:00",
+          "receipt_local": "2026-11-16T20:06:15.909+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830781.7841012,
+          "source": 1794830781.762106,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 7.914991049146045,
+          "progress_at_receipt": {
+            "receipt": 1794830781.7792246,
+            "source": 1794830781.7775478,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:06:21.762+08:00",
+          "receipt_local": "2026-11-16T20:06:21.784+08:00"
+        },
+        "abort_to_next_add_s": 5.872644424438477,
+        "next_stop_owner_clear": {
+          "receipt": 1794830781.8109426,
+          "value": -1.0,
+          "local": "2026-11-16T20:06:21.810+08:00",
+          "receipt_local": "2026-11-16T20:06:21.810+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830782.6542006,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830782.6488042,
+            "source": 1794830782.647605,
+            "reference": 1794830781.762106,
+            "phase": 0.28564377537385116,
+            "scale": 0.6720129079999999
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:06:22.654+08:00"
+        },
+        "cause": {
+          "receipt": 1794830782.7109258,
+          "source": 1794830782.6526299,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830782.6446636 obs=2282 esdf=2281 epoch=2 revision=2281 fusion_stamp=1794830782.5688624 traj_id=1 traj_start=1794830781.7621059 phase=0.28361051294961226 query_phase=1.6836105129496133 gear=1 raw_speed=0.085513016955587703 reference_xy_q=[   0.15759216775883333    -1.9977271459809876  0.0076962826984281378    0.52033093611853021    -1.0522715144609451 8.2115366000538483e-08    0.94098723551990882                      0] reference_yaw=-1.0338201396087976 path_distance=0.089296054058662394 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=12 arm_link=-1 arm_point=-1 query=[0.096770107215479295  -2.2914261967538025  0.09800009779632092] voxel=[153  53   4] voxel_center=[0.17500000000000071 -2.3249999999999997 0.22500000000000001] distance=0.15289241822025096 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[  0.12781849407841717   -1.9041306972775445 0.0077667151713747655   0.51988122429155093   -1.0522240994423415                     0   0.94134333206314169                     0] actual_yaw=-1.3574412658108141 actual_vxy=[ 0.010587003689839551 -0.048866300789719326] odom_stamp=1794830782.5638478 joint_stamp=1794830782.6398954",
+          "local": "2026-11-16T20:06:22.652+08:00",
+          "receipt_local": "2026-11-16T20:06:22.710+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830794.784918,
+          "source": 1794830794.7500002,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": -1,
+          "pieces": 2,
+          "duration": 1.7449095067624796,
+          "progress_at_receipt": {
+            "receipt": 1794830794.7781599,
+            "source": 1794830794.7776272,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:06:34.750+08:00",
+          "receipt_local": "2026-11-16T20:06:34.784+08:00"
+        },
+        "abort_to_next_add_s": 12.130717515945435,
+        "next_stop_owner_clear": {
+          "receipt": 1794830794.812079,
+          "value": -1.0,
+          "local": "2026-11-16T20:06:34.812+08:00",
+          "receipt_local": "2026-11-16T20:06:34.812+08:00"
+        },
+        "goal_number": 1
+      },
+      {
+        "abort": {
+          "receipt": 1794830805.6416306,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830805.6381838,
+            "source": 1794830805.63765,
+            "reference": 1794830798.8076134,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:06:45.641+08:00"
+        },
+        "cause": {
+          "receipt": 1794830805.6820047,
+          "source": 1794830805.6380677,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830805.6367598 obs=2410 esdf=2409 epoch=2 revision=2409 fusion_stamp=1794830805.6216295 traj_id=1 traj_start=1794830798.8076134 phase=0 query_phase=0.050000000000000003 gear=1 raw_speed=0.050003528933142874 reference_xy_q=[    0.1171696835589844    -1.8903790936122904  0.0077667151713747655    0.51988122429155093    -1.0522428938906576 3.0519520572718819e-20    0.94133854479663936                      0] reference_yaw=1.5572943831473769 path_distance=0.0025000443777027383 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=4 arm_link=-1 arm_point=-1 query=[0.31865625218386129 -1.9668566922141852 0.09800009779632092] voxel=[155  60   4] voxel_center=[0.27500000000000036 -1.9749999999999996 0.22500000000000001] distance=0.13454054027013351 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[ 0.11714105314762652   -1.869651656312421 0.011501719770642632  0.52178363317622478  -1.0541090550344954                    0   0.9421461835190591                    0] actual_yaw=-0.40520345932350793 actual_vxy=[ 0.045951110567622577 -0.019710287608305586] odom_stamp=1794830805.5649092 joint_stamp=1794830805.6148713",
+          "local": "2026-11-16T20:06:45.638+08:00",
+          "receipt_local": "2026-11-16T20:06:45.682+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830808.4863243,
+          "source": 1794830808.4493876,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": -1,
+          "pieces": 2,
+          "duration": 1.0687382531631662,
+          "progress_at_receipt": {
+            "receipt": 1794830808.4778879,
+            "source": 1794830808.477595,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:06:48.449+08:00",
+          "receipt_local": "2026-11-16T20:06:48.486+08:00"
+        },
+        "abort_to_next_add_s": 2.844693660736084,
+        "next_stop_owner_clear": {
+          "receipt": 1794830808.5427191,
+          "value": -1.0,
+          "local": "2026-11-16T20:06:48.542+08:00",
+          "receipt_local": "2026-11-16T20:06:48.542+08:00"
+        },
+        "goal_number": 2
+      },
+      {
+        "abort": {
+          "receipt": 1794830809.263345,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830809.2580442,
+            "source": 1794830809.2576573,
+            "reference": 1794830808.4493876,
+            "phase": 0.20447390155090303,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:06:49.263+08:00"
+        },
+        "cause": {
+          "receipt": 1794830809.2716422,
+          "source": 1794830809.253781,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830809.2526045 obs=2427 esdf=2426 epoch=2 revision=2426 fusion_stamp=1794830809.2110481 traj_id=2 traj_start=1794830808.4493876 phase=0.20734877634518323 query_phase=0.25734877634518322 gear=-1 raw_speed=0.049871035101961066 reference_xy_q=[    0.10468348649991645     -1.8619570571675639    0.011503061196295057     0.52178431639650058     -1.0541089604508989 -2.2495918487436406e-21     0.94214689079621072                       0] reference_yaw=-0.37388308333083675 path_distance=0.0024939914426406898 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=13 arm_link=-1 arm_point=-1 query=[ 0.2859960808608874  -2.005602154788062 0.09800009779632092] voxel=[155  60   4] voxel_center=[0.27500000000000036 -1.9749999999999996 0.22500000000000001] distance=0.13109683761142274 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[ 0.11593736180348957  -1.8747249356428639 0.011501719770642632  0.52178363317622478  -1.0541090550344954                    0   0.9421461835190591                    0] actual_yaw=-0.40002656939468118 actual_vxy=[ 0.046052532353407498 -0.019472140710213557] odom_stamp=1794830809.1631646 joint_stamp=1794830809.1999254",
+          "local": "2026-11-16T20:06:49.253+08:00",
+          "receipt_local": "2026-11-16T20:06:49.271+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830810.476757,
+          "source": 1794830810.45258,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": -1,
+          "pieces": 2,
+          "duration": 1.2570167585806795,
+          "progress_at_receipt": {
+            "receipt": 1794830810.467988,
+            "source": 1794830810.467579,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:06:50.452+08:00",
+          "receipt_local": "2026-11-16T20:06:50.476+08:00"
+        },
+        "abort_to_next_add_s": 1.2134120464324951,
+        "next_stop_owner_clear": {
+          "receipt": 1794830810.504844,
+          "value": -1.0,
+          "local": "2026-11-16T20:06:50.504+08:00",
+          "receipt_local": "2026-11-16T20:06:50.504+08:00"
+        },
+        "goal_number": 2
+      },
+      {
+        "abort": {
+          "receipt": 1794830813.9624002,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830813.9593318,
+            "source": 1794830813.9578757,
+            "reference": 1794830810.45258,
+            "phase": 1.9527459149828967,
+            "scale": 0.2431323869179184
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:06:53.962+08:00"
+        },
+        "cause": {
+          "receipt": 1794830813.9670537,
+          "source": 1794830813.9590063,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830813.9575505 obs=2449 esdf=2448 epoch=2 revision=2448 fusion_stamp=1794830813.9165189 traj_id=2 traj_start=1794830810.45258 phase=1.9527138043071572 query_phase=2.0027138043071573 gear=1 raw_speed=0.068515126933197085 reference_xy_q=[  0.099007531775587354    -1.8539333329424008   0.011458377214836902    0.52176155682770731    -1.0540972164159175 -0.0036363870184060875    0.92937982509791583    0.00216215702778829] reference_yaw=0.28629791935495635 path_distance=0.0033450815979725696 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=12 arm_link=-1 arm_point=-1 query=[0.36843925405903521 -1.9857096680749544 0.09800009779632092] voxel=[156  62   3] voxel_center=[0.32500000000000018              -1.875 0.17500000000000002] distance=0.14167774820997162 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[ 0.12529564668941379  -1.8574401667376723 0.011850785621041499  0.52356386901325891  -1.0522415527348614                    0  0.94410095228129265                    0] actual_yaw=-0.24929085008948496 actual_vxy=[ 0.048454381228079525 -0.012335839647301464] odom_stamp=1794830813.8649306 joint_stamp=1794830813.9448762",
+          "local": "2026-11-16T20:06:53.959+08:00",
+          "receipt_local": "2026-11-16T20:06:53.967+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830825.5734847,
+          "source": 1794830825.5227993,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 5.377075391322864,
+          "progress_at_receipt": {
+            "receipt": 1794830825.568793,
+            "source": 1794830825.5676785,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:07:05.522+08:00",
+          "receipt_local": "2026-11-16T20:07:05.573+08:00"
+        },
+        "abort_to_next_add_s": 11.611084461212158,
+        "next_stop_owner_clear": {
+          "receipt": 1794830825.6205223,
+          "value": -1.0,
+          "local": "2026-11-16T20:07:05.620+08:00",
+          "receipt_local": "2026-11-16T20:07:05.620+08:00"
+        },
+        "goal_number": 2
+      },
+      {
+        "abort": {
+          "receipt": 1794830826.542847,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830826.5382621,
+            "source": 1794830826.5376148,
+            "reference": 1794830825.5227993,
+            "phase": 0.3349081294371645,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:07:06.542+08:00"
+        },
+        "cause": {
+          "receipt": 1794830826.5429163,
+          "source": 1794830826.5351086,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830826.5326257 obs=2505 esdf=2504 epoch=2 revision=2504 fusion_stamp=1794830826.4551666 traj_id=1 traj_start=1794830825.5227993 phase=0.33857721083387421 query_phase=0.3885772108338742 gear=1 raw_speed=0.051075664239109995 reference_xy_q=[   0.13007924193802889    -1.8692832172341449   0.011847226595813864    0.52356065980675026    -1.0522420614496215 8.5080888846210078e-22    0.94409841533642835                      0] reference_yaw=-0.22225660671381009 path_distance=0.0025447827181939958 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=13 arm_link=-1 arm_point=-1 query=[ 0.3310086233374091 -1.9838936645536231 0.09800009779632092] voxel=[156  61   3] voxel_center=[0.32500000000000018 -1.9249999999999998 0.17500000000000002] distance=0.097126475372792717 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[ 0.11571142923526523  -1.8581413932855235 0.011850785621041499  0.52356386901325891  -1.0522415527348614                    0  0.94410095228129265                    0] actual_yaw=-0.25077484735970085 actual_vxy=[ 0.048436021528166485 -0.012407732207095427] odom_stamp=1794830826.464452 joint_stamp=1794830826.4749274",
+          "local": "2026-11-16T20:07:06.535+08:00",
+          "receipt_local": "2026-11-16T20:07:06.542+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830831.4915493,
+          "source": 1794830831.4728932,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 5.051246462013111,
+          "progress_at_receipt": {
+            "receipt": 1794830831.4894133,
+            "source": 1794830831.4889424,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:07:11.472+08:00",
+          "receipt_local": "2026-11-16T20:07:11.491+08:00"
+        },
+        "abort_to_next_add_s": 4.948702335357666,
+        "next_stop_owner_clear": {
+          "receipt": 1794830831.5378509,
+          "value": -1.0,
+          "local": "2026-11-16T20:07:11.537+08:00",
+          "receipt_local": "2026-11-16T20:07:11.537+08:00"
+        },
+        "goal_number": 2
+      },
+      {
+        "abort": {
+          "receipt": 1794830832.6827834,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830832.6808312,
+            "source": 1794830832.67759,
+            "reference": 1794830831.4728932,
+            "phase": 0.5235679415821827,
+            "scale": 0.6884665533406733
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:07:12.682+08:00"
+        },
+        "cause": {
+          "receipt": 1794830832.6854563,
+          "source": 1794830832.6787105,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830832.6775014 obs=2532 esdf=2531 epoch=2 revision=2531 fusion_stamp=1794830832.5778687 traj_id=1 traj_start=1794830831.4728932 phase=0.52350583258164907 query_phase=0.57350583258164911 gear=1 raw_speed=0.051692998461958378 reference_xy_q=[   0.14963230873685113    -1.8672394855246872   0.013837728479192112    0.52171827442790675    -1.0524751957178062 3.8193506792991651e-19     0.9440475765945826                      0] reference_yaw=-0.11379772936569249 path_distance=0.002572495306487716 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=9 arm_link=-1 arm_point=-1 query=[0.21524074289348327  -1.942677600972855 0.09800009779632092] voxel=[155  61   4] voxel_center=[0.27500000000000036 -1.9249999999999998 0.22500000000000001] distance=0.14146604379080638 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[0.11641693495809191 -1.8611800663927753 0.01382300767579509 0.51988122429155093 -1.0522415527348614                   0 0.94410095228129265                   0] actual_yaw=-0.23842727489639814 actual_vxy=[ 0.048585530715052956 -0.011808734273267634] odom_stamp=1794830832.5645812 joint_stamp=1794830832.6649022",
+          "local": "2026-11-16T20:07:12.678+08:00",
+          "receipt_local": "2026-11-16T20:07:12.685+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830837.758342,
+          "source": 1794830837.7301579,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 5.002708916314791,
+          "progress_at_receipt": {
+            "receipt": 1794830837.7482038,
+            "source": 1794830837.7476354,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:07:17.730+08:00",
+          "receipt_local": "2026-11-16T20:07:17.758+08:00"
+        },
+        "abort_to_next_add_s": 5.075558662414551,
+        "next_stop_owner_clear": {
+          "receipt": 1794830837.8024454,
+          "value": -1.0,
+          "local": "2026-11-16T20:07:17.802+08:00",
+          "receipt_local": "2026-11-16T20:07:17.802+08:00"
+        },
+        "goal_number": 2
+      },
+      {
+        "abort": {
+          "receipt": 1794830838.8149405,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830838.8080916,
+            "source": 1794830838.8076558,
+            "reference": 1794830837.7301579,
+            "phase": 0.4121848611915496,
+            "scale": 0.8080857952000002
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:07:18.814+08:00"
+        },
+        "cause": {
+          "receipt": 1794830838.8314774,
+          "source": 1794830838.8142397,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830838.812902 obs=2557 esdf=2556 epoch=2 revision=2556 fusion_stamp=1794830838.6820827 traj_id=1 traj_start=1794830837.7301579 phase=0.41642413987960347 query_phase=0.46642413987960346 gear=1 raw_speed=0.051322208896618614 reference_xy_q=[   0.14354695831522579    -1.8645861388866778   0.013819465080089256    0.51988122429155093    -1.0523302015978215 1.4404004116886021e-19    0.94407667731409517                      0] reference_yaw=-0.15588370485063163 path_distance=0.0025557840055356793 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=10 arm_link=-1 arm_point=-1 query=[0.22688261166152318 -1.8093541833157829 0.09800009779632092] voxel=[156  62   3] voxel_center=[0.32500000000000018              -1.875 0.17500000000000002] distance=0.14094459933561657 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[0.12157525732315067 -1.8595463183865033 0.01382300767579509 0.51853732076751535 -1.0522415527348614                   0 0.94226835656669861                   0] actual_yaw=-0.23280735440824407 actual_vxy=[ 0.048651127264711429 -0.011535502410942181] odom_stamp=1794830838.7649872 joint_stamp=1794830838.7999797",
+          "local": "2026-11-16T20:07:18.814+08:00",
+          "receipt_local": "2026-11-16T20:07:18.831+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830853.560877,
+          "source": 1794830853.5433555,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 6.019756613363402,
+          "progress_at_receipt": {
+            "receipt": 1794830853.5579276,
+            "source": 1794830853.557584,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:07:33.543+08:00",
+          "receipt_local": "2026-11-16T20:07:33.560+08:00"
+        },
+        "abort_to_next_add_s": 14.745936632156372,
+        "next_stop_owner_clear": {
+          "receipt": 1794830853.595756,
+          "value": -1.0,
+          "local": "2026-11-16T20:07:33.595+08:00",
+          "receipt_local": "2026-11-16T20:07:33.595+08:00"
+        },
+        "goal_number": 2
+      },
+      {
+        "abort": {
+          "receipt": 1794830858.421754,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830858.4186049,
+            "source": 1794830858.4176152,
+            "reference": 1794830853.5433555,
+            "phase": 2.678745829212063,
+            "scale": 0.20100769206265767
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:07:38.421+08:00"
+        },
+        "cause": {
+          "receipt": 1794830858.4955187,
+          "source": 1794830858.420386,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830858.4192142 obs=2663 esdf=2662 epoch=2 revision=2662 fusion_stamp=1794830858.3113289 traj_id=1 traj_start=1794830853.5433555 phase=2.6790672342804327 query_phase=2.7290672342804325 gear=1 raw_speed=0.13473843983890529 reference_xy_q=[   0.32102973497545112     -1.829817827848196   0.011968190402857419    0.51894890846210284    -1.0528089506683114 9.3020901687379072e-19    0.94183899690345596                      0] reference_yaw=0.73539304428445051 path_distance=0.0066499027046021909 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=8 arm_link=-1 arm_point=-1 query=[0.51157394307871484 -1.9305082702071403 0.09800009779632092] voxel=[159  63   3] voxel_center=[0.47500000000000053 -1.8249999999999997 0.17500000000000002] distance=0.13564156197052646 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[ 0.26396460807440875  -1.8635885777328067 0.013212142437597075  0.51853732076751535  -1.0522415527348614                    0   0.9406801069473838                    0] actual_yaw=0.19171599958922958 actual_vxy=[ 0.049083935382941764 0.0095271867475765198] odom_stamp=1794830858.365226 joint_stamp=1794830858.4099462",
+          "local": "2026-11-16T20:07:38.420+08:00",
+          "receipt_local": "2026-11-16T20:07:38.495+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830860.1423888,
+          "source": 1794830860.1205423,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": -1,
+          "pieces": 2,
+          "duration": 0.811598139562454,
+          "progress_at_receipt": {
+            "receipt": 1794830860.1278636,
+            "source": 1794830860.127577,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:07:40.120+08:00",
+          "receipt_local": "2026-11-16T20:07:40.142+08:00"
+        },
+        "abort_to_next_add_s": 1.720634937286377,
+        "next_stop_owner_clear": {
+          "receipt": 1794830860.162421,
+          "value": -1.0,
+          "local": "2026-11-16T20:07:40.162+08:00",
+          "receipt_local": "2026-11-16T20:07:40.162+08:00"
+        },
+        "goal_number": 2
+      },
+      {
+        "abort": {
+          "receipt": 1794830866.8886197,
+          "source": 0.0,
+          "action": 2,
+          "trajectory_id": 0,
+          "singul": 0,
+          "pieces": 0,
+          "duration": 0,
+          "progress_at_receipt": {
+            "receipt": 1794830866.878092,
+            "source": 1794830866.8776019,
+            "reference": 1794830860.1205423,
+            "phase": 4.035020673735295,
+            "scale": 0.0
+          },
+          "local": "1970-01-01T08:00:00.000+08:00",
+          "receipt_local": "2026-11-16T20:07:46.888+08:00"
+        },
+        "cause": {
+          "receipt": 1794830866.976681,
+          "source": 1794830866.8754368,
+          "node": "/remani_planner_node",
+          "level": 8,
+          "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830866.8744245 obs=2706 esdf=2705 epoch=2 revision=2705 fusion_stamp=1794830866.7631016 traj_id=2 traj_start=1794830860.1205423 phase=4.0371322523373774 query_phase=4.0871322523373772 gear=1 raw_speed=0.11397240629148304 reference_xy_q=[   0.47485796339955694    -1.5607463811407694  0.0082883546158348982    0.51975248635896676    -1.0522434529385667 2.8710267383144298e-20    0.94127529872366666                      0] reference_yaw=1.2902652531249323 path_distance=0.0058105169851039497 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=5 arm_link=-1 arm_point=-1 query=[ 0.5193005416186367 -1.6503021354846259 0.09800009779632092] voxel=[160  68   4] voxel_center=[0.52500000000000036 -1.5749999999999997 0.22500000000000001] distance=0.14775611863516833 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[ 0.43056645848598207  -1.7017101649461672 0.013212142437597075  0.51982886441399112  -1.0522415527348614                    0  0.94862135504395795                    0] actual_yaw=1.0269623668872194 actual_vxy=[0.025871031279598673 0.042786560279251561] odom_stamp=1794830866.7683246 joint_stamp=1794830866.8699787",
+          "local": "2026-11-16T20:07:46.875+08:00",
+          "receipt_local": "2026-11-16T20:07:46.976+08:00"
+        },
+        "classification": "raw_live_occupancy_near_stop",
+        "next_add": {
+          "receipt": 1794830867.6469905,
+          "source": 1794830867.6415882,
+          "action": 1,
+          "trajectory_id": 1,
+          "singul": 1,
+          "pieces": 2,
+          "duration": 2.0830413650079644,
+          "progress_at_receipt": {
+            "receipt": 1794830867.6378977,
+            "source": 1794830867.6375735,
+            "reference": 0.0,
+            "phase": 0.0,
+            "scale": 0.0
+          },
+          "local": "2026-11-16T20:07:47.641+08:00",
+          "receipt_local": "2026-11-16T20:07:47.646+08:00"
+        },
+        "abort_to_next_add_s": 0.7583708763122559,
+        "next_stop_owner_clear": {
+          "receipt": 1794830867.761057,
+          "value": -1.0,
+          "local": "2026-11-16T20:07:47.761+08:00",
+          "receipt_local": "2026-11-16T20:07:47.761+08:00"
+        },
+        "goal_number": 2
+      }
+    ]
+  },
+  "raw_live_collision": {
+    "first": {
+      "abort": {
+        "receipt": 1794830670.4566708,
+        "source": 0.0,
+        "action": 2,
+        "trajectory_id": 0,
+        "singul": 0,
+        "pieces": 0,
+        "duration": 0,
+        "progress_at_receipt": {
+          "receipt": 1794830670.449144,
+          "source": 1794830670.4476845,
+          "reference": 1794830580.3170319,
+          "phase": 10.45542611351137,
+          "scale": 0.0
+        },
+        "local": "1970-01-01T08:00:00.000+08:00",
+        "receipt_local": "2026-11-16T20:04:30.456+08:00"
+      },
+      "cause": {
+        "receipt": 1794830670.5150943,
+        "source": 1794830670.4466357,
+        "node": "/remani_planner_node",
+        "level": 8,
+        "message": "[LiveCollisionStop] source=raw_latest checked_at=1794830670.4417636 obs=1620 esdf=1619 epoch=2 revision=1619 fusion_stamp=1794830670.379221 traj_id=2 traj_start=1794830580.3170319 phase=10.458737075237197 query_phase=10.508737075237198 gear=-1 raw_speed=0.14963813122754821 reference_xy_q=[   0.3299308565584953   -1.2749594329423515 0.0094768489272531835   0.52575505212560025   -1.0446574726303632 0.0085920365954898284   0.96506203460681372                     0] reference_yaw=1.6386213265878513 path_distance=0.0074082790655661378 stop_threshold=0.14999999999999999 hit_valid=1 collision_type=0 base_sphere=13 arm_link=-1 arm_point=-1 query=[0.38228102493478883 -1.0496426985099481 0.09800009779632092] voxel=[157  80   4] voxel_center=[               0.375 -0.97499999999999964  0.22500000000000001] distance=0.14749074860713171 threshold=0.15528264240422765 occupancy=2.1972245773362196 occupancy_threshold=1.3862943611198908 actual_xy_q=[  0.32027391283276491   -1.1720983945632508  0.012182398178920421   0.52379076181601825   -1.0418044838079352 0.0064228116473391324   0.96207784357683435                     0] actual_yaw=1.4585969626582533 actual_vxy=[-0.0077259898026241476   -0.11368547625455409] odom_stamp=1794830670.3645647 joint_stamp=1794830670.4347115",
+        "local": "2026-11-16T20:04:30.446+08:00",
+        "receipt_local": "2026-11-16T20:04:30.515+08:00"
+      },
+      "classification": "raw_live_occupancy_near_stop",
+      "next_add": {
+        "receipt": 1794830671.3255727,
+        "source": 1794830671.3089082,
+        "action": 1,
+        "trajectory_id": 1,
+        "singul": -1,
+        "pieces": 2,
+        "duration": 5.555673460606599,
+        "progress_at_receipt": {
+          "receipt": 1794830671.3235738,
+          "source": 1794830671.3181436,
+          "reference": 0.0,
+          "phase": 0.0,
+          "scale": 0.0
+        },
+        "local": "2026-11-16T20:04:31.308+08:00",
+        "receipt_local": "2026-11-16T20:04:31.325+08:00"
+      },
+      "abort_to_next_add_s": 0.8689019680023193,
+      "next_stop_owner_clear": {
+        "receipt": 1794830671.345403,
+        "value": -1.0,
+        "local": "2026-11-16T20:04:31.345+08:00",
+        "receipt_local": "2026-11-16T20:04:31.345+08:00"
+      },
+      "goal_number": 1
+    },
+    "meaning": "collision_is_dynamic here includes latest live LiDAR occupancy. It does not require a moving cluster or intentional human crossing. The warning label dynamic obstacle is not a classification witness.",
+    "independent_geometry_audit": "collision_geometry_body_audit.json",
+    "geometry_findings": "All 19 selected stop voxels have actual same-window mapping points. Twelve points are suspiciously fixed in source-stamp body coordinates x=.188-.202m, y=-.024..+.013m, z=.194-.208m; physical fixed-sphere gaps10.04-13.85mm lie just outside 10mm self-filter padding, while planner clearance includes a50mm voxel margin. Other seven have body x~.37-.43m.",
+    "geometry_boundary": "Fresh near-field input and inconsistent filtering/planning margins are confirmed; physical identity of returns is not. AABB/sphere proximity/body-coordinate clustering do not prove a particular robot shell surface. Extrinsic error, near-field multipath, selection bias at filter boundary, and nearby external objects are not independently excluded. These later19 stops do not explain earliest zero pulses."
+  },
+  "recovery_delay_evidence": {
+    "failures": {
+      "start_not_free": {
+        "log_count": 54,
+        "first": {
+          "receipt": 1794830670.5735505,
+          "source": 1794830670.5694935,
+          "node": "/remani_planner_node",
+          "level": 4,
+          "message": "KinoAstar: start (0:car-obstacle) is not free!",
+          "local": "2026-11-16T20:04:30.569+08:00",
+          "receipt_local": "2026-11-16T20:04:30.573+08:00"
+        },
+        "log_count_is_not_unique_attempt_count": true
+      },
+      "left_wheel_acceleration": {
+        "log_count": 88,
+        "first": {
+          "receipt": 1794830677.1191008,
+          "source": 1794830677.0341287,
+          "node": "/remani_planner_node",
+          "level": 4,
+          "message": "-7.042632 max left wheel alpha is not feasible at relative time 0.050000! opt failed",
+          "local": "2026-11-16T20:04:37.034+08:00",
+          "receipt_local": "2026-11-16T20:04:37.119+08:00"
+        },
+        "log_count_is_not_unique_attempt_count": true
+      },
+      "right_wheel_acceleration": {
+        "log_count": 58,
+        "first": {
+          "receipt": 1794830703.090885,
+          "source": 1794830703.0820453,
+          "node": "/remani_planner_node",
+          "level": 4,
+          "message": "-4.621656 max right wheel alpha is not feasible at relative time 0.120000! opt failed",
+          "local": "2026-11-16T20:05:03.082+08:00",
+          "receipt_local": "2026-11-16T20:05:03.090+08:00"
+        },
+        "log_count_is_not_unique_attempt_count": true
+      },
+      "right_wheel_speed": {
+        "log_count": 9,
+        "first": {
+          "receipt": 1794830749.1841846,
+          "source": 1794830749.120772,
+          "node": "/remani_planner_node",
+          "level": 4,
+          "message": "3.449576 max right wheel omega is not feasible at relative time 1.130000! opt failed",
+          "local": "2026-11-16T20:05:49.120+08:00",
+          "receipt_local": "2026-11-16T20:05:49.184+08:00"
+        },
+        "log_count_is_not_unique_attempt_count": true
+      },
+      "left_wheel_speed": {
+        "log_count": 0,
+        "first": null,
+        "log_count_is_not_unique_attempt_count": true
+      }
+    },
+    "interpretation": "Start nonfree and wheel acceleration/speed violations obstruct recovery after a stop. First such logs are after firstABORT and after first live collision; do not treat frequency as unique attempts or these later failures as initial stutter cause. Limits were not changed by this audit.",
+    "goal_retention": {
+      "validated_transient_recovery_logs": 19,
+      "give_up_goal_logs": 0,
+      "depth_lost_logs": 0,
+      "ordinary_emergency_stop_logs": 0,
+      "interpretation": "Transient recovery retained the goal through these19 episodes and published validated replacements. No evidence of old five-retry goal deletion in this run; first target was replaced by a newly published goal."
+    }
+  },
+  "optional_refresh": {
+    "transport_messages": 108,
+    "actual_attempts": [
+      {
+        "receipt": 1794830675.9527173,
+        "source": 1794830675.9217,
+        "node": "/remani_planner_node",
+        "level": 2,
+        "message": "[FSM][MPPIRefresh] goal=1794830561.994209290 reference=1794830671.308908224 episode=1794830675.272631407 success=0 elapsed_ms=233.51 prefix_used=0",
+        "fields": {
+          "goal": 1794830561.9942093,
+          "reference": 1794830671.3089082,
+          "episode": 1794830675.2726314,
+          "success": 0.0,
+          "elapsed_ms": 233.51,
+          "prefix_used": 0.0
+        },
+        "local": "2026-11-16T20:04:35.921+08:00",
+        "receipt_local": "2026-11-16T20:04:35.952+08:00"
+      },
+      {
+        "receipt": 1794830686.7138214,
+        "source": 1794830686.705038,
+        "node": "/remani_planner_node",
+        "level": 2,
+        "message": "[FSM][MPPIRefresh] goal=1794830561.994209290 reference=1794830681.131393433 episode=1794830686.501844645 success=1 elapsed_ms=184.14 prefix_used=0",
+        "fields": {
+          "goal": 1794830561.9942093,
+          "reference": 1794830681.1313934,
+          "episode": 1794830686.5018446,
+          "success": 1.0,
+          "elapsed_ms": 184.14,
+          "prefix_used": 0.0
+        },
+        "local": "2026-11-16T20:04:46.705+08:00",
+        "receipt_local": "2026-11-16T20:04:46.713+08:00"
+      },
+      {
+        "receipt": 1794830795.693241,
+        "source": 1794830795.68168,
+        "node": "/remani_planner_node",
+        "level": 2,
+        "message": "[FSM][MPPIRefresh] goal=1794830793.173975706 reference=1794830794.750000238 episode=1794830795.424704313 success=0 elapsed_ms=227.15 prefix_used=0",
+        "fields": {
+          "goal": 1794830793.1739757,
+          "reference": 1794830794.7500002,
+          "episode": 1794830795.4247043,
+          "success": 0.0,
+          "elapsed_ms": 227.15,
+          "prefix_used": 0.0
+        },
+        "local": "2026-11-16T20:06:35.681+08:00",
+        "receipt_local": "2026-11-16T20:06:35.693+08:00"
+      },
+      {
+        "receipt": 1794830798.4216833,
+        "source": 1794830798.4144719,
+        "node": "/remani_planner_node",
+        "level": 2,
+        "message": "[FSM][MPPIRefresh] goal=1794830793.173975706 reference=1794830794.750000238 episode=1794830798.078687429 success=1 elapsed_ms=306.84 prefix_used=0",
+        "fields": {
+          "goal": 1794830793.1739757,
+          "reference": 1794830794.7500002,
+          "episode": 1794830798.0786874,
+          "success": 1.0,
+          "elapsed_ms": 306.84,
+          "prefix_used": 0.0
+        },
+        "local": "2026-11-16T20:06:38.414+08:00",
+        "receipt_local": "2026-11-16T20:06:38.421+08:00"
+      },
+      {
+        "receipt": 1794830804.4695194,
+        "source": 1794830804.4607909,
+        "node": "/remani_planner_node",
+        "level": 2,
+        "message": "[FSM][MPPIRefresh] goal=1794830793.173975706 reference=1794830798.807613373 episode=1794830804.180374622 success=0 elapsed_ms=257.34 prefix_used=0",
+        "fields": {
+          "goal": 1794830793.1739757,
+          "reference": 1794830798.8076134,
+          "episode": 1794830804.1803746,
+          "success": 0.0,
+          "elapsed_ms": 257.34,
+          "prefix_used": 0.0
+        },
+        "local": "2026-11-16T20:06:44.460+08:00",
+        "receipt_local": "2026-11-16T20:06:44.469+08:00"
+      }
+    ],
+    "actual_successes": 2,
+    "moving_handoff_logs": [
+      {
+        "receipt": 1794830686.7097673,
+        "source": 1794830686.7027805,
+        "node": "/remani_planner_node",
+        "level": 2,
+        "message": "[MovingHandoff] epoch=1794830686.520680666 activation=1794830687.220680714 remaining=0.518 old_start=1794830681.131393433 phase=3.237715 scale=0.982",
+        "local": "2026-11-16T20:04:46.702+08:00",
+        "receipt_local": "2026-11-16T20:04:46.709+08:00"
+      },
+      {
+        "receipt": 1794830798.421658,
+        "source": 1794830798.4141,
+        "node": "/remani_planner_node",
+        "level": 2,
+        "message": "[MovingHandoff] epoch=1794830798.107613325 activation=1794830798.807613373 remaining=0.394 old_start=1794830794.750000238 phase=1.209293 scale=0.000",
+        "local": "2026-11-16T20:06:38.414+08:00",
+        "receipt_local": "2026-11-16T20:06:38.421+08:00"
+      }
+    ],
+    "prefix_used": 0,
+    "conclusion": "Five actual optional attempts, two successes. Production live event contains no MPPI prefix. The first attempt begins around20:04:35.688 after initial stutter/firstABORT. tryMppiRefresh failure restores old guide metadata and does not itself publish ABORT.",
+    "overlapping_second_fault": {
+      "refresh_begin_approx": 1794830675.6882937,
+      "fault_true_receipt": 1794830675.870209,
+      "mppi_rejection_status_receipt": 1794830675.9079056,
+      "mppi_rejection_reason": "command_hold_or_braking_rejected_by_latest_state_or_map",
+      "refresh_failure_source": 1794830675.9217,
+      "fsm_fault_callback_source": 1794830675.9295242,
+      "abort_receipt": 1794830675.9415317,
+      "boundary": "Fault arrived during synchronous optional solve and was processed after it. This proves fault/ABORT path, not that optional solve caused the geometry failure or that CPU contention had no role."
+    },
+    "yaw_continuity_boundary": {
+      "next_feedback_source": 1794830804.2049701,
+      "logged_yaw_error_rad": -2.029,
+      "following_raw_stop_source": 1794830805.638,
+      "reference_yaw": 1.557294383,
+      "actual_yaw": -0.405203459,
+      "interpretation": "Matching/fresh progress does not prove the physical robot aligns with the future guide heading. This witness needs separate handoff acceptance/actuation analysis; do not attribute its cause solely from these stamps."
+    }
+  },
+  "prior_fix_checks": {
+    "phase_clock_witness": {
+      "checked_at": 1794830670.4417636,
+      "reference_start": 1794830580.3170319,
+      "wall_elapsed_s": 90.12473177909851,
+      "reported_phase_s": 10.458737075237197,
+      "controller_nearby_phase_s": 10.4554261135,
+      "interpretation": "At first live collision, scan used controller phase rather than90s wallclock fallback; this historical bug is not reproduced at this witness."
+    },
+    "transient_recovery": "19 recovery completions and no goal-giveup. Recovery fix operates, but recovering from repeatedly flagged near-field points can still create repeated stops.",
+    "ordinary_static_urgent_one_line_route": "Not exercised: no ordinary Emergency stop! witness; helper behavior cannot be claimed real-vehicle accepted for an unobserved entrance."
+  },
+  "source_citations": {
+    "snapshot_decode": "src/mm_remani/scripts/mppi/active_arm_mppi.py:72-94",
+    "snapshot_exception": "src/mm_remani/scripts/whole_body_mppi.py:424-444",
+    "reject_fault_escalation": "src/mm_remani/scripts/whole_body_mppi.py:562-579",
+    "snapshot_input_error_capture": "src/mm_remani/scripts/whole_body_mppi.py:635",
+    "tracking_fault_callback": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1107-1146",
+    "abort_publication": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:3755-3763",
+    "raw_live_stop": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1980-2020",
+    "transient_goal_preserving_recovery": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:436-547",
+    "optional_refresh": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1033-1084",
+    "virtual_clock_tracking_error_hold": "src/mm_controller/src/mm_controller_fsm.cpp:394-450",
+    "start_collision": "src/mm_remani_planner/path_searching/src/kino_astar.cpp:489-496",
+    "wheel_feasibility": "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp:418-432"
+  },
+  "limits": [
+    "No dynamic crossing was deliberately performed; user reported open transfer. Dynamic output presence/absence cannot independently prove physical human entry time.",
+    "This core audit does not identify physical objects from live points; use separate source-stamp cloud/TF evidence with its limitations.",
+    "Zero cmd/trajectory ABORT are explicit software events, not exact physical-stop onset.",
+    "No source/parameter changes or simulation were made in this audit."
+  ],
+  "resources": {
+    "initial_pass_peak_rss_kib": 277284,
+    "initial_pass_exceeded_250MiB_limit": true,
+    "disclosure": "First retained diagnostic pass reached270.8MiB and then exited; parent informed. Replaced bulky work file by trimmed2.7MB result. Subsequent targeted closed-bag passes peaked208732/207812KiB. Final report assembly uses trimmed work only.",
+    "final_assembly_peak_rss_kib": 23392
+  }
+}

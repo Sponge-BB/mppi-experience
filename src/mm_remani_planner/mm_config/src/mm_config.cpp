@@ -893,15 +893,29 @@ bool MMConfig::checkManiPlanningObsCollision(
 }
 
 bool MMConfig::checkCarDynamicObsCollision(Eigen::Vector3d car_state, bool safe, double &min_dist){
+    return checkCarDynamicObsCollision(car_state, safe, min_dist, nullptr);
+}
+
+bool MMConfig::checkCarDynamicObsCollision(Eigen::Vector3d car_state, bool safe, double &min_dist,
+                                          DynamicCollisionEvidence *evidence){
+    if (evidence)
+        *evidence = DynamicCollisionEvidence{};
     std::vector<Eigen::Vector3d> car_pts;
     getCarPts(car_state, car_pts);
     const double extra_distance = (safe ? car_safe_margin_ : 0.0) + map_resolution_;
     for(std::size_t i = 0; i < car_pts.size(); ++i){
         const auto &pt = car_pts[i];
         const double safe_dist = getBaseSphereRadius(i) + extra_distance;
-        const double dist = grid_map_->getDynamicObstacleDistance(pt, safe_dist);
+        const double dist = grid_map_->getDynamicObstacleDistance(
+            pt, safe_dist, evidence ? &evidence->hit : nullptr);
         if(dist < safe_dist){
             min_dist = dist;
+            if (evidence) {
+                evidence->query = pt;
+                evidence->threshold = safe_dist;
+                evidence->collision_type = 0;
+                evidence->base_sphere = static_cast<int>(i);
+            }
             return true;
         }
     }
@@ -910,6 +924,13 @@ bool MMConfig::checkCarDynamicObsCollision(Eigen::Vector3d car_state, bool safe,
 }
 
 bool MMConfig::checkManiDynamicObsCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, double &min_dist){
+    return checkManiDynamicObsCollision(car_state, mani_state, safe, min_dist, nullptr);
+}
+
+bool MMConfig::checkManiDynamicObsCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, double &min_dist,
+                                           DynamicCollisionEvidence *evidence){
+    if (evidence)
+        *evidence = DynamicCollisionEvidence{};
     Eigen::Matrix4d T_q = Eigen::Matrix4d::Identity();
     T_q(0, 0) = cos(car_state(2));
     T_q(0, 1) = -sin(car_state(2));
@@ -926,9 +947,17 @@ bool MMConfig::checkManiDynamicObsCollision(Eigen::Vector3d car_state, Eigen::Ve
         const int pts_size = manipulator_link_pts_[i].cols();
         for(int j = 0; j < pts_size; ++j){
             const Eigen::Vector3d pt_on_link = (T_now * manipulator_link_pts_[i].col(j)).head(3);
-            const double dist = grid_map_->getDynamicObstacleDistance(pt_on_link, safe_dist);
+            const double dist = grid_map_->getDynamicObstacleDistance(
+                pt_on_link, safe_dist, evidence ? &evidence->hit : nullptr);
             if(dist < safe_dist){
                 min_dist = dist;
+                if (evidence) {
+                    evidence->query = pt_on_link;
+                    evidence->threshold = safe_dist;
+                    evidence->collision_type = 1;
+                    evidence->arm_link = i;
+                    evidence->arm_point = j;
+                }
                 return true;
             }
         }
@@ -1092,12 +1121,17 @@ bool MMConfig::checkManicollision(Eigen::Vector3d car_state, Eigen::VectorXd man
 }
 
 bool MMConfig::checkDynamicObstacleCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type){
+    return checkDynamicObstacleCollision(car_state, mani_state, safe, coll_type, nullptr);
+}
+
+bool MMConfig::checkDynamicObstacleCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type,
+                                            DynamicCollisionEvidence *evidence){
     double min_dist;
-    if(checkCarDynamicObsCollision(car_state, safe, min_dist)){
+    if(checkCarDynamicObsCollision(car_state, safe, min_dist, evidence)){
         coll_type = 0;
         return true;
     }
-    if(checkManiDynamicObsCollision(car_state, mani_state, safe, min_dist)){
+    if(checkManiDynamicObsCollision(car_state, mani_state, safe, min_dist, evidence)){
         coll_type = 1;
         return true;
     }

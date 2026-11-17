@@ -1,0 +1,92 @@
+{
+  "scope": "200 fake telemetry cycles; actual driver and SDK getter bodies loaded by AST; no SDK import, CAN, ROS, or timing claim; not evidence that hardware latency is fixed",
+  "source_sha256": {
+    "/home/l/remani_ws/experiments/online_remani_validation/results/motor_feedback_diagnostic_20261110/telemetry_reduction/before/piper_ctrl_single_node.py": "a854e3566a9adb9eee49ed9b7d8e9e3457de0c10c8b0fd578493135f4bb98b82",
+    "/home/l/remani_ws/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py": "76729c4713b5d0a1c2ffeaac48a098f5c2394b49a0fe9800e68d2a0508483041",
+    "/home/l/.local/lib/python3.8/site-packages/piper_sdk/interface/piper_interface.py": "ee63f0fa68286f7d0970ac9b53828c407f135ee68624064404fc419b0acede92"
+  },
+  "scenarios": {
+    "none": {
+      "before": {
+        "motor_constructed": 200,
+        "motor_locks": 200,
+        "fps_locks": 1800,
+        "motor_published": 200,
+        "end_pose_locks": 200,
+        "pose_constructed": 200,
+        "quaternion_conversions": 200,
+        "pose_published": 200,
+        "euler_constructed": 200,
+        "euler_published": 200
+      },
+      "after": {}
+    },
+    "pose_only": {
+      "before": {
+        "motor_constructed": 200,
+        "motor_locks": 200,
+        "fps_locks": 1800,
+        "motor_published": 200,
+        "end_pose_locks": 200,
+        "pose_constructed": 200,
+        "quaternion_conversions": 200,
+        "pose_published": 200,
+        "euler_constructed": 200,
+        "euler_published": 200
+      },
+      "after": {
+        "end_pose_locks": 200,
+        "fps_locks": 600,
+        "pose_constructed": 200,
+        "quaternion_conversions": 200,
+        "pose_published": 200
+      }
+    },
+    "euler_only": {
+      "before": {
+        "motor_constructed": 200,
+        "motor_locks": 200,
+        "fps_locks": 1800,
+        "motor_published": 200,
+        "end_pose_locks": 200,
+        "pose_constructed": 200,
+        "quaternion_conversions": 200,
+        "pose_published": 200,
+        "euler_constructed": 200,
+        "euler_published": 200
+      },
+      "after": {
+        "end_pose_locks": 200,
+        "fps_locks": 600,
+        "euler_constructed": 200,
+        "euler_published": 200
+      }
+    },
+    "all": {
+      "before": {
+        "motor_constructed": 200,
+        "motor_locks": 200,
+        "fps_locks": 1800,
+        "motor_published": 200,
+        "end_pose_locks": 200,
+        "pose_constructed": 200,
+        "quaternion_conversions": 200,
+        "pose_published": 200,
+        "euler_constructed": 200,
+        "euler_published": 200
+      },
+      "after": {
+        "motor_constructed": 200,
+        "motor_locks": 200,
+        "motor_published": 200,
+        "end_pose_locks": 200,
+        "fps_locks": 600,
+        "pose_constructed": 200,
+        "quaternion_conversions": 200,
+        "pose_published": 200,
+        "euler_constructed": 200,
+        "euler_published": 200
+      }
+    }
+  }
+}

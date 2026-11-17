@@ -1,0 +1,45 @@
+{
+  "recorded_state_elapsed_s": 4.059999998999956,
+  "snapshot": "corrected_servo_zero/first_dynamic_snapshot.npy",
+  "alignment": "Recorded state shifted in time to first snapshot +50ms for offline computational comparison only",
+  "groups": 1,
+  "group_sizes": [
+    38
+  ],
+  "native_servo": true,
+  "warmup": {
+    "plan_ms": 74.81966300110798,
+    "total_ms": 78.56898200407159
+  },
+  "profiled": {
+    "plan_ms": 83.08194499841193,
+    "total_ms": 87.34433900099248
+  },
+  "source_sha256": "f1537dfce80edee39fa2658e720b06156b9c71665b9adcd9d383783592039749"
+}
+         13705 function calls (13642 primitive calls) in 0.087 seconds
+
+   Ordered by: cumulative time
+   List reduced from 238 to 18 due to restriction <18>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.087    0.087 <stdin>:19(once)
+        1    0.001    0.001    0.083    0.083 standby_whole_body_mppi.py:216(plan)
+        3    0.003    0.001    0.076    0.025 standby_whole_body_mppi.py:136(evaluate)
+        4    0.005    0.001    0.028    0.007 active_arm_mppi.py:83(query)
+       62    0.000    0.000    0.018    0.000 active_arm_mppi.py:200(advance)
+  681/618    0.003    0.000    0.018    0.000 {built-in method numpy.core._multiarray_umath.implement_array_function}
+        4    0.017    0.004    0.017    0.004 {method 'query' of 'scipy.spatial.ckdtree.cKDTree' objects}
+       94    0.010    0.000    0.015    0.000 active_arm_mppi.py:139(_advance_base)
+        3    0.000    0.000    0.013    0.004 active_arm_mppi.py:298(configuration_gap)
+        4    0.003    0.001    0.013    0.003 active_arm_model.py:377(configuration_gaps_batch)
+       94    0.003    0.000    0.010    0.000 active_arm_mppi.py:162(_advance_position_arm)
+        4    0.000    0.000    0.008    0.002 active_arm_mppi.py:295(spheres)
+        4    0.000    0.000    0.008    0.002 active_arm_model.py:371(body_spheres_batch)
+       32    0.000    0.000    0.008    0.000 active_arm_mppi.py:215(advance_position_brake)
+        4    0.000    0.000    0.008    0.002 active_arm_model.py:363(body_spheres)
+        8    0.001    0.000    0.008    0.001 active_arm_model.py:354(arm_spheres)
+      459    0.008    0.000    0.008    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+       10    0.000    0.000    0.005    0.001 <__array_function__ internals>:2(norm)
+
+

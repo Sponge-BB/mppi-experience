@@ -1,0 +1,286 @@
+{
+  "scope": "Full production NativeReferenceAdapter.plan -> WholeBodyMPPI.plan -> original independent 5ms bounded/lagged Plant; real two-gear polynomial and capacity-limited 100Hz native phase clock transcription. Clear one-sphere scene, ideal fixed arm, no full robot collision/map/replanning/terminal FSM. Recorded gates copied by source walltime when specified, no new actuator authority or ROS publishing. This is not hardware validation.",
+  "params": {
+    "yaw_hold_speed": 0.04,
+    "virtual_time_scale_rise_rate": 0.8,
+    "virtual_time_scale_fall_rate": 2.0,
+    "base_tracking_slow_distance": 0.08,
+    "base_tracking_stop_distance": 0.16,
+    "base_tracking_resume_distance": 0.05,
+    "base_tracking_slow_yaw": 0.25,
+    "base_tracking_stop_yaw": 0.55,
+    "base_tracking_resume_yaw": 0.15,
+    "base_tracking_min_time_scale": 0.1
+  },
+  "base_limits": {
+    "vmax": 0.25,
+    "wmax": 0.35,
+    "accel": 0.25,
+    "angular_accel": 0.8,
+    "track": 0.37,
+    "wheel_v": 0.25,
+    "wheel_a": 0.2975
+  },
+  "initial_state": [
+    -0.2833449222587313,
+    0.039577631467713634,
+    -0.0039423133529168635,
+    -0.0009187268940778481,
+    0.003948068807535607,
+    -0.006998770300497261,
+    0.5107182457185807,
+    -1.050182064217508,
+    0.0,
+    0.9388475112327896,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "final_state": [
+    0.5274930599417237,
+    -1.330103566571801,
+    1.8160890765696724,
+    -0.06531591039830216,
+    -0.18724550166774168,
+    -0.006998770300497261,
+    0.5107182457185807,
+    -1.050182064217508,
+    0.0,
+    0.9388475112327896,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "native_duration": 13.48169309704538,
+  "elapsed": 20.93,
+  "clock_completed": true,
+  "final_phase": 13.48169309704538,
+  "final_scale": 1.0,
+  "final_goal_position_error": 0.06921938150472515,
+  "final_endpoint_position_error": 0.06921938150472574,
+  "final_goal_yaw_error": 0.23832563834487974,
+  "freeze_events": 0,
+  "resume_events": 0,
+  "frozen_seconds": 0.0,
+  "max_reference_position_error": 0.12451208837026621,
+  "max_reference_yaw_error": 0.44057693971754475,
+  "angular_flips_ge_005": 1,
+  "angular_flips_scale_mode": 0,
+  "angular_flips_endpoint_2_5cm": 0,
+  "scale_transitions": 0,
+  "scale_transition_command_flips": 0,
+  "events": [],
+  "flips": [
+    {
+      "before": {
+        "delivery_event": null,
+        "t": 2.4,
+        "phase": 1.8134830486124411,
+        "scale": 0.6006555080769159,
+        "hold": false,
+        "block": 0,
+        "gear": 1,
+        "position": [
+          -0.1720233985252468,
+          -0.01993179839606278
+        ],
+        "yaw": -0.7547361360146503,
+        "command": [
+          0.10486466537761159,
+          -0.06384979748181507
+        ],
+        "reference_position_error": 0.1154972881709408,
+        "reference_yaw_error": 0.38201651632992517,
+        "current_distance": 0.11657803234730878,
+        "end_distance": 0.38727967071096603,
+        "pause_align": true
+      },
+      "after": {
+        "delivery_event": null,
+        "t": 2.5,
+        "phase": 1.8693236266492994,
+        "scale": 0.5246644495020664,
+        "hold": false,
+        "block": 0,
+        "gear": 1,
+        "position": [
+          -0.16461365142622786,
+          -0.027069262383184314
+        ],
+        "yaw": -0.7772644205821353,
+        "command": [
+          0.10476322150065258,
+          0.05421872087345747
+        ],
+        "reference_position_error": 0.11548233365017047,
+        "reference_yaw_error": 0.40844518349931125,
+        "current_distance": 0.11645005364287034,
+        "end_distance": 0.37801282350033777,
+        "pause_align": true
+      },
+      "scale_mode_changed": false,
+      "same_gear": true,
+      "endpoint_2_5cm_crossed": false
+    }
+  ],
+  "transitions": [],
+  "nonzero_sign_changes": 2,
+  "nonzero_sign_changes_scale_mode": 0,
+  "nonzero_sign_changes_endpoint_2_5cm": 0,
+  "nonzero_sign_change_definition": "Consecutive controls with abs(w)>=.05, skipping smaller/zero commands; counts can include ordinary smooth sign changes over long intervals. Inspect attached rows for root cause.",
+  "nonzero_sign_change_rows": [
+    {
+      "before": {
+        "delivery_event": null,
+        "t": 2.4,
+        "phase": 1.8134830486124411,
+        "scale": 0.6006555080769159,
+        "hold": false,
+        "block": 0,
+        "gear": 1,
+        "position": [
+          -0.1720233985252468,
+          -0.01993179839606278
+        ],
+        "yaw": -0.7547361360146503,
+        "command": [
+          0.10486466537761159,
+          -0.06384979748181507
+        ],
+        "reference_position_error": 0.1154972881709408,
+        "reference_yaw_error": 0.38201651632992517,
+        "current_distance": 0.11657803234730878,
+        "end_distance": 0.38727967071096603,
+        "pause_align": true
+      },
+      "after": {
+        "delivery_event": null,
+        "t": 2.5,
+        "phase": 1.8693236266492994,
+        "scale": 0.5246644495020664,
+        "hold": false,
+        "block": 0,
+        "gear": 1,
+        "position": [
+          -0.16461365142622786,
+          -0.027069262383184314
+        ],
+        "yaw": -0.7772644205821353,
+        "command": [
+          0.10476322150065258,
+          0.05421872087345747
+        ],
+        "reference_position_error": 0.11548233365017047,
+        "reference_yaw_error": 0.40844518349931125,
+        "current_distance": 0.11645005364287034,
+        "end_distance": 0.37801282350033777,
+        "pause_align": true
+      },
+      "scale_mode_changed": false,
+      "same_gear": true,
+      "endpoint_2_5cm_crossed": false
+    },
+    {
+      "before": {
+        "delivery_event": null,
+        "t": 12.5,
+        "phase": 8.39430451146712,
+        "scale": 0.5849773814072723,
+        "hold": false,
+        "block": 1,
+        "gear": -1,
+        "position": [
+          0.14127830311760228,
+          -0.5389809796855302
+        ],
+        "yaw": 2.121413782581353,
+        "command": [
+          -0.10605949996777776,
+          0.10084915641038439
+        ],
+        "reference_position_error": 0.11689089943046468,
+        "reference_yaw_error": 0.21539999980802005,
+        "current_distance": 0.11799585566225416,
+        "end_distance": 0.946615338256204,
+        "pause_align": true
+      },
+      "after": {
+        "delivery_event": null,
+        "t": 12.700000000000001,
+        "phase": 8.50979608254725,
+        "scale": 0.5719316086483539,
+        "hold": false,
+        "block": 1,
+        "gear": -1,
+        "position": [
+          0.15253935090216328,
+          -0.5565109077338558
+        ],
+        "yaw": 2.156783819987486,
+        "command": [
+          -0.1071917621829132,
+          -0.05577044536982534
+        ],
+        "reference_position_error": 0.11805052367570187,
+        "reference_yaw_error": 0.23419670749630406,
+        "current_distance": 0.1191494922220451,
+        "end_distance": 0.9259849453799516,
+        "pause_align": true
+      },
+      "scale_mode_changed": false,
+      "same_gear": true,
+      "endpoint_2_5cm_crossed": false
+    }
+  ],
+  "wall_seconds": 3.1794944659995963,
+  "variant": "current",
+  "actual_plan_calls": 210,
+  "actual_plan_failures": [],
+  "capacity_clock": {
+    "limits": {
+      "vmax": 0.25,
+      "wmax": 0.35,
+      "accel": 0.25,
+      "angular_accel": 0.8,
+      "track": 0.37,
+      "wheel_v": 0.25,
+      "wheel_a": 0.2975
+    },
+    "statistics": {
+      "samples": 2093,
+      "limited_samples": 560,
+      "max_published_demand": 1.0,
+      "violations": 0,
+      "max_published_linear": 0.193833000684955,
+      "max_published_angular": 0.35000000000000003,
+      "max_published_wheel": 0.21994000105993353,
+      "max_linear_excess": 0.0,
+      "max_angular_excess": 5.551115123125783e-17,
+      "max_wheel_excess": 0.0
+    },
+    "scope": "Base-only transcription of source execution_scale: raw polynomial derivatives, same low-speed heading convention, target minimum, post-smoothing hard cap, and new-phase publication cap. Original tracking thresholds/rates preserved. Numerical code does not execute the C++ ROS controller process."
+  },
+  "source_sha256": {
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "e5ac13e9387138c0464607996ae362297925a6b2abca34bcf0a51f65d38b303d",
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": "7e6685aaee4d3a32c624636ad4712372f8b0bd4d44811e594daeee1ac6f11d6a",
+    "src/mm_controller/src/mm_controller_fsm.cpp": "ecbc83d66555d07ad8eb635c3117748f840f4be62254fdb2ee908fc0564e8c23",
+    "src/mm_controller/include/mm_controller/mm_controller_fsm.hpp": "8c455eec799d13e6057142473dadc58393be4915440a7abf1c53d32995068a26",
+    "src/mm_remani/launch/exp0_real.launch": "631e1eb2a966d67e874d59942d81fe0faea8b4333b5cf04a5158dfc8d5eef116",
+    "src/mm_remani/scripts/mppi/native_reference.py": "1bdd107857b42f24cdc59004d4860040d5bda4bfbb058f603624d374d1a11455",
+    "src/mm_remani/scripts/whole_body_mppi.py": "87813ae8097c1d92ea71b05d43489fdafe557aa87ac60e812c17bf7d0e4b5e28",
+    "src/mm_remani/config/mppi.yaml": "44034906e3142eb990d9270e634c2c3272879e21be3833911965763fa85cf99b"
+  },
+  "actual_command_peaks": {
+    "linear": 0.19849530004672405,
+    "angular": 0.35,
+    "wheel": 0.25
+  }
+}

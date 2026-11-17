@@ -1,0 +1,25 @@
+{
+  "runtime_uncertainty_coefficients": [
+    0,
+    0,
+    0
+  ],
+  "confirmed_current_stop": {
+    "goal1": "16:19:50.455",
+    "goal1_failure": "No planning-layer-free local target collision type1 (arm/environment), 5 failures then WAIT_TARGET at16:19:50.725",
+    "goal2": "16:19:59.532",
+    "goal2_failure": "No planning-layer-free local target collision type0 (base/environment), 5 failures then WAIT_TARGET at16:19:59.718",
+    "no_successful_navigation_trajectory_for_these_goals": true
+  },
+  "occupancy_clear_semantics": {
+    "live": "Only actual later free rays clear live cells; no time-expiry/missed-frame clearing mechanism in current code. Same-frame hit wins.",
+    "prior_map": "Static PCD separate mask; live static clearing disabled in current real launch.",
+    "dynamic_prediction": "Latest frame replaces old prediction; no perpetual accumulation. Removing uncertainty does not clear live occupancy.",
+    "new_map_initialization": "Current planner static map reloaded16:18:17.136; volatile map from prior15:56 planner does not survive this reinitialization."
+  },
+  "unknowns": [
+    "No same-generation blocking voxel and real sensor ray audit was captured at goal rejection; cannot yet identify whether the blocking geometry is live residual, a new actual return, static PCD, or model mismatch.",
+    "Zero uncertainty parameters are verified live; this does not imply zero map occupancy or all goals collision-free."
+  ],
+  "runtime_edits": false
+}

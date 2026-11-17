@@ -5,7 +5,9 @@
 #include <cstdint>
 #include <cstring>
 #include <limits>
+#include <iomanip>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -39,6 +41,66 @@ struct ClusterDetection
   DynamicDetection tracking_detection;
   std::vector<Eigen::Vector3f> points;
 };
+
+std::string qualificationSummary(
+    const std::vector<MotionQualificationDiagnostic> &diagnostics)
+{
+  constexpr std::size_t limit = 12;
+  const std::size_t shown = std::min(limit, diagnostics.size());
+  std::ostringstream text;
+  text << std::fixed << std::setprecision(3)
+       << "{total=" << diagnostics.size() << ",shown=" << shown
+       << ",truncated=" << diagnostics.size() - shown << ",clusters=[";
+  for (std::size_t index = 0; index < shown; ++index)
+  {
+    const auto &d = diagnostics[index];
+    if (index)
+      text << ';';
+    const char *phase = !d.motion_evaluated ? "new" :
+        d.was_motion_qualified ? (d.motion_qualified ? "maintained" : "cleared") :
+        d.motion_qualified ? "qualified" : "candidate";
+    const char *surface = d.surface == MotionSurfaceResult::PASSED ? "passed" :
+        d.surface == MotionSurfaceResult::REJECTED ? "rejected" : "not_evaluated";
+    text << "{idx=" << d.detection_index << ",id=" << d.track_id
+         << ",xyz=" << d.observed_position.x() << '/' << d.observed_position.y()
+         << '/' << d.observed_position.z() << ",n=" << d.point_count
+         << ",hits=" << d.hit_count << ",steps=" << d.valid_step_count
+         << ",dt=" << d.observation_dt << ",hist=" << d.history_duration
+         << ",net=" << d.net_displacement << ",net_v=" << d.robust_speed
+         << ",v3d=" << d.estimated_speed << ",latest_v=" << d.latest_planar_speed
+         << ",eff=" << d.motion_efficiency << ",dir=" << d.direction_consistency
+         << ",max_step_v=" << d.maximum_step_speed
+         << ",history_reset=" << d.history_reset << ",phase=" << phase
+         << ",ever=" << d.ever_motion_qualified
+         << ",why=" << motionRejectionReasons(d.rejection_mask)
+         << ",surface=" << surface << ",background=" << d.inside_stationary_background
+         << ",anchor_d=" << d.matching_background_distance << '}';
+  }
+  text << "]}";
+  return text.str();
+}
+
+std::string surfaceDiagnosticSummary(const MotionQualificationDiagnostic &d)
+{
+  const auto &x = d.surface_details;
+  std::ostringstream out;
+  out << std::setprecision(17) << "source_stamp=" << d.stamp_seconds
+      << " id=" << d.track_id << " xyz=" << d.observed_position.transpose()
+      << " first=" << x.first_stamp << " last=" << x.last_stamp
+      << " previous_points=" << x.previous_points << " current_points=" << x.current_points
+      << " dx=" << x.translation_x << " dy=" << x.translation_y
+      << " tolerance=" << x.tolerance << " accepted=" << d.motion_qualified;
+  const auto direction = [&](const char *name, const SurfaceDirectionDiagnostic &v) {
+    out << " " << name << "={evaluated=" << v.evaluated << ",samples=" << v.samples
+        << ",stationary_squared=" << v.stationary_squared
+        << ",translated_squared=" << v.translated_squared
+        << ",stationary_distinct=" << v.stationary_distinct
+        << ",translated_close=" << v.translated_close
+        << ",translation_improves=" << v.translation_improves << "}";
+  };
+  direction("forward", x.forward); direction("reverse", x.reverse);
+  return out.str();
+}
 
 sensor_msgs::PointField makeField(const std::string &name,
                                   std::uint32_t offset,
@@ -97,6 +159,7 @@ public:
                       maximum_cluster_points_, 1200);
     private_nh_.param("maximum_cluster_extent",
                       maximum_cluster_extent_, 2.20);
+    private_nh_.param("surface_diagnostics", surface_diagnostics_, false);
     private_nh_.param("maximum_residual_points",
                       maximum_residual_points_, 4000);
     private_nh_.param("maximum_output_points",
@@ -119,6 +182,7 @@ public:
         stable_motion_center_parameters_.minimum_stable_core_points, 8);
 
     DynamicObstacleTrackerCore::Parameters tracker_parameters;
+    tracker_parameters.collect_surface_diagnostics = surface_diagnostics_;
     private_nh_.param("association_gate",
                       tracker_parameters.association_gate, 0.75);
     private_nh_.param("association_position_allowance",
@@ -148,6 +212,10 @@ public:
                       tracker_parameters.dynamic_exit_speed, 0.10);
     private_nh_.param("minimum_dynamic_displacement",
                       tracker_parameters.minimum_dynamic_displacement, 0.06);
+    // Relate surface evidence to the existing voxel scale rather than adding
+    // another independently tuned launch threshold.
+    tracker_parameters.surface_motion_tolerance =
+        std::max(0.03, 0.5 * voxel_leaf_size_);
     private_nh_.param("direction_consistency_cosine",
                       tracker_parameters.direction_consistency_cosine, 0.30);
     private_nh_.param("minimum_motion_duration",
@@ -567,7 +635,8 @@ private:
         // stable centre.
         cluster.tracking_detection.centroid =
             estimateStableMotionCenter(
-                cluster.points, stable_motion_center_parameters_);
+                cluster.points, stable_motion_center_parameters_, nullptr,
+                &cluster.tracking_detection.motion_surface);
         cluster.tracking_detection.extent = maximum - minimum;
         cluster.tracking_detection.point_count = indices.indices.size();
         clusters.push_back(std::move(cluster));
@@ -579,8 +648,14 @@ private:
     for (const ClusterDetection &cluster : clusters)
       detections.push_back(cluster.tracking_detection);
 
-    const std::vector<TrackedDetection> tracked =
-        tracker_->update(detections, message->header.stamp.toSec());
+    std::vector<MotionQualificationDiagnostic> qualification_diagnostics;
+    const std::vector<TrackedDetection> tracked = tracker_->update(
+        detections, message->header.stamp.toSec(), &qualification_diagnostics);
+
+    if (surface_diagnostics_)
+      for (const auto &evidence : qualification_diagnostics)
+        if (evidence.surface_details.evaluated)
+          ROS_INFO_STREAM("[SurfaceEvidence] " << surfaceDiagnosticSummary(evidence));
 
     int confirmed_count = 0;
     int motion_qualified_count = 0;
@@ -697,7 +772,7 @@ private:
 
     ROS_INFO_THROTTLE(
         1.0,
-        "[DynamicTracker] downsampled=%zu residual=%zu clusters=%zu confirmed=%d motion_qualified=%d rejected_stationary=%d background_anchors=%zu tracks=%zu health=%d publish=%s age=%.3fs processing=%.2fms.",
+        "[DynamicTracker] downsampled=%zu residual=%zu clusters=%zu confirmed=%d motion_qualified=%d nonmoving_confirmed=%d background_anchors=%zu tracks=%zu health=%d publish=%s age=%.3fs processing=%.2fms. source_stamp=%.9f qualification=%s",
         downsampled->size(), residual->size(), clusters.size(),
         confirmed_count, motion_qualified_count,
         stationary_confirmed_count,
@@ -705,7 +780,8 @@ private:
         tracker_->trackCount(),
         static_cast<int>(current_health_state),
         publish_allowed ? "yes" : "no", input_age,
-        processing_message.data);
+        processing_message.data, message->header.stamp.toSec(),
+        qualificationSummary(qualification_diagnostics).c_str());
   }
 
   void publishDynamicPoints(
@@ -724,7 +800,7 @@ private:
     std::size_t total_dynamic_points = 0;
     for (const TrackedDetection &track : tracked)
     {
-      if (track.motion_qualified &&
+      if ((track.motion_qualified || track.ever_motion_qualified) &&
           track.detection_index < clusters.size())
         total_dynamic_points +=
             clusters[track.detection_index].points.size();
@@ -741,7 +817,10 @@ private:
     std::size_t flattened_index = 0;
     for (const TrackedDetection &track : tracked)
     {
-      if (!track.motion_qualified ||
+      // Core returns only tracks matched to this frame's real detections.
+      // A classification change must not erase an observed object's geometry;
+      // a missing detection still emits no points and cannot refresh its age.
+      if ((!track.motion_qualified && !track.ever_motion_qualified) ||
           track.detection_index >= clusters.size())
         continue;
       const Eigen::Vector3f velocity = track.velocity.cast<float>();
@@ -821,6 +900,7 @@ private:
   std::string static_map_topic_;
   std::string output_topic_;
   std::string world_frame_;
+  bool surface_diagnostics_ = false;
   bool require_static_map_ = true;
   bool static_map_ready_ = false;
   double tf_timeout_ = 0.03;

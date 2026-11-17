@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "version": "standby_20261105_feedback_02",
+  "namespace": "/standby_trial_20261105_feedback_02",
+  "mode": "shadow",
+  "hardware_motion_enabled": false,
+  "world_frame": "standby_feedback_02_odom",
+  "base_frame": "standby_feedback_02_base_link",
+  "topics": {
+    "odom": "/standby_trial_20261105_feedback_02/sensors/odom",
+    "joints": "/standby_trial_20261105_feedback_02/sensors/joint_states",
+    "raw_cloud": "/standby_trial_20261105_feedback_02/sensors/lidar_pcl2",
+    "filtered_cloud": "/standby_trial_20261105_feedback_02/sensors/filtered_cloud_unavailable",
+    "dynamic_cloud": "/standby_trial_20261105_feedback_02/perception/dynamic_points",
+    "perception_health": "/standby_trial_20261105_feedback_02/perception/dynamic_obstacle_tracker/perception_healthy",
+    "static_cloud": "/standby_trial_20261105_feedback_02/sensors/static_cloud_unregistered"
+  },
+  "model": {
+    "parameters": "model/parameters.yaml",
+    "urdf": "model/mm.urdf"
+  },
+  "max_age_s": 0.25,
+  "cloud_max_points": 4000,
+  "static_max_points": 15000,
+  "rate_hz": 2.0,
+  "horizon": 20,
+  "step": 0.1,
+  "random_samples": 6,
+  "deadline_s": 0.4,
+  "seed": 11,
+  "postures": [],
+  "kernel_config": {},
+  "joint_limit_overrides": {
+    "joint6": [
+      -0.35,
+      0.35
+    ]
+  },
+  "arm_limits": {
+    "lower": [
+      -2.618,
+      -0.05,
+      -2.697,
+      -1.832,
+      -1.25,
+      -0.35
+    ],
+    "upper": [
+      2.618,
+      3.14,
+      0.05,
+      1.832,
+      1.25,
+      0.35
+    ],
+    "velocity": [
+      0.45,
+      0.45,
+      0.45,
+      0.45,
+      0.45,
+      0.45
+    ],
+    "acceleration": [
+      0.9,
+      0.9,
+      0.9,
+      0.9,
+      0.9,
+      0.9
+    ]
+  },
+  "joint_frames": [
+    "standby_feedback_02_base_link"
+  ],
+  "input_availability_note": "Real sensors and receive-only arm feedback only. Filtered/static/dynamic free-space registration is not certified; shadow must retain strict waiting.",
+  "odom_validation": {
+    "max_age_s": 0.25,
+    "future_tolerance_s": 0.02,
+    "max_gap_s": 0.5,
+    "max_linear_speed_m_s": 1.0,
+    "position_noise_m": 0.02,
+    "max_angular_speed_rad_s": 3.0,
+    "angle_noise_rad": 0.05,
+    "initial_origin_xy": [
+      0.0,
+      0.0
+    ],
+    "max_initial_radius_m": 2.0
+  }
+}

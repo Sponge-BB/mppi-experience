@@ -1,0 +1,46 @@
+45 groups passed, no SDK/ROS/CAN imports:
+ - three-pair completeness, exact angle units, source stamp, no cached republish
+ - position-derived velocity and missing/stale pair withholding
+ - watchdog/execution-state sample complete fresh SDK input despite stalled ROS publisher; one source-stamped publication and real velocity
+ - repeated SDK reads, source stamp alone or receive counts alone cannot renew accepted source/steady ages or republish
+ - independent sampling rejects lost pair, >50ms pair spread and future/nonfinite source; timeout log identifies real SDK timing
+ - enable requires feedback; pending motor enable waits; fresh command; replay rejected
+ - malformed, nonfinite, unordered and future command rejection
+ - successful-command expiry holds without CAN/disable; rejects queued stamps; fresh plan resumes without reset
+ - holding still hard-stops on real joint/status/motor loss or faults; healthy recovery cannot unlatch
+ - real feedback loss takes priority when the command lease expires at the same time
+ - leased commands independently reject any joint lead above .03rad; exact positive/negative boundary is accepted
+ - independent feedback expiration stops before command lease
+ - stop diagnostics distinguish initial command timeout from feedback loss without relaxing either
+ - one stale motor enable state stops even when other five update
+ - motor loss logs all six fields from the failed sample despite immediate SDK recovery
+ - fresh motor disable is distinct from stale feedback in the same unchanged hard-stop path
+ - ArmStatus requires received source, publishes only advancing stamp/count, copies all scalar flags
+ - ArmStatus source count, wall and monotonic ages gate publication and enable
+ - ArmStatus loss alone stops before live command expiry; fresh normal status cannot release latch
+ - fresh abnormal ArmStatus stops at command entry without sending JointCtrl
+ - execution state denies missing input and manual-disabled/pending motors; retains actual CAN source stamp
+ - queued positive execution state cannot gain validity; same-source stop and recovered feedback retain latch
+ - execution expiry uses oldest joint pair/motor source or active command lease; repeats do not renew
+ - send failure and quick-stop failure preserve latch
+ - expiry during CAN send still hard-stops even with fresh joint/status/all-motor sources
+ - execution-state publication error cannot kill watchdog without latching and attempting quick-stop
+ - pos/gozero/reset/gripper bypass disabled and shutdown stops
+ - native mode retains unstamped larger-target commands and repeated cached status publication compatibility
+ - bridge retains velocities/source header, gripper metres and rejects missing position
+ - filter never fills missing joints/velocities with zero; derives real velocity
+ - native target reads original 8-value config; finite/URDF/wrist/lease validation precedes CAN
+ - native enable waits for real source input, retries at 1s, stops within 10s without command lease
+ - native target uses original speed15 at at most5Hz; motion/settling gates ready; no early external command
+ - native readiness uses true six-joint velocity and is withdrawn on pose drift before command entry
+ - ready arm holds its original target beyond 138s while awaiting MPPI without renewing an external lease
+ - late settling drift withdraws handoff without reusing initial60s timeout, then settles again
+ - native handoff is permanent; external expiry holds without native fallback; a fresh external command resumes
+ - failed first external send locks stop, never acknowledges handoff or resumes native target sends
+ - CAN transport forces5ms; SDK swallowed-failure/inactive enums raise before command commit or native handoff
+ - first external CAN send cannot acknowledge stale feedback or extend the pre-send deadline
+ - native pre-handoff still stops on stale joint/status/any motor or dropped motor enable, with no auto re-enable
+ - unreached standby stops at finite60s measured from first enable request
+ - ordinary leased mode acknowledges only an unexpired sent command; healthy hold keeps source-based execution feedback
+ - end-pose telemetry skips unsubscribed work; both formats share one read and retain units
+ - motor telemetry skips absent subscribers and copies enable bits without SDK FPS getters or commands

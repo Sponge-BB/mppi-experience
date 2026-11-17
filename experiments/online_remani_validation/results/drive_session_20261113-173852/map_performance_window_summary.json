@@ -1,0 +1,3450 @@
+{
+  "caveats": [
+    "Goal observation windows end at next goal or bag end; there was no planning/finish topic in this capture.",
+    "Event boundaries and pipeline metrics use runtime_logs/hai_navigation_logs.jsonl when available. Aggregated /rosout_agg in the bag missed multiple Depth Lost/recovery messages; absence there was not proof of a continuous stop.",
+    "No-perception-stop segments exclude source-log Depth Lost until validated recovery and truncate source-log Give up. They are not a claim of continuous physical motion.",
+    "Source clocks are used for logs/goals/cloud windows; status and cmd have no source header and use recorded receive time.",
+    "Each pipeline point summarizes preceding 5 seconds and may straddle a segment boundary; medians are medians of window averages.",
+    "Cloud headers record all received callbacks after payload budget exhaustion; payload absence is not sensor absence.",
+    "h3 is occupancy commit time and h17 ESDF-copy acquisition time; neither is raw sensor source time.",
+    "Different paths, live points, occupancy changes and CPU load mean this is not a strict controlled A/B against 15:43."
+  ],
+  "goals": [
+    {
+      "receive": 1794563113.1342318,
+      "source": 1794563113.126941,
+      "clock": "17:45:13.126",
+      "x": 0.617774486541748,
+      "y": -1.2898898124694824
+    },
+    {
+      "receive": 1794563136.94502,
+      "source": 1794563136.935839,
+      "clock": "17:45:36.935",
+      "x": 0.6929194927215576,
+      "y": -1.5455669164657593
+    },
+    {
+      "receive": 1794563184.192083,
+      "source": 1794563184.1771302,
+      "clock": "17:46:24.177",
+      "x": 0.4957064688205719,
+      "y": -1.2968875169754028
+    },
+    {
+      "receive": 1794563200.6829174,
+      "source": 1794563200.682124,
+      "clock": "17:46:40.682",
+      "x": 0.4447011649608612,
+      "y": 1.4370858669281006
+    }
+  ],
+  "finish_topic": [],
+  "observation_windows": [
+    {
+      "name": "goal1_observation",
+      "start": 1794563113.126941,
+      "end": 1794563136.935839,
+      "start_clock": "17:45:13.126",
+      "end_clock": "17:45:36.935",
+      "status_n": 186,
+      "states": {
+        "command_delivered": 177,
+        "collision_snapshot_expired_during_plan": 1,
+        "collision_snapshot_unavailable": 2,
+        "inputs_expired_before_delivery": 2,
+        "waiting_explicit_arm_enable_or_normal_status": 3,
+        "native_reference_expired_during_plan": 1
+      },
+      "delivered_modes": {
+        "reference_wait_hold": 5,
+        "nominal": 141,
+        "terminal_yaw_alignment": 31
+      },
+      "snapshot_input_rejections": 5,
+      "explicit_map_age_over350_count": 5,
+      "map_age_over350_by_state": {
+        "collision_snapshot_expired_during_plan": 1,
+        "collision_snapshot_unavailable": 2,
+        "inputs_expired_before_delivery": 2
+      },
+      "snapshot_invalid_flag_count": 0,
+      "dynamic_invalid_count": 0,
+      "deadline95_rejections": 0,
+      "cycle_ms_by_state": {
+        "command_delivered": {
+          "n": 177,
+          "min": 5.53,
+          "median": 34.79,
+          "p95": 63.15,
+          "max": 75.78
+        },
+        "collision_snapshot_expired_during_plan": {
+          "n": 1,
+          "min": 61.34,
+          "median": 61.34,
+          "p95": 61.34,
+          "max": 61.34
+        },
+        "collision_snapshot_unavailable": {
+          "n": 2,
+          "min": 0.27,
+          "median": 0.655,
+          "p95": 0.27,
+          "max": 1.04
+        },
+        "inputs_expired_before_delivery": {
+          "n": 2,
+          "min": 26.75,
+          "median": 51.76,
+          "p95": 26.75,
+          "max": 76.77
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 3,
+          "min": 0.24,
+          "median": 0.85,
+          "p95": 0.85,
+          "max": 33.14
+        },
+        "native_reference_expired_during_plan": {
+          "n": 1,
+          "min": 20.66,
+          "median": 20.66,
+          "p95": 20.66,
+          "max": 20.66
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 159,
+        "min": 99.28345680236816,
+        "median": 141.99471473693848,
+        "p95": 197.85714149475098,
+        "max": 231.39572143554688
+      },
+      "new_map_interval_ms": {
+        "n": 158,
+        "min": 100.9981632232666,
+        "median": 144.45602893829346,
+        "p95": 182.83438682556152,
+        "max": 1147.122859954834
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 159,
+        "min": 83.14800262451172,
+        "median": 123.44622611999512,
+        "p95": 166.29528999328613,
+        "max": 211.52615547180176
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 159,
+        "min": 6.269216537475586,
+        "median": 15.127897262573242,
+        "p95": 34.09743309020996,
+        "max": 47.405242919921875
+      },
+      "snapshot_packet_n": 477,
+      "snapshot_valid_fraction": 0.9517819706498952,
+      "snapshot_age_over350_at_receive_count": 18,
+      "local_changed": {
+        "n": 5,
+        "min": 1735,
+        "median": 1781,
+        "p95": 2085,
+        "max": 2124
+      },
+      "local_input_bound_voxels": {
+        "n": 5,
+        "min": 2009100,
+        "median": 2223360,
+        "p95": 2245320,
+        "max": 2277660
+      },
+      "pipeline_window_n": 5,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 5,
+          "min": 22.09,
+          "median": 26.18,
+          "p95": 27.95,
+          "max": 28.07
+        },
+        "esdf_compute_avg_ms": {
+          "n": 5,
+          "min": 67.91,
+          "median": 77.44,
+          "p95": 84.21,
+          "max": 97.24
+        },
+        "main_commit_avg_ms": {
+          "n": 5,
+          "min": 7.39,
+          "median": 7.53,
+          "p95": 7.64,
+          "max": 7.65
+        },
+        "snapshot_avg_ms": {
+          "n": 5,
+          "min": 2.38,
+          "median": 2.59,
+          "p95": 2.65,
+          "max": 2.83
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 51.66,
+        "esdf_compute_max_ms": 155.16,
+        "main_commit_max_ms": 13.24,
+        "snapshot_max_ms": 11.91
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 238,
+          "source_interval_ms": {
+            "n": 237,
+            "min": 96.62151336669922,
+            "median": 100.00085830688477,
+            "p95": 100.84009170532227,
+            "max": 103.42836380004883
+          },
+          "source_to_record_ms": {
+            "n": 238,
+            "min": 13.469934463500977,
+            "median": 19.080400466918945,
+            "p95": 32.09519386291504,
+            "max": 44.327735900878906
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 238,
+          "source_interval_ms": {
+            "n": 237,
+            "min": 96.62151336669922,
+            "median": 100.00085830688477,
+            "p95": 100.84009170532227,
+            "max": 103.42836380004883
+          },
+          "source_to_record_ms": {
+            "n": 238,
+            "min": 15.398502349853516,
+            "median": 21.029233932495117,
+            "p95": 37.83011436462402,
+            "max": 56.459665298461914
+          }
+        },
+        "/velodyne_points": {
+          "n": 225,
+          "source_interval_ms": {
+            "n": 224,
+            "min": 96.62151336669922,
+            "median": 100.00801086425781,
+            "p95": 100.96931457519531,
+            "max": 1200.0861167907715
+          },
+          "source_to_record_ms": {
+            "n": 225,
+            "min": 32.7761173248291,
+            "median": 48.78735542297363,
+            "p95": 86.79771423339844,
+            "max": 126.85418128967285
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 225,
+          "source_interval_ms": {
+            "n": 224,
+            "min": 96.62151336669922,
+            "median": 100.00801086425781,
+            "p95": 100.96931457519531,
+            "max": 1200.0861167907715
+          },
+          "source_to_record_ms": {
+            "n": 225,
+            "min": 36.71455383300781,
+            "median": 54.260969161987305,
+            "p95": 89.71786499023438,
+            "max": 145.54834365844727
+          }
+        }
+      }
+    },
+    {
+      "name": "goal2_observation",
+      "start": 1794563136.935839,
+      "end": 1794563184.1771302,
+      "start_clock": "17:45:36.935",
+      "end_clock": "17:46:24.177",
+      "status_n": 456,
+      "states": {
+        "command_delivered": 271,
+        "delivery_deadline_exceeded": 3,
+        "waiting_explicit_arm_enable_or_normal_status": 5,
+        "collision_snapshot_unavailable": 10,
+        "native_reference_cancelled": 157,
+        "no_feasible_candidate": 3,
+        "collision_snapshot_expired_during_plan": 3,
+        "inputs_expired_before_delivery": 1,
+        "native_gear_changed_during_plan": 2,
+        "state_feedback_stale": 1
+      },
+      "delivered_modes": {
+        "reference_wait_hold": 9,
+        "nominal": 262
+      },
+      "snapshot_input_rejections": 14,
+      "explicit_map_age_over350_count": 12,
+      "map_age_over350_by_state": {
+        "collision_snapshot_unavailable": 8,
+        "collision_snapshot_expired_during_plan": 3,
+        "inputs_expired_before_delivery": 1
+      },
+      "snapshot_invalid_flag_count": 8,
+      "dynamic_invalid_count": 1,
+      "deadline95_rejections": 3,
+      "cycle_ms_by_state": {
+        "command_delivered": {
+          "n": 271,
+          "min": 5.55,
+          "median": 40.22,
+          "p95": 68.49,
+          "max": 94.51
+        },
+        "delivery_deadline_exceeded": {
+          "n": 3,
+          "min": 98.33,
+          "median": 107.88,
+          "p95": 107.88,
+          "max": 113.75
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 5,
+          "min": 0.15,
+          "median": 0.26,
+          "p95": 0.28,
+          "max": 0.31
+        },
+        "collision_snapshot_unavailable": {
+          "n": 10,
+          "min": 0.08,
+          "median": 0.29000000000000004,
+          "p95": 0.98,
+          "max": 1.25
+        },
+        "native_reference_cancelled": {
+          "n": 157,
+          "min": 0.47,
+          "median": 0.66,
+          "p95": 2.62,
+          "max": 13.7
+        },
+        "no_feasible_candidate": {
+          "n": 3,
+          "min": 56.74,
+          "median": 61.85,
+          "p95": 61.85,
+          "max": 73.86
+        },
+        "collision_snapshot_expired_during_plan": {
+          "n": 3,
+          "min": 23.85,
+          "median": 26.36,
+          "p95": 26.36,
+          "max": 36.52
+        },
+        "inputs_expired_before_delivery": {
+          "n": 1,
+          "min": 25.07,
+          "median": 25.07,
+          "p95": 25.07,
+          "max": 25.07
+        },
+        "native_gear_changed_during_plan": {
+          "n": 2,
+          "min": 21.82,
+          "median": 29.06,
+          "p95": 21.82,
+          "max": 36.3
+        },
+        "state_feedback_stale": {
+          "n": 1,
+          "min": 0.22,
+          "median": 0.22,
+          "p95": 0.22,
+          "max": 0.22
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 332,
+        "min": 87.72563934326172,
+        "median": 140.73657989501953,
+        "p95": 194.4863796234131,
+        "max": 289.3047332763672
+      },
+      "new_map_interval_ms": {
+        "n": 331,
+        "min": 91.02201461791992,
+        "median": 141.7837142944336,
+        "p95": 176.3324737548828,
+        "max": 447.9398727416992
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 332,
+        "min": 73.64678382873535,
+        "median": 122.2003698348999,
+        "p95": 166.25380516052246,
+        "max": 201.85279846191406
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 332,
+        "min": 5.994558334350586,
+        "median": 14.782190322875977,
+        "p95": 39.61682319641113,
+        "max": 170.22967338562012
+      },
+      "snapshot_packet_n": 940,
+      "snapshot_valid_fraction": 0.973404255319149,
+      "snapshot_age_over350_at_receive_count": 14,
+      "local_changed": {
+        "n": 9,
+        "min": 1237,
+        "median": 1363,
+        "p95": 1673,
+        "max": 1687
+      },
+      "local_input_bound_voxels": {
+        "n": 9,
+        "min": 1886520,
+        "median": 2119680,
+        "p95": 2208900,
+        "max": 2276640
+      },
+      "pipeline_window_n": 9,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 9,
+          "min": 21.8,
+          "median": 22.98,
+          "p95": 25.54,
+          "max": 26.19
+        },
+        "esdf_compute_avg_ms": {
+          "n": 9,
+          "min": 71.07,
+          "median": 79.94,
+          "p95": 81.63,
+          "max": 84.23
+        },
+        "main_commit_avg_ms": {
+          "n": 9,
+          "min": 7.32,
+          "median": 7.75,
+          "p95": 8.14,
+          "max": 8.15
+        },
+        "snapshot_avg_ms": {
+          "n": 9,
+          "min": 2.38,
+          "median": 2.63,
+          "p95": 2.75,
+          "max": 3.27
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 63.19,
+        "esdf_compute_max_ms": 119.51,
+        "main_commit_max_ms": 19.34,
+        "snapshot_max_ms": 16.82
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 471,
+          "source_interval_ms": {
+            "n": 470,
+            "min": 94.2225456237793,
+            "median": 100.00228881835938,
+            "p95": 100.93069076538086,
+            "max": 199.7201442718506
+          },
+          "source_to_record_ms": {
+            "n": 471,
+            "min": 13.24152946472168,
+            "median": 19.336223602294922,
+            "p95": 36.48734092712402,
+            "max": 200.8500099182129
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 471,
+          "source_interval_ms": {
+            "n": 470,
+            "min": 94.2225456237793,
+            "median": 100.00205039978027,
+            "p95": 100.93069076538086,
+            "max": 203.51171493530273
+          },
+          "source_to_record_ms": {
+            "n": 471,
+            "min": 14.420270919799805,
+            "median": 21.5451717376709,
+            "p95": 39.94560241699219,
+            "max": 96.70805931091309
+          }
+        },
+        "/velodyne_points": {
+          "n": 455,
+          "source_interval_ms": {
+            "n": 454,
+            "min": 94.2225456237793,
+            "median": 100.00276565551758,
+            "p95": 100.96573829650879,
+            "max": 499.88818168640137
+          },
+          "source_to_record_ms": {
+            "n": 455,
+            "min": 32.315969467163086,
+            "median": 48.34151268005371,
+            "p95": 73.46391677856445,
+            "max": 144.76799964904785
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 454,
+          "source_interval_ms": {
+            "n": 453,
+            "min": 94.2225456237793,
+            "median": 100.00300407409668,
+            "p95": 100.96573829650879,
+            "max": 499.88818168640137
+          },
+          "source_to_record_ms": {
+            "n": 454,
+            "min": 36.67163848876953,
+            "median": 53.15577983856201,
+            "p95": 80.22046089172363,
+            "max": 129.95505332946777
+          }
+        }
+      }
+    },
+    {
+      "name": "goal3_observation",
+      "start": 1794563184.1771302,
+      "end": 1794563200.682124,
+      "start_clock": "17:46:24.177",
+      "end_clock": "17:46:40.682",
+      "status_n": 146,
+      "states": {
+        "command_delivered": 133,
+        "reference_changed_before_delivery": 1,
+        "waiting_explicit_arm_enable_or_normal_status": 4,
+        "native_gear_changed_during_plan": 1,
+        "collision_snapshot_unavailable": 4,
+        "native_reference_expired_during_plan": 1,
+        "inputs_expired_before_delivery": 1,
+        "state_feedback_stale": 1
+      },
+      "delivered_modes": {
+        "reference_wait_hold": 5,
+        "nominal": 68,
+        "terminal_yaw_alignment": 60
+      },
+      "snapshot_input_rejections": 5,
+      "explicit_map_age_over350_count": 4,
+      "map_age_over350_by_state": {
+        "collision_snapshot_unavailable": 3,
+        "inputs_expired_before_delivery": 1
+      },
+      "snapshot_invalid_flag_count": 4,
+      "dynamic_invalid_count": 2,
+      "deadline95_rejections": 0,
+      "cycle_ms_by_state": {
+        "command_delivered": {
+          "n": 133,
+          "min": 6.56,
+          "median": 28.84,
+          "p95": 62.61,
+          "max": 88.58
+        },
+        "reference_changed_before_delivery": {
+          "n": 1,
+          "min": 17.74,
+          "median": 17.74,
+          "p95": 17.74,
+          "max": 17.74
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 4,
+          "min": 0.15,
+          "median": 0.2,
+          "p95": 0.21,
+          "max": 24.63
+        },
+        "native_gear_changed_during_plan": {
+          "n": 1,
+          "min": 27.47,
+          "median": 27.47,
+          "p95": 27.47,
+          "max": 27.47
+        },
+        "collision_snapshot_unavailable": {
+          "n": 4,
+          "min": 0.11,
+          "median": 0.22999999999999998,
+          "p95": 0.25,
+          "max": 0.59
+        },
+        "native_reference_expired_during_plan": {
+          "n": 1,
+          "min": 54.07,
+          "median": 54.07,
+          "p95": 54.07,
+          "max": 54.07
+        },
+        "inputs_expired_before_delivery": {
+          "n": 1,
+          "min": 27.28,
+          "median": 27.28,
+          "p95": 27.28,
+          "max": 27.28
+        },
+        "state_feedback_stale": {
+          "n": 1,
+          "min": 0.17,
+          "median": 0.17,
+          "p95": 0.17,
+          "max": 0.17
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 107,
+        "min": 114.95590209960938,
+        "median": 135.20288467407227,
+        "p95": 188.62342834472656,
+        "max": 219.1140651702881
+      },
+      "new_map_interval_ms": {
+        "n": 106,
+        "min": 96.34017944335938,
+        "median": 148.53835105895996,
+        "p95": 167.25516319274902,
+        "max": 543.6651706695557
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 107,
+        "min": 105.20005226135254,
+        "median": 119.05908584594727,
+        "p95": 164.52884674072266,
+        "max": 174.03340339660645
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 107,
+        "min": 5.780935287475586,
+        "median": 13.876676559448242,
+        "p95": 42.59634017944336,
+        "max": 64.37540054321289
+      },
+      "snapshot_packet_n": 329,
+      "snapshot_valid_fraction": 0.9209726443768997,
+      "snapshot_age_over350_at_receive_count": 13,
+      "local_changed": {
+        "n": 3,
+        "min": 1512,
+        "median": 1568,
+        "p95": 1568,
+        "max": 1620
+      },
+      "local_input_bound_voxels": {
+        "n": 3,
+        "min": 2120100,
+        "median": 2131560,
+        "p95": 2131560,
+        "max": 2255220
+      },
+      "pipeline_window_n": 4,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 4,
+          "min": 21.39,
+          "median": 26.54,
+          "p95": 27.38,
+          "max": 27.88
+        },
+        "esdf_compute_avg_ms": {
+          "n": 4,
+          "min": 70.84,
+          "median": 77.725,
+          "p95": 78.62,
+          "max": 83.85
+        },
+        "main_commit_avg_ms": {
+          "n": 4,
+          "min": 7.21,
+          "median": 7.84,
+          "p95": 8.01,
+          "max": 8.12
+        },
+        "snapshot_avg_ms": {
+          "n": 4,
+          "min": 2.39,
+          "median": 2.575,
+          "p95": 2.61,
+          "max": 2.64
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 49.42,
+        "esdf_compute_max_ms": 105.46,
+        "main_commit_max_ms": 18.76,
+        "snapshot_max_ms": 8.63
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 165,
+          "source_interval_ms": {
+            "n": 164,
+            "min": 98.18315505981445,
+            "median": 99.98762607574463,
+            "p95": 100.8298397064209,
+            "max": 101.84454917907715
+          },
+          "source_to_record_ms": {
+            "n": 165,
+            "min": 14.690637588500977,
+            "median": 20.893096923828125,
+            "p95": 35.17913818359375,
+            "max": 69.49353218078613
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 165,
+          "source_interval_ms": {
+            "n": 164,
+            "min": 98.18315505981445,
+            "median": 99.98762607574463,
+            "p95": 100.8298397064209,
+            "max": 101.84454917907715
+          },
+          "source_to_record_ms": {
+            "n": 165,
+            "min": 16.271114349365234,
+            "median": 23.552894592285156,
+            "p95": 39.879798889160156,
+            "max": 69.75889205932617
+          }
+        },
+        "/velodyne_points": {
+          "n": 153,
+          "source_interval_ms": {
+            "n": 152,
+            "min": 98.18315505981445,
+            "median": 99.98762607574463,
+            "p95": 100.9986400604248,
+            "max": 599.9503135681152
+          },
+          "source_to_record_ms": {
+            "n": 153,
+            "min": 33.77842903137207,
+            "median": 49.935102462768555,
+            "p95": 74.75829124450684,
+            "max": 136.92855834960938
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 153,
+          "source_interval_ms": {
+            "n": 152,
+            "min": 98.18315505981445,
+            "median": 99.98762607574463,
+            "p95": 100.9986400604248,
+            "max": 599.9503135681152
+          },
+          "source_to_record_ms": {
+            "n": 153,
+            "min": 36.815643310546875,
+            "median": 54.354190826416016,
+            "p95": 78.42803001403809,
+            "max": 142.49420166015625
+          }
+        }
+      }
+    },
+    {
+      "name": "goal4_observation",
+      "start": 1794563200.682124,
+      "end": 1794563332.2434106,
+      "start_clock": "17:46:40.682",
+      "end_clock": "17:48:52.243",
+      "status_n": 1138,
+      "states": {
+        "command_delivered": 555,
+        "delivery_deadline_exceeded": 1,
+        "waiting_explicit_arm_enable_or_normal_status": 15,
+        "collision_snapshot_unavailable": 507,
+        "inputs_expired_before_delivery": 10,
+        "planning_deadline_exceeded": 1,
+        "native_reference_cancelled": 39,
+        "collision_snapshot_expired_during_plan": 10
+      },
+      "delivered_modes": {
+        "reference_wait_hold": 4,
+        "nominal": 551
+      },
+      "snapshot_input_rejections": 527,
+      "explicit_map_age_over350_count": 514,
+      "map_age_over350_by_state": {
+        "collision_snapshot_unavailable": 501,
+        "inputs_expired_before_delivery": 7,
+        "collision_snapshot_expired_during_plan": 6
+      },
+      "snapshot_invalid_flag_count": 492,
+      "dynamic_invalid_count": 471,
+      "deadline95_rejections": 2,
+      "cycle_ms_by_state": {
+        "command_delivered": {
+          "n": 555,
+          "min": 7.12,
+          "median": 41.04,
+          "p95": 71.64,
+          "max": 90.93
+        },
+        "delivery_deadline_exceeded": {
+          "n": 1,
+          "min": 107.02,
+          "median": 107.02,
+          "p95": 107.02,
+          "max": 107.02
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 15,
+          "min": 0.14,
+          "median": 0.22,
+          "p95": 22.66,
+          "max": 34.73
+        },
+        "collision_snapshot_unavailable": {
+          "n": 507,
+          "min": 0.14,
+          "median": 0.28,
+          "p95": 0.66,
+          "max": 10.09
+        },
+        "inputs_expired_before_delivery": {
+          "n": 10,
+          "min": 29.01,
+          "median": 47.065,
+          "p95": 59.92,
+          "max": 69.29
+        },
+        "planning_deadline_exceeded": {
+          "n": 1,
+          "min": 169.27,
+          "median": 169.27,
+          "p95": 169.27,
+          "max": 169.27
+        },
+        "native_reference_cancelled": {
+          "n": 39,
+          "min": 0.47,
+          "median": 0.68,
+          "p95": 2.82,
+          "max": 6.06
+        },
+        "collision_snapshot_expired_during_plan": {
+          "n": 10,
+          "min": 15.37,
+          "median": 20.729999999999997,
+          "p95": 28.31,
+          "max": 47.56
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 510,
+        "min": 76.8585205078125,
+        "median": 137.67468929290771,
+        "p95": 198.67706298828125,
+        "max": 327.9902935028076
+      },
+      "new_map_interval_ms": {
+        "n": 509,
+        "min": 93.10603141784668,
+        "median": 148.05293083190918,
+        "p95": 209.40494537353516,
+        "max": 1551.2726306915283
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 510,
+        "min": 68.77946853637695,
+        "median": 120.51022052764893,
+        "p95": 173.16579818725586,
+        "max": 296.4632511138916
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 510,
+        "min": 6.043195724487305,
+        "median": 13.682246208190918,
+        "p95": 36.63992881774902,
+        "max": 139.57476615905762
+      },
+      "snapshot_packet_n": 2626,
+      "snapshot_valid_fraction": 0.5517897943640518,
+      "snapshot_age_over350_at_receive_count": 1127,
+      "local_changed": {
+        "n": 16,
+        "min": 1580,
+        "median": 1677.5,
+        "p95": 1925,
+        "max": 2112
+      },
+      "local_input_bound_voxels": {
+        "n": 16,
+        "min": 2027520,
+        "median": 2085120.0,
+        "p95": 2211600,
+        "max": 2269440
+      },
+      "pipeline_window_n": 26,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 26,
+          "min": 0.0,
+          "median": 23.799999999999997,
+          "p95": 29.03,
+          "max": 34.16
+        },
+        "esdf_compute_avg_ms": {
+          "n": 26,
+          "min": 0.0,
+          "median": 75.475,
+          "p95": 118.88,
+          "max": 131.15
+        },
+        "main_commit_avg_ms": {
+          "n": 26,
+          "min": 0.0,
+          "median": 6.87,
+          "p95": 7.25,
+          "max": 7.68
+        },
+        "snapshot_avg_ms": {
+          "n": 26,
+          "min": 0.0,
+          "median": 2.425,
+          "p95": 3.1,
+          "max": 3.32
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 70.48,
+        "esdf_compute_max_ms": 206.39,
+        "main_commit_max_ms": 19.71,
+        "snapshot_max_ms": 15.66
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 1315,
+          "source_interval_ms": {
+            "n": 1314,
+            "min": 97.5186824798584,
+            "median": 99.99048709869385,
+            "p95": 101.02343559265137,
+            "max": 200.16050338745117
+          },
+          "source_to_record_ms": {
+            "n": 1315,
+            "min": 12.485504150390625,
+            "median": 20.586729049682617,
+            "p95": 32.75275230407715,
+            "max": 203.42111587524414
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 1315,
+          "source_interval_ms": {
+            "n": 1314,
+            "min": 97.5186824798584,
+            "median": 99.99048709869385,
+            "p95": 101.02343559265137,
+            "max": 200.16050338745117
+          },
+          "source_to_record_ms": {
+            "n": 1315,
+            "min": 13.855695724487305,
+            "median": 22.906064987182617,
+            "p95": 36.50808334350586,
+            "max": 206.85410499572754
+          }
+        },
+        "/velodyne_points": {
+          "n": 731,
+          "source_interval_ms": {
+            "n": 730,
+            "min": 97.53227233886719,
+            "median": 100.00014305114746,
+            "p95": 101.51457786560059,
+            "max": 1499.8314380645752
+          },
+          "source_to_record_ms": {
+            "n": 731,
+            "min": 31.30364418029785,
+            "median": 49.4234561920166,
+            "p95": 85.2665901184082,
+            "max": 304.6002388000488
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 731,
+          "source_interval_ms": {
+            "n": 730,
+            "min": 97.53227233886719,
+            "median": 99.99978542327881,
+            "p95": 101.43327713012695,
+            "max": 1499.8314380645752
+          },
+          "source_to_record_ms": {
+            "n": 731,
+            "min": 36.382436752319336,
+            "median": 54.40258979797363,
+            "p95": 91.61615371704102,
+            "max": 304.8067092895508
+          }
+        }
+      }
+    }
+  ],
+  "no_perception_stop_segments": [
+    {
+      "name": "goal1_no_perception_stop_part1",
+      "start": 1794563113.126941,
+      "end": 1794563125.2054374,
+      "start_clock": "17:45:13.126",
+      "end_clock": "17:45:25.205",
+      "status_n": 106,
+      "states": {
+        "command_delivered": 102,
+        "collision_snapshot_expired_during_plan": 1,
+        "collision_snapshot_unavailable": 1,
+        "inputs_expired_before_delivery": 1,
+        "waiting_explicit_arm_enable_or_normal_status": 1
+      },
+      "delivered_modes": {
+        "reference_wait_hold": 5,
+        "nominal": 97
+      },
+      "snapshot_input_rejections": 3,
+      "explicit_map_age_over350_count": 3,
+      "map_age_over350_by_state": {
+        "collision_snapshot_expired_during_plan": 1,
+        "collision_snapshot_unavailable": 1,
+        "inputs_expired_before_delivery": 1
+      },
+      "snapshot_invalid_flag_count": 0,
+      "dynamic_invalid_count": 0,
+      "deadline95_rejections": 0,
+      "cycle_ms_by_state": {
+        "command_delivered": {
+          "n": 102,
+          "min": 5.53,
+          "median": 39.34,
+          "p95": 61.2,
+          "max": 72.71
+        },
+        "collision_snapshot_expired_during_plan": {
+          "n": 1,
+          "min": 61.34,
+          "median": 61.34,
+          "p95": 61.34,
+          "max": 61.34
+        },
+        "collision_snapshot_unavailable": {
+          "n": 1,
+          "min": 1.04,
+          "median": 1.04,
+          "p95": 1.04,
+          "max": 1.04
+        },
+        "inputs_expired_before_delivery": {
+          "n": 1,
+          "min": 76.77,
+          "median": 76.77,
+          "p95": 76.77,
+          "max": 76.77
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 1,
+          "min": 33.14,
+          "median": 33.14,
+          "p95": 33.14,
+          "max": 33.14
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 77,
+        "min": 105.75342178344727,
+        "median": 153.32579612731934,
+        "p95": 198.9889144897461,
+        "max": 231.39572143554688
+      },
+      "new_map_interval_ms": {
+        "n": 76,
+        "min": 101.09305381774902,
+        "median": 149.9577760696411,
+        "p95": 174.5285987854004,
+        "max": 201.00784301757812
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 77,
+        "min": 97.39828109741211,
+        "median": 125.17547607421875,
+        "p95": 169.5539951324463,
+        "max": 211.52615547180176
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 77,
+        "min": 6.433010101318359,
+        "median": 15.002727508544922,
+        "p95": 35.25352478027344,
+        "max": 47.405242919921875
+      },
+      "snapshot_packet_n": 242,
+      "snapshot_valid_fraction": 0.9380165289256198,
+      "snapshot_age_over350_at_receive_count": 10,
+      "local_changed": {
+        "n": 2,
+        "min": 1781,
+        "median": 1933.0,
+        "p95": 1781,
+        "max": 2085
+      },
+      "local_input_bound_voxels": {
+        "n": 2,
+        "min": 2131200,
+        "median": 2177280.0,
+        "p95": 2131200,
+        "max": 2223360
+      },
+      "pipeline_window_n": 3,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 3,
+          "min": 26.18,
+          "median": 27.95,
+          "p95": 27.95,
+          "max": 28.07
+        },
+        "esdf_compute_avg_ms": {
+          "n": 3,
+          "min": 77.44,
+          "median": 84.21,
+          "p95": 84.21,
+          "max": 97.24
+        },
+        "main_commit_avg_ms": {
+          "n": 3,
+          "min": 7.44,
+          "median": 7.64,
+          "p95": 7.64,
+          "max": 7.65
+        },
+        "snapshot_avg_ms": {
+          "n": 3,
+          "min": 2.44,
+          "median": 2.59,
+          "p95": 2.59,
+          "max": 2.83
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 51.66,
+        "esdf_compute_max_ms": 155.16,
+        "main_commit_max_ms": 13.24,
+        "snapshot_max_ms": 8.09
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 121,
+          "source_interval_ms": {
+            "n": 120,
+            "min": 97.33796119689941,
+            "median": 99.99513626098633,
+            "p95": 100.84009170532227,
+            "max": 102.65564918518066
+          },
+          "source_to_record_ms": {
+            "n": 121,
+            "min": 13.469934463500977,
+            "median": 19.594192504882812,
+            "p95": 35.861968994140625,
+            "max": 42.557477951049805
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 121,
+          "source_interval_ms": {
+            "n": 120,
+            "min": 97.33796119689941,
+            "median": 99.99513626098633,
+            "p95": 100.84009170532227,
+            "max": 102.65564918518066
+          },
+          "source_to_record_ms": {
+            "n": 121,
+            "min": 16.091585159301758,
+            "median": 22.852659225463867,
+            "p95": 38.73562812805176,
+            "max": 56.06198310852051
+          }
+        },
+        "/velodyne_points": {
+          "n": 110,
+          "source_interval_ms": {
+            "n": 109,
+            "min": 97.33796119689941,
+            "median": 99.99608993530273,
+            "p95": 100.84009170532227,
+            "max": 199.92613792419434
+          },
+          "source_to_record_ms": {
+            "n": 110,
+            "min": 36.57889366149902,
+            "median": 50.61662197113037,
+            "p95": 89.04790878295898,
+            "max": 119.9183464050293
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 110,
+          "source_interval_ms": {
+            "n": 109,
+            "min": 97.33796119689941,
+            "median": 99.99608993530273,
+            "p95": 100.84009170532227,
+            "max": 199.92613792419434
+          },
+          "source_to_record_ms": {
+            "n": 110,
+            "min": 36.71455383300781,
+            "median": 56.713104248046875,
+            "p95": 92.59867668151855,
+            "max": 127.6254653930664
+          }
+        }
+      }
+    },
+    {
+      "name": "goal1_no_perception_stop_part2",
+      "start": 1794563125.7235155,
+      "end": 1794563136.935839,
+      "start_clock": "17:45:25.723",
+      "end_clock": "17:45:36.935",
+      "status_n": 79,
+      "states": {
+        "waiting_explicit_arm_enable_or_normal_status": 2,
+        "command_delivered": 75,
+        "native_reference_expired_during_plan": 1,
+        "inputs_expired_before_delivery": 1
+      },
+      "delivered_modes": {
+        "nominal": 44,
+        "terminal_yaw_alignment": 31
+      },
+      "snapshot_input_rejections": 1,
+      "explicit_map_age_over350_count": 1,
+      "map_age_over350_by_state": {
+        "inputs_expired_before_delivery": 1
+      },
+      "snapshot_invalid_flag_count": 0,
+      "dynamic_invalid_count": 0,
+      "deadline95_rejections": 0,
+      "cycle_ms_by_state": {
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 2,
+          "min": 0.24,
+          "median": 0.5449999999999999,
+          "p95": 0.24,
+          "max": 0.85
+        },
+        "command_delivered": {
+          "n": 75,
+          "min": 6.62,
+          "median": 27.0,
+          "p95": 64.35,
+          "max": 75.78
+        },
+        "native_reference_expired_during_plan": {
+          "n": 1,
+          "min": 20.66,
+          "median": 20.66,
+          "p95": 20.66,
+          "max": 20.66
+        },
+        "inputs_expired_before_delivery": {
+          "n": 1,
+          "min": 26.75,
+          "median": 26.75,
+          "p95": 26.75,
+          "max": 26.75
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 81,
+        "min": 99.28345680236816,
+        "median": 141.00050926208496,
+        "p95": 183.04681777954102,
+        "max": 201.35116577148438
+      },
+      "new_map_interval_ms": {
+        "n": 80,
+        "min": 100.9981632232666,
+        "median": 139.21451568603516,
+        "p95": 180.03249168395996,
+        "max": 215.68965911865234
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 81,
+        "min": 83.14800262451172,
+        "median": 123.20494651794434,
+        "p95": 160.20774841308594,
+        "max": 167.08898544311523
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 81,
+        "min": 6.269216537475586,
+        "median": 15.127897262573242,
+        "p95": 32.34505653381348,
+        "max": 38.26427459716797
+      },
+      "snapshot_packet_n": 224,
+      "snapshot_valid_fraction": 1.0,
+      "snapshot_age_over350_at_receive_count": 0,
+      "local_changed": {
+        "n": 3,
+        "min": 1735,
+        "median": 1751,
+        "p95": 1751,
+        "max": 2124
+      },
+      "local_input_bound_voxels": {
+        "n": 3,
+        "min": 2009100,
+        "median": 2245320,
+        "p95": 2245320,
+        "max": 2277660
+      },
+      "pipeline_window_n": 2,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 2,
+          "min": 22.09,
+          "median": 22.130000000000003,
+          "p95": 22.09,
+          "max": 22.17
+        },
+        "esdf_compute_avg_ms": {
+          "n": 2,
+          "min": 67.91,
+          "median": 72.235,
+          "p95": 67.91,
+          "max": 76.56
+        },
+        "main_commit_avg_ms": {
+          "n": 2,
+          "min": 7.39,
+          "median": 7.46,
+          "p95": 7.39,
+          "max": 7.53
+        },
+        "snapshot_avg_ms": {
+          "n": 2,
+          "min": 2.38,
+          "median": 2.5149999999999997,
+          "p95": 2.38,
+          "max": 2.65
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 43.58,
+        "esdf_compute_max_ms": 110.64,
+        "main_commit_max_ms": 12.07,
+        "snapshot_max_ms": 11.91
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 112,
+          "source_interval_ms": {
+            "n": 111,
+            "min": 96.62151336669922,
+            "median": 100.00967979431152,
+            "p95": 100.81624984741211,
+            "max": 103.42836380004883
+          },
+          "source_to_record_ms": {
+            "n": 112,
+            "min": 13.580560684204102,
+            "median": 18.37337017059326,
+            "p95": 30.640602111816406,
+            "max": 44.327735900878906
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 112,
+          "source_interval_ms": {
+            "n": 111,
+            "min": 96.62151336669922,
+            "median": 100.00967979431152,
+            "p95": 100.81624984741211,
+            "max": 103.42836380004883
+          },
+          "source_to_record_ms": {
+            "n": 112,
+            "min": 15.398502349853516,
+            "median": 19.69599723815918,
+            "p95": 34.79313850402832,
+            "max": 56.459665298461914
+          }
+        },
+        "/velodyne_points": {
+          "n": 111,
+          "source_interval_ms": {
+            "n": 110,
+            "min": 96.62151336669922,
+            "median": 100.00967979431152,
+            "p95": 100.8749008178711,
+            "max": 199.91588592529297
+          },
+          "source_to_record_ms": {
+            "n": 111,
+            "min": 32.7761173248291,
+            "median": 46.72122001647949,
+            "p95": 73.11654090881348,
+            "max": 126.85418128967285
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 111,
+          "source_interval_ms": {
+            "n": 110,
+            "min": 96.62151336669922,
+            "median": 100.00967979431152,
+            "p95": 100.8749008178711,
+            "max": 199.91588592529297
+          },
+          "source_to_record_ms": {
+            "n": 111,
+            "min": 37.42647171020508,
+            "median": 52.232980728149414,
+            "p95": 81.67076110839844,
+            "max": 145.54834365844727
+          }
+        }
+      }
+    },
+    {
+      "name": "goal2_no_perception_stop_part1",
+      "start": 1794563136.935839,
+      "end": 1794563180.4584777,
+      "start_clock": "17:45:36.935",
+      "end_clock": "17:46:20.458",
+      "status_n": 418,
+      "states": {
+        "command_delivered": 271,
+        "delivery_deadline_exceeded": 3,
+        "waiting_explicit_arm_enable_or_normal_status": 5,
+        "collision_snapshot_unavailable": 10,
+        "native_reference_cancelled": 119,
+        "no_feasible_candidate": 3,
+        "collision_snapshot_expired_during_plan": 3,
+        "inputs_expired_before_delivery": 1,
+        "native_gear_changed_during_plan": 2,
+        "state_feedback_stale": 1
+      },
+      "delivered_modes": {
+        "reference_wait_hold": 9,
+        "nominal": 262
+      },
+      "snapshot_input_rejections": 14,
+      "explicit_map_age_over350_count": 12,
+      "map_age_over350_by_state": {
+        "collision_snapshot_unavailable": 8,
+        "collision_snapshot_expired_during_plan": 3,
+        "inputs_expired_before_delivery": 1
+      },
+      "snapshot_invalid_flag_count": 8,
+      "dynamic_invalid_count": 1,
+      "deadline95_rejections": 3,
+      "cycle_ms_by_state": {
+        "command_delivered": {
+          "n": 271,
+          "min": 5.55,
+          "median": 40.22,
+          "p95": 68.49,
+          "max": 94.51
+        },
+        "delivery_deadline_exceeded": {
+          "n": 3,
+          "min": 98.33,
+          "median": 107.88,
+          "p95": 107.88,
+          "max": 113.75
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 5,
+          "min": 0.15,
+          "median": 0.26,
+          "p95": 0.28,
+          "max": 0.31
+        },
+        "collision_snapshot_unavailable": {
+          "n": 10,
+          "min": 0.08,
+          "median": 0.29000000000000004,
+          "p95": 0.98,
+          "max": 1.25
+        },
+        "native_reference_cancelled": {
+          "n": 119,
+          "min": 0.47,
+          "median": 0.64,
+          "p95": 2.62,
+          "max": 13.7
+        },
+        "no_feasible_candidate": {
+          "n": 3,
+          "min": 56.74,
+          "median": 61.85,
+          "p95": 61.85,
+          "max": 73.86
+        },
+        "collision_snapshot_expired_during_plan": {
+          "n": 3,
+          "min": 23.85,
+          "median": 26.36,
+          "p95": 26.36,
+          "max": 36.52
+        },
+        "inputs_expired_before_delivery": {
+          "n": 1,
+          "min": 25.07,
+          "median": 25.07,
+          "p95": 25.07,
+          "max": 25.07
+        },
+        "native_gear_changed_during_plan": {
+          "n": 2,
+          "min": 21.82,
+          "median": 29.06,
+          "p95": 21.82,
+          "max": 36.3
+        },
+        "state_feedback_stale": {
+          "n": 1,
+          "min": 0.22,
+          "median": 0.22,
+          "p95": 0.22,
+          "max": 0.22
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 302,
+        "min": 87.72563934326172,
+        "median": 141.8832540512085,
+        "p95": 195.68181037902832,
+        "max": 289.3047332763672
+      },
+      "new_map_interval_ms": {
+        "n": 301,
+        "min": 91.02201461791992,
+        "median": 142.41647720336914,
+        "p95": 182.71255493164062,
+        "max": 447.9398727416992
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 302,
+        "min": 73.64678382873535,
+        "median": 122.57087230682373,
+        "p95": 168.87617111206055,
+        "max": 201.85279846191406
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 302,
+        "min": 5.994558334350586,
+        "median": 14.95969295501709,
+        "p95": 39.75868225097656,
+        "max": 170.22967338562012
+      },
+      "snapshot_packet_n": 865,
+      "snapshot_valid_fraction": 0.9710982658959537,
+      "snapshot_age_over350_at_receive_count": 14,
+      "local_changed": {
+        "n": 8,
+        "min": 1237,
+        "median": 1368.5,
+        "p95": 1673,
+        "max": 1687
+      },
+      "local_input_bound_voxels": {
+        "n": 8,
+        "min": 1886520,
+        "median": 2103120.0,
+        "p95": 2170800,
+        "max": 2208900
+      },
+      "pipeline_window_n": 9,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 9,
+          "min": 21.8,
+          "median": 22.98,
+          "p95": 25.54,
+          "max": 26.19
+        },
+        "esdf_compute_avg_ms": {
+          "n": 9,
+          "min": 71.07,
+          "median": 79.94,
+          "p95": 81.63,
+          "max": 84.23
+        },
+        "main_commit_avg_ms": {
+          "n": 9,
+          "min": 7.32,
+          "median": 7.75,
+          "p95": 8.14,
+          "max": 8.15
+        },
+        "snapshot_avg_ms": {
+          "n": 9,
+          "min": 2.38,
+          "median": 2.63,
+          "p95": 2.75,
+          "max": 3.27
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 63.19,
+        "esdf_compute_max_ms": 119.51,
+        "main_commit_max_ms": 19.34,
+        "snapshot_max_ms": 16.82
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 434,
+          "source_interval_ms": {
+            "n": 433,
+            "min": 94.2225456237793,
+            "median": 100.00205039978027,
+            "p95": 100.82411766052246,
+            "max": 199.7201442718506
+          },
+          "source_to_record_ms": {
+            "n": 434,
+            "min": 13.24152946472168,
+            "median": 19.347786903381348,
+            "p95": 36.97395324707031,
+            "max": 200.8500099182129
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 434,
+          "source_interval_ms": {
+            "n": 433,
+            "min": 94.2225456237793,
+            "median": 100.00205039978027,
+            "p95": 100.82411766052246,
+            "max": 203.51171493530273
+          },
+          "source_to_record_ms": {
+            "n": 434,
+            "min": 14.420270919799805,
+            "median": 21.566152572631836,
+            "p95": 40.184736251831055,
+            "max": 96.70805931091309
+          }
+        },
+        "/velodyne_points": {
+          "n": 418,
+          "source_interval_ms": {
+            "n": 417,
+            "min": 94.2225456237793,
+            "median": 100.00252723693848,
+            "p95": 100.96120834350586,
+            "max": 499.88818168640137
+          },
+          "source_to_record_ms": {
+            "n": 418,
+            "min": 32.315969467163086,
+            "median": 48.76244068145752,
+            "p95": 75.04940032958984,
+            "max": 144.76799964904785
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 417,
+          "source_interval_ms": {
+            "n": 416,
+            "min": 94.2225456237793,
+            "median": 100.00276565551758,
+            "p95": 100.96120834350586,
+            "max": 499.88818168640137
+          },
+          "source_to_record_ms": {
+            "n": 417,
+            "min": 36.67163848876953,
+            "median": 53.92789840698242,
+            "p95": 80.40714263916016,
+            "max": 129.95505332946777
+          }
+        }
+      }
+    },
+    {
+      "name": "goal3_no_perception_stop_part1",
+      "start": 1794563184.1771302,
+      "end": 1794563198.436209,
+      "start_clock": "17:46:24.177",
+      "end_clock": "17:46:38.436",
+      "status_n": 124,
+      "states": {
+        "command_delivered": 112,
+        "reference_changed_before_delivery": 1,
+        "waiting_explicit_arm_enable_or_normal_status": 4,
+        "native_gear_changed_during_plan": 1,
+        "collision_snapshot_unavailable": 3,
+        "native_reference_expired_during_plan": 1,
+        "inputs_expired_before_delivery": 1,
+        "state_feedback_stale": 1
+      },
+      "delivered_modes": {
+        "reference_wait_hold": 5,
+        "nominal": 68,
+        "terminal_yaw_alignment": 39
+      },
+      "snapshot_input_rejections": 4,
+      "explicit_map_age_over350_count": 3,
+      "map_age_over350_by_state": {
+        "collision_snapshot_unavailable": 2,
+        "inputs_expired_before_delivery": 1
+      },
+      "snapshot_invalid_flag_count": 3,
+      "dynamic_invalid_count": 1,
+      "deadline95_rejections": 0,
+      "cycle_ms_by_state": {
+        "command_delivered": {
+          "n": 112,
+          "min": 6.56,
+          "median": 32.120000000000005,
+          "p95": 64.93,
+          "max": 88.58
+        },
+        "reference_changed_before_delivery": {
+          "n": 1,
+          "min": 17.74,
+          "median": 17.74,
+          "p95": 17.74,
+          "max": 17.74
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 4,
+          "min": 0.15,
+          "median": 0.2,
+          "p95": 0.21,
+          "max": 24.63
+        },
+        "native_gear_changed_during_plan": {
+          "n": 1,
+          "min": 27.47,
+          "median": 27.47,
+          "p95": 27.47,
+          "max": 27.47
+        },
+        "collision_snapshot_unavailable": {
+          "n": 3,
+          "min": 0.11,
+          "median": 0.21,
+          "p95": 0.21,
+          "max": 0.25
+        },
+        "native_reference_expired_during_plan": {
+          "n": 1,
+          "min": 54.07,
+          "median": 54.07,
+          "p95": 54.07,
+          "max": 54.07
+        },
+        "inputs_expired_before_delivery": {
+          "n": 1,
+          "min": 27.28,
+          "median": 27.28,
+          "p95": 27.28,
+          "max": 27.28
+        },
+        "state_feedback_stale": {
+          "n": 1,
+          "min": 0.17,
+          "median": 0.17,
+          "p95": 0.17,
+          "max": 0.17
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 92,
+        "min": 114.95590209960938,
+        "median": 136.13152503967285,
+        "p95": 190.69528579711914,
+        "max": 219.1140651702881
+      },
+      "new_map_interval_ms": {
+        "n": 91,
+        "min": 96.34017944335938,
+        "median": 148.67472648620605,
+        "p95": 167.25516319274902,
+        "max": 447.9987621307373
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 92,
+        "min": 105.20005226135254,
+        "median": 120.18156051635742,
+        "p95": 167.4027442932129,
+        "max": 174.03340339660645
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 92,
+        "min": 5.780935287475586,
+        "median": 13.573169708251953,
+        "p95": 42.6790714263916,
+        "max": 64.37540054321289
+      },
+      "snapshot_packet_n": 284,
+      "snapshot_valid_fraction": 0.9190140845070423,
+      "snapshot_age_over350_at_receive_count": 10,
+      "local_changed": {
+        "n": 3,
+        "min": 1512,
+        "median": 1568,
+        "p95": 1568,
+        "max": 1620
+      },
+      "local_input_bound_voxels": {
+        "n": 3,
+        "min": 2120100,
+        "median": 2131560,
+        "p95": 2131560,
+        "max": 2255220
+      },
+      "pipeline_window_n": 3,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 3,
+          "min": 21.39,
+          "median": 25.7,
+          "p95": 25.7,
+          "max": 27.88
+        },
+        "esdf_compute_avg_ms": {
+          "n": 3,
+          "min": 70.84,
+          "median": 76.83,
+          "p95": 76.83,
+          "max": 78.62
+        },
+        "main_commit_avg_ms": {
+          "n": 3,
+          "min": 7.67,
+          "median": 8.01,
+          "p95": 8.01,
+          "max": 8.12
+        },
+        "snapshot_avg_ms": {
+          "n": 3,
+          "min": 2.39,
+          "median": 2.61,
+          "p95": 2.61,
+          "max": 2.64
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 48.21,
+        "esdf_compute_max_ms": 105.09,
+        "main_commit_max_ms": 18.76,
+        "snapshot_max_ms": 8.63
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 143,
+          "source_interval_ms": {
+            "n": 142,
+            "min": 98.47283363342285,
+            "median": 99.99394416809082,
+            "p95": 100.8298397064209,
+            "max": 101.5925407409668
+          },
+          "source_to_record_ms": {
+            "n": 143,
+            "min": 14.690637588500977,
+            "median": 20.563840866088867,
+            "p95": 36.95559501647949,
+            "max": 69.49353218078613
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 143,
+          "source_interval_ms": {
+            "n": 142,
+            "min": 98.47283363342285,
+            "median": 99.99394416809082,
+            "p95": 100.8298397064209,
+            "max": 101.5925407409668
+          },
+          "source_to_record_ms": {
+            "n": 143,
+            "min": 16.37864112854004,
+            "median": 23.71525764465332,
+            "p95": 39.987802505493164,
+            "max": 69.75889205932617
+          }
+        },
+        "/velodyne_points": {
+          "n": 131,
+          "source_interval_ms": {
+            "n": 130,
+            "min": 98.47283363342285,
+            "median": 99.99394416809082,
+            "p95": 100.9986400604248,
+            "max": 599.9503135681152
+          },
+          "source_to_record_ms": {
+            "n": 131,
+            "min": 33.77842903137207,
+            "median": 50.92930793762207,
+            "p95": 75.1645565032959,
+            "max": 136.92855834960938
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 131,
+          "source_interval_ms": {
+            "n": 130,
+            "min": 98.47283363342285,
+            "median": 99.99394416809082,
+            "p95": 100.9986400604248,
+            "max": 599.9503135681152
+          },
+          "source_to_record_ms": {
+            "n": 131,
+            "min": 36.815643310546875,
+            "median": 55.924177169799805,
+            "p95": 78.42803001403809,
+            "max": 142.49420166015625
+          }
+        }
+      }
+    },
+    {
+      "name": "goal4_no_perception_stop_part1",
+      "start": 1794563200.682124,
+      "end": 1794563210.894377,
+      "start_clock": "17:46:40.682",
+      "end_clock": "17:46:50.894",
+      "status_n": 74,
+      "states": {
+        "command_delivered": 67,
+        "delivery_deadline_exceeded": 1,
+        "waiting_explicit_arm_enable_or_normal_status": 2,
+        "collision_snapshot_unavailable": 2,
+        "inputs_expired_before_delivery": 2
+      },
+      "delivered_modes": {
+        "reference_wait_hold": 4,
+        "nominal": 63
+      },
+      "snapshot_input_rejections": 4,
+      "explicit_map_age_over350_count": 1,
+      "map_age_over350_by_state": {
+        "collision_snapshot_unavailable": 1
+      },
+      "snapshot_invalid_flag_count": 2,
+      "dynamic_invalid_count": 1,
+      "deadline95_rejections": 1,
+      "cycle_ms_by_state": {
+        "command_delivered": {
+          "n": 67,
+          "min": 7.12,
+          "median": 37.38,
+          "p95": 62.74,
+          "max": 89.89
+        },
+        "delivery_deadline_exceeded": {
+          "n": 1,
+          "min": 107.02,
+          "median": 107.02,
+          "p95": 107.02,
+          "max": 107.02
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 2,
+          "min": 0.14,
+          "median": 1.1600000000000001,
+          "p95": 0.14,
+          "max": 2.18
+        },
+        "collision_snapshot_unavailable": {
+          "n": 2,
+          "min": 0.15,
+          "median": 0.175,
+          "p95": 0.15,
+          "max": 0.2
+        },
+        "inputs_expired_before_delivery": {
+          "n": 2,
+          "min": 50.98,
+          "median": 55.45,
+          "p95": 50.98,
+          "max": 59.92
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 66,
+        "min": 76.8585205078125,
+        "median": 134.00804996490479,
+        "p95": 182.23810195922852,
+        "max": 211.17591857910156
+      },
+      "new_map_interval_ms": {
+        "n": 65,
+        "min": 99.3812084197998,
+        "median": 145.89762687683105,
+        "p95": 163.73467445373535,
+        "max": 543.5845851898193
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 66,
+        "min": 68.77946853637695,
+        "median": 118.00289154052734,
+        "p95": 157.78708457946777,
+        "max": 171.40936851501465
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 66,
+        "min": 6.043195724487305,
+        "median": 14.410853385925293,
+        "p95": 36.94748878479004,
+        "max": 56.60653114318848
+      },
+      "snapshot_packet_n": 204,
+      "snapshot_valid_fraction": 0.8676470588235294,
+      "snapshot_age_over350_at_receive_count": 15,
+      "local_changed": {
+        "n": 2,
+        "min": 1636,
+        "median": 1656.5,
+        "p95": 1636,
+        "max": 1677
+      },
+      "local_input_bound_voxels": {
+        "n": 2,
+        "min": 2062080,
+        "median": 2085120.0,
+        "p95": 2062080,
+        "max": 2108160
+      },
+      "pipeline_window_n": 2,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 2,
+          "min": 26.17,
+          "median": 26.825000000000003,
+          "p95": 26.17,
+          "max": 27.48
+        },
+        "esdf_compute_avg_ms": {
+          "n": 2,
+          "min": 71.34,
+          "median": 73.98,
+          "p95": 71.34,
+          "max": 76.62
+        },
+        "main_commit_avg_ms": {
+          "n": 2,
+          "min": 6.98,
+          "median": 6.98,
+          "p95": 6.98,
+          "max": 6.98
+        },
+        "snapshot_avg_ms": {
+          "n": 2,
+          "min": 2.36,
+          "median": 2.525,
+          "p95": 2.36,
+          "max": 2.69
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 41.24,
+        "esdf_compute_max_ms": 104.99,
+        "main_commit_max_ms": 9.86,
+        "snapshot_max_ms": 11.54
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 103,
+          "source_interval_ms": {
+            "n": 102,
+            "min": 98.06966781616211,
+            "median": 99.98559951782227,
+            "p95": 100.6925106048584,
+            "max": 102.01287269592285
+          },
+          "source_to_record_ms": {
+            "n": 103,
+            "min": 14.308691024780273,
+            "median": 20.468950271606445,
+            "p95": 34.76595878601074,
+            "max": 43.40624809265137
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 103,
+          "source_interval_ms": {
+            "n": 102,
+            "min": 98.06966781616211,
+            "median": 99.98559951782227,
+            "p95": 100.6925106048584,
+            "max": 102.01287269592285
+          },
+          "source_to_record_ms": {
+            "n": 103,
+            "min": 15.571355819702148,
+            "median": 22.04132080078125,
+            "p95": 40.02976417541504,
+            "max": 46.672821044921875
+          }
+        },
+        "/velodyne_points": {
+          "n": 88,
+          "source_interval_ms": {
+            "n": 87,
+            "min": 98.06966781616211,
+            "median": 99.99728202819824,
+            "p95": 100.9061336517334,
+            "max": 799.8800277709961
+          },
+          "source_to_record_ms": {
+            "n": 88,
+            "min": 32.675981521606445,
+            "median": 50.06754398345947,
+            "p95": 68.23420524597168,
+            "max": 123.3835220336914
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 88,
+          "source_interval_ms": {
+            "n": 87,
+            "min": 98.06966781616211,
+            "median": 99.99728202819824,
+            "p95": 100.9061336517334,
+            "max": 799.8800277709961
+          },
+          "source_to_record_ms": {
+            "n": 88,
+            "min": 36.382436752319336,
+            "median": 53.0545711517334,
+            "p95": 75.0579833984375,
+            "max": 138.75555992126465
+          }
+        }
+      }
+    },
+    {
+      "name": "goal4_no_perception_stop_part2",
+      "start": 1794563211.4221072,
+      "end": 1794563218.2857673,
+      "start_clock": "17:46:51.422",
+      "end_clock": "17:46:58.285",
+      "status_n": 58,
+      "states": {
+        "waiting_explicit_arm_enable_or_normal_status": 1,
+        "command_delivered": 57
+      },
+      "delivered_modes": {
+        "nominal": 57
+      },
+      "snapshot_input_rejections": 0,
+      "explicit_map_age_over350_count": 0,
+      "map_age_over350_by_state": {},
+      "snapshot_invalid_flag_count": 0,
+      "dynamic_invalid_count": 0,
+      "deadline95_rejections": 0,
+      "cycle_ms_by_state": {
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 1,
+          "min": 0.17,
+          "median": 0.17,
+          "p95": 0.17,
+          "max": 0.17
+        },
+        "command_delivered": {
+          "n": 57,
+          "min": 27.8,
+          "median": 49.19,
+          "p95": 70.36,
+          "max": 83.62
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 45,
+        "min": 80.94549179077148,
+        "median": 132.41338729858398,
+        "p95": 168.2741641998291,
+        "max": 183.98380279541016
+      },
+      "new_map_interval_ms": {
+        "n": 44,
+        "min": 97.80597686767578,
+        "median": 148.15151691436768,
+        "p95": 157.97734260559082,
+        "max": 163.17176818847656
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 45,
+        "min": 72.45802879333496,
+        "median": 118.97134780883789,
+        "p95": 159.6829891204834,
+        "max": 170.48931121826172
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 45,
+        "min": 6.349325180053711,
+        "median": 11.757850646972656,
+        "p95": 25.73370933532715,
+        "max": 46.117544174194336
+      },
+      "snapshot_packet_n": 138,
+      "snapshot_valid_fraction": 0.9130434782608695,
+      "snapshot_age_over350_at_receive_count": 9,
+      "local_changed": {
+        "n": 1,
+        "min": 1665,
+        "median": 1665,
+        "p95": 1665,
+        "max": 1665
+      },
+      "local_input_bound_voxels": {
+        "n": 1,
+        "min": 2039040,
+        "median": 2039040,
+        "p95": 2039040,
+        "max": 2039040
+      },
+      "pipeline_window_n": 1,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 1,
+          "min": 26.25,
+          "median": 26.25,
+          "p95": 26.25,
+          "max": 26.25
+        },
+        "esdf_compute_avg_ms": {
+          "n": 1,
+          "min": 75.47,
+          "median": 75.47,
+          "p95": 75.47,
+          "max": 75.47
+        },
+        "main_commit_avg_ms": {
+          "n": 1,
+          "min": 6.71,
+          "median": 6.71,
+          "p95": 6.71,
+          "max": 6.71
+        },
+        "snapshot_avg_ms": {
+          "n": 1,
+          "min": 2.3,
+          "median": 2.3,
+          "p95": 2.3,
+          "max": 2.3
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 34.37,
+        "esdf_compute_max_ms": 107.29,
+        "main_commit_max_ms": 9.06,
+        "snapshot_max_ms": 3.16
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 69,
+          "source_interval_ms": {
+            "n": 68,
+            "min": 97.9604721069336,
+            "median": 100.00741481781006,
+            "p95": 100.92663764953613,
+            "max": 101.87101364135742
+          },
+          "source_to_record_ms": {
+            "n": 69,
+            "min": 13.273000717163086,
+            "median": 18.59283447265625,
+            "p95": 29.73341941833496,
+            "max": 41.53847694396973
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 69,
+          "source_interval_ms": {
+            "n": 68,
+            "min": 97.9604721069336,
+            "median": 100.00741481781006,
+            "p95": 100.92663764953613,
+            "max": 101.87101364135742
+          },
+          "source_to_record_ms": {
+            "n": 69,
+            "min": 14.585018157958984,
+            "median": 21.58331871032715,
+            "p95": 31.363487243652344,
+            "max": 51.578521728515625
+          }
+        },
+        "/velodyne_points": {
+          "n": 60,
+          "source_interval_ms": {
+            "n": 59,
+            "min": 97.9604721069336,
+            "median": 100.01492500305176,
+            "p95": 101.03988647460938,
+            "max": 101.87101364135742
+          },
+          "source_to_record_ms": {
+            "n": 60,
+            "min": 35.61282157897949,
+            "median": 47.42133617401123,
+            "p95": 77.14414596557617,
+            "max": 93.32871437072754
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 60,
+          "source_interval_ms": {
+            "n": 59,
+            "min": 97.9604721069336,
+            "median": 100.01492500305176,
+            "p95": 101.03988647460938,
+            "max": 101.87101364135742
+          },
+          "source_to_record_ms": {
+            "n": 60,
+            "min": 43.01571846008301,
+            "median": 53.93874645233154,
+            "p95": 74.02586936950684,
+            "max": 96.70567512512207
+          }
+        }
+      }
+    },
+    {
+      "name": "goal4_no_perception_stop_part3",
+      "start": 1794563222.217935,
+      "end": 1794563268.7151527,
+      "start_clock": "17:47:02.217",
+      "end_clock": "17:47:48.715",
+      "status_n": 435,
+      "states": {
+        "command_delivered": 373,
+        "inputs_expired_before_delivery": 4,
+        "waiting_explicit_arm_enable_or_normal_status": 5,
+        "collision_snapshot_expired_during_plan": 3,
+        "collision_snapshot_unavailable": 19,
+        "native_reference_cancelled": 31
+      },
+      "delivered_modes": {
+        "nominal": 373
+      },
+      "snapshot_input_rejections": 26,
+      "explicit_map_age_over350_count": 22,
+      "map_age_over350_by_state": {
+        "inputs_expired_before_delivery": 3,
+        "collision_snapshot_unavailable": 17,
+        "collision_snapshot_expired_during_plan": 2
+      },
+      "snapshot_invalid_flag_count": 12,
+      "dynamic_invalid_count": 3,
+      "deadline95_rejections": 0,
+      "cycle_ms_by_state": {
+        "command_delivered": {
+          "n": 373,
+          "min": 22.01,
+          "median": 40.81,
+          "p95": 72.17,
+          "max": 85.35
+        },
+        "inputs_expired_before_delivery": {
+          "n": 4,
+          "min": 34.52,
+          "median": 49.129999999999995,
+          "p95": 52.25,
+          "max": 69.29
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 5,
+          "min": 0.16,
+          "median": 0.22,
+          "p95": 0.29,
+          "max": 0.36
+        },
+        "collision_snapshot_expired_during_plan": {
+          "n": 3,
+          "min": 15.37,
+          "median": 20.02,
+          "p95": 20.02,
+          "max": 21.31
+        },
+        "collision_snapshot_unavailable": {
+          "n": 19,
+          "min": 0.14,
+          "median": 0.33,
+          "p95": 2.39,
+          "max": 10.09
+        },
+        "native_reference_cancelled": {
+          "n": 31,
+          "min": 0.47,
+          "median": 0.71,
+          "p95": 2.82,
+          "max": 6.06
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 311,
+        "min": 97.44381904602051,
+        "median": 135.50853729248047,
+        "p95": 189.5308494567871,
+        "max": 327.9902935028076
+      },
+      "new_map_interval_ms": {
+        "n": 310,
+        "min": 96.9841480255127,
+        "median": 146.67880535125732,
+        "p95": 196.05159759521484,
+        "max": 555.7472705841064
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 311,
+        "min": 90.61217308044434,
+        "median": 119.3854808807373,
+        "p95": 171.05531692504883,
+        "max": 296.4632511138916
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 311,
+        "min": 6.19196891784668,
+        "median": 13.785362243652344,
+        "p95": 35.46476364135742,
+        "max": 139.57476615905762
+      },
+      "snapshot_packet_n": 927,
+      "snapshot_valid_fraction": 0.9460625674217907,
+      "snapshot_age_over350_at_receive_count": 32,
+      "local_changed": {
+        "n": 9,
+        "min": 1580,
+        "median": 1678,
+        "p95": 1854,
+        "max": 2112
+      },
+      "local_input_bound_voxels": {
+        "n": 9,
+        "min": 2027520,
+        "median": 2085120,
+        "p95": 2153880,
+        "max": 2269440
+      },
+      "pipeline_window_n": 9,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 9,
+          "min": 23.46,
+          "median": 25.86,
+          "p95": 29.03,
+          "max": 29.84
+        },
+        "esdf_compute_avg_ms": {
+          "n": 9,
+          "min": 72.04,
+          "median": 75.99,
+          "p95": 83.23,
+          "max": 123.89
+        },
+        "main_commit_avg_ms": {
+          "n": 9,
+          "min": 6.68,
+          "median": 7.01,
+          "p95": 7.09,
+          "max": 7.22
+        },
+        "snapshot_avg_ms": {
+          "n": 9,
+          "min": 2.38,
+          "median": 2.75,
+          "p95": 3.14,
+          "max": 3.32
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 57.64,
+        "esdf_compute_max_ms": 191.66,
+        "main_commit_max_ms": 13.64,
+        "snapshot_max_ms": 15.66
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 464,
+          "source_interval_ms": {
+            "n": 463,
+            "min": 97.5186824798584,
+            "median": 99.99799728393555,
+            "p95": 101.06825828552246,
+            "max": 200.16050338745117
+          },
+          "source_to_record_ms": {
+            "n": 464,
+            "min": 12.485504150390625,
+            "median": 19.504785537719727,
+            "p95": 34.86037254333496,
+            "max": 203.42111587524414
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 464,
+          "source_interval_ms": {
+            "n": 463,
+            "min": 97.5186824798584,
+            "median": 99.99799728393555,
+            "p95": 101.06825828552246,
+            "max": 200.16050338745117
+          },
+          "source_to_record_ms": {
+            "n": 464,
+            "min": 13.855695724487305,
+            "median": 22.11451530456543,
+            "p95": 37.22333908081055,
+            "max": 206.85410499572754
+          }
+        },
+        "/velodyne_points": {
+          "n": 441,
+          "source_interval_ms": {
+            "n": 440,
+            "min": 97.53227233886719,
+            "median": 99.99799728393555,
+            "p95": 101.15170478820801,
+            "max": 800.041675567627
+          },
+          "source_to_record_ms": {
+            "n": 441,
+            "min": 31.30364418029785,
+            "median": 48.682212829589844,
+            "p95": 78.25350761413574,
+            "max": 304.6002388000488
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 442,
+          "source_interval_ms": {
+            "n": 441,
+            "min": 97.53227233886719,
+            "median": 99.99799728393555,
+            "p95": 101.15170478820801,
+            "max": 800.041675567627
+          },
+          "source_to_record_ms": {
+            "n": 442,
+            "min": 37.44697570800781,
+            "median": 53.63821983337402,
+            "p95": 84.96689796447754,
+            "max": 304.8067092895508
+          }
+        }
+      }
+    },
+    {
+      "name": "goal4_no_perception_stop_part4",
+      "start": 1794563269.5084162,
+      "end": 1794563274.1015081,
+      "start_clock": "17:47:49.508",
+      "end_clock": "17:47:54.101",
+      "status_n": 28,
+      "states": {
+        "native_reference_cancelled": 1,
+        "collision_snapshot_unavailable": 4,
+        "command_delivered": 15,
+        "inputs_expired_before_delivery": 4,
+        "waiting_explicit_arm_enable_or_normal_status": 3,
+        "collision_snapshot_expired_during_plan": 1
+      },
+      "delivered_modes": {
+        "nominal": 15
+      },
+      "snapshot_input_rejections": 9,
+      "explicit_map_age_over350_count": 8,
+      "map_age_over350_by_state": {
+        "collision_snapshot_unavailable": 4,
+        "inputs_expired_before_delivery": 4
+      },
+      "snapshot_invalid_flag_count": 2,
+      "dynamic_invalid_count": 1,
+      "deadline95_rejections": 0,
+      "cycle_ms_by_state": {
+        "native_reference_cancelled": {
+          "n": 1,
+          "min": 0.52,
+          "median": 0.52,
+          "p95": 0.52,
+          "max": 0.52
+        },
+        "collision_snapshot_unavailable": {
+          "n": 4,
+          "min": 0.18,
+          "median": 0.22499999999999998,
+          "p95": 0.24,
+          "max": 0.69
+        },
+        "command_delivered": {
+          "n": 15,
+          "min": 26.87,
+          "median": 46.95,
+          "p95": 59.27,
+          "max": 68.9
+        },
+        "inputs_expired_before_delivery": {
+          "n": 4,
+          "min": 29.01,
+          "median": 37.05,
+          "p95": 43.23,
+          "max": 48.12
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 3,
+          "min": 0.19,
+          "median": 0.33,
+          "p95": 0.33,
+          "max": 0.98
+        },
+        "collision_snapshot_expired_during_plan": {
+          "n": 1,
+          "min": 20.15,
+          "median": 20.15,
+          "p95": 20.15,
+          "max": 20.15
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 21,
+        "min": 129.44817543029785,
+        "median": 177.8857707977295,
+        "p95": 223.4330177307129,
+        "max": 229.70318794250488
+      },
+      "new_map_interval_ms": {
+        "n": 20,
+        "min": 136.59262657165527,
+        "median": 185.83738803863525,
+        "p95": 455.5695056915283,
+        "max": 515.1231288909912
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 21,
+        "min": 116.90211296081543,
+        "median": 165.3766632080078,
+        "p95": 205.78432083129883,
+        "max": 209.29718017578125
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 21,
+        "min": 6.100893020629883,
+        "median": 11.908769607543945,
+        "p95": 25.444984436035156,
+        "max": 51.432132720947266
+      },
+      "snapshot_packet_n": 92,
+      "snapshot_valid_fraction": 0.7065217391304348,
+      "snapshot_age_over350_at_receive_count": 16,
+      "local_changed": {
+        "n": 1,
+        "min": 1793,
+        "median": 1793,
+        "p95": 1793,
+        "max": 1793
+      },
+      "local_input_bound_voxels": {
+        "n": 1,
+        "min": 2074260,
+        "median": 2074260,
+        "p95": 2074260,
+        "max": 2074260
+      },
+      "pipeline_window_n": 1,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 1,
+          "min": 22.72,
+          "median": 22.72,
+          "p95": 22.72,
+          "max": 22.72
+        },
+        "esdf_compute_avg_ms": {
+          "n": 1,
+          "min": 109.98,
+          "median": 109.98,
+          "p95": 109.98,
+          "max": 109.98
+        },
+        "main_commit_avg_ms": {
+          "n": 1,
+          "min": 6.84,
+          "median": 6.84,
+          "p95": 6.84,
+          "max": 6.84
+        },
+        "snapshot_avg_ms": {
+          "n": 1,
+          "min": 2.44,
+          "median": 2.44,
+          "p95": 2.44,
+          "max": 2.44
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 33.25,
+        "esdf_compute_max_ms": 143.04,
+        "main_commit_max_ms": 10.67,
+        "snapshot_max_ms": 4.23
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 46,
+          "source_interval_ms": {
+            "n": 45,
+            "min": 98.72126579284668,
+            "median": 99.96151924133301,
+            "p95": 100.78001022338867,
+            "max": 101.43327713012695
+          },
+          "source_to_record_ms": {
+            "n": 46,
+            "min": 13.916492462158203,
+            "median": 19.31941509246826,
+            "p95": 35.15768051147461,
+            "max": 53.914785385131836
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 46,
+          "source_interval_ms": {
+            "n": 45,
+            "min": 98.72126579284668,
+            "median": 99.96151924133301,
+            "p95": 100.78001022338867,
+            "max": 101.43327713012695
+          },
+          "source_to_record_ms": {
+            "n": 46,
+            "min": 14.059305191040039,
+            "median": 22.37403392791748,
+            "p95": 38.58685493469238,
+            "max": 51.08022689819336
+          }
+        },
+        "/velodyne_points": {
+          "n": 32,
+          "source_interval_ms": {
+            "n": 31,
+            "min": 98.72126579284668,
+            "median": 99.97820854187012,
+            "p95": 399.4753360748291,
+            "max": 500.0765323638916
+          },
+          "source_to_record_ms": {
+            "n": 32,
+            "min": 36.562442779541016,
+            "median": 53.43770980834961,
+            "p95": 83.67609977722168,
+            "max": 146.27337455749512
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 31,
+          "source_interval_ms": {
+            "n": 30,
+            "min": 98.72126579284668,
+            "median": 99.9753475189209,
+            "p95": 499.91416931152344,
+            "max": 798.8901138305664
+          },
+          "source_to_record_ms": {
+            "n": 31,
+            "min": 41.788339614868164,
+            "median": 59.65018272399902,
+            "p95": 79.31876182556152,
+            "max": 108.7808609008789
+          }
+        }
+      }
+    },
+    {
+      "name": "goal4_no_perception_stop_part5",
+      "start": 1794563274.5943074,
+      "end": 1794563282.1270607,
+      "start_clock": "17:47:54.594",
+      "end_clock": "17:48:02.127",
+      "status_n": 64,
+      "states": {
+        "collision_snapshot_unavailable": 12,
+        "command_delivered": 43,
+        "collision_snapshot_expired_during_plan": 6,
+        "waiting_explicit_arm_enable_or_normal_status": 3
+      },
+      "delivered_modes": {
+        "nominal": 43
+      },
+      "snapshot_input_rejections": 18,
+      "explicit_map_age_over350_count": 13,
+      "map_age_over350_by_state": {
+        "collision_snapshot_unavailable": 9,
+        "collision_snapshot_expired_during_plan": 4
+      },
+      "snapshot_invalid_flag_count": 6,
+      "dynamic_invalid_count": 1,
+      "deadline95_rejections": 0,
+      "cycle_ms_by_state": {
+        "collision_snapshot_unavailable": {
+          "n": 12,
+          "min": 0.19,
+          "median": 0.275,
+          "p95": 0.42,
+          "max": 0.64
+        },
+        "command_delivered": {
+          "n": 43,
+          "min": 21.21,
+          "median": 36.58,
+          "p95": 58.65,
+          "max": 90.93
+        },
+        "collision_snapshot_expired_during_plan": {
+          "n": 6,
+          "min": 16.13,
+          "median": 24.59,
+          "p95": 28.31,
+          "max": 47.56
+        },
+        "waiting_explicit_arm_enable_or_normal_status": {
+          "n": 3,
+          "min": 0.16,
+          "median": 22.66,
+          "p95": 22.66,
+          "max": 34.73
+        }
+      },
+      "new_map_first_visible_age_ms": {
+        "n": 38,
+        "min": 120.73493003845215,
+        "median": 183.0962896347046,
+        "p95": 251.0666847229004,
+        "max": 299.5631694793701
+      },
+      "new_map_interval_ms": {
+        "n": 37,
+        "min": 142.60053634643555,
+        "median": 191.18118286132812,
+        "p95": 252.32648849487305,
+        "max": 303.6530017852783
+      },
+      "first_map_copy_acq_minus_commit_ms": {
+        "n": 38,
+        "min": 113.63673210144043,
+        "median": 168.0816411972046,
+        "p95": 219.16794776916504,
+        "max": 259.1383457183838
+      },
+      "first_map_receive_minus_copy_acq_ms": {
+        "n": 38,
+        "min": 6.518363952636719,
+        "median": 16.47508144378662,
+        "p95": 34.64508056640625,
+        "max": 88.05441856384277
+      },
+      "snapshot_packet_n": 150,
+      "snapshot_valid_fraction": 0.82,
+      "snapshot_age_over350_at_receive_count": 21,
+      "local_changed": {
+        "n": 2,
+        "min": 1622,
+        "median": 1773.5,
+        "p95": 1622,
+        "max": 1925
+      },
+      "local_input_bound_voxels": {
+        "n": 2,
+        "min": 2140320,
+        "median": 2175960.0,
+        "p95": 2140320,
+        "max": 2211600
+      },
+      "pipeline_window_n": 2,
+      "pipeline_window_average_stats": {
+        "occ_avg_ms": {
+          "n": 2,
+          "min": 23.32,
+          "median": 23.42,
+          "p95": 23.32,
+          "max": 23.52
+        },
+        "esdf_compute_avg_ms": {
+          "n": 2,
+          "min": 114.86,
+          "median": 116.87,
+          "p95": 114.86,
+          "max": 118.88
+        },
+        "main_commit_avg_ms": {
+          "n": 2,
+          "min": 7.05,
+          "median": 7.15,
+          "p95": 7.05,
+          "max": 7.25
+        },
+        "snapshot_avg_ms": {
+          "n": 2,
+          "min": 2.66,
+          "median": 2.75,
+          "p95": 2.66,
+          "max": 2.84
+        }
+      },
+      "pipeline_window_maxima": {
+        "occ_max_ms": 46.16,
+        "esdf_compute_max_ms": 170.57,
+        "main_commit_max_ms": 19.71,
+        "snapshot_max_ms": 9.27
+      },
+      "cloud_source_metadata": {
+        "/cloud_registered": {
+          "n": 75,
+          "source_interval_ms": {
+            "n": 74,
+            "min": 98.46901893615723,
+            "median": 100.00789165496826,
+            "p95": 101.03511810302734,
+            "max": 101.59754753112793
+          },
+          "source_to_record_ms": {
+            "n": 75,
+            "min": 12.892007827758789,
+            "median": 19.37127113342285,
+            "p95": 36.571502685546875,
+            "max": 43.9913272857666
+          }
+        },
+        "/livox/lidar_no_ground": {
+          "n": 75,
+          "source_interval_ms": {
+            "n": 74,
+            "min": 98.46901893615723,
+            "median": 100.00789165496826,
+            "p95": 101.03511810302734,
+            "max": 101.59754753112793
+          },
+          "source_to_record_ms": {
+            "n": 75,
+            "min": 14.809608459472656,
+            "median": 22.440671920776367,
+            "p95": 33.07366371154785,
+            "max": 42.476654052734375
+          }
+        },
+        "/velodyne_points": {
+          "n": 58,
+          "source_interval_ms": {
+            "n": 57,
+            "min": 98.46901893615723,
+            "median": 100.04377365112305,
+            "p95": 199.80692863464355,
+            "max": 399.1215229034424
+          },
+          "source_to_record_ms": {
+            "n": 58,
+            "min": 35.888671875,
+            "median": 50.52495002746582,
+            "p95": 88.53960037231445,
+            "max": 132.9941749572754
+          }
+        },
+        "/velodyne_points_mapping": {
+          "n": 58,
+          "source_interval_ms": {
+            "n": 57,
+            "min": 98.46901893615723,
+            "median": 100.04377365112305,
+            "p95": 199.80692863464355,
+            "max": 399.1215229034424
+          },
+          "source_to_record_ms": {
+            "n": 58,
+            "min": 38.31291198730469,
+            "median": 56.055545806884766,
+            "p95": 90.05880355834961,
+            "max": 138.35716247558594
+          }
+        }
+      }
+    }
+  ],
+  "giveup_logs": [
+    {
+      "source": 1794563180.4584777,
+      "clock": "17:46:20.458",
+      "node": "/remani_planner_node",
+      "text": "[FSM] Give up current target and return to WAIT_TARGET. Please send a new goal."
+    },
+    {
+      "source": 1794563198.436209,
+      "clock": "17:46:38.436",
+      "node": "/remani_planner_node",
+      "text": "[FSM] Give up current target and return to WAIT_TARGET. Please send a new goal."
+    }
+  ],
+  "depth_lost_logs": [
+    {
+      "source": 1794563125.2054374,
+      "clock": "17:45:25.205",
+      "node": "/remani_planner_node",
+      "text": "Depth Lost! EMERGENCY_STOP"
+    },
+    {
+      "source": 1794563210.894377,
+      "clock": "17:46:50.894",
+      "node": "/remani_planner_node",
+      "text": "Depth Lost! EMERGENCY_STOP"
+    },
+    {
+      "source": 1794563218.2857673,
+      "clock": "17:46:58.285",
+      "node": "/remani_planner_node",
+      "text": "Depth Lost! EMERGENCY_STOP"
+    },
+    {
+      "source": 1794563268.7151527,
+      "clock": "17:47:48.715",
+      "node": "/remani_planner_node",
+      "text": "Depth Lost! EMERGENCY_STOP"
+    },
+    {
+      "source": 1794563274.1015081,
+      "clock": "17:47:54.101",
+      "node": "/remani_planner_node",
+      "text": "Depth Lost! EMERGENCY_STOP"
+    },
+    {
+      "source": 1794563282.1270607,
+      "clock": "17:48:02.127",
+      "node": "/remani_planner_node",
+      "text": "Depth Lost! EMERGENCY_STOP"
+    },
+    {
+      "source": 1794563335.3066669,
+      "clock": "17:48:55.306",
+      "node": "/remani_planner_node",
+      "text": "Depth Lost! EMERGENCY_STOP"
+    }
+  ],
+  "recovery_logs": [
+    {
+      "source": 1794563125.7235155,
+      "clock": "17:45:25.723",
+      "node": "/remani_planner_node",
+      "text": "[FSM] Fresh perception and feedback validated a new recovery trajectory; release only the perception stop."
+    },
+    {
+      "source": 1794563211.4221072,
+      "clock": "17:46:51.422",
+      "node": "/remani_planner_node",
+      "text": "[FSM] Fresh perception and feedback validated a new recovery trajectory; release only the perception stop."
+    },
+    {
+      "source": 1794563222.217935,
+      "clock": "17:47:02.217",
+      "node": "/remani_planner_node",
+      "text": "[FSM] Fresh perception and feedback validated a new recovery trajectory; release only the perception stop."
+    },
+    {
+      "source": 1794563269.5084162,
+      "clock": "17:47:49.508",
+      "node": "/remani_planner_node",
+      "text": "[FSM] Fresh perception and feedback validated a new recovery trajectory; release only the perception stop."
+    },
+    {
+      "source": 1794563274.5943074,
+      "clock": "17:47:54.594",
+      "node": "/remani_planner_node",
+      "text": "[FSM] Fresh perception and feedback validated a new recovery trajectory; release only the perception stop."
+    },
+    {
+      "source": 1794563333.2359574,
+      "clock": "17:48:53.235",
+      "node": "/remani_planner_node",
+      "text": "[FSM] Fresh perception and feedback validated a new recovery trajectory; release only the perception stop."
+    },
+    {
+      "source": 1794563336.017166,
+      "clock": "17:48:56.017",
+      "node": "/remani_planner_node",
+      "text": "[FSM] Fresh perception and feedback validated a new recovery trajectory; release only the perception stop."
+    }
+  ],
+  "local_esdf_records": [
+    {
+      "source": 1794563101.387528,
+      "clock": "17:45:01.387",
+      "changed": 1859,
+      "input_bound_voxels": 1992960,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563106.4102483,
+      "clock": "17:45:06.410",
+      "changed": 1782,
+      "input_bound_voxels": 2003340,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563111.5918677,
+      "clock": "17:45:11.591",
+      "changed": 1817,
+      "input_bound_voxels": 2004480,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563116.6015797,
+      "clock": "17:45:16.601",
+      "changed": 2085,
+      "input_bound_voxels": 2223360,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563121.6575239,
+      "clock": "17:45:21.657",
+      "changed": 1781,
+      "input_bound_voxels": 2131200,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563126.7575357,
+      "clock": "17:45:26.757",
+      "changed": 1751,
+      "input_bound_voxels": 2245320,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563131.838295,
+      "clock": "17:45:31.838",
+      "changed": 2124,
+      "input_bound_voxels": 2277660,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563136.8435352,
+      "clock": "17:45:36.843",
+      "changed": 1735,
+      "input_bound_voxels": 2009100,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563141.8639467,
+      "clock": "17:45:41.863",
+      "changed": 1687,
+      "input_bound_voxels": 2170800,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563146.9740915,
+      "clock": "17:45:46.974",
+      "changed": 1673,
+      "input_bound_voxels": 1886520,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563152.0820484,
+      "clock": "17:45:52.082",
+      "changed": 1374,
+      "input_bound_voxels": 2086200,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563157.2040133,
+      "clock": "17:45:57.204",
+      "changed": 1237,
+      "input_bound_voxels": 2086560,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563162.302095,
+      "clock": "17:46:02.302",
+      "changed": 1283,
+      "input_bound_voxels": 2119680,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563167.4434001,
+      "clock": "17:46:07.443",
+      "changed": 1363,
+      "input_bound_voxels": 2064600,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563172.4857438,
+      "clock": "17:46:12.485",
+      "changed": 1385,
+      "input_bound_voxels": 2208900,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563177.4937568,
+      "clock": "17:46:17.493",
+      "changed": 1287,
+      "input_bound_voxels": 2154240,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563182.544513,
+      "clock": "17:46:22.544",
+      "changed": 1322,
+      "input_bound_voxels": 2276640,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563187.6885834,
+      "clock": "17:46:27.688",
+      "changed": 1512,
+      "input_bound_voxels": 2255220,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563192.735697,
+      "clock": "17:46:32.735",
+      "changed": 1620,
+      "input_bound_voxels": 2131560,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563197.742053,
+      "clock": "17:46:37.742",
+      "changed": 1568,
+      "input_bound_voxels": 2120100,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563202.7859833,
+      "clock": "17:46:42.785",
+      "changed": 1636,
+      "input_bound_voxels": 2108160,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563207.7935216,
+      "clock": "17:46:47.793",
+      "changed": 1677,
+      "input_bound_voxels": 2062080,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563212.8892238,
+      "clock": "17:46:52.889",
+      "changed": 1665,
+      "input_bound_voxels": 2039040,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563219.039183,
+      "clock": "17:46:59.039",
+      "changed": 1695,
+      "input_bound_voxels": 2085720,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563224.1479821,
+      "clock": "17:47:04.147",
+      "changed": 1854,
+      "input_bound_voxels": 2052000,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563229.2927408,
+      "clock": "17:47:09.292",
+      "changed": 1687,
+      "input_bound_voxels": 2153880,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563234.3403063,
+      "clock": "17:47:14.340",
+      "changed": 2112,
+      "input_bound_voxels": 2038080,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563239.3941998,
+      "clock": "17:47:19.394",
+      "changed": 1678,
+      "input_bound_voxels": 2085120,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563244.5433416,
+      "clock": "17:47:24.543",
+      "changed": 1771,
+      "input_bound_voxels": 2097600,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563249.6381145,
+      "clock": "17:47:29.638",
+      "changed": 1580,
+      "input_bound_voxels": 2027520,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563254.7695484,
+      "clock": "17:47:34.769",
+      "changed": 1605,
+      "input_bound_voxels": 2269440,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563259.899524,
+      "clock": "17:47:39.899",
+      "changed": 1633,
+      "input_bound_voxels": 2039040,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563265.0394528,
+      "clock": "17:47:45.039",
+      "changed": 1654,
+      "input_bound_voxels": 2085120,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563270.1005197,
+      "clock": "17:47:50.100",
+      "changed": 1793,
+      "input_bound_voxels": 2074260,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563275.1765432,
+      "clock": "17:47:55.176",
+      "changed": 1622,
+      "input_bound_voxels": 2211600,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563280.267143,
+      "clock": "17:48:00.267",
+      "changed": 1925,
+      "input_bound_voxels": 2140320,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563332.8899791,
+      "clock": "17:48:52.889",
+      "changed": 1759,
+      "input_bound_voxels": 2118480,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    },
+    {
+      "source": 1794563337.9968035,
+      "clock": "17:48:57.996",
+      "changed": 1823,
+      "input_bound_voxels": 2082600,
+      "global_voxels": 3600000,
+      "cap": 0.6,
+      "full": "no"
+    }
+  ]
+}

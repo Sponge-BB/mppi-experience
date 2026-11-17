@@ -1,0 +1,40 @@
+2026-11-12 本轮机械臂快停审计（只读，未修改运行代码）
+
+直接触发原因
+当前实际运行的 piper_ctrl_single_node-21.log 在 20:13:47.019 记录：
+motor feedback unavailable/disabled; motor_fresh=False;
+received=(True, True, True, True, True, True);
+update_age_ms=(11.731, 22.64, 40.151, 60.058, 76.104, 11.326);
+enabled=(True, True, True, True, True, True);
+sdk_source_age_ms=152.336; valid_for_ms=-2.3355484008789062.
+
+驱动 _source_deadline 同时约束源 CAN 时间戳和各电机的 SDK 更新年龄，
+门限固定为150毫秒。本次六个电机均反馈使能，SDK更新年龄均未超限；
+越限的是最新处理的低速反馈帧的源时间。随后 _stop_commands 调用
+MotionCtrl_1(0x01, 0, 0) 主动快停，锁存，不自动复位。
+上午10:00的 -20.log 属于另一实例，不能解释本次。
+
+时间戳来源
+SocketCAN 的 SO_TIMESTAMPNS 是内核接收时间，协议解析器传入SDK消息；
+SDK每处理一条低速反馈，覆盖聚合 time_stamp，并更新该电机的 perf_counter。
+聚合 time_stamp 不是六个电机最旧时间。若排除系统wall时钟跳变，
+本次最新低速帧从内核收包到SDK处理约有141毫秒差值。
+证据支持主机接收至处理存在延迟；现有记录不足以进一步区分调度、GIL、
+锁等待、接收积压等来源，也不能据此认定机械臂硬件故障。
+
+同一次bag中的因果顺序
+详见 ../arm_stop_201347_timeline.json（完整保留源时间和本机接收时间）。
+20:13:47.033：记录器收到 enabled=False, stop_latched=True。
+20:13:47.061：MPPI发布 arm_stop_latched 拒绝原因。
+20:13:48.077：规划器报告实时地图输入超时。
+失能前已出现一次自过滤等待关节超时；失能后自过滤持续拒收过期关节，
+因此后续地图输入超时不能作为本次机械臂快停的先发原因。
+上述接收时间只用于同机记录顺序，不能当作精确驱动调用时刻。
+
+记录情况和边界
+capture.bag 正常关闭，543.812秒，378253327字节；记录器峰值RSS243.78MiB。
+仅关闭身份核验后的记录器PID160525，未关闭机器人程序，未发布导航、
+使能、复位或运动指令，未修改驱动、SDK、launch及参数。
+当前代码版本仍为20261112-200048-occupancy-chain-recording，
+父版本20261112-161309-no-dynamic-uncertainty。
+原始日志与相关源码副本及SHA256清单见本目录 manifest.json。

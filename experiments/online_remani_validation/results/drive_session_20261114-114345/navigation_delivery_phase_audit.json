@@ -1,0 +1,174 @@
+{
+  "window": {
+    "start": 1794628114.717843,
+    "finish": 1794628144.1312928,
+    "start_local": "2026-11-14T11:48:34.717+08:00",
+    "finish_local": "2026-11-14T11:49:04.131+08:00",
+    "duration_s": 29.41344976425171
+  },
+  "by_state": {
+    "reference_changed_during_plan": {
+      "recorded_delivery_phase_ms": null,
+      "plan_return_to_status_ms": {
+        "n": 2,
+        "min": 0.294,
+        "median": 2.78,
+        "p95": 5.017,
+        "max": 5.266
+      }
+    },
+    "command_delivered": {
+      "recorded_delivery_phase_ms": {
+        "n": 212,
+        "min": 4.342,
+        "median": 15.031,
+        "p95": 31.654,
+        "max": 57.181
+      },
+      "plan_return_to_status_ms": {
+        "n": 212,
+        "min": 5.545,
+        "median": 16.769,
+        "p95": 35.232,
+        "max": 61.743
+      }
+    },
+    "inputs_expired_before_delivery": {
+      "recorded_delivery_phase_ms": null,
+      "plan_return_to_status_ms": {
+        "n": 16,
+        "min": 8.71,
+        "median": 20.404,
+        "p95": 53.257,
+        "max": 54.444
+      }
+    },
+    "planning_deadline_exceeded": {
+      "recorded_delivery_phase_ms": null,
+      "plan_return_to_status_ms": {
+        "n": 2,
+        "min": 0.233,
+        "median": 1.046,
+        "p95": 1.778,
+        "max": 1.859
+      }
+    },
+    "delivery_deadline_exceeded": {
+      "recorded_delivery_phase_ms": {
+        "n": 6,
+        "min": 11.782,
+        "median": 22.031,
+        "p95": 38.177,
+        "max": 42.881
+      },
+      "plan_return_to_status_ms": {
+        "n": 6,
+        "min": 14.241,
+        "median": 26.009,
+        "p95": 39.964,
+        "max": 43.676
+      }
+    },
+    "collision_snapshot_expired_during_plan": {
+      "recorded_delivery_phase_ms": null,
+      "plan_return_to_status_ms": {
+        "n": 20,
+        "min": 0.271,
+        "median": 0.515,
+        "p95": 3.048,
+        "max": 4.375
+      }
+    },
+    "waiting_explicit_arm_enable_or_normal_status": {
+      "recorded_delivery_phase_ms": {
+        "n": 1,
+        "min": 11.849,
+        "median": 11.849,
+        "p95": 11.849,
+        "max": 11.849
+      },
+      "plan_return_to_status_ms": {
+        "n": 1,
+        "min": 28.212,
+        "median": 28.212,
+        "p95": 28.212,
+        "max": 28.212
+      }
+    },
+    "collision_snapshot_unavailable": {
+      "recorded_delivery_phase_ms": null,
+      "plan_return_to_status_ms": null
+    },
+    "feedback_expired_during_plan": {
+      "recorded_delivery_phase_ms": null,
+      "plan_return_to_status_ms": {
+        "n": 2,
+        "min": 0.819,
+        "median": 1.891,
+        "p95": 2.856,
+        "max": 2.963
+      }
+    },
+    "native_reference_expired_before_delivery": {
+      "recorded_delivery_phase_ms": null,
+      "plan_return_to_status_ms": {
+        "n": 1,
+        "min": 11.889,
+        "median": 11.889,
+        "p95": 11.889,
+        "max": 11.889
+      }
+    }
+  },
+  "largest_delivery_phases": [
+    {
+      "state": "command_delivered",
+      "t": 1794628115.6873522,
+      "plan_ms": 33.347,
+      "delivery_phase_ms": 57.181
+    },
+    {
+      "state": "delivery_deadline_exceeded",
+      "t": 1794628139.2607868,
+      "plan_ms": 74.414,
+      "delivery_phase_ms": 42.881
+    },
+    {
+      "state": "command_delivered",
+      "t": 1794628120.0876782,
+      "plan_ms": 55.844,
+      "delivery_phase_ms": 38.947
+    },
+    {
+      "state": "command_delivered",
+      "t": 1794628118.2831485,
+      "plan_ms": 43.718,
+      "delivery_phase_ms": 38.178
+    },
+    {
+      "state": "command_delivered",
+      "t": 1794628136.603647,
+      "plan_ms": 36.562,
+      "delivery_phase_ms": 38.09
+    },
+    {
+      "state": "command_delivered",
+      "t": 1794628119.0485744,
+      "plan_ms": 16.28,
+      "delivery_phase_ms": 37.305
+    },
+    {
+      "state": "command_delivered",
+      "t": 1794628115.444831,
+      "plan_ms": 16.611,
+      "delivery_phase_ms": 36.269
+    },
+    {
+      "state": "command_delivered",
+      "t": 1794628130.7753694,
+      "plan_ms": 39.739,
+      "delivery_phase_ms": 35.91
+    }
+  ],
+  "caveat": "delivery_elapsed_ms minus planning_elapsed_ms is a delivery-stage elapsed duration including reference locking, waiting, checks and scheduling, NOT measured input-lock hold time. It ends before ROS command publication. Missing delivery_elapsed_ms for earlier rejected paths are selection-biased. plan_return_to_status_ms includes rejection diagnostics and is only an elapsed proxy, not lock duration."
+}

@@ -1,0 +1,166 @@
+{
+  "confirmed_bug": "Native reverse gear was inferred from time-scaled speed < -0.01 m/s. Near-zero scale or zero polynomial speed loses discrete reverse direction; nominal guidance commands rotation instead of reverse translation.",
+  "reproduction": "Actual NativeReferenceAdapter and WholeBodyMPPI with current YAML limits, constant reverse native polynomial and analytic clear collision geometry. No ROS or hardware access.",
+  "comparison": [
+    {
+      "gear": -1,
+      "scale": 1.0,
+      "before_vw": [
+        -0.2,
+        0.0
+      ],
+      "after_vw": [
+        -0.2,
+        0.0
+      ]
+    },
+    {
+      "gear": -1,
+      "scale": 0.1,
+      "before_vw": [
+        -0.08,
+        0.0
+      ],
+      "after_vw": [
+        -0.08,
+        0.0
+      ]
+    },
+    {
+      "gear": -1,
+      "scale": 0.05,
+      "before_vw": [
+        -0.08,
+        0.0
+      ],
+      "after_vw": [
+        -0.08,
+        0.0
+      ]
+    },
+    {
+      "gear": -1,
+      "scale": 0.02,
+      "before_vw": [
+        0.0,
+        -0.35
+      ],
+      "after_vw": [
+        -0.08,
+        0.0
+      ]
+    },
+    {
+      "gear": -1,
+      "scale": 0.0,
+      "before_vw": [
+        0.0,
+        -0.35
+      ],
+      "after_vw": [
+        -0.03600000000000001,
+        0.0
+      ]
+    },
+    {
+      "gear": 1,
+      "scale": 1.0,
+      "before_vw": [
+        0.2,
+        0.0
+      ],
+      "after_vw": [
+        0.2,
+        0.0
+      ]
+    },
+    {
+      "gear": 1,
+      "scale": 0.1,
+      "before_vw": [
+        0.08,
+        0.0
+      ],
+      "after_vw": [
+        0.08,
+        0.0
+      ]
+    },
+    {
+      "gear": 1,
+      "scale": 0.05,
+      "before_vw": [
+        0.08,
+        0.0
+      ],
+      "after_vw": [
+        0.08,
+        0.0
+      ]
+    },
+    {
+      "gear": 1,
+      "scale": 0.02,
+      "before_vw": [
+        0.08,
+        0.0
+      ],
+      "after_vw": [
+        0.08,
+        0.0
+      ]
+    },
+    {
+      "gear": 1,
+      "scale": 0.0,
+      "before_vw": [
+        0.03600000000000001,
+        0.0
+      ],
+      "after_vw": [
+        0.03600000000000001,
+        0.0
+      ]
+    }
+  ],
+  "fix": "Capture validated native.gears[current_block] under reference lock and pass separately to navigation plan and both proposal stages. guide accepts the same optional direction. Legacy callers and standby retain original behavior.",
+  "preserved": [
+    "unscaled forward/reverse first commands identical",
+    "paused phase still holds its current pose instead of following the remaining curve",
+    "collision, braking, execution, source-age and reference-revision acceptance unchanged",
+    "random generation, dynamics, speed caps and deadlines unchanged"
+  ],
+  "native_search_findings": {
+    "reverse_allowed": "real_speed.yaml:100 allow_reverse=true; kino_astar.cpp:124 Reeds-Shepp; :576 negative arc expansion; :524 singular start enables both directions.",
+    "preference": "remani_planner_param.yaml:5-7 forward cost 1, reverse cost 3, gear switch cost 10. A native forward detour is possible; this is distinct from losing a published reverse gear.",
+    "retry_budget": "real_speed.yaml:82-87 rear distant goal 3 tries per round, 3 failed rounds, shared 3 s round wall budget; generic defaults remani_planner_param.yaml:119-120 5 tries/5 rounds. Current failure has no confirmed trace showing retry exhaustion.",
+    "gear_transport": "FSM publishes original singul at remani_replan_fsm.cpp:2194; native_reference.py preserves message singul in gears. Proven loss was in MPPI speed threshold, after sampling/scaling."
+  },
+  "limitations": "This isolated reproduction establishes a deterministic defect, not that every observed rear-goal stop or replan has this cause. No new hardware validation performed; restart is required for edited Python to load.",
+  "tests": {
+    "modules": [
+      "test_mppi_reverse_gear",
+      "test_mppi_native_phase",
+      "test_mppi_navigation_priority",
+      "test_mppi_navigation_servo",
+      "test_mppi_terminal_yaw",
+      "test_mppi_collision",
+      "test_mppi_reference_wait",
+      "test_mppi_execution_gate",
+      "test_mppi_standby"
+    ],
+    "tests": 102,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "seconds": 1.697148934006691,
+    "max_rss_kib": 67564,
+    "successful": true
+  },
+  "production_and_tests_sha256": {
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "8145b355961f48de3e2c9a12a5d4d80dd0b5323bdebd250ae46c864f21290157",
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": "e9136f06ba4e9505b628bf7430d233a92cfc35514332dbe8236fca58076972b6",
+    "src/mm_remani/test/test_mppi_native_phase.py": "e09dc207f70938d4abf528b4b5aabe2b0749fd7968ea27bc35bb562657d8f6ae",
+    "src/mm_remani/test/test_mppi_reverse_gear.py": "e6754620247262bb4c2636ca01716584f663be20bdff44e46960da55f7ebee55"
+  }
+}

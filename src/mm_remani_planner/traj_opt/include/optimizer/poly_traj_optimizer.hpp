@@ -162,6 +162,8 @@ namespace remani_planner
     bool checkCollision(const SingulTrajData &traj, double t, int &coll_type);
     bool checkPlanningCollision(const SingulTrajData &traj, double t, int &coll_type);
     bool checkDynamicObstacleCollision(const SingulTrajData &traj, double t, int &coll_type);
+    bool checkDynamicObstacleCollision(const SingulTrajData &traj, double t, int &coll_type,
+                                       MMConfig::DynamicCollisionEvidence *evidence);
     bool checkPredictedDynamicObstacleCollision(
         const SingulTrajData &traj, double t,
         const plan_env::DynamicPointSnapshot &snapshot,

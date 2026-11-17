@@ -1,0 +1,590 @@
+{
+  "source": "experiments/online_remani_validation/results/startup_listen_20261110_165922/events.jsonl",
+  "scope": "All observed navigation from first to last nonzero cmd_vel plus final cancellation. Startup zeros excluded; two observed tracking faults. No goal/progress topic subscription, so new-target publication and progress source age are not directly measured.",
+  "recorded_through": "2026-11-10T17:07:08.840+08:00",
+  "navigation": {
+    "first_nonzero": "2026-11-10T17:00:13.124+08:00",
+    "last_nonzero": "2026-11-10T17:01:17.180+08:00",
+    "nonzero_cmd_count": 116,
+    "nonzero_segments_separated_by_2s": [
+      {
+        "first": "2026-11-10T17:00:13.124+08:00",
+        "last": "2026-11-10T17:00:14.102+08:00"
+      },
+      {
+        "first": "2026-11-10T17:00:38.789+08:00",
+        "last": "2026-11-10T17:00:55.475+08:00"
+      },
+      {
+        "first": "2026-11-10T17:00:57.602+08:00",
+        "last": "2026-11-10T17:01:17.180+08:00"
+      }
+    ],
+    "window_s": 64.934,
+    "cmd_count": 654,
+    "zero_cmd_count": 538,
+    "moving_to_zero_transitions": 87,
+    "nonzero_command_gap_ms": {
+      "n": 115,
+      "min": 48.24,
+      "p50": 232.459,
+      "p95": 699.549,
+      "max": 24686.277
+    },
+    "commanded_nonzero_duration_before_last_nonzero_s": 7.34,
+    "commanded_zero_duration_before_last_nonzero_s": 56.716,
+    "mppi_states": {
+      "command_delivered": 121,
+      "collision_snapshot_unavailable": 194,
+      "delivery_deadline_exceeded": 6,
+      "inputs_expired_before_delivery": 20,
+      "collision_snapshot_expired_during_plan": 78,
+      "native_progress_stale": 2,
+      "waiting_explicit_arm_enable_or_normal_status": 44,
+      "native_reference_cancelled": 174,
+      "planning_deadline_exceeded": 1
+    },
+    "delivered_modes": {
+      "nominal": 117,
+      "reference_wait_hold": 4
+    },
+    "delivered_cycle_ms": {
+      "n": 121,
+      "min": 13.17,
+      "p50": 56.56,
+      "p95": 83.1,
+      "max": 91.9
+    },
+    "delivered_solve_ms": {
+      "n": 121,
+      "min": 1.49,
+      "p50": 42.41,
+      "p95": 70.36,
+      "max": 82.65
+    },
+    "map_age_at_listener_ms": {
+      "n": 1298,
+      "min": 170.857,
+      "p50": 271.068,
+      "p95": 360.813,
+      "max": 522.866
+    },
+    "map_age_over_350ms_fraction": 0.0655,
+    "snapshot_copy_to_listener_ms": {
+      "n": 1298,
+      "min": 13.42,
+      "p50": 100.413,
+      "p95": 198.268,
+      "max": 300.341
+    }
+  },
+  "cancellation_events": [
+    {
+      "tracking_fault_true": "2026-11-10T17:00:14.269+08:00",
+      "tracking_fault_true_epoch": 1794301214.2695749,
+      "nearby_mppi_reason": "native_progress_stale",
+      "reason_received": "2026-11-10T17:00:14.286+08:00",
+      "fsm_abort_source_stamp": "2026-11-10T17:00:14.281+08:00",
+      "first_cancelled_received": "2026-11-10T17:00:14.465+08:00"
+    },
+    {
+      "tracking_fault_true": "2026-11-10T17:01:17.558+08:00",
+      "tracking_fault_true_epoch": 1794301277.5587232,
+      "nearby_mppi_reason": "native_progress_stale",
+      "reason_received": "2026-11-10T17:01:17.585+08:00",
+      "fsm_abort_source_stamp": "2026-11-10T17:01:17.560+08:00",
+      "first_cancelled_received": "2026-11-10T17:01:17.795+08:00"
+    }
+  ],
+  "first_8_stops": [
+    {
+      "received": 1794301213.2389872,
+      "local_received": "2026-11-10T17:00:13.238+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 11.16
+      }
+    },
+    {
+      "received": 1794301213.5403664,
+      "local_received": "2026-11-10T17:00:13.540+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 10.54
+      }
+    },
+    {
+      "received": 1794301214.240094,
+      "local_received": "2026-11-10T17:00:14.240+08:00",
+      "nearest_status": {
+        "state": "delivery_deadline_exceeded",
+        "offset_ms": 21.02
+      }
+    },
+    {
+      "received": 1794301238.8936493,
+      "local_received": "2026-11-10T17:00:38.893+08:00",
+      "nearest_status": {
+        "state": "inputs_expired_before_delivery",
+        "offset_ms": 7.03
+      }
+    },
+    {
+      "received": 1794301239.23658,
+      "local_received": "2026-11-10T17:00:39.236+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 6.16
+      }
+    },
+    {
+      "received": 1794301239.7384012,
+      "local_received": "2026-11-10T17:00:39.738+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 8.75
+      }
+    },
+    {
+      "received": 1794301240.0356555,
+      "local_received": "2026-11-10T17:00:40.035+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 12.66
+      }
+    },
+    {
+      "received": 1794301240.238432,
+      "local_received": "2026-11-10T17:00:40.238+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 11.22
+      }
+    }
+  ],
+  "last_8_stops": [
+    {
+      "received": 1794301274.439011,
+      "local_received": "2026-11-10T17:01:14.439+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 11.37
+      }
+    },
+    {
+      "received": 1794301274.8691566,
+      "local_received": "2026-11-10T17:01:14.869+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_expired_during_plan",
+        "offset_ms": 25.03
+      }
+    },
+    {
+      "received": 1794301275.338851,
+      "local_received": "2026-11-10T17:01:15.338+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 35.89
+      }
+    },
+    {
+      "received": 1794301275.8467002,
+      "local_received": "2026-11-10T17:01:15.846+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 6.86
+      }
+    },
+    {
+      "received": 1794301276.4714549,
+      "local_received": "2026-11-10T17:01:16.471+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_expired_during_plan",
+        "offset_ms": 26.12
+      }
+    },
+    {
+      "received": 1794301276.6437812,
+      "local_received": "2026-11-10T17:01:16.643+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 11.19
+      }
+    },
+    {
+      "received": 1794301276.8374887,
+      "local_received": "2026-11-10T17:01:16.837+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_unavailable",
+        "offset_ms": 12.95
+      }
+    },
+    {
+      "received": 1794301277.301722,
+      "local_received": "2026-11-10T17:01:17.301+08:00",
+      "nearest_status": {
+        "state": "collision_snapshot_expired_during_plan",
+        "offset_ms": 45.03
+      }
+    }
+  ],
+  "cancellation_traces": [
+    {
+      "tracking_fault_true": "2026-11-10T17:00:14.269+08:00",
+      "events": [
+        {
+          "received": 1794301213.9084914,
+          "topic": "/mppi/status",
+          "state": "collision_snapshot_unavailable",
+          "cycle_ms": 0.36,
+          "local_received": "2026-11-10T17:00:13.908+08:00"
+        },
+        {
+          "received": 1794301213.9950974,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:00:13.995+08:00"
+        },
+        {
+          "received": 1794301214.0049293,
+          "topic": "/mppi/status",
+          "state": "collision_snapshot_expired_during_plan",
+          "cycle_ms": 59.13,
+          "local_received": "2026-11-10T17:00:14.004+08:00"
+        },
+        {
+          "received": 1794301214.1028864,
+          "topic": "/cmd_vel",
+          "v": -0.04994513198228584,
+          "w": -0.09370426299769363,
+          "local_received": "2026-11-10T17:00:14.102+08:00"
+        },
+        {
+          "received": 1794301214.104931,
+          "topic": "/mppi/status",
+          "state": "command_delivered",
+          "cycle_ms": 65.64,
+          "local_received": "2026-11-10T17:00:14.104+08:00"
+        },
+        {
+          "received": 1794301214.1055956,
+          "topic": "/tracking_fault",
+          "active": false,
+          "local_received": "2026-11-10T17:00:14.105+08:00"
+        },
+        {
+          "received": 1794301214.240094,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:00:14.240+08:00"
+        },
+        {
+          "received": 1794301214.2611177,
+          "topic": "/mppi/status",
+          "state": "delivery_deadline_exceeded",
+          "cycle_ms": 103.87,
+          "local_received": "2026-11-10T17:00:14.261+08:00"
+        },
+        {
+          "received": 1794301214.2695749,
+          "topic": "/tracking_fault",
+          "active": true,
+          "local_received": "2026-11-10T17:00:14.269+08:00"
+        },
+        {
+          "received": 1794301214.2723606,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:00:14.272+08:00"
+        },
+        {
+          "received": 1794301214.2867036,
+          "topic": "/mppi/status",
+          "state": "native_progress_stale",
+          "cycle_ms": 12.45,
+          "local_received": "2026-11-10T17:00:14.286+08:00"
+        },
+        {
+          "received": 1794301214.289099,
+          "topic": "/rosout_agg",
+          "stamp": 1794301214.281052,
+          "message": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry.",
+          "local_received": "2026-11-10T17:00:14.289+08:00"
+        },
+        {
+          "received": 1794301214.292475,
+          "topic": "/rosout_agg",
+          "stamp": 1794301214.2855535,
+          "message": "MPPI command rejected: native_progress_stale (cycle=12.45 ms; snapshot={})",
+          "local_received": "2026-11-10T17:00:14.292+08:00"
+        },
+        {
+          "received": 1794301214.3448093,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:00:14.344+08:00"
+        },
+        {
+          "received": 1794301214.3535202,
+          "topic": "/mppi/status",
+          "state": "waiting_explicit_arm_enable_or_normal_status",
+          "cycle_ms": 0.19,
+          "local_received": "2026-11-10T17:00:14.353+08:00"
+        },
+        {
+          "received": 1794301214.4409614,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:00:14.440+08:00"
+        },
+        {
+          "received": 1794301214.465722,
+          "topic": "/mppi/status",
+          "state": "native_reference_cancelled",
+          "cycle_ms": 1.01,
+          "local_received": "2026-11-10T17:00:14.465+08:00"
+        },
+        {
+          "received": 1794301214.4731362,
+          "topic": "/rosout_agg",
+          "stamp": 1794301214.4638028,
+          "message": "MPPI command rejected: native_reference_cancelled (cycle=1.01 ms; snapshot={})",
+          "local_received": "2026-11-10T17:00:14.473+08:00"
+        },
+        {
+          "received": 1794301214.5440986,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:00:14.544+08:00"
+        },
+        {
+          "received": 1794301214.6341722,
+          "topic": "/mppi/status",
+          "state": "collision_snapshot_unavailable",
+          "cycle_ms": 1.15,
+          "local_received": "2026-11-10T17:00:14.634+08:00"
+        },
+        {
+          "received": 1794301214.6361396,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:00:14.636+08:00"
+        },
+        {
+          "received": 1794301214.6640322,
+          "topic": "/mppi/status",
+          "state": "native_reference_cancelled",
+          "cycle_ms": 0.48,
+          "local_received": "2026-11-10T17:00:14.664+08:00"
+        },
+        {
+          "received": 1794301214.6786597,
+          "topic": "/rosout_agg",
+          "stamp": 1794301214.660985,
+          "message": "MPPI command rejected: native_reference_cancelled (cycle=0.48 ms; snapshot={})",
+          "local_received": "2026-11-10T17:00:14.678+08:00"
+        },
+        {
+          "received": 1794301214.7370765,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:00:14.737+08:00"
+        },
+        {
+          "received": 1794301214.7373946,
+          "topic": "/mppi/status",
+          "state": "native_reference_cancelled",
+          "cycle_ms": 1.05,
+          "local_received": "2026-11-10T17:00:14.737+08:00"
+        }
+      ]
+    },
+    {
+      "tracking_fault_true": "2026-11-10T17:01:17.558+08:00",
+      "events": [
+        {
+          "received": 1794301277.180661,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.15,
+          "local_received": "2026-11-10T17:01:17.180+08:00"
+        },
+        {
+          "received": 1794301277.1816418,
+          "topic": "/tracking_fault",
+          "active": false,
+          "local_received": "2026-11-10T17:01:17.181+08:00"
+        },
+        {
+          "received": 1794301277.185239,
+          "topic": "/mppi/status",
+          "state": "command_delivered",
+          "cycle_ms": 44.72,
+          "local_received": "2026-11-10T17:01:17.185+08:00"
+        },
+        {
+          "received": 1794301277.301722,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:01:17.301+08:00"
+        },
+        {
+          "received": 1794301277.3455884,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:01:17.345+08:00"
+        },
+        {
+          "received": 1794301277.346748,
+          "topic": "/mppi/status",
+          "state": "collision_snapshot_expired_during_plan",
+          "cycle_ms": 67.13,
+          "local_received": "2026-11-10T17:01:17.346+08:00"
+        },
+        {
+          "received": 1794301277.4020004,
+          "topic": "/mppi/status",
+          "state": "collision_snapshot_unavailable",
+          "cycle_ms": 1.44,
+          "local_received": "2026-11-10T17:01:17.402+08:00"
+        },
+        {
+          "received": 1794301277.4671514,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:01:17.467+08:00"
+        },
+        {
+          "received": 1794301277.5152702,
+          "topic": "/mppi/status",
+          "state": "collision_snapshot_expired_during_plan",
+          "cycle_ms": 31.23,
+          "local_received": "2026-11-10T17:01:17.515+08:00"
+        },
+        {
+          "received": 1794301277.5584033,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:01:17.558+08:00"
+        },
+        {
+          "received": 1794301277.5587232,
+          "topic": "/tracking_fault",
+          "active": true,
+          "local_received": "2026-11-10T17:01:17.558+08:00"
+        },
+        {
+          "received": 1794301277.5854132,
+          "topic": "/mppi/status",
+          "state": "native_progress_stale",
+          "cycle_ms": 22.06,
+          "local_received": "2026-11-10T17:01:17.585+08:00"
+        },
+        {
+          "received": 1794301277.6002707,
+          "topic": "/rosout_agg",
+          "stamp": 1794301277.560484,
+          "message": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry.",
+          "local_received": "2026-11-10T17:01:17.600+08:00"
+        },
+        {
+          "received": 1794301277.6030884,
+          "topic": "/rosout_agg",
+          "stamp": 1794301277.5844626,
+          "message": "MPPI command rejected: native_progress_stale (cycle=22.06 ms; snapshot={})",
+          "local_received": "2026-11-10T17:01:17.603+08:00"
+        },
+        {
+          "received": 1794301277.642716,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:01:17.642+08:00"
+        },
+        {
+          "received": 1794301277.6491835,
+          "topic": "/mppi/status",
+          "state": "collision_snapshot_unavailable",
+          "cycle_ms": 0.31,
+          "local_received": "2026-11-10T17:01:17.649+08:00"
+        },
+        {
+          "received": 1794301277.738086,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:01:17.738+08:00"
+        },
+        {
+          "received": 1794301277.7954419,
+          "topic": "/mppi/status",
+          "state": "native_reference_cancelled",
+          "cycle_ms": 2.47,
+          "local_received": "2026-11-10T17:01:17.795+08:00"
+        },
+        {
+          "received": 1794301277.7995667,
+          "topic": "/rosout_agg",
+          "stamp": 1794301277.794264,
+          "message": "MPPI command rejected: native_reference_cancelled (cycle=2.47 ms; snapshot={})",
+          "local_received": "2026-11-10T17:01:17.799+08:00"
+        },
+        {
+          "received": 1794301277.8362799,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:01:17.836+08:00"
+        },
+        {
+          "received": 1794301277.836621,
+          "topic": "/mppi/status",
+          "state": "native_reference_cancelled",
+          "cycle_ms": 0.81,
+          "local_received": "2026-11-10T17:01:17.836+08:00"
+        },
+        {
+          "received": 1794301277.936103,
+          "topic": "/mppi/status",
+          "state": "native_reference_cancelled",
+          "cycle_ms": 0.54,
+          "local_received": "2026-11-10T17:01:17.936+08:00"
+        },
+        {
+          "received": 1794301277.9362745,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:01:17.936+08:00"
+        },
+        {
+          "received": 1794301278.043246,
+          "topic": "/mppi/status",
+          "state": "native_reference_cancelled",
+          "cycle_ms": 3.01,
+          "local_received": "2026-11-10T17:01:18.043+08:00"
+        },
+        {
+          "received": 1794301278.0434864,
+          "topic": "/cmd_vel",
+          "v": 0.0,
+          "w": 0.0,
+          "local_received": "2026-11-10T17:01:18.043+08:00"
+        }
+      ]
+    }
+  ],
+  "conclusion": "Map-age/deadline rejections repeatedly insert zero commands during navigation. Both tracking_fault=true events correlate with native_progress_stale then FSM trajectory abort and native_reference_cancelled. This reason also includes negative age from comparing newly received progress with an older cycle time; the recorder has no progress source stamps, so it does not prove a real 250ms feedback timeout. See progress_old_cycle_time_reproduction.json for a deterministic reproduction of that race."
+}

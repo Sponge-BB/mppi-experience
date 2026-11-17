@@ -1,0 +1,47 @@
+{
+  "before": {
+    "returncode": 1,
+    "tests": 1,
+    "failures": 1,
+    "elapsed_s": 1.0667854359999183,
+    "peak_rss_kib": 99416,
+    "properties": {
+      "stripe_dense_voxels_0": "2178981",
+      "stripe_computed_voxels_0": "2178981",
+      "stripe_dense_compute_ms_0": "111.114411",
+      "stripe_actual_compute_ms_0": "102.707043",
+      "stripe_dense_voxels_1": "2178981",
+      "stripe_computed_voxels_1": "2178981",
+      "stripe_dense_compute_ms_1": "201.946221",
+      "stripe_actual_compute_ms_1": "159.784543"
+    }
+  },
+  "after": {
+    "returncode": 0,
+    "tests": 13,
+    "failures": 0,
+    "elapsed_s": 1.4269955069976277,
+    "peak_rss_kib": 122904,
+    "properties": {
+      "stripe_dense_voxels_0": "2178981",
+      "stripe_computed_voxels_0": "1262142",
+      "stripe_dense_compute_ms_0": "138.203302",
+      "stripe_actual_compute_ms_0": "105.720366",
+      "stripe_dense_voxels_1": "2178981",
+      "stripe_computed_voxels_1": "1262142",
+      "stripe_dense_compute_ms_1": "118.087809",
+      "stripe_actual_compute_ms_1": "98.523888"
+    }
+  },
+  "before_failure_is_expected": "The new split-selection regression intentionally fails on unchanged longest-axis-only worker; all capped distances still match dense in that baseline.",
+  "after_passed": true,
+  "installed": false,
+  "no_ROS_master": true,
+  "voxel_reduction_fraction": 0.4207650273224044,
+  "equivalence_check": "Entire capped signed field reconstructed from previous dense field plus all patches; every voxel compared by ASSERT_DOUBLE_EQ, including deletions and overlap checks. No geometric/TTL/cap/halo/atomic-commit contract changed.",
+  "timing_limitations": "One constructed dirty distribution, insertion/deletion patterns. Worker wall time is load-sensitive; before/after processes were not a controlled live A/B. Named counts establish computational volume reduction, not measured real-robot speedup.",
+  "source_sha256": {
+    "src/mm_remani_planner/plan_env/src/esdf_worker.cpp": "7d3898791148ecf80d8a680031acb151e8ef441004f8019c47a189ed187151d7",
+    "src/mm_remani_planner/plan_env/test/test_esdf_worker.cpp": "4a7ad8e1685900e13e0c04976587c17d75aefb89cedef655f0beb6f0c819cae0"
+  }
+}

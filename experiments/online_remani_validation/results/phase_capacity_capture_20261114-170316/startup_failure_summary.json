@@ -1,0 +1,30 @@
+{
+  "diagnosis": "can1 transmit queue remains full while RX continues; native startup CAN send fails and driver latches stop before standby target delivery",
+  "evidence": "can_startup_readonly_probe.json",
+  "tx_queue_packets_before_after": [
+    10,
+    10
+  ],
+  "tx_counter_before_after": [
+    89045,
+    89045
+  ],
+  "rx_packets_in_2s": 4696,
+  "can_port": "can1",
+  "driver": {
+    "sha256": "63d5c809a2686abb1c297c1f3459676dfba6f6ed83aa9b520b3d89d0aa81933f",
+    "pre_fix_version_record": {
+      "version": "20261113-105409-feedback-grace300",
+      "metadata": {
+        "type": "file",
+        "mode": 493,
+        "size": 59452,
+        "sha256": "63d5c809a2686abb1c297c1f3459676dfba6f6ed83aa9b520b3d89d0aa81933f"
+      }
+    },
+    "matches_pre_fix": true
+  },
+  "earlier_same_send_failure": "2026-11-14 16:20:56 before the 16:34 baseline of this code fix",
+  "limits": "The original trigger of the adapter TX stall is not established. SDK suppresses underlying send exception. No reset, CAN send, enable or motion was issued.",
+  "next_step": "Stop the robot workflow before resetting/reinitializing the CAN adapter; do not flush queued targets into a running workflow."
+}

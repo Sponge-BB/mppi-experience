@@ -1,0 +1,134 @@
+实车工程链路审计（2026-11-09）
+
+审计入口：/home/l/remani_ws/src/mm_remani/launch/exp0_real.launch。
+范围：实际launch包含关系、雷达桥接及过滤、FAST-LIO到规划坐标、PCD与实时地图、动态识别及历史、REMANI状态机、MPPI参考/碰撞快照、底盘/机械臂执行与反馈。
+本轮没有修改生产源码或运行参数，没有编译、启停机器人节点、操作CAN、发送运动或解除停车。只写审计材料，并用模拟输入和Mock输出调用现有函数复现两项问题。
+本报告中P1表示优先修复的功能/执行缺陷，P2表示条件配置或能力边界；不表示所有P1都已在现场触发。代码确定、离线复现、现场事实与待验证推断分别说明。
+
+现场与版本边界
+- 12:53停车记录：旧106/301不再输出，区域仍有真实回波，恢复始终不满足。用户确认场景没有运动障碍，静态误检应作为首要排查方向；尚未证明具体是哪一簇、哪一帧造成首次误判。
+- 13:16只读查询：ROS master可达，但关键cmd_vel、joint_ctrl_single、odom、dynamic_points等均无发布者；只有部分可视化订阅。故核心程序当时已不在发布，查询到的参数可能是上次运行残留，不能当作仍在执行的证明。详见runtime_graph.json。
+- 上一次有效反馈采样及默认launch均为use_mppi=false、动态避障active=true。默认入口既不是完整原生基线，也不是启用了MPPI的双层执行。
+- 源文件哈希记录见source_manifest.json。原始停车证据保存在相邻dynamic_track_recovery_20261109/midroute_diagnosis目录。
+
+1. P1：一个旧目标编号丢失，被升级为与空间位置无关的整车锁停。
+证据：代码确定，现场停车已观察到。
+DynamicPointBuffer只要仍有任意历史ID未重观测，就可令整个动态快照失效。FSM只按lost_observation字符串强制zero，未先检查丢失目标是否影响当前执行段；即使fail_safe_on_unavailable=false也不生效。最终候选验收再次据同原因拒绝发布。
+恢复又要求旧表面及±8cm余量全部有近期自由射线证据。现场106仅881/3625样本满足，仍有312个occupied样本。固定表面或长期不可见位置会让这项条件长期不成立。
+同一问题还有资源锁存：历史预算4*max_points，实车为960个点；超过后history_overflow永久置true，而recoverObservedTracks直接退出，没有恢复路径。即便之后输入正常也不会自行恢复。
+位置：
+  src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp:225,260,318,375
+  src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:2745,3051
+最小修复：将身份/预测失效与轨迹危险分开。停止使用无效速度预测，当前真实占据继续参与轨迹验收；仅影响当前执行安全的未知区域阻止动作。资源预算触发需要可定义的恢复/降级，不以任意历史ID永久锁全车。不能简单把未知当空或一律超时删除。
+
+2. P1：静态残差簇的“可见中心漂移”仍可能被当作物体运动。
+证据：判别实现确定；结合用户现场信息高度怀疑本次误检，具体首次触发待逐帧验证。
+实时点云距静态PCD最近点超过0.12m后进入残差候选；这一步不是直接判定动态。后续净位移、速度、方向一致性等主要来自簇中心。视角变化、分裂合并及局部遮挡可能在固定物体上制造持续中心漂移。高目标稳定核心只对高度>=0.65m的目标启用；旧106高度约0.34m，不在该分支。
+现场旧区域实测有61/7个点，PCD原范围仅1/0个点。这说明参考覆盖有差异，不能单凭此认定这些回波曾真实移动。健康门允许最多3个运动目标，也无法排除单个误检。
+位置：
+  src/mm_remani/src/dynamic_obstacle_tracker_node.cpp:475,487,580
+  src/mm_remani/src/dynamic_obstacle_tracker_core.cpp:79,350,527
+  src/mm_remani/launch/exp0_real.launch:426,431,467
+最小修复：先核对坐标和固定背景覆盖，再约束首次运动资格，要求实际表面运动支持，避免仅靠可见中心移动；不要通过简单扩大静态匹配半径掩盖真正的近障运动。
+
+3. P1：感知坐标被平面化，且原始扫描没有逐点去畸变。
+证据：实现与现场TF差异确定；本次误检的因果贡献待验证。
+fastlio_to_odom以body约等于LiDAR为前提，输出仅yaw姿态、固定base_z；实际FAST-LIO配置有IMU-LiDAR外参。livox_frame随后固定接到平面base_link。点云桥仅保留XYZI和整帧stamp，丢失逐点offset_time；Tracker再用整帧单一TF变换。
+所以“使用准确stamp TF”仍不等于保留了真实扫描的六维姿态与运动补偿。同一时刻的记录中body有倾角且z约0.040，livox_frame无倾角且z=0.117。不能据这组数字直接宣布外参错，但必须区分底盘二维规划坐标与感知所需的完整传感器坐标。
+位置：
+  src/mm_remani/scripts/fastlio_to_odom.py:105,120,127
+  src/mm_remani/launch/exp0_real.launch:505
+  src/mm_remani/src/livox_custom_to_pcl.cpp:62
+  src/NEXTE_Sentry_Nav/sentry_slam/FAST_LIO_LOCALIZATION/config/mid360.yaml:21
+最小修复：保留底盘平面规划，感知复用完整传感器姿态、标定外参与现有FAST-LIO去畸变输出。优先复用已有模块，不新增第二套定位或去畸变实现。
+相关默认边界：ICP当前计算结果主要用于诊断，默认不注入规划TF；map->camera_init->odom为恒等。max_scan_odom_dt=0、max_data_age=0关闭相应时间门。不能将当前模式描述为已完成全局ICP定位闭环；如启用校正，需要唯一校正入口和非零时间约束。
+相关位置：src/mm_remani/launch/fastlio_localize_remani.launch:85；src/mm_remani/launch/exp0_real.launch:303。
+
+4. P1：自车过滤用固定大矩形，额外遮掉外部空间，且两个感知消费者视野不一致。
+证据：过滤行为和默认参数确定；此次旧目标在前方3米多，不是本次直接原因。
+上游CropBox在雷达系删除x[-.8,.05]、y[-.90,.40]、z[-.01,.7]全部点。GridMap还在底盘系删除x[-.80,.45]、y[-.85,.55]、z[-.20,.90]，并丢弃雷达x<=-.3的所有点。Tracker没有后两层一致过滤。
+这些范围包含实际车体外部空间，不会随机械臂姿态变化。真实外障进入同一盒子会被删；Tracker观测过的区域也可能无法在地图中提供恢复射线。
+位置：src/mm_remani/launch/exp0_real.launch:393；src/mm_remani/launch/piper_advanced_param.xml:97；src/mm_remani_planner/plan_env/src/grid_map.cpp:3858。
+最小修复：统一有效点云约定；固定底盘范围依实物核验缩小，机械臂自车点复用已有几何及关节反馈处理，避免继续扩大矩形盲区。被过滤的空间不能因此认定空闲。
+
+5. P1：实时地图把“连续未命中”直接当作“已经空闲”，与问题1相反。
+证据：代码和现有测试确定；未声称本次已发生漏障碰撞。
+expireStaleLiveOccupancy只看最后命中距当前成功fusion周期的差，达到默认4帧便将占据设为clamp_min_log，清除膨胀。没有判断旧体素是否在有效视野、是否被遮挡、是否有新自由射线穿过。转弯后移出视野或被近物遮挡的非PCD障碍也会走此分支。静态PCD体素不受此过期规则影响。
+同时，动态ID恢复却要求全部位置有近期自由射线。两层对同一“没看到”的语义不一致：一层可能长期停车，另一层可能过早放行。
+位置：src/mm_remani_planner/plan_env/src/grid_map.cpp:1662,1686,1695；默认参数:319。
+现有测试：src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp:1488，直接模拟未触及旧体素的fusion周期后期待清除，验证的是当前策略，并未覆盖遮挡时的正确语义。
+最小修复：区分未观测与观测为空；当前命中保持障碍，真正穿透证据才支持清空；移出局部窗口和未知管理采用明确边界，不能用未命中周期把未知写成自由。
+
+6. P1：Tracker重置后复用编号，规划端却把编号视为持久身份。
+证据：跨模块契约冲突确定；106/301是否由reset产生尚无证据。
+reset清空tracks并令next_track_id=1，静态地图重发、残差超限和健康退化都可调用。规划端保留历史，并按裸uint32 ID直接覆盖。新物体复用旧ID可覆盖旧未知几何；不再出现的ID则可能一直等待。
+位置：src/mm_remani/src/dynamic_obstacle_tracker_core.cpp:748；src/mm_remani/src/dynamic_obstacle_tracker_node.cpp:389,506,636；src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp:248。
+最小修复：同进程reset保持ID分配单调；跨进程重启需要明确生产者代次或统一受控状态切换。ID仅服务短期关联，不应独自赋予清空空间或全车放行的权限。
+
+7. P1：原生执行模式下，慢规划阻塞了同进程碰撞监督。
+证据：队列/调用关系确定，既有现场优化日志约数百毫秒；尚未做硬件延迟测量。
+planner_node使用ros::spin单线程；execFSMCallback与checkCollisionCallback使用同一默认队列。reboundReplan同步执行A*及优化时，轨迹碰撞检查和FSM反馈回调不能同时运行。地图及ESDF隔离线程只解决地图回调阻塞，不会自动隔离轨迹安全检查。
+默认原生real_base_tracker没有独立障碍查询，mm_controller独立进程继续播放旧轨迹、刷新命令；命令到达超时无法发现“碰撞监督正在阻塞”。safety_speed_limit又是无时间戳的缓存值。
+位置：src/mm_remani_planner/plan_manage/src/remani_planner_node.cpp:13；同目录remani_replan_fsm.cpp:321,2991；src/mm_remani/scripts/real_base_tracker.py:27,145,155,263。
+最小修复：让即时碰撞/停止监督独立于同步优化，使用不可变状态快照和明确结果交付。不能直接给整个FSM换成多线程spinner，FSM目前并未完成并发状态保护。
+模式区别：启用MPPI后已有独立Python快层和地图/导出队列，不能说该模式完全没有独立监督；但规划端限速状态仍需明确时效与所有权。
+
+8. P1：机械臂反馈失效时，“冻结轨迹时钟”不等于“禁止整机运动”。
+证据：代码路径确定，未实际断开实车反馈测试。
+原生模式joint_fresh失败只force_freeze，virtual_time_scale归零后仍输出冻结位置。real_base_tracker的v=v_ref*cos(error)+kx*position_error，以及角度纠偏仍可非零。定位新鲜、位置存在小误差时，底盘可能继续向旧位置纠偏。该路径没有独立机械臂反馈失效禁行信号。
+controller_utils还以接收时刻更新joint_rcv_stamp，不以源时间判断旧反馈；排队旧数据可能暂时被认定新鲜。
+位置：src/mm_controller/src/mm_controller_fsm.cpp:449,503,538,584；src/mm_remani/scripts/real_base_tracker.py:384；src/mm_controller/include/mm_controller/controller_utils.hpp:88。
+最小修复：正常跟踪减速与反馈失效分开；失效明确禁止底盘/机械臂新运动输出，并要求源时间有效。不要只把参考速度或轨迹进度置零。
+
+9. P1：MPPI换轨等待，可能被机械臂驱动当作指令失联永久锁停。
+证据：参考替换和无机械臂输出已离线调用真实函数复现；驱动锁存由源码确认，没有运行驱动验证实车时序。
+新id=1参考到达就替换旧参考、清空progress；未来激活时刻之前adapter返回native_reference_not_started。WholeBodyNode.reject仅停底盘，不发机械臂保持命令；正常参考过渡也不发tracking_fault。Piper执行阶段命令有效期0.30s，到期_stop_commands永久锁存。实车配置普通交接0.4s、动态0.70s，具体剩余等待还取决于规划耗时。
+离线例子：旧参考原本可用，20.02收到20.70激活的新参考；20.03旧参考已被丢弃，余下0.67s无可用参考。调用reject，底盘stop调用1次、机械臂发布0次、故障通知0次。
+位置：src/mm_remani/scripts/mppi/native_reference_adapter.py:184,205；src/mm_remani/scripts/whole_body_mppi.py:390,395；src/mm_remani/config/real_speed.yaml:27,47；src/mm_remani/launch/exp0_real.launch:339；src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py:580,599。
+现有测试test_mppi_collision.py:54确认了过渡不发arm，但未验证与真实watchdog串联的结果，单模块测试通过不能排除此冲突。
+最小修复：active/pending参考共同激活切换；过渡期间保留已验证的安全旧前缀或新鲜合法保持命令。真正失联、异常反馈和急停仍保留锁存，不能简单放宽全部超时。
+
+10. P2：MPPI静态模式与快照健康契约互相矛盾。
+证据：参数组合及消费函数拒绝已离线复现。
+use_mppi=true、enable_dynamic_tracker_shadow=false、enable_dynamic_avoidance=false时，dynamic_enabled=false，导出h19固定0；导出h4和PythonSnapshot.fresh却都无条件要求h19=1。静态ESDF及全部反馈新鲜也永远不能执行。h28==0只绕过动态年龄检查，并没有绕过这项硬条件。
+位置：src/mm_remani/launch/exp0_real.launch:69；src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp:206,209；src/mm_remani/scripts/mppi/active_arm_mppi.py:85。
+最小修复：生产者与消费者统一“动态关闭时如何使用静态/实时占据避障”的健康契约，覆盖实际launch参数组合，不只测试人工构造的健康wire。
+
+11. P2/能力缺口：标准入口默认没有MPPI，也尚未迁移快层前缀进入慢层的双向协同。
+证据：默认入口与生产接口确定。
+use_mppi默认false；原生底盘tracker和joint bridge执行，MPPI节点与导出不运行，而动态预测active默认true。因此“按原命令启动”不能代表MPPI实车实验，也不是未修改原生基线。
+即使开启MPPI，NativeReferenceAdapter明确标注fast_to_slow_prefix_enabled=false。快层向慢层主要发tracking_fault Bool，未提供实验版获准避障事件、完整前缀、预测交接状态与候选相位。慢层仍外推旧原生轨迹，再按误差阈值修正实测残差。这与研究中“把快层正在执行的绕行带进慢层初值”不同。
+位置：src/mm_remani/launch/exp0_real.launch:7,9,29,262,323；src/mm_remani/scripts/mppi/native_reference_adapter.py:1,220；src/mm_remani/scripts/whole_body_mppi.py:213,404；src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:2275。
+最小修复：明确原生、动态预测增强、REMANI+MPPI三种实际能力，记录展开参数与命令所有者；经过验收后只迁移研究所需的事件/前缀接口，不把experiments里已经验证的能力视为生产路径已经具备。
+
+12. P1：原生模式为保留启动体验关闭了执行期命令租约，故障恢复与首次启动混在一起。
+证据：参数和执行分支确定；已接收目标的剩余运动量待实测。
+use_mppi=false使command_timeout=0、max_command_age=0，运行中的掉使能也允许周期性EnableArm。指令源年龄、指令到期快停和锁存检查集中在timeout>0分支。底层仍会拒绝当前反馈不新鲜时的新关节命令，但这不等于对已经接收的位置目标执行快停。
+用户明确要求保留原启动归位；本项不把首次自动使能或归位动作本身当漏洞，而是指出执行阶段保护与模式不一致。
+位置：src/mm_remani/launch/exp0_real.launch:335,339；src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py:364,615,751,764。
+最小修复：保留原生启动流程，进入正常执行后使用统一的源时效和故障停止协议；自动启动完成不应等同于故障后自动恢复运动。
+
+13. P2/待标定：实车位置伺服响应与MPPI积分预测尚未建立对应关系。
+证据：接口差异确定，尚不能量化为当前实际碰撞或轨迹误差。
+实车MPPI使用关节速度/加速度积分预测，发送第一步关节位置；Piper驱动以固定速度档位执行位置目标，并不消费发布的关节速度。已有速度延续及固定目标两种检查包络，但尚未证明覆盖真实位置响应、超调和快停行为。
+位置：src/mm_remani/scripts/mppi/active_arm_mppi.py:258；src/mm_remani/scripts/whole_body_mppi.py:94,505；src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py:791。
+最小修复：在后续获准实测中测当前fixed_vel=1响应与快停范围，复用现有模型加入保守误差；不要直接套用仅供仿真的伺服常数，也无需新增另一套机械臂驱动。
+
+14. P2：hardware_enabled=false不等于原生模式完全隔离运动命令。
+证据：launch条件确定；只有图中另有真实驱动时才可能实际运动。
+该开关关闭本launch内的硬件驱动，但两个原生命令桥只由use_mppi控制，仍向真实cmd_vel及joint_ctrl_single发布。它可用于“不启动本组驱动”，不应被当成“无任何执行发布”的观察模式。
+位置：src/mm_remani/launch/exp0_real.launch:262,323；src/mm_remani/scripts/real_base_tracker.py:15；src/mm_controller/scripts/joint_cmd_bridge.py:11。
+最小修复：硬件关闭时禁止执行发布或将输出明确重映射到观察话题；继续保留反馈和可视化，不新增并行工程。
+
+本轮验证及边界
+- 离线真实函数调用确认第9、10项的参考/输出及快照拒绝行为，结果见offline_reproductions.json。没有调用rospy.init_node、真实Publisher、CAN SDK或运动服务。峰值RSS为55048 KiB，约54 MiB。
+- 首次离线导入受用户级NumPy与系统SciPy版本混用影响而失败；按实车MPPI launch已有PYTHONNOUSERSITE=1重试通过，没有安装/卸载或修改任何依赖，不将该临时检查环境误报为生产故障。
+- 读取已有单元测试以确认保护是否存在，没有将此前80个地图/缓冲测试通过等同于实车全链路正确。
+- 已确认不应误报为缺失的保护：同ID运动后停止仍保留当前观测；MPPI首控制复验、源时间门控、执行状态门控；关节6在慢层/MPPI/桥一致为±0.35rad；最新地图候选验收有显式refresh；启用MPPI后存在独立快层进程及地图/导出队列。
+
+最小推进顺序
+A. 先统一感知坐标/有效视野和固定场景动态误检判据；解除“身份丢失=全局停车”的错误耦合，同时保留轨迹相关的真实障碍与未知检查（1、2、3、4、6）。
+B. 统一地图“未看见/看见为空/仍命中”的语义，修复无可见性证据清障（5）。A/B应共同设计，不能先把所有lost保护删掉而留下过早清障。
+C. 修正常换轨与watchdog冲突、反馈失效输出语义和执行阶段租约（8、9、12）；使碰撞监督独立于慢优化（7）。
+D. 明确实际运行模式并修复静态MPPI组合（10、11）；再迁移真正需要的快层事件/前缀，最后进行模型响应标定（13）及命令隔离修正（14）。
+以上是审计与修复次序，不是已完成修复清单。生产代码尚未因本轮审计改变。

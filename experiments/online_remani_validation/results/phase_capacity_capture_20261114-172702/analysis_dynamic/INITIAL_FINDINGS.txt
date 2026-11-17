@@ -1,0 +1,22 @@
+本轮动态避障记录初查（只读，不修改运行代码）
+代码版本：20261114-165513-phase-capacity。
+用户现场反馈：普通导航改善；动态障碍进入时似乎先停，等待 REMANI 新路径。
+
+记录范围：2026-11-14 17:27:04.628 至 17:33:01.587（北京时间）；96 MiB payload预算结束采集，bag文件约109 MiB。之后仅有MPPI/Piper节点文本日志至17:36:43，不能等同完整话题记录。
+保存内容：4个导航目标，3260条MPPI状态，3256条速度指令，403条预测可视化数据，21条轨迹消息（包含取消和档位块），152条刷新消息；还保存里程计、关节反馈、控制进度、限速、跟踪故障、ROS日志及版本校验。
+没有保存：完整原始点云、动态障碍几何/速度数组、碰撞距离场数据体或现场视频。因此不能直接离线重放同一环境，不能从碰撞日志认定障碍就是用户本人或判定占据正确。
+
+已确认的控制行为：
+1. MPPI共1920条command_delivered，其中导航相关152条arm_only，526条nominal；无whole_body_fallback交付。arm_only是保持参考底盘导引、只优化机械臂的分支；指令ROS发布并非电机执行确认。这证明MPPI在工作，但不证明成功底盘绕行。
+2. 152条刷新归属于4个episode，慢层日志4次MPPIRefresh均success=0；不能称为152次或4次成功重规划，也不能把episode等同真实动态障碍事件。触发干预可能是静态/实时占据或参考候选间隙，不仅是运动预测。
+3. 17:31:35.151 FSM报告实时占据障碍仅0.00m，触发stop before replanning；17:31:35.160收到轨迹ACTION_ABORT。之后至17:31:43.730新恢复轨迹交付约8.6s，记录88条cmd_vel全部为零，86条native_reference_cancelled状态。17:31:43.953再次触发同类停车。
+4. 17:32:03.168同类停车后，17:32:03.18至17:32:48.14记录450条cmd_vel全部为零，449条native_reference_cancelled；17:32:48.147收到用户新目标。
+5. 非零动态预测overlay出现在约17:30:08–11、17:32:10–20、17:32:30–38。不能将这些时段与用户出现的确切时刻直接等同；17:32:03停车早于17:32:10.982非零overlay日志，表明仅凭日志名称Dynamic obstacle不足以证明动态预测导致停车。
+
+代码核对：慢层ACTION_ABORT清除MPPI原生参考；导航仍active但path为空时adapter直接返回native_reference_cancelled，不进入导航候选求解；reject发布底盘零速。当前不存在取消参考之后独立继续导航绕行的分支。慢层交付有效新轨迹/进度后才恢复参考执行。这条链与上述8.6s和45s停车记录一致。
+核心已证实问题：快层持续避让会被慢层取消参考的路径打断。尚未证实：首次实时占据告警是否准确、动态分类/预测是否及时、当时底盘可绕行候选是否确实可行。
+另外17:30:45至17:31:14附近存在MPPI输出间断及LiDAR超时。独立节点文本日志17:30:45.411已经记录该轮planning_deadline_exceeded，cycle=105.61ms；bag直到17:31:14才收录，planner日志也有约27s接收延迟。因此不能把这约29s直接当MPPI求解耗时，或仅按bag接收顺序推导此段实时因果。这个缺口需与动态避障取消链区分。
+失败诊断中另有1条whole_body_fallback的planning_deadline_exceeded；不能因没有成功交付该模式就认定从未尝试整机候选。
+
+证据文件：saved_record.json；analysis_dynamic/control_summary.json；analysis_dynamic/status.jsonl；analysis_dynamic/commands.jsonl；analysis_dynamic/rosout_analysis.json；cancellation_refresh_code_review.json。
+本次不改变运行代码或版本；不将本轮结果标为动态避障实车验证通过。

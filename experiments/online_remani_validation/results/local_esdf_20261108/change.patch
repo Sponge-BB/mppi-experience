@@ -1,0 +1,764 @@
+--- before/src/mm_remani_planner/plan_env/include/plan_env/grid_map.h
++++ after/src/mm_remani_planner/plan_env/include/plan_env/grid_map.h
+@@ -132,6 +132,10 @@
+   /* optional asynchronous live ESDF pipeline */
+   bool async_esdf_enable_;
+   double async_esdf_max_result_age_;
++  // Maintain a globally consistent, truncated field by recomputing only
++  // changed occupancy and its finite influence neighbourhood.
++  bool incremental_esdf_ = false;
++  double esdf_distance_cap_ = 0.6;
+ 
+   bool use_global_map_;
+   bool fuse_global_map_;
+@@ -575,6 +579,8 @@
+   void invalidateAsyncESDFJobs();
+   void recordESDFTiming(double compute_ms, double commit_ms,
+                         double result_age_ms, bool asynchronous);
++  bool prepareIncrementalESDF();
++  void finishIncrementalESDF();
+ 
+   inline void inflatePoint(const Eigen::Vector3i &pt, int step, vector<Eigen::Vector3i> &pts);
+   int setCacheOccupancy(Eigen::Vector3d pos, int occ);
+@@ -659,6 +665,11 @@
+   std::uint64_t esdf_last_resolved_request_id_ = 0;
+   std::uint64_t esdf_committed_request_id_ = 0;
+   bool async_esdf_fallback_to_sync_ = false;
++  std::vector<char> esdf_committed_occupancy_;
++  std::uint64_t esdf_occupancy_epoch_ = 0;
++  Eigen::Vector3i esdf_write_min_ = Eigen::Vector3i::Zero();
++  Eigen::Vector3i esdf_write_max_ = Eigen::Vector3i::Constant(-1);
++  bool incremental_patch_ready_ = false;
+ 
+   //
+   uniform_real_distribution<double> rand_noise_;
+--- before/src/mm_remani_planner/plan_env/src/grid_map.cpp
++++ after/src/mm_remani_planner/plan_env/src/grid_map.cpp
+@@ -309,6 +309,8 @@
+   node_.param("grid_map/fuse_global_map", mp_.fuse_global_map_, true);
+   node_.param("grid_map/local_esdf_follow_odom", mp_.local_esdf_follow_odom_, true);
+   node_.param("grid_map/global_map_full_esdf", mp_.global_map_full_esdf_, true);
++  node_.param("grid_map/incremental_esdf", mp_.incremental_esdf_, false);
++  node_.param("grid_map/esdf_distance_cap", mp_.esdf_distance_cap_, 0.6);
+   node_.param("grid_map/global_map_obstacles_inflation", mp_.global_map_obstacles_inflation_, mp_.obstacles_inflation_);
+   node_.param("grid_map/global_map_lidar_clear", mp_.global_map_lidar_clear_, true);
+   node_.param("grid_map/global_map_lidar_clear_radius", mp_.global_map_lidar_clear_radius_, 0.0);
+@@ -371,6 +373,10 @@
+   if(global_plan){
+     mp_.use_global_map_ = true;
+   }
++  if (mp_.incremental_esdf_ &&
++      (!fusedGlobalMapOwnsESDFBounds() || !mp_.global_map_full_esdf_ ||
++       !std::isfinite(mp_.esdf_distance_cap_) || mp_.esdf_distance_cap_ < 0.6))
++    throw std::invalid_argument("incremental ESDF requires a fused full global map and a finite distance cap >= 0.6m");
+   bool use_load_map_;
+   nh.param("grid_map/use_load_map", use_load_map_, false);
+ 
+@@ -1053,6 +1059,10 @@
+     return;
+   if (mp_.global_map_full_esdf_ && md_.global_esdf_pending_)
+     return;
++  // Incremental work bounds belong to the captured occupancy changes, not
++  // newer odometry. Moving the robot must not invalidate an in-flight patch.
++  if (mp_.incremental_esdf_ && esdf_occupancy_epoch_ == esdf_map_epoch_)
++    return;
+ 
+   Eigen::Vector3i min_id, max_id;
+   if (mp_.global_map_full_esdf_ && fusedGlobalMapOwnsESDFBounds())
+@@ -1105,7 +1115,7 @@
+     md_.occupancy_buffer_neg_[idx] = 0;
+     md_.distance_buffer_[idx] = 10000;
+     md_.distance_buffer_neg_[idx] = 10000;
+-    md_.distance_buffer_all_[idx] = 10000;
++    if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
+   }
+ }
+ 
+@@ -1134,7 +1144,7 @@
+         md_.occupancy_buffer_neg_[idx] = 1;
+         md_.distance_buffer_[idx] = 10000;
+         md_.distance_buffer_neg_[idx] = 10000;
+-        md_.distance_buffer_all_[idx] = 10000;
++        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
+         ++cleared;
+       }
+ 
+@@ -1725,7 +1735,7 @@
+         int idx = toAddress(x, y, z);
+         if (md_.static_occupancy_[idx]) continue;
+         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
+-        md_.distance_buffer_all_[idx] = 10000;
++        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
+       }
+ 
+       for (int z = max_cut(2) + 1; z <= max_cut_m(2); ++z)
+@@ -1733,7 +1743,7 @@
+         int idx = toAddress(x, y, z);
+         if (md_.static_occupancy_[idx]) continue;
+         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
+-        md_.distance_buffer_all_[idx] = 10000;
++        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
+       }
+     }
+ 
+@@ -1746,7 +1756,7 @@
+         int idx = toAddress(x, y, z);
+         if (md_.static_occupancy_[idx]) continue;
+         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
+-        md_.distance_buffer_all_[idx] = 10000;
++        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
+       }
+ 
+       for (int y = max_cut(1) + 1; y <= max_cut_m(1); ++y)
+@@ -1754,7 +1764,7 @@
+         int idx = toAddress(x, y, z);
+         if (md_.static_occupancy_[idx]) continue;
+         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
+-        md_.distance_buffer_all_[idx] = 10000;
++        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
+       }
+     }
+ 
+@@ -1767,7 +1777,7 @@
+         int idx = toAddress(x, y, z);
+         if (md_.static_occupancy_[idx]) continue;
+         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
+-        md_.distance_buffer_all_[idx] = 10000;
++        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
+       }
+ 
+       for (int x = max_cut(0) + 1; x <= max_cut_m(0); ++x)
+@@ -1775,7 +1785,7 @@
+         int idx = toAddress(x, y, z);
+         if (md_.static_occupancy_[idx]) continue;
+         md_.occupancy_buffer_[idx] = mp_.clamp_min_log_ - mp_.unknown_flag_;
+-        md_.distance_buffer_all_[idx] = 10000;
++        if (!mp_.incremental_esdf_) md_.distance_buffer_all_[idx] = 10000;
+       }
+     }
+ 
+@@ -2221,6 +2231,71 @@
+   md_.esdf_need_update_ = true;
+ }
+ 
++bool GridMap::prepareIncrementalESDF()
++{
++  if (!mp_.incremental_esdf_)
++    return true;
++
++  const auto &occupancy = md_.occupancy_buffer_inflate_;
++  const Eigen::Vector3i last = mp_.map_voxel_num_ - Eigen::Vector3i::Ones();
++  Eigen::Vector3i lo = last, hi = Eigen::Vector3i::Zero();
++  const bool full = esdf_occupancy_epoch_ != esdf_map_epoch_ ||
++      esdf_committed_occupancy_.size() != occupancy.size() ||
++      md_.static_map_esdf_pending_ || md_.global_esdf_pending_;
++  std::size_t changed = 0;
++  if (!full)
++  {
++    const int nz = mp_.map_voxel_num_.z();
++    const int yz = mp_.map_voxel_num_.y() * nz;
++    // Compare the actual inflated binary layer, including removals, expiry,
++    // static clearing and inflation. A ray/endpoint bounding box misses some
++    // of these mutations. This linear byte scan costs no full EDT workspace.
++    for (std::size_t i = 0; i < occupancy.size(); ++i)
++      if (occupancy[i] != esdf_committed_occupancy_[i])
++      {
++        const Eigen::Vector3i p(i / yz, (i % yz) / nz, i % nz);
++        lo = lo.cwiseMin(p);
++        hi = hi.cwiseMax(p);
++        ++changed;
++      }
++    if (changed == 0)
++    {
++      // Freshly fused occupancy is identical to the field's input. Reuse its
++      // distances without renewing the original observation/fusion timestamp.
++      md_.esdf_observation_seq_ = md_.dynamic_observation_seq_;
++      md_.esdf_need_update_ = false;
++      incremental_patch_ready_ = false;
++      return false;
++    }
++  }
++  // Native signed EDT is resolution - distance_to_free inside obstacles.
++  // Both the affected output and its input halo need cap + one voxel.
++  const int radius = static_cast<int>(std::ceil(
++      mp_.esdf_distance_cap_ / mp_.resolution_)) + 1;
++  const Eigen::Vector3i pad = Eigen::Vector3i::Constant(radius);
++  esdf_write_min_ = full ? Eigen::Vector3i::Zero().eval()
++                         : (lo - pad).cwiseMax(Eigen::Vector3i::Zero()).eval();
++  esdf_write_max_ = full ? last : (hi + pad).cwiseMin(last).eval();
++  md_.local_bound_min_ = (esdf_write_min_ - pad).cwiseMax(Eigen::Vector3i::Zero());
++  md_.local_bound_max_ = (esdf_write_max_ + pad).cwiseMin(last);
++  incremental_patch_ready_ = true;
++  ROS_INFO_THROTTLE(5.0,
++      "[GridMap][LocalESDF] changed=%zu compute=%ld/%zu voxels, cap=%.2fm; full=%s",
++      changed, static_cast<long>((md_.local_bound_max_ - md_.local_bound_min_ +
++          Eigen::Vector3i::Ones()).cast<long>().prod()), occupancy.size(),
++      mp_.esdf_distance_cap_, full ? "yes" : "no");
++  return true;
++}
++
++void GridMap::finishIncrementalESDF()
++{
++  if (!mp_.incremental_esdf_)
++    return;
++  esdf_committed_occupancy_ = md_.occupancy_buffer_inflate_;
++  esdf_occupancy_epoch_ = esdf_map_epoch_;
++  incremental_patch_ready_ = false;
++}
++
+ bool GridMap::submitAsyncESDFUpdate()
+ {
+   if (!esdf_worker_ || async_esdf_fallback_to_sync_)
+@@ -2439,18 +2514,28 @@
+   const std::size_t nz = static_cast<std::size_t>(size.z());
+   const std::size_t compact_yz =
+       static_cast<std::size_t>(size.y()) * nz;
+-  for (int x = result.min_index.x(); x <= result.max_index.x(); ++x)
+-    for (int y = result.min_index.y(); y <= result.max_index.y(); ++y)
++  const Eigen::Vector3i write_min = mp_.incremental_esdf_ ? esdf_write_min_ : result.min_index;
++  const Eigen::Vector3i write_max = mp_.incremental_esdf_ ? esdf_write_max_ : result.max_index;
++  for (int x = write_min.x(); x <= write_max.x(); ++x)
++    for (int y = write_min.y(); y <= write_max.y(); ++y)
+     {
+       const std::size_t compact_address =
+           static_cast<std::size_t>(x - result.min_index.x()) * compact_yz +
+-          static_cast<std::size_t>(y - result.min_index.y()) * nz;
++          static_cast<std::size_t>(y - result.min_index.y()) * nz +
++          write_min.z() - result.min_index.z();
+       const int map_address =
+           x * mp_.map_voxel_num_.y() * mp_.map_voxel_num_.z() +
+-          y * mp_.map_voxel_num_.z() + result.min_index.z();
+-      std::copy_n(result.distance_all.begin() + compact_address, nz,
+-                  md_.distance_buffer_all_.begin() + map_address);
+-    }
++          y * mp_.map_voxel_num_.z() + write_min.z();
++      const int count = write_max.z() - write_min.z() + 1;
++      if (mp_.incremental_esdf_)
++        for (int z = 0; z < count; ++z)
++          md_.distance_buffer_all_[map_address + z] = std::max(-mp_.esdf_distance_cap_,
++              std::min(mp_.esdf_distance_cap_, result.distance_all[compact_address + z]));
++      else
++        std::copy_n(result.distance_all.begin() + compact_address, count,
++                    md_.distance_buffer_all_.begin() + map_address);
++    }
++  finishIncrementalESDF();
+ 
+   const double commit_ms =
+       (ros::SteadyTime::now() - commit_start).toSec() * 1000.0;
+@@ -2536,6 +2621,9 @@
+     return;
+   }
+ 
++  if (!prepareIncrementalESDF())
++    return;
++
+   const bool static_or_initial_update =
+       md_.static_map_esdf_pending_ || md_.global_esdf_pending_;
+   if (mp_.async_esdf_enable_ && !async_esdf_fallback_to_sync_ &&
+@@ -2573,6 +2661,7 @@
+       md_.dynamic_observation_seq_;
+   const ros::SteadyTime wall_start = ros::SteadyTime::now();
+   updateESDF3d();
++  finishIncrementalESDF();
+   const double wall_ms =
+       (ros::SteadyTime::now() - wall_start).toSec() * 1000.0;
+ 
+@@ -3968,12 +4057,19 @@
+         const int y = min_esdf.y() + static_cast<int>(yz_index / nz);
+         const int z = min_esdf.z() + static_cast<int>(yz_index % nz);
+         const int index = address(x, y, z);
+-        md_.distance_buffer_all_[index] = md_.distance_buffer_[index];
++        if (mp_.incremental_esdf_ && incremental_patch_ready_ &&
++            (x < esdf_write_min_.x() || x > esdf_write_max_.x() ||
++             y < esdf_write_min_.y() || y > esdf_write_max_.y() ||
++             z < esdf_write_min_.z() || z > esdf_write_max_.z()))
++          return;  // Halo is input support, never a replacement output field.
++        double distance = md_.distance_buffer_[index];
+         if (md_.distance_buffer_neg_[index] > 0.0)
+         {
+-          md_.distance_buffer_all_[index] +=
+-              -md_.distance_buffer_neg_[index] + mp_.resolution_;
++          distance += -md_.distance_buffer_neg_[index] + mp_.resolution_;
+         }
++        md_.distance_buffer_all_[index] = mp_.incremental_esdf_
++            ? std::max(-mp_.esdf_distance_cap_, std::min(mp_.esdf_distance_cap_, distance))
++            : distance;
+       });
+ }
+ 
+--- before/src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp
++++ after/src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp
+@@ -2,6 +2,7 @@
+ 
+ #include <cmath>
+ #include <chrono>
++#include <random>
+ #include <thread>
+ #include <vector>
+ 
+@@ -732,6 +733,152 @@
+     return map.md_.live_fusion_cycle_;
+   }
+ 
++  static void configureIncrementalTest(GridMap &map, bool incremental)
++  {
++    // These tests invoke the real timer callback without initMap(). Explicit
++    // value initialization prevents unrelated uninitialized runtime flags.
++    map.mp_ = MappingParameters{};
++    map.md_ = MappingData{};
++    map.mp_.resolution_ = 0.1;
++    map.mp_.resolution_inv_ = 10.0;
++    map.mp_.map_voxel_num_ = Eigen::Vector3i(61, 51, 31);
++    map.mp_.map_origin_ = Eigen::Vector3d::Zero();
++    map.mp_.map_size_ = map.mp_.map_voxel_num_.cast<double>() * 0.1;
++    map.mp_.map_min_boundary_ = map.mp_.map_origin_;
++    map.mp_.map_max_boundary_ = map.mp_.map_size_;
++    map.mp_.parallel_threads_ = 1;
++    map.mp_.parallel_voxel_threshold_ = 1;
++    map.mp_.incremental_esdf_ = incremental;
++    map.mp_.esdf_distance_cap_ = 0.6;
++    map.mp_.async_esdf_enable_ = false;
++    map.mp_.async_esdf_max_result_age_ = 5.0;
++    map.mp_.show_esdf_time_ = false;
++    map.mp_.enable_performance_diagnostics_ = false;
++    map.mp_.use_global_map_ = true;
++    map.mp_.fuse_global_map_ = true;
++    map.mp_.global_map_full_esdf_ = true;
++    map.mp_.local_esdf_follow_odom_ = false;
++    map.mp_.live_lidar_health_monitor_enable_ = false;
++    map.mp_.clamp_min_log_ = -2.0;
++    map.mp_.min_occupancy_log_ = 0.0;
++    map.mp_.unknown_flag_ = 0.01;
++    map.mp_.local_map_margin_ = 0;
++    map.mp_.obstacles_inflation_ = 0.0;
++    map.mp_.virtual_ceil_height_ = -1.0;
++    map.mp_.global_map_lidar_clear_min_misses_ = 1;
++    map.md_.local_bound_min_ = Eigen::Vector3i::Zero();
++    map.md_.local_bound_max_ = map.mp_.map_voxel_num_ - Eigen::Vector3i::Ones();
++    map.md_.occupancy_bound_min_ = map.md_.local_bound_min_;
++    map.md_.occupancy_bound_max_ = map.md_.local_bound_max_;
++    map.md_.has_odom_ = true;
++    map.md_.has_cloud_ = true;
++    map.md_.static_map_esdf_ready_ = true;
++    map.md_.static_map_esdf_pending_ = false;
++    map.md_.global_esdf_pending_ = false;
++    const std::size_t count = 61 * 51 * 31;
++    map.md_.occupancy_buffer_.assign(count, -2.0);
++    map.md_.occupancy_buffer_inflate_.assign(count, 0);
++    map.md_.occupancy_buffer_neg_.assign(count, 0);
++    map.md_.static_occupancy_.assign(count, 0);
++    map.md_.static_miss_count_.assign(count, 0);
++    map.md_.tmp_buffer1_.assign(count, 0.0);
++    map.md_.tmp_buffer2_.assign(count, 0.0);
++    map.md_.distance_buffer_.assign(count, 10000.0);
++    map.md_.distance_buffer_neg_.assign(count, 10000.0);
++    map.md_.distance_buffer_all_.assign(count, 10000.0);
++    map.isolated_mapping_ = false;
++    map.esdf_map_epoch_ = 1;
++    map.esdf_occupancy_epoch_ = 0;
++    map.esdf_committed_occupancy_.clear();
++    map.incremental_patch_ready_ = false;
++  }
++
++  static void stageIncrementalOccupancy(GridMap &map,
++                                        const std::vector<char> &occupancy,
++                                        std::uint64_t sequence)
++  {
++    map.md_.occupancy_buffer_inflate_ = occupancy;
++    for (std::size_t i = 0; i < occupancy.size(); ++i)
++      map.md_.occupancy_buffer_[i] = occupancy[i] ? 2.0 : -2.0;
++    map.md_.dynamic_observation_seq_ = sequence;
++    map.md_.lidar_accepted_seq_ = sequence;
++    map.md_.lidar_fused_seq_ = sequence;
++    map.md_.last_occ_update_time_ = ros::Time(100 + sequence, 0);
++    map.md_.esdf_need_update_ = true;
++  }
++
++  static Eigen::Vector3i writeMinimum(const GridMap &map) { return map.esdf_write_min_; }
++  static Eigen::Vector3i writeMaximum(const GridMap &map) { return map.esdf_write_max_; }
++  static std::uint64_t distanceRevision(const GridMap &map) { return map.read_distance_revision_; }
++  static std::uint64_t computedCount(const GridMap &map) { return map.md_.esdf_update_count_; }
++  static void invalidateIncrementalEpoch(GridMap &map) { map.invalidateAsyncESDFJobs(); }
++
++  static int clearStaticCellForIncrementalTest(GridMap &map, const Eigen::Vector3i &cell)
++  {
++    const auto index = address(map, cell);
++    map.md_.static_occupancy_[index] = 1;
++    map.md_.static_miss_count_[index] = 1;
++    return map.clearStaticOccupancyAround(cell, 0);
++  }
++
++  static void clearLocalPerimeterForIncrementalTest(GridMap &map)
++  {
++    map.md_.occupancy_bound_min_ = Eigen::Vector3i(28, 23, 13);
++    map.md_.occupancy_bound_max_ = Eigen::Vector3i(32, 27, 17);
++    map.clearAndInflateLocalMap();
++  }
++
++  static const std::vector<char> &inflatedLayer(const GridMap &map)
++  {
++    return map.md_.occupancy_buffer_inflate_;
++  }
++
++  static void requestESDFAfterLocalClearing(GridMap &map, std::uint64_t sequence)
++  {
++    // The occupancy callback advances this revision after both real clearing
++    // operations. Do not replace their actual raw or inflated output here.
++    map.md_.dynamic_observation_seq_ = sequence;
++    map.md_.esdf_need_update_ = true;
++  }
++
++  static void publishIncrementalSnapshot(GridMap &map)
++  {
++    map.isolated_mapping_ = true;
++    map.publishReadSnapshot();
++  }
++
++  static std::shared_ptr<const std::vector<double>> latestDistanceLayer(const GridMap &map)
++  {
++    return std::atomic_load(&map.latest_read_snapshot_)->distance;
++  }
++
++  static void enableIncrementalAsync(GridMap &map)
++  {
++    const auto sequence = map.md_.esdf_observation_seq_;
++    enableAsync(map, sequence);
++    map.md_.esdf_observation_seq_ = sequence;
++  }
++
++  static void incrementalCallbackAndPublish(GridMap &map)
++  {
++    asMappingWriter(map, [&]() {
++      map.updateESDFCallback(ros::TimerEvent());
++      map.publishReadSnapshot();
++    });
++  }
++
++  static bool waitForIncrementalCallbackCommit(GridMap &map, std::uint64_t sequence)
++  {
++    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
++    do {
++      incrementalCallbackAndPublish(map);
++      if (map.md_.esdf_observation_seq_ == sequence && !map.md_.esdf_need_update_)
++        return true;
++      std::this_thread::sleep_for(std::chrono::milliseconds(1));
++    } while (std::chrono::steady_clock::now() < deadline);
++    return false;
++  }
++
+ private:
+   static int address(const GridMap &map, const Eigen::Vector3i &index)
+   {
+@@ -1716,6 +1863,257 @@
+   EXPECT_FALSE(GridMapParallelTestAccessor::lidarObservationPending(map));
+ }
+ 
++class GridMapIncremental : public testing::Test
++{
++protected:
++  using Access = GridMapParallelTestAccessor;
++  GridMap incremental_, reference_;
++  std::vector<char> occupancy_;
++  std::uint64_t sequence_ = 0;
++
++  void SetUp() override
++  {
++    ensureRosInitialized();
++    Access::configureIncrementalTest(incremental_, true);
++    Access::configureIncrementalTest(reference_, false);
++    occupancy_.assign(61 * 51 * 31, 0);
++  }
++
++  static std::size_t cell(int x, int y, int z)
++  {
++    return (static_cast<std::size_t>(x) * 51 + y) * 31 + z;
++  }
++
++  void stage()
++  {
++    ++sequence_;
++    Access::stageIncrementalOccupancy(incremental_, occupancy_, sequence_);
++    Access::stageIncrementalOccupancy(reference_, occupancy_, sequence_);
++  }
++
++  void expectGlobalReference(const std::vector<double> *before = nullptr)
++  {
++    const auto &actual = Access::distances(incremental_);
++    const auto &full = Access::distances(reference_);
++    ASSERT_EQ(full.size(), actual.size());
++    const auto lo = Access::writeMinimum(incremental_);
++    const auto hi = Access::writeMaximum(incremental_);
++    for (int x = 0; x < 61; ++x)
++      for (int y = 0; y < 51; ++y)
++        for (int z = 0; z < 31; ++z)
++        {
++          const auto i = cell(x, y, z);
++          const double expected = std::max(-0.6, std::min(0.6, full[i]));
++          ASSERT_TRUE(std::isfinite(actual[i])) << i;
++          ASSERT_NEAR(expected, actual[i], 1e-10)
++              << "frame " << sequence_ << " voxel " << x << ',' << y << ',' << z;
++          if (before && (x < lo.x() || x > hi.x() || y < lo.y() ||
++                         y > hi.y() || z < lo.z() || z > hi.z()))
++            ASSERT_DOUBLE_EQ((*before)[i], actual[i])
++                << "write outside committed interior at " << x << ',' << y << ',' << z;
++        }
++  }
++
++  void syncFrame()
++  {
++    const auto before = Access::distances(incremental_);
++    stage();
++    Access::processESDF(reference_);
++    Access::processESDF(incremental_);
++    ASSERT_EQ(sequence_, Access::esdfObservationSeq(incremental_));
++    ASSERT_FALSE(Access::esdfNeedsUpdate(incremental_));
++    ASSERT_NO_FATAL_FAILURE(expectGlobalReference(&before));
++  }
++};
++
++TEST_F(GridMapIncremental, EmptyAndFullyOccupiedInitializationMatchCappedGlobalEDT)
++{
++  syncFrame();
++  EXPECT_DOUBLE_EQ(0.6, Access::distances(incremental_)[cell(30, 25, 15)]);
++  std::fill(occupancy_.begin(), occupancy_.end(), 1);
++  syncFrame();
++  EXPECT_DOUBLE_EQ(-0.6, Access::distances(incremental_)[cell(30, 25, 15)]);
++  std::fill(occupancy_.begin(), occupancy_.end(), 0);
++  syncFrame();
++}
++
++TEST_F(GridMapIncremental, InsertionRemovalAndOutsideNeighborPreserveBoundaryDistances)
++{
++  // This unchanged neighbor is outside the next write interior, but is the
++  // nearest source for its outermost voxel. An EDT without its halo is wrong.
++  occupancy_[cell(38, 25, 15)] = 1;
++  syncFrame();
++  occupancy_[cell(30, 25, 15)] = 1;
++  syncFrame();
++  EXPECT_EQ(Eigen::Vector3i(23, 18, 8), Access::writeMinimum(incremental_));
++  EXPECT_EQ(Eigen::Vector3i(37, 32, 22), Access::writeMaximum(incremental_));
++  EXPECT_NEAR(0.1, Access::distances(incremental_)[cell(37, 25, 15)], 1e-10);
++  occupancy_[cell(30, 25, 15)] = 0;
++  syncFrame();
++  EXPECT_NEAR(0.5, Access::distances(incremental_)[cell(33, 25, 15)], 1e-10);
++
++  // Map-clipped faces, edges and corners must retain correct linear indexing.
++  for (const Eigen::Vector3i &p : {Eigen::Vector3i(0, 0, 0),
++                                 Eigen::Vector3i(60, 50, 30)})
++  {
++    occupancy_[cell(p.x(), p.y(), p.z())] = 1;
++    syncFrame();
++    occupancy_[cell(p.x(), p.y(), p.z())] = 0;
++    syncFrame();
++  }
++}
++
++TEST_F(GridMapIncremental, ExcavatingAndRefillingSolidObstacleMatchesSignedGlobalEDT)
++{
++  for (int x = 2; x <= 58; ++x)
++    for (int y = 2; y <= 48; ++y)
++      for (int z = 2; z <= 28; ++z)
++        occupancy_[cell(x, y, z)] = 1;
++  syncFrame();
++  EXPECT_DOUBLE_EQ(-0.6, Access::distances(incremental_)[cell(30, 25, 15)]);
++  occupancy_[cell(30, 25, 15)] = 0;
++  syncFrame();
++  EXPECT_NEAR(0.1, Access::distances(incremental_)[cell(30, 25, 15)], 1e-10);
++  EXPECT_NEAR(-0.1, Access::distances(incremental_)[cell(32, 25, 15)], 1e-10);
++  occupancy_[cell(30, 25, 15)] = 1;
++  syncFrame();
++  EXPECT_DOUBLE_EQ(-0.6, Access::distances(incremental_)[cell(30, 25, 15)]);
++}
++
++TEST_F(GridMapIncremental, ActualStaticAndPerimeterClearingPreserveDistancesUntilCommit)
++{
++  const Eigen::Vector3i center(30, 25, 15);
++  const std::vector<Eigen::Vector3i> perimeter = {
++      {26, 25, 15}, {34, 25, 15}, {30, 21, 15},
++      {30, 29, 15}, {30, 25, 11}, {30, 25, 19}};
++  occupancy_[cell(center.x(), center.y(), center.z())] = 1;
++  for (const auto &p : perimeter)
++    occupancy_[cell(p.x(), p.y(), p.z())] = 1;
++  syncFrame();
++  const auto before = Access::distances(incremental_);
++
++  ASSERT_EQ(1, Access::clearStaticCellForIncrementalTest(incremental_, center));
++  ASSERT_EQ(1, Access::clearStaticCellForIncrementalTest(reference_, center));
++  EXPECT_EQ(0, Access::inflatedOccupancy(incremental_, center));
++  EXPECT_EQ(before, Access::distances(incremental_));
++  EXPECT_DOUBLE_EQ(10000.0, Access::distances(reference_)[cell(30, 25, 15)]);
++
++  Access::clearLocalPerimeterForIncrementalTest(incremental_);
++  Access::clearLocalPerimeterForIncrementalTest(reference_);
++  for (const auto &p : perimeter)
++  {
++    // All six perimeter loops must execute. The legacy reference resetting
++    // its distance is a positive control for the formerly corrupting write.
++    EXPECT_LT(Access::rawOccupancy(incremental_, p), -2.0);
++    EXPECT_DOUBLE_EQ(10000.0, Access::distances(reference_)[cell(p.x(), p.y(), p.z())]);
++  }
++  ASSERT_EQ(before, Access::distances(incremental_));
++  ASSERT_EQ(Access::inflatedLayer(reference_), Access::inflatedLayer(incremental_));
++
++  ++sequence_;
++  Access::requestESDFAfterLocalClearing(reference_, sequence_);
++  Access::requestESDFAfterLocalClearing(incremental_, sequence_);
++  Access::processESDF(reference_);
++  Access::processESDF(incremental_);
++  EXPECT_EQ(sequence_, Access::esdfObservationSeq(incremental_));
++  EXPECT_FALSE(Access::esdfNeedsUpdate(incremental_));
++  ASSERT_NO_FATAL_FAILURE(expectGlobalReference(&before));
++  EXPECT_NEAR(0.4, Access::distances(incremental_)[cell(30, 25, 15)], 1e-10);
++}
++
++TEST_F(GridMapIncremental, SeededMultiFrameChangesAcrossMapMatchEveryGlobalVoxel)
++{
++  occupancy_[cell(7, 8, 9)] = 1;
++  occupancy_[cell(52, 41, 22)] = 1;
++  syncFrame();
++  std::mt19937 random(23);
++  const std::vector<Eigen::Vector3i> centers = {
++      {14, 13, 12}, {14, 13, 12}, {46, 38, 19}, {46, 38, 19},
++      {4, 43, 4}, {4, 43, 4}, {55, 5, 26}, {55, 5, 26}};
++  std::size_t local_updates = 0;
++  for (const auto &center : centers)
++  {
++    for (int i = 0; i < 17; ++i)
++    {
++      const Eigen::Vector3i p = center + Eigen::Vector3i(
++          int(random() % 5) - 2, int(random() % 5) - 2, int(random() % 5) - 2);
++      auto &occupied = occupancy_[cell(p.x(), p.y(), p.z())];
++      occupied = !occupied;
++    }
++    syncFrame();
++    const Eigen::Vector3i size = Access::writeMaximum(incremental_) -
++                                Access::writeMinimum(incremental_) + Eigen::Vector3i::Ones();
++    if (size.prod() < 61 * 51 * 31) ++local_updates;
++  }
++  EXPECT_EQ(centers.size(), local_updates);
++}
++
++TEST_F(GridMapIncremental, UnchangedBinaryAdvancesSequenceButEpochInvalidationRecomputes)
++{
++  occupancy_[cell(30, 25, 15)] = 1;
++  syncFrame();
++  const auto previous = Access::distances(incremental_);
++  const auto revision = Access::distanceRevision(incremental_);
++  const auto computations = Access::computedCount(incremental_);
++  syncFrame();
++  EXPECT_EQ(previous, Access::distances(incremental_));
++  EXPECT_EQ(revision, Access::distanceRevision(incremental_));
++  EXPECT_EQ(computations, Access::computedCount(incremental_));
++
++  // Equal bytes cannot authorize reuse across a reset/static-map epoch.
++  Access::invalidateIncrementalEpoch(incremental_);
++  syncFrame();
++  EXPECT_EQ(Eigen::Vector3i::Zero(), Access::writeMinimum(incremental_));
++  EXPECT_EQ(Eigen::Vector3i(60, 50, 30), Access::writeMaximum(incremental_));
++  EXPECT_EQ(computations + 1, Access::computedCount(incremental_));
++  EXPECT_GT(Access::distanceRevision(incremental_), revision);
++}
++
++TEST_F(GridMapIncremental, AsyncCallbackAndUnchangedReusePreservePinnedSnapshot)
++{
++  occupancy_[cell(38, 25, 15)] = 1;
++  syncFrame();
++  Access::publishIncrementalSnapshot(incremental_);
++  Access::enableIncrementalAsync(incremental_);
++  const Eigen::Vector3i query(30, 25, 15);
++  GridMap::ReadScope pinned(incremental_);
++  const auto old_sequence = incremental_.getESDFObservationSeq();
++  const auto old_stamp = Access::pinnedObservationStamp(incremental_);
++  const double old_distance = incremental_.getDistance(query);
++  const auto before = Access::distances(incremental_);
++
++  occupancy_[cell(30, 25, 15)] = 1;
++  stage();
++  Access::processESDF(reference_);
++  ASSERT_TRUE(Access::waitForIncrementalCallbackCommit(incremental_, sequence_));
++  ASSERT_EQ(1U, Access::asyncCommittedCount(incremental_));
++  ASSERT_NO_FATAL_FAILURE(expectGlobalReference(&before));
++  EXPECT_EQ(old_sequence, incremental_.getESDFObservationSeq());
++  EXPECT_EQ(old_stamp, Access::pinnedObservationStamp(incremental_));
++  EXPECT_DOUBLE_EQ(old_distance, incremental_.getDistance(query));
++
++  const auto committed_layer = Access::latestDistanceLayer(incremental_);
++  const auto submitted = Access::latestSubmittedRequestId(incremental_);
++  const auto revision = Access::distanceRevision(incremental_);
++  stage();  // Fresh occupancy observation, identical inflated binary geometry.
++  Access::processESDF(reference_);
++  Access::incrementalCallbackAndPublish(incremental_);
++  ASSERT_EQ(sequence_, Access::esdfObservationSeq(incremental_));
++  EXPECT_FALSE(Access::esdfNeedsUpdate(incremental_));
++  EXPECT_EQ(submitted, Access::latestSubmittedRequestId(incremental_));
++  EXPECT_EQ(1U, Access::asyncCommittedCount(incremental_));
++  EXPECT_EQ(revision, Access::distanceRevision(incremental_));
++  EXPECT_EQ(committed_layer, Access::latestDistanceLayer(incremental_));
++  EXPECT_EQ(old_sequence, incremental_.getESDFObservationSeq());
++  EXPECT_EQ(old_stamp, Access::pinnedObservationStamp(incremental_));
++  EXPECT_DOUBLE_EQ(old_distance, incremental_.getDistance(query));
++  ASSERT_NO_FATAL_FAILURE(expectGlobalReference());
++  incremental_.refreshReadSnapshot();
++  EXPECT_EQ(sequence_, incremental_.getESDFObservationSeq());
++  EXPECT_EQ(ros::Time(100 + sequence_, 0), Access::pinnedObservationStamp(incremental_));
++  EXPECT_NEAR(0.0, incremental_.getDistance(query), 1e-10);
++}
++
+ int main(int argc, char **argv)
+ {
+   testing::InitGoogleTest(&argc, argv);
+--- before/src/mm_remani/launch/exp0_real.launch
++++ after/src/mm_remani/launch/exp0_real.launch
+@@ -5,6 +5,7 @@
+   <!-- Keep the original distributed ROS graph and drivers. MPPI replaces
+        only the two command bridges; mm_controller still supplies progress. -->
+   <arg name="use_mppi" default="false"/>
++  <arg name="use_local_esdf" default="$(arg use_mppi)"/>
+   <param name="/remani_planner_node/mppi/enable" value="$(arg use_mppi)" type="bool"/>
+   <arg name="hardware_enabled" default="true"/>
+   <arg name="can_port" default="can1"/>
+@@ -51,6 +52,14 @@
+     <arg name="lidar_offset_y" value="$(arg lidar_offset_y)"/>
+     <arg name="lidar_offset_z" value="$(arg lidar_offset_z)"/>
+   </include>
++
++  <!-- One global static initialization, then exact local maintenance of a
++       signed distance field truncated at 0.6m (beyond collision/cost margins).
++       false restores the full-map EDT for a direct timing comparison. -->
++  <param name="/remani_planner_node/grid_map/incremental_esdf"
++         value="$(arg use_local_esdf)" type="bool"/>
++  <param name="/remani_planner_node/grid_map/esdf_distance_cap"
++         value="0.6" type="double"/>
+ 
+   <!-- Override the shared planner defaults for this real-robot experiment.
+        Qualified moving tracks drive a short-horizon swept planning overlay.
+--- before/src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp
++++ after/src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp
+@@ -48,7 +48,6 @@
+   int max_cells_;
+   bool dynamic_enabled_;
+   Eigen::Vector3i crop_lo_ = Eigen::Vector3i::Constant(-1), crop_hi_ = crop_lo_;
+-  std::uint64_t esdf_seq_ = std::numeric_limits<std::uint64_t>::max();
+   std::pair<std::uint64_t, std::uint64_t> esdf_version_{};
+   std::uint64_t generation_ = 0, sequence_ = 0, sent_generation_ = 0;
+   int last_subscribers_ = -1;
+@@ -161,7 +160,9 @@
+     const auto seq = map_->getESDFObservationSeq();
+     const auto occupancy_seq = map_->getDynamicObservationSeq();
+     const auto version = map_->getReadESDFVersion();
+-    const bool refresh = !previous || version != esdf_version_ || seq != esdf_seq_ ||
++    // A newer fused observation with identical occupancy reuses the field;
++    // its real fusion stamp/sequence still advance independently below.
++    const bool refresh = !previous || version != esdf_version_ ||
+                          lo != crop_lo_ || hi != crop_hi_;
+     if (refresh) {
+       auto field = std::make_shared<std::vector<double>>();
+@@ -172,7 +173,7 @@
+             field->push_back(map_->getDistance(Eigen::Vector3i(x, y, z)));
+       h[17] = acquired;  // ESDF-copy acquisition time, never original sensor time.
+       next->esdf = field;
+-      esdf_seq_ = seq; esdf_version_ = version; crop_lo_ = lo; crop_hi_ = hi; ++generation_;
++      esdf_version_ = version; crop_lo_ = lo; crop_hi_ = hi; ++generation_;
+     } else {
+       next->esdf = previous->esdf;
+       h[17] = previous->header[17];

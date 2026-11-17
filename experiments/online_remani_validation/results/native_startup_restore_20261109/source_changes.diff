@@ -1,0 +1,853 @@
+--- before/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py
++++ after/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py
+@@ -13,6 +13,7 @@
+ import threading
+ import argparse
+ import math
++import xml.etree.ElementTree as ET
+ from piper_sdk import *
+ from piper_sdk import C_PiperInterface
+ from std_srvs.srv import Trigger, TriggerResponse
+@@ -107,6 +108,7 @@
+         self._feedback_stamp = 0.0
+         self._feedback_monotonic = 0.0
+         self._feedback_position = None
++        self._feedback_velocity = None
+         self._last_joint_counts = (0, 0, 0)
+         self._last_arm_status_count = 0
+         self._last_arm_status_stamp = 0.0
+@@ -114,6 +116,7 @@
+         self._previous_feedback = None
+         self._watchdog_done = threading.Event()
+         self.block_ctrl_flag = False
++        self._configure_native_startup()
+         if self.command_timeout > 0:
+             self.auto_enable = False
+             self.auto_reenable_on_drop = False
+@@ -180,6 +183,131 @@
+ 
+     def GetEnableFlag(self):
+         return self.__enable_flag
++
++    def _configure_native_startup(self):
++        """Validate the original fixed standby target before opening CAN."""
++        self.native_startup_to_standby = rospy.get_param('~native_startup_to_standby', False)
++        if not isinstance(self.native_startup_to_standby, bool):
++            raise ValueError('native_startup_to_standby must be a bool')
++        self._native_handoff = False
++        self._native_ready = False
++        self._native_started = None
++        self._native_last_enable = None
++        self._native_last_target = None
++        self._native_settled_since = None
++        self._native_motors_seen = False
++        self._native_target = None
++        self._native_target_counts = None
++        if not self.native_startup_to_standby:
++            return
++        if self.command_timeout <= 0:
++            raise ValueError('native startup requires a positive command_timeout')
++        initial = rospy.get_param('/remani_planner_node/fsm/init_state')
++        if (not isinstance(initial, (list, tuple)) or len(initial) != 8 or
++                any(isinstance(q, bool) or not isinstance(q, (int, float)) or
++                    not math.isfinite(q) for q in initial)):
++            raise ValueError('native startup requires the finite 8-value original fsm/init_state')
++        target = tuple(math.radians(q) for q in initial[2:])
++        robot = ET.fromstring(rospy.get_param('/robot_description'))
++        for name, q in zip(ARM_JOINT_NAMES, target):
++            joint = robot.find("joint[@name='%s']" % name)
++            limit = joint.find('limit') if joint is not None else None
++            if limit is None:
++                raise ValueError('native startup requires URDF limits for ' + name)
++            lower, upper = float(limit.get('lower')), float(limit.get('upper'))
++            if not (math.isfinite(lower) and math.isfinite(upper) and lower < upper and lower <= q <= upper):
++                raise ValueError('native startup target outside URDF limits: ' + name)
++        # Retain the original joint-command bridge's wrist range.
++        if not -.35 <= target[5] <= .35:
++            raise ValueError('native startup target outside original joint6 command range')
++        self._native_target = target
++        self._native_target_counts = tuple(round(q * 180000.0 / math.pi) for q in target)
++
++    def _native_pending(self):
++        return self.native_startup_to_standby and not self._native_handoff
++
++    def _refresh_native_ready(self):
++        """Readiness is revocable and uses complete, source-derived feedback."""
++        if not self._native_pending():
++            return
++        good = (not self._command_latched and self._native_motors_seen and
++                self._feedback_fresh() and self._arm_status_normal_fresh() and
++                self._motors_enabled_fresh() and self._feedback_velocity is not None and
++                all(abs(q - target) < .015 for q, target in
++                    zip(self._feedback_position, self._native_target)) and
++                all(math.isfinite(v) and abs(v) < .02 for v in self._feedback_velocity))
++        if not good:
++            self._native_settled_since = None
++            self._native_ready = False
++        else:
++            now = time.monotonic()
++            if self._native_settled_since is None:
++                self._native_settled_since = now
++            ready = now - self._native_settled_since >= .30
++            if ready and not self._native_ready:
++                rospy.loginfo('Piper native standby reached; holding target until first valid MPPI command.')
++            self._native_ready = ready
++
++    def _native_startup_tick(self):
++        """Original 5 Hz fixed target; bounded enable/arrival, no map dependency.
++
++        Called only with _command_lock held. The native sender and external
++        JointCtrl callback therefore cannot overlap at handoff.
++        """
++        if not self._native_pending() or self._command_latched:
++            return
++        now = time.monotonic()
++        motor_fresh, motors_enabled, _ = self._motor_feedback_sample()
++        joint_fresh = self._feedback_fresh()
++        status, _, _, status_fresh, _ = self._arm_status_sample()
++        healthy = (joint_fresh and status_fresh and status.arm_status == 0 and
++                   status.err_code == 0 and motor_fresh)
++        if self.block_ctrl_flag:
++            self._stop_commands('native startup blocked')
++            return
++        if not healthy:
++            self._native_ready = False
++            self._native_settled_since = None
++            if self._native_started is not None:
++                self._stop_commands('native startup joint/status/motor feedback unavailable')
++            else:
++                rospy.logwarn_throttle(2.0,
++                    'Piper native startup waiting; no enable sent: joint_fresh=%s, '
++                    'status_fresh=%s arm_status=%s err_code=%s, motor_fresh=%s. '
++                    'A prior stop is never reset automatically.',
++                    joint_fresh, status_fresh, status.arm_status, status.err_code, motor_fresh)
++            return
++        if self._native_started is None:
++            self._native_started = now
++            self._native_last_enable = now
++            # Reject queued external plans from before this startup request;
++            # native target sends must never refresh this external timestamp.
++            self._last_command_stamp = time.time()
++            self.__enable_flag = True
++            self.piper.EnableArm(7)
++            rospy.loginfo('Piper native startup enable sent; motor timeout 10s, standby timeout 60s.')
++        if not self._native_motors_seen:
++            if now - self._native_started >= 10.0:
++                self._stop_commands('native startup motor enable timeout')
++                return
++            if motors_enabled:
++                self._native_motors_seen = True
++            else:
++                if now - self._native_last_enable >= 1.0:
++                    self._native_last_enable = now
++                    self.piper.EnableArm(7)
++                return
++        elif not motors_enabled:
++            self._stop_commands('native startup motor enable dropped')
++            return
++        self._refresh_native_ready()
++        if not self._native_ready and now - self._native_started >= 60.0:
++            self._stop_commands('native startup standby timeout')
++            return
++        if self._native_last_target is None or now - self._native_last_target >= .20:
++            self.piper.MotionCtrl_2(0x01, 0x01, 15, 0)
++            self.piper.JointCtrl(*self._native_target_counts)
++            self._native_last_target = now
+ 
+     def Pubilsh(self):
+         """机械臂消息发布"""
+@@ -351,6 +479,7 @@
+         with self._command_lock:
+             message = PiperExecutionState()
+             message.stop_latched = self._command_latched
++            message.command_active = False
+             if not stopped and not self._command_latched:
+                 status, stamp, _, status_fresh, deadline = self._arm_status_sample()
+                 self._execution_source_stamp = stamp if math.isfinite(stamp) and stamp > 0 else 0.
+@@ -363,11 +492,16 @@
+                 deadline = min(deadline, motor_deadline, joint_deadline)
+                 message.feedback_valid = bool(status_fresh and status.arm_status == 0 and
+                     status.err_code == 0 and self._feedback_fresh() and motor_fresh and time.time() < deadline)
+-                message.enabled = bool(self.__enable_flag and motor_fresh and motors_enabled)
+-                if self.__enable_flag:
++                self._refresh_native_ready()
++                native_pending = self._native_pending()
++                message.enabled = bool(self.__enable_flag and motor_fresh and motors_enabled and
++                                       (not native_pending or self._native_ready))
++                if self.__enable_flag and not native_pending:
+                     lease = (time.time()+self._command_deadline-time.monotonic()
+                              if self._command_deadline is not None else 0.)
+                     deadline = min(deadline, lease)
++                message.command_active = bool(message.enabled and message.feedback_valid and
++                    not native_pending and self._command_seen and time.time() < deadline)
+                 message.valid_until = rospy.Time.from_sec(max(0., deadline))
+             message.header.stamp = rospy.Time.from_sec(self._execution_source_stamp)
+             self.execution_state_pub.publish(message)
+@@ -393,6 +527,10 @@
+             return
+         self._last_joint_counts = counts
+         with self._command_lock:
++            dt = stamp - self._feedback_stamp
++            self._feedback_velocity = (tuple((q - old) / dt for q, old in
++                zip(positions, self._feedback_position)) if self._feedback_position is not None and
++                0 < dt <= .15 else None)
+             self._feedback_stamp = stamp
+             self._feedback_monotonic = time.monotonic()
+             self._feedback_position = tuple(positions)
+@@ -446,6 +584,8 @@
+             self._command_latched = True
+             self.__enable_flag = False
+             self._command_deadline = None
++            self._native_ready = False
++            self._native_settled_since = None
+             rospy.logerr('Piper command stop latched: %s; no automatic reset/re-enable.', reason)
+             try:
+                 self.PublishExecutionState(stopped=True)
+@@ -458,6 +598,9 @@
+ 
+     def _check_command_timeout(self):
+         with self._command_lock:
++            if self._native_pending():
++                self._native_startup_tick()
++                return
+             if self.__enable_flag and not self._command_latched:
+                 if (self._command_deadline is None or
+                         time.monotonic() >= self._command_deadline):
+@@ -492,6 +635,13 @@
+                     not self._arm_status_normal_fresh()):
+                 rospy.logwarn('Enable rejected: latched stop or no fresh normal arm/joint feedback.')
+                 return False
++            if self._native_pending():
++                try:
++                    self._native_startup_tick()
++                    return self.__enable_flag and not self._command_latched
++                except Exception:
++                    self._stop_commands('native startup enable/send failed')
++                    return False
+             if self.__enable_flag:
+                 return True
+             try:
+@@ -602,6 +752,8 @@
+             self._check_command_timeout()
+             if self._command_latched:
+                 return
++            if self._native_pending() and not self._native_ready:
++                return
+         if (len(joint_data.position) not in (6, 7) or
+                 not all(math.isfinite(q) for q in joint_data.position) or
+                 (joint_data.name and
+@@ -618,7 +770,7 @@
+                     not 0 <= age < self.max_command_age or
+                     not self._motors_enabled_fresh()):
+                 return
+-            self._command_deadline = time.monotonic() + min(
++            command_deadline = time.monotonic() + min(
+                 self.command_timeout, self.max_command_age - age)
+         if not self.block_ctrl_flag:
+             factor = 180000.0 / math.pi
+@@ -641,6 +793,18 @@
+                 # 给定关节角位置
+                 self.piper.JointCtrl(joint_0, joint_1, joint_2, joint_3, joint_4, joint_5)
+                 if self.command_timeout > 0:
++                    # Commit only after the SDK send succeeds. Preserve the
++                    # pre-send age limit rather than extending it by CAN time.
++                    self._command_deadline = command_deadline
++                    if (time.monotonic() >= command_deadline or not self._feedback_fresh() or
++                            not self._arm_status_normal_fresh() or not self._motors_enabled_fresh()):
++                        self._stop_commands('command/feedback expired during joint send')
++                        return
++                    if self._native_pending():
++                        self._native_handoff = True
++                        self._native_ready = False
++                        self._native_settled_since = None
++                        rospy.loginfo('Piper native startup handed off to leased MPPI commands.')
+                     if not self._command_seen:
+                         rospy.loginfo('Piper first leased joint command sent (source age=%.3fs).', age)
+                     self._last_command_stamp = stamp
+--- before/src/piper_ros/src/piper/launch/start_single_piper.launch
++++ after/src/piper_ros/src/piper/launch/start_single_piper.launch
+@@ -10,6 +10,7 @@
+   <arg name="gripper_exist" default="true" />
+   <arg name="command_timeout" default="0.0" />
+   <arg name="max_command_age" default="0.30" />
++  <arg name="native_startup_to_standby" default="false" />
+   <!-- <include file="$(find piper_description)/launch/display_xacro.launch"/> -->
+   <!-- 启动机械臂节点 -->
+   <node name="piper_ctrl_single_node" pkg="piper" type="piper_ctrl_single_node.py" output="screen">
+@@ -23,6 +24,7 @@
+     <param name="fixed_vel" value="$(arg fixed_vel)" />
+     <param name="command_timeout" value="$(arg command_timeout)" />
+     <param name="max_command_age" value="$(arg max_command_age)" />
++    <param name="native_startup_to_standby" value="$(arg native_startup_to_standby)" type="bool" />
+     <!-- <param name="rviz_ctrl_flag" value="true" /> -->
+     <param name="gripper_exist" value="$(arg gripper_exist)" />
+     <remap from="joint_ctrl_single" to="/joint_ctrl_single" />
+--- before/src/mm_remani/scripts/whole_body_mppi.py
++++ after/src/mm_remani/scripts/whole_body_mppi.py
+@@ -172,7 +172,14 @@
+             arm_position_servo=arm_position_servo,
+             config=rospy.get_param('~standby', {}))
+         self.reference = NativeReferenceAdapter(self.kernel, clock=rospy.get_time)
+-        self.startup_complete = not bool(rospy.get_param('~startup_to_standby', False))
++        self.native_arm_startup = rospy.get_param('~native_arm_startup', False)
++        planned_startup = rospy.get_param('~startup_to_standby', False)
++        if (type(self.native_arm_startup) is not bool or type(planned_startup) is not bool
++                or (self.native_arm_startup and (planned_startup or self.simulation))):
++            raise ValueError('invalid_or_conflicting_arm_startup_modes')
++        self.startup_complete = not (self.native_arm_startup or planned_startup)
++        self.native_handoff_sent = False
++        self.native_handoff_stamp = 0.
+         self.startup_target = None
+         if not self.startup_complete:
+             initial = np.asarray(rospy.get_param('/remani_planner_node/fsm/init_state'), dtype=float)
+@@ -189,6 +196,7 @@
+         self.anchor = self.arm_anchor = None
+         self.execution_stamp = self.execution_valid_until = 0.
+         self.execution_enabled = self.execution_latched = False
++        self.execution_command_active = False
+         self.execution_revision = 0
+         self.sent_command = False
+         self.sent_navigation_goal = None
+@@ -200,7 +208,8 @@
+         self.base_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1) if self.execute else None
+         self.arm_pub = rospy.Publisher('/joint_ctrl_single', JointState, queue_size=1) if self.execute else None
+         self.enable_pub = (rospy.Publisher('/enable_flag', Bool, queue_size=1)
+-                           if self.execute and not self.simulation and not self.startup_complete else None)
++                           if self.execute and not self.simulation and not self.startup_complete
++                           and not self.native_arm_startup else None)
+         self.fault_pub = rospy.Publisher('/tracking_fault', Bool, queue_size=1) if self.execute else None
+         self.info_pub = rospy.Publisher('/mppi/status', String, queue_size=1)
+         self.path_pub = rospy.Publisher('/mppi/predicted_base', RosPath, queue_size=1)
+@@ -318,6 +327,7 @@
+                 if self.execution_enabled: self.execution_revision += 1
+                 if math.isfinite(stamp): self.execution_stamp = max(self.execution_stamp, stamp)
+                 self.execution_enabled = False
++                self.execution_command_active = False
+                 self.execution_valid_until = 0.
+                 self.stop_base()
+                 return
+@@ -327,6 +337,7 @@
+                 if self.execution_enabled: self.execution_revision += 1
+                 if math.isfinite(stamp): self.execution_stamp = max(self.execution_stamp, stamp)
+                 self.execution_enabled = False
++                self.execution_command_active = False
+                 self.execution_valid_until = 0.
+                 self.stop_base()
+                 return
+@@ -338,10 +349,36 @@
+             if not self.execution_ready(now): self.execution_revision += 1
+             self.execution_stamp, self.execution_valid_until = stamp, until
+             self.execution_enabled = True
++            self.execution_command_active = bool(msg.command_active)
+ 
+     def execution_ready(self, now):
+         return (not self.execution_latched and self.execution_enabled and
+                 fresh(self.execution_stamp, now) and now < self.execution_valid_until)
++
++    def native_startup_gate(self, now):
++        """The driver owns native startup; this node only checks its handoff.
++
++        No map or MPPI solve is needed while the driver moves to standby.
++        The first MPPI command still receives normal map/geometry validation;
++        navigation stays blocked until source-stamped driver acknowledgement.
++        """
++        with self.reference.lock, self.lock:
++            if not self.execution_ready(now):
++                raise ValueError('waiting_native_arm_startup')
++            if self.joints is None or not fresh(self.joint_stamp, now):
++                raise ValueError('native_startup_joint_feedback_unavailable')
++            if self.execution_command_active and not self.native_handoff_sent:
++                raise ValueError('native_startup_driver_already_claimed')
++            if (self.native_handoff_sent and self.execution_command_active
++                    and self.execution_stamp > self.native_handoff_stamp):
++                self.startup_complete = True
++                self.reference.finish()
++                self.anchor = self.arm_anchor = None
++                rospy.loginfo('startup_ready: original standby reached; Piper confirmed MPPI takeover.')
++                return
++            if (np.max(np.abs(self.joints[:6]-self.startup_target)) >= .015
++                    or np.max(np.abs(self.joints[6:])) >= .02):
++                raise ValueError('native_startup_standby_not_reached')
+ 
+     def on_speed_limit(self, msg):
+         # Preserve real_base_tracker's latched limit: negative/nonfinite clears,
+@@ -392,6 +429,7 @@
+         self.cycle_began = began
+         diagnostics = {}
+         startup = not getattr(self, 'startup_complete', True)
++        native_startup = startup and getattr(self, 'native_arm_startup', False)
+         try:
+             with self.lock:
+                 execution_revision = self.execution_revision
+@@ -399,6 +437,10 @@
+                     raise ValueError('arm_stop_latched')
+                 if not startup and self.execute and not self.simulation and not self.execution_ready(now):
+                     raise ValueError('waiting_explicit_arm_enable_or_normal_status')
++            if native_startup:
++                self.native_startup_gate(now)
++                startup = not self.startup_complete
++                native_startup = startup
+             state, snapshot, anchor, arm_anchor = self.capture(now)
+             if self.simulation:
+                 diagnostics = dict(plan_time=now, measured_state=state.tolist(),
+@@ -407,7 +449,7 @@
+             with self.reference.lock:
+                 revision = self.reference.revision
+                 kernel = self.reference.navigation if self.reference.active and not startup else self.kernel
+-            if startup:
++            if startup and not native_startup:
+                 result, info = startup_plan(kernel, state, self.startup_target, snapshot, now,
+                     preflight=not self.startup_enable_requested and not self.simulation)
+             else:
+@@ -446,6 +488,10 @@
+                     raise ValueError('collision_snapshot_expired_during_plan')
+                 if not np.isfinite(command).all():
+                     raise ValueError('invalid_selected_arm_target')
++                if native_startup:
++                    # The driver may still be holding its native target. Keep
++                    # the base stationary until it acknowledges MPPI ownership.
++                    command[:2] = 0.
+                 command[:2] = base_command(command, self.limits)
+                 limit = self.safety_speed_limit
+                 if limit is not None:
+@@ -483,7 +529,7 @@
+                 if self.execute:
+                     if not self.simulation and (not self.execution_ready(delivery_time)
+                             or execution_revision != self.execution_revision):
+-                        if (startup and not self.startup_enable_requested and not self.execution_latched
++                        if (startup and not native_startup and not self.startup_enable_requested and not self.execution_latched
+                                 and not self.execution_ready(delivery_time)
+                                 and fresh(self.enable_feedback_stamp, delivery_time)
+                                 and delivery_time < self.enable_feedback_until
+@@ -504,7 +550,12 @@
+                     self.fault_pub.publish(Bool(data=False)); self.sent_command = True
+                     self.sent_navigation_goal = self.reference.goal_stamp if self.reference.active else None
+                 startup_ready = False
+-                if startup:
++                if native_startup:
++                    if self.execute:
++                        if not self.native_handoff_sent:
++                            self.native_handoff_stamp = delivery_time
++                        self.native_handoff_sent = True
++                elif startup:
+                     settled = (np.max(np.abs(self.joints[:6]-self.startup_target)) < .015
+                                and np.max(np.abs(self.joints[6:])) < .02)
+                     self.startup_settled_since = ((self.startup_settled_since if self.startup_settled_since is not None
+@@ -530,6 +581,8 @@
+             if startup:
+                 compact.update(startup_ready=startup_ready,
+                     startup_error_rad=float(np.max(np.abs(current[5:11]-self.startup_target))))
++                if native_startup:
++                    compact['startup_mode'] = 'native_waiting_driver_takeover_ack'
+             if diagnostics: compact['candidate_diagnostics'] = diagnostics
+             self.info_pub.publish(String(data=json.dumps(compact)))
+             if time.monotonic()-self.last_visual > .33:
+--- before/src/mm_remani/launch/exp0_real.launch
++++ after/src/mm_remani/launch/exp0_real.launch
+@@ -183,8 +183,8 @@
+        ========================================================= -->
+   <rosparam file="$(find mm_remani)/config/real_speed.yaml" command="load" />
+   <group if="$(arg use_mppi)">
+-    <!-- Keep the original configured standby reference. The MPPI node alone
+-         executes a checked arm-only startup before accepting navigation. -->
++    <!-- Preserve the original standby target. Piper performs native startup;
++         MPPI takes over only after measured arrival and driver acknowledgement. -->
+     <param name="/mm_controller_node/fsm/capture_startup_standby" value="false" type="bool"/>
+   </group>
+ 
+@@ -263,7 +263,7 @@
+   <node if="$(arg use_mppi)" pkg="mm_remani" type="whole_body_mppi.py" name="whole_body_mppi" output="screen">
+     <rosparam file="$(find mm_remani)/config/mppi.yaml" command="load"/>
+     <param name="execute" value="$(arg hardware_enabled)" type="bool"/>
+-    <param name="startup_to_standby" value="true" type="bool"/>
++    <param name="native_arm_startup" value="true" type="bool"/>
+     <env name="PYTHONNOUSERSITE" value="1"/>
+     <env name="OPENBLAS_NUM_THREADS" value="1"/>
+     <env name="OMP_NUM_THREADS" value="1"/>
+@@ -331,6 +331,7 @@
+   <include if="$(arg hardware_enabled)" file="$(find piper)/launch/start_single_piper.launch">
+     <arg name="can_port" value="$(arg can_port)" />
+     <arg name="fixed_vel" value="$(eval 1 if arg('use_mppi') else 15)" />
++    <arg name="native_startup_to_standby" value="$(arg use_mppi)" />
+     <arg name="auto_enable" value="$(eval not arg('use_mppi'))" />
+     <arg name="auto_reenable_on_drop" value="$(eval not arg('use_mppi'))" />
+     <arg name="auto_reenable_interval" value="1.0" />
+--- before/src/mm_remani/test/test_mppi_startup.py
++++ after/src/mm_remani/test/test_mppi_startup.py
+@@ -140,12 +140,13 @@
+         controls = np.tile(np.r_[.02, np.zeros(7)], (node.kernel.H, 1))
+         node.reference.plan = Mock(return_value=((controls, np.tile(state, (2, 1))), {'feasible': 1}))
+ 
+-    def feed(self, now, enabled=False, valid=True, stopped=False, stamp=None):
++    def feed(self, now, enabled=False, valid=True, stopped=False, stamp=None, command_active=False):
+         self.now = now; self.node.base_stamp = self.node.joint_stamp = now
+         source = now if stamp is None else stamp
+         msg = NS(header=NS(stamp=NS(to_sec=lambda: source)),
+                  valid_until=NS(to_sec=lambda: source+.15),
+-                 enabled=enabled, feedback_valid=valid, stop_latched=stopped)
++                 enabled=enabled, feedback_valid=valid, stop_latched=stopped,
++                 command_active=command_active)
+         with patch('whole_body_mppi.rospy.get_time', return_value=now):
+             self.node.on_execution_state(msg)
+ 
+@@ -335,5 +336,128 @@
+         self.assertEqual(self.node.base_pub.publish.call_args.args[0].linear.x, .02)
+ 
+ 
++class NativeStartupCycleTests(unittest.TestCase):
++    feed = StartupCycleTests.feed
++    cycle = StartupCycleTests.cycle
++    status = StartupCycleTests.status
++    assert_zero_base = StartupCycleTests.assert_zero_base
++
++    def setUp(self):
++        StartupCycleTests.setUp(self)
++        node = self.node
++        node.native_arm_startup = True
++        node.native_handoff_sent = False
++        node.native_handoff_stamp = 0.
++        node.execution_command_active = False
++        node.startup_target = Q.copy()
++        node.enable_pub = None
++
++    def test_native_driver_can_start_without_map_or_mppi_plan(self):
++        self.node.snapshot = None
++        self.node.joints[:6] = np.deg2rad([-2.343, -1.960, 1.256, 5.970, 26.698, -5.864])
++        self.feed(100., enabled=False)
++        planned = self.cycle()
++        planned.assert_not_called()
++        self.node.reference.plan.assert_not_called()
++        self.node.arm_pub.publish.assert_not_called()
++        self.assertEqual(self.status()['state'], 'waiting_native_arm_startup')
++        self.assert_zero_base()
++
++    def test_ready_report_does_not_override_actual_pose_or_velocity(self):
++        for part in ('position', 'velocity'):
++            with self.subTest(part=part):
++                self.setUp(); self.feed(100., enabled=True)
++                self.node.joints[0 if part == 'position' else 6] += .05
++                self.cycle()
++                self.assertEqual(self.status()['state'], 'native_startup_standby_not_reached')
++                self.node.reference.plan.assert_not_called()
++                self.node.arm_pub.publish.assert_not_called()
++                self.assert_zero_base()
++
++    def test_first_mppi_command_waits_for_a_fresh_map(self):
++        self.feed(100., enabled=True)
++        self.node.snapshot.valid = False
++        self.cycle()
++        self.assertEqual(self.status()['state'], 'collision_snapshot_unavailable')
++        self.node.arm_pub.publish.assert_not_called()
++        self.assertFalse(self.node.native_handoff_sent)
++        self.assertFalse(self.node.startup_complete)
++        self.assert_zero_base()
++
++    def test_first_command_is_checked_and_zero_base_until_driver_ack(self):
++        self.feed(100., enabled=True)
++        planned = self.cycle()
++        planned.assert_not_called()
++        self.node.reference.plan.assert_called_once()
++        self.node.arm_pub.publish.assert_called_once()
++        self.assertTrue(self.node.native_handoff_sent)
++        self.assertFalse(self.node.startup_complete)
++        self.feed(100.02, enabled=True, command_active=False)
++        self.cycle()
++        self.assertFalse(self.node.startup_complete)
++        self.assert_zero_base()
++        self.feed(100.04, enabled=True, command_active=True)
++        self.cycle()
++        self.assertTrue(self.node.startup_complete)
++        self.assertEqual(self.node.base_pub.publish.call_args.args[0].linear.x, .02)
++
++    def test_obstacle_prevents_handoff_even_if_native_driver_is_ready(self):
++        self.feed(100., enabled=True)
++        state = np.r_[self.node.base, self.node.joints]
++        self.node.snapshot.point = self.node.kernel.spheres(state[None])[0, 61, :3]
++        self.cycle()
++        self.node.arm_pub.publish.assert_not_called()
++        self.assertFalse(self.node.native_handoff_sent)
++        self.assertIn('command_hold_or_braking_rejected', self.status()['state'])
++        self.assert_zero_base()
++
++    def test_stop_or_stale_ack_cannot_complete_startup(self):
++        self.feed(100., enabled=True); self.cycle()
++        self.feed(100.02, enabled=True, command_active=True, stamp=99.99)
++        self.cycle()
++        self.assertFalse(self.node.startup_complete)
++        self.feed(100.04, enabled=True, command_active=True, stopped=True)
++        planned = self.cycle()
++        planned.assert_not_called()
++        self.assertFalse(self.node.startup_complete)
++        self.assertEqual(self.status()['state'], 'arm_stop_latched')
++        self.assert_zero_base()
++
++    def test_enable_status_change_during_handoff_rejects_delivery(self):
++        self.feed(100., enabled=True)
++        result = self.node.reference.plan.return_value
++        def plan(*args, **kwargs):
++            self.feed(100.01, enabled=False)
++            return result
++        self.node.reference.plan.side_effect = plan
++        self.cycle()
++        self.node.arm_pub.publish.assert_not_called()
++        self.assertFalse(self.node.native_handoff_sent)
++        self.assertFalse(self.node.startup_complete)
++        self.assert_zero_base()
++
++    def test_navigation_goals_wait_for_confirmed_handoff(self):
++        self.feed(100., enabled=True); self.cycle()
++        self.node.reference.feed_goal = Mock()
++        with patch('whole_body_mppi.rospy.logwarn_throttle'):
++            self.node.on_goal(NS())
++        self.node.reference.feed_goal.assert_not_called()
++
++    def test_preexisting_or_pre_delivery_active_status_is_not_a_new_ack(self):
++        self.feed(100., enabled=True, command_active=True)
++        self.cycle()
++        self.node.arm_pub.publish.assert_not_called()
++        self.assertEqual(self.status()['state'], 'native_startup_driver_already_claimed')
++        self.setUp(); self.feed(100., enabled=True); self.cycle()
++        self.node.native_handoff_stamp = 100.03
++        self.feed(100.02, enabled=True, command_active=True)
++        self.cycle()
++        self.assertFalse(self.node.startup_complete)
++        self.assert_zero_base()
++        self.feed(100.04, enabled=True, command_active=True)
++        self.cycle()
++        self.assertTrue(self.node.startup_complete)
++
++
+ if __name__ == '__main__':
+     unittest.main()
+--- before/src/mm_remani/test/test_piper_feedback_command.py
++++ after/src/mm_remani/test/test_piper_feedback_command.py
+@@ -3,6 +3,7 @@
+ import ast
+ import math
+ import threading
++import xml.etree.ElementTree as ET
+ from pathlib import Path
+ from types import SimpleNamespace as NS
+ 
+@@ -26,6 +27,7 @@
+     def __init__(self):
+         self.header=NS(stamp=Stamp())
+         self.enabled=False; self.stop_latched=False; self.feedback_valid=False
++        self.command_active=False
+         self.valid_until=Stamp()
+ class Pub:
+     def __init__(self): self.messages=[]
+@@ -37,7 +39,7 @@
+                  threading=threading, Bool=NS, TriggerResponse=response,
+                  EnableResponse=response, GoZeroResponse=response,
+                  SetBoolResponse=response, GripperResponse=response, PiperStatusMsg=NS,
+-                 PiperExecutionState=ExecutionState)
++                 PiperExecutionState=ExecutionState, ET=ET)
+ source=ROOT/'src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py'
+ tree=ast.parse(source.read_text())
+ selected=[n for n in tree.body if isinstance(n,(ast.ClassDef,ast.Assign))]
+@@ -76,6 +78,11 @@
+     n._command_lock=threading.RLock(); n._command_latched=False
+     n._command_deadline=None; n._last_command_stamp=0.; n._command_seen=False
+     n._feedback_stamp=0.; n._feedback_monotonic=0.; n._feedback_position=None
++    n._feedback_velocity=None
++    n.native_startup_to_standby=False; n._native_handoff=False; n._native_ready=False
++    n._native_started=None; n._native_last_enable=None; n._native_last_target=None
++    n._native_settled_since=None; n._native_motors_seen=False
++    n._native_target=None; n._native_target_counts=None
+     n._last_joint_counts=(0,0,0); n._previous_feedback=None
+     n._last_arm_status_count=0; n._last_arm_status_stamp=0.
+     n._watchdog_done=threading.Event(); n._C_PiperRosNode__enable_flag=False
+@@ -87,8 +94,8 @@
+     for pair in pairs:
+         key=groups[pair]; counter.fps_data[key]=counter.fps_data.get(key,0)+1
+         counter.last_time[key]=clock.perf_counter()
+-        setattr(f.joint_state,'joint_%d'%(pair*2+1),raw)
+-        setattr(f.joint_state,'joint_%d'%(pair*2+2),raw)
++        for joint in (pair*2, pair*2+1):
++            setattr(f.joint_state,'joint_%d'%(joint+1),raw[joint] if isinstance(raw,(list,tuple)) else raw)
+     f.time_stamp=clock.time()-.002
+     motor=n.piper._C_PiperInterface__arm_motor_info_low_spd
+     motor.time_stamp=clock.time()-.002
+@@ -323,5 +330,181 @@
+ assert all(math.isclose(v,.2,rel_tol=1e-10) for v in filter_ns['pub'].messages[-1].velocity)
+ m.name.pop(); m.position.pop(); cb(m); assert len(filter_ns['pub'].messages)==1
+ checks.append('filter never fills missing joints/velocities with zero; derives real velocity')
++
++# Native startup is tested through the same watchdog/command callbacks with
++# advancing fake CAN source samples; no ROS, SDK or hardware is constructed.
++original_initial = ast.literal_eval(next(line.split(':',1)[1].strip() for line in
++    (ROOT/'src/mm_remani_planner/plan_manage/config/exp0_param.yaml').read_text().splitlines()
++    if line.strip().startswith('init_state ')))
++robot_description = (ROOT/'src/my_description/robot/mm.urdf').read_text()
++native_params = {'~native_startup_to_standby':True,
++                 '/remani_planner_node/fsm/init_state':original_initial,
++                 '/robot_description':robot_description}
++rospy.get_param = lambda key,*default: native_params[key] if key in native_params else default[0]
++def native_node():
++    n=node(); n._configure_native_startup(); return n
++def native_feed(n, dt=.10, at_target=True, enabled=True, status=True):
++    clock.value+=dt
++    feed(n,raw=n._native_target_counts if at_target else 0,enabled=enabled,status=status)
++    n._check_command_timeout()
++def native_ready():
++    n=native_node(); feed(n,enabled=False); n._check_command_timeout()
++    for _ in range(8): native_feed(n)
++    assert n._native_ready and not n._command_latched
++    return n
++
++n=native_node(); assert not n.piper.calls
++assert all(math.isclose(q,math.radians(d)) for q,d in zip(n._native_target,original_initial[2:]))
++for key,bad in (('~native_startup_to_standby','false'),
++                ('/remani_planner_node/fsm/init_state',[0]*7),
++                ('/remani_planner_node/fsm/init_state',[0]*7+[float('nan')]),
++                ('/remani_planner_node/fsm/init_state',[0,0,300,0,0,0,0,0]),
++                ('/remani_planner_node/fsm/init_state',[0,0,0,0,0,0,0,45]),
++                ('/robot_description','<robot/>')):
++    saved=native_params[key]; native_params[key]=bad
++    n=node()
++    try:
++        n._configure_native_startup()
++        raise AssertionError('invalid native target/config accepted: '+key)
++    except ValueError:
++        pass
++    assert not n.piper.calls
++    native_params[key]=saved
++n=node(); n.command_timeout=0
++try:
++    n._configure_native_startup(); raise AssertionError('native startup without lease accepted')
++except ValueError:
++    pass
++checks.append('native target reads original 8-value config; finite/URDF/wrist/lease validation precedes CAN')
++
++n=native_node(); n._check_command_timeout(); clock.value+=100; n._check_command_timeout()
++assert not n.piper.calls and n._native_started is None
++feed(n,enabled=False); n._check_command_timeout()
++assert [kind for kind,_ in n.piper.calls]==['enable'] and n._native_started==clock.time()
++stamp=n._last_command_stamp
++for _ in range(6): native_feed(n,at_target=False,enabled=False)
++assert not n._command_latched and n._command_deadline is None
++assert n._last_command_stamp==stamp and not n._native_ready
++for _ in range(100):
++    native_feed(n,at_target=False,enabled=False)
++    if n._command_latched: break
++assert n._command_latched and not n._native_motors_seen
++assert 1 <= sum(k=='enable' for k,_ in n.piper.calls) <= 10
++assert not any(k=='joint' for k,_ in n.piper.calls)
++count=len(n.piper.calls); native_feed(n)
++assert len(n.piper.calls)==count and not n._request_enable(True)
++checks.append('native enable waits for real source input, retries at 1s, stops within 10s without command lease')
++
++n=native_node(); feed(n,enabled=False); n._check_command_timeout()
++native_feed(n,at_target=False)
++native_feed(n)  # Large change: real measured velocity prevents ready.
++assert not n._native_ready and max(abs(v) for v in n._feedback_velocity)>.02
++before=len(n.piper.calls); n.joint_callback(command(n,q=[.2]*6))
++assert len(n.piper.calls)==before and not n._command_seen
++send_times=[]; previous_count=sum(k=='joint' for k,_ in n.piper.calls)
++for _ in range(24):
++    native_feed(n,dt=.05)
++    count=sum(k=='joint' for k,_ in n.piper.calls)
++    if count>previous_count: send_times.append(clock.time())
++    previous_count=count
++assert n._native_ready and n._command_deadline is None
++assert all(b-a>=.20-1e-10 for a,b in zip(send_times,send_times[1:]))
++assert all(args[2]==15 for kind,args in n.piper.calls if kind=='mode')
++assert all(args==n._native_target_counts for kind,args in n.piper.calls if kind=='joint')
++n.PublishExecutionState(); state=n.execution_state_pub.messages[-1]
++assert state.enabled and state.feedback_valid and not state.command_active
++assert state.valid_until.to_sec()>clock.time() and n._last_command_stamp==1000.
++checks.append('native target uses original speed15 at at most5Hz; motion/settling gates ready; no early external command')
++
++n=native_ready(); n.gripper_exist=True
++native_feed(n)
++assert n._feedback_velocity is not None and all(v==0 for v in n._feedback_velocity)
++assert n._native_ready  # Gripper presence does not reset the six-arm velocity.
++clock.value+=.05
++raw=list(n._native_target_counts); raw[0]+=2000
++feed(n,raw=raw); n.PublishExecutionState()
++assert not n._native_ready and not n.execution_state_pub.messages[-1].enabled
++count=len(n.piper.calls); n.joint_callback(command(n))
++assert len(n.piper.calls)==count and not n._command_seen
++for _ in range(8): native_feed(n)
++assert n._native_ready
++checks.append('native readiness uses true six-joint velocity and is withdrawn on pose drift before command entry')
++
++n=native_ready()
++for _ in range(40): native_feed(n)
++assert not n._command_latched and n._command_deadline is None
++assert sum(k=='enable' for k,_ in n.piper.calls)==1
++assert not n._command_seen and not n._native_handoff
++n.PublishExecutionState(); state=n.execution_state_pub.messages[-1]
++assert state.enabled and not state.command_active and state.valid_until.to_sec()>clock.time()
++checks.append('ready arm holds its original target beyond .3s while awaiting MPPI without renewing an external lease')
++
++n=native_ready(); old_stamp=n._last_command_stamp
++for bad in (command(n,stamp=old_stamp),command(n,stamp=clock.time()+.1),command(n,q=[0]*5)):
++    n.joint_callback(bad)
++assert not n._native_handoff and not n._command_seen and n._command_deadline is None
++clock.value+=.01; feed(n,raw=n._native_target_counts)
++first=command(n); before=len(n.piper.calls)
++n.joint_callback(first)
++assert n._native_handoff and n._command_seen and not n._native_ready
++assert [k for k,_ in n.piper.calls[before:]]==['mode','joint']
++assert n.piper.calls[-2][1][2]==n.fixed_vel==1
++assert 0 < n._command_deadline-clock.time() <= .3
++n.PublishExecutionState(); state=n.execution_state_pub.messages[-1]
++assert state.command_active and state.enabled and state.feedback_valid
++for _ in range(2): native_feed(n)
++assert len(n.piper.calls)==before+2  # Native sender is permanently gone.
++native_feed(n,dt=.11)
++assert n._command_latched and not n.GetEnableFlag() and n._native_handoff
++assert not n.execution_state_pub.messages[-1].command_active
++count=len(n.piper.calls); native_feed(n)
++assert len(n.piper.calls)==count and not n._request_enable(True)
++checks.append('first successful external send atomically hands off, acknowledges actual command, then enforces .3s without native fallback')
++
++n=native_ready(); clock.value+=.01; feed(n,raw=n._native_target_counts)
++n.piper.fail_joint=True; n.joint_callback(command(n))
++assert n._command_latched and not n._native_handoff and not n._command_seen
++assert not n.execution_state_pub.messages[-1].command_active
++count=len(n.piper.calls); native_feed(n)
++assert len(n.piper.calls)==count
++checks.append('failed first external send locks stop, never acknowledges handoff or resumes native target sends')
++
++n=native_ready(); clock.value+=.01; feed(n,raw=n._native_target_counts)
++original_send=n.piper.JointCtrl
++def delayed_send(*args):
++    original_send(*args); clock.value+=.15
++n.piper.JointCtrl=delayed_send
++n.joint_callback(command(n))
++assert n._command_latched and not n._native_handoff and not n._command_seen
++assert not n.execution_state_pub.messages[-1].command_active
++checks.append('first external CAN send cannot acknowledge stale feedback or extend the pre-send deadline')
++
++for lost in ('joint','status','motor','disabled'):
++    n=native_ready(); clock.value+=.16
++    feed(n,pairs=() if lost=='joint' else (0,1,2),raw=n._native_target_counts,
++         enabled=lost!='disabled',status=lost!='status')
++    if lost=='motor':
++        n.piper._C_PiperInterface__fps_counter.last_time['ArmMotorDriverInfoLowSpd_6']-=.2
++    n._check_command_timeout()
++    assert n._command_latched and not n._native_ready, lost
++    assert sum(k=='enable' for k,_ in n.piper.calls)==1, lost
++    assert not n.execution_state_pub.messages[-1].command_active
++checks.append('native pre-handoff still stops on stale joint/status/any motor or dropped motor enable, with no auto re-enable')
++
++n=native_node(); feed(n,enabled=False); n._check_command_timeout()
++for _ in range(610):
++    native_feed(n,at_target=False)
++    if n._command_latched: break
++assert n._command_latched and 60 <= clock.time()-n._native_started < 60.2
++assert sum(k=='enable' for k,_ in n.piper.calls)==1
++checks.append('unreached standby stops at finite60s measured from first enable request')
++
++n=node(); feed(n); assert n._request_enable(True)
++n.PublishExecutionState(); assert not n.execution_state_pub.messages[-1].command_active
++clock.value+=.05; feed(n); n.joint_callback(command(n)); n.PublishExecutionState()
++assert n.execution_state_pub.messages[-1].command_active
++clock.value+=.31; feed(n); n.PublishExecutionState()
++assert not n.execution_state_pub.messages[-1].command_active
++checks.append('ordinary leased mode also acknowledges only a successfully sent, unexpired external command')
+ print('%d groups passed, no SDK/ROS/CAN imports:'%len(checks))
+ for item in checks: print(' - '+item)

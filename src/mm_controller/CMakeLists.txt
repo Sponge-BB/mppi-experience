@@ -58,3 +58,14 @@ target_link_libraries( mm_controller_node
   ${OpenCV_LIBRARIES}
   controller_utils
 )
+
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_gtest(test_execution_capacity test/test_execution_capacity.cpp)
+  if(TARGET test_execution_capacity)
+    target_link_libraries(test_execution_capacity ${catkin_LIBRARIES})
+  endif()
+  catkin_add_gtest(test_feedback_source test/test_feedback_source.cpp)
+  if(TARGET test_feedback_source)
+    target_link_libraries(test_feedback_source ${catkin_LIBRARIES})
+  endif()
+endif()

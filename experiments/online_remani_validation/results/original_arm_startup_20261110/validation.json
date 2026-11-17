@@ -1,0 +1,28 @@
+{
+  "version": "20261110-230910-original-arm-startup",
+  "parent": "20261110-204057-arm-startup-unresolved",
+  "hardware_motion_test": false,
+  "state": "OFFLINE_VERIFIED_HARDWARE_PENDING",
+  "scope": "Restore original SDK initialization, mode-before-enable and mm_controller/joint_cmd_bridge standby path. Preserve exclusive MPPI handoff and post-handoff execution checks.",
+  "checks": [
+    {
+      "command": "python3 src/mm_remani/test/test_piper_feedback_command.py",
+      "result": "47 groups passed, including actual constructor/auto-enable and actual bridge-to-driver callbacks; no SDK/ROS/CAN imports"
+    },
+    {
+      "command": "PYTHONNOUSERSITE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /usr/bin/python3 src/mm_remani/test/test_mppi_startup.py -v",
+      "result": "30 tests passed in 0.692s; no ROS master/CAN/motion"
+    },
+    {
+      "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /usr/bin/python3 src/mm_remani/test/test_original_arm_startup_launch.py -v",
+      "result": "3 tests passed over all four MPPI/hardware launch combinations in 0.883s; parse only"
+    },
+    {
+      "command": "git diff --check (affected production files)",
+      "result": "passed"
+    }
+  ],
+  "test_environment_note": "First MPPI test invocation without PYTHONNOUSERSITE used incompatible user numpy/system scipy. Re-run with the production launch environment passed. No installed dependencies changed.",
+  "runtime_note": "Only Python/XML changed; no C++ rebuild required. Existing running driver process has old code and must exit before the next power-on/test; next roslaunch loads these source files.",
+  "remaining": "Confirm on hardware that original standby movement succeeds and MPPI handoff completes. Root cause of prior wrist oscillation is not yet proven."
+}

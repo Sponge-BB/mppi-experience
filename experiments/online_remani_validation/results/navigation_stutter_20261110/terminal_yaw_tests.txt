@@ -1,0 +1,85 @@
+test_alignment_runs_existing_collision_check_and_keeps_source_stamp (test_mppi_terminal_yaw.TerminalDeliveryTests) ... ok
+test_cancel_or_new_goal_after_candidate_preserves_revision_gate (test_mppi_terminal_yaw.TerminalDeliveryTests) ... MPPI command rejected: reference_changed_before_delivery (cycle=1.26 ms; snapshot={})
+MPPI command rejected: reference_changed_before_delivery (cycle=1.22 ms; snapshot={})
+ok
+test_collision_rejection_and_driver_stop_never_deliver_alignment (test_mppi_terminal_yaw.TerminalDeliveryTests) ... MPPI command rejected: command_hold_or_braking_rejected_by_latest_state_or_map (cycle=1.62 ms; snapshot={})
+MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=2.59 ms; snapshot={})
+ok
+test_expired_map_never_delivers_alignment (test_mppi_terminal_yaw.TerminalDeliveryTests) ... MPPI command rejected: collision_snapshot_expired_during_plan (cycle=1.24 ms; snapshot={})
+ok
+test_goal_transform_failure_clears_stored_goal_pose (test_mppi_terminal_yaw.TerminalDeliveryTests) ... ok
+test_latest_goal_position_or_progress_loss_blocks_delivery (test_mppi_terminal_yaw.TerminalDeliveryTests) ... MPPI command rejected: reference_changed_before_delivery (cycle=1.45 ms; snapshot={})
+MPPI command rejected: reference_changed_before_delivery (cycle=1.19 ms; snapshot={})
+ok
+test_latest_yaw_is_recomputed_before_collision_check (test_mppi_terminal_yaw.TerminalDeliveryTests) ... ok
+test_zero_safety_limit_blocks_rotation_before_collision_check (test_mppi_terminal_yaw.TerminalDeliveryTests) ... ok
+test_current_position_and_arm_must_both_be_at_endpoint (test_mppi_terminal_yaw.TerminalEligibilityTests) ... ok
+test_local_endpoint_inside_arrival_radius_is_not_final_goal (test_mppi_terminal_yaw.TerminalEligibilityTests) ... ok
+test_missing_stale_pending_or_unfinished_progress_never_turns (test_mppi_terminal_yaw.TerminalEligibilityTests) ... ok
+test_new_goal_cancel_finish_and_invalid_goal_invalidate_alignment (test_mppi_terminal_yaw.TerminalEligibilityTests) ... ok
+test_only_bounded_yaw_intent_and_no_arm_or_translation (test_mppi_terminal_yaw.TerminalEligibilityTests) ... ok
+test_yaw_uses_goal_quaternion_and_shortest_wrapped_direction (test_mppi_terminal_yaw.TerminalEligibilityTests) ... ok
+test_actual_clock_does_not_extend_stale_progress (test_mppi_native_phase.NativePhaseTests) ... ok
+test_actual_clock_progress_expiring_during_solve_is_still_rejected (test_mppi_native_phase.NativePhaseTests) ... ok
+test_actual_clock_rollback_is_not_clamped_to_cycle_time (test_mppi_native_phase.NativePhaseTests) ... ok
+test_cancel_and_finish_do_not_reuse_old_trajectory (test_mppi_native_phase.NativePhaseTests) ... ok
+test_cancel_clears_active_and_pending_references (test_mppi_native_phase.NativePhaseTests) ... ok
+test_continuously_decreasing_progress_does_not_starve_control (test_mppi_native_phase.NativePhaseTests) ... ok
+test_crossing_pending_activation_during_solve_discards_old_result (test_mppi_native_phase.NativePhaseTests) ... ok
+test_current_gear_does_not_jump_to_return_path_and_arm_stops_at_boundary (test_mppi_native_phase.NativePhaseTests) ... ok
+test_future_bridge_does_not_renew_stale_controller_progress (test_mppi_native_phase.NativePhaseTests) ... ok
+test_future_candidate_without_new_progress_cannot_execute_old_after_activation (test_mppi_native_phase.NativePhaseTests) ... ok
+test_future_prefix_appends_are_kept_separate_from_active (test_mppi_native_phase.NativePhaseTests) ... ok
+test_future_replacement_preserves_active_and_routes_progress_by_start (test_mppi_native_phase.NativePhaseTests) ... ok
+test_future_trajectory_does_not_start_early (test_mppi_native_phase.NativePhaseTests) ... ok
+test_new_goal_and_replacement_clear_previous_progress_and_caches (test_mppi_native_phase.NativePhaseTests) ... ok
+test_new_progress_since_cycle_start_uses_actual_time_for_phase_and_collision (test_mppi_native_phase.NativePhaseTests) ... ok
+test_one_clock_tick_ahead_does_not_invalidate_navigation (test_mppi_native_phase.NativePhaseTests) ... ok
+test_ordinary_progress_updates_do_not_invalidate_every_plan (test_mppi_native_phase.NativePhaseTests) ... ok
+test_pause_holds_phase_and_current_pose_but_remains_usable (test_mppi_native_phase.NativePhaseTests) ... ok
+test_phase_at_prefix_end_is_expired_even_when_wall_clock_is_early (test_mppi_native_phase.NativePhaseTests) ... ok
+test_post_solve_freshness_uses_actual_ros_clock_not_wall_extrapolation (test_mppi_native_phase.NativePhaseTests) ... ok
+test_progress_expires_by_header_and_invalid_values_cannot_refresh_it (test_mppi_native_phase.NativePhaseTests) ... ok
+test_progress_must_still_be_fresh_after_solving (test_mppi_native_phase.NativePhaseTests) ... ok
+test_revision_change_during_plan_rejects_result (test_mppi_native_phase.NativePhaseTests) ... ok
+test_standby_then_goal_waits_for_real_reference_and_progress (test_mppi_native_phase.NativePhaseTests) ... ok
+test_true_future_progress_is_still_rejected (test_mppi_native_phase.NativePhaseTests) ... ok
+test_virtual_phase_drives_base_and_arm_after_wall_duration_has_elapsed (test_mppi_native_phase.NativePhaseTests) ... ok
+test_without_clock_preserves_caller_prediction_time (test_mppi_native_phase.NativePhaseTests) ... ok
+test_cancel_invalid_progress_and_collision_failures_never_fall_back_to_hold (test_mppi_reference_wait.ReferenceWaitDeliveryTests) ... MPPI command rejected: native_reference_cancelled (cycle=0.64 ms; snapshot={})
+MPPI command rejected: native_progress_stale (cycle=0.60 ms; snapshot={})
+MPPI command rejected: invalid_native_progress (cycle=0.59 ms; snapshot={})
+MPPI command rejected: no_feasible_candidate (cycle=0.59 ms; snapshot={})
+ok
+test_hold_uses_latest_feedback_and_collision_check_instead_of_old_arm_target (test_mppi_reference_wait.ReferenceWaitDeliveryTests) ... ok
+test_invalid_latest_map_does_not_get_a_hold_heartbeat (test_mppi_reference_wait.ReferenceWaitDeliveryTests) ... MPPI command rejected: unsafe_hold (cycle=0.78 ms; snapshot={})
+ok
+test_only_explicit_reference_waits_are_eligible_and_helper_outputs_zero_intent (test_mppi_reference_wait.ReferenceWaitDeliveryTests) ... ok
+test_progress_becoming_ready_during_checked_hold_does_not_clear_recovery (test_mppi_reference_wait.ReferenceWaitDeliveryTests) ... ok
+test_seven_hundred_ms_wait_keeps_real_command_cadence_without_extending_timeout (test_mppi_reference_wait.ReferenceWaitDeliveryTests) ... ok
+test_stale_feedback_or_cloud_does_not_get_a_hold_heartbeat (test_mppi_reference_wait.ReferenceWaitDeliveryTests) ... MPPI command rejected: state_feedback_stale (cycle=0.44 ms; snapshot={})
+MPPI command rejected: collision_snapshot_unavailable (cycle=0.43 ms; snapshot={})
+ok
+test_stop_arriving_during_wait_plan_still_latches_and_blocks_delivery (test_mppi_reference_wait.ReferenceWaitDeliveryTests) ... MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=1.29 ms; snapshot={})
+ok
+test_actual_health_gap_during_solve_still_rejects_even_after_fresh_recovery (test_mppi_execution_gate.ExecutionDeliveryTests) ... MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=1.21 ms; snapshot={})
+ok
+test_first_enable_cannot_authorize_a_plan_started_without_permission (test_mppi_execution_gate.ExecutionDeliveryTests) ... MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=0.44 ms; snapshot={})
+ok
+test_invalid_then_reenabled_during_solve_rejects_both_commands (test_mppi_execution_gate.ExecutionDeliveryTests) ... MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=1.65 ms; snapshot={})
+ok
+test_normal_source_refresh_during_solve_delivers_both_commands (test_mppi_execution_gate.ExecutionDeliveryTests) ... ok
+test_old_command_becoming_healthy_hold_during_solve_allows_new_delivery (test_mppi_execution_gate.ExecutionDeliveryTests) ... ok
+test_already_expired_source_health_stops_immediately (test_mppi_execution_gate.ExecutionGateTests) ... ok
+test_future_stale_or_extended_source_expiry_is_rejected (test_mppi_execution_gate.ExecutionGateTests) ... ok
+test_healthy_command_expiry_does_not_revoke_authority_or_stop_base (test_mppi_execution_gate.ExecutionGateTests) ... ok
+test_invalid_status_cannot_be_undone_by_older_healthy_packet (test_mppi_execution_gate.ExecutionGateTests) ... ok
+test_normal_feedback_refresh_keeps_authority_but_reenable_changes_it (test_mppi_execution_gate.ExecutionGateTests) ... ok
+test_queued_healthy_packet_does_not_get_a_new_lease (test_mppi_execution_gate.ExecutionGateTests) ... ok
+test_source_gap_also_invalidates_an_inflight_permission (test_mppi_execution_gate.ExecutionGateTests) ... ok
+test_stop_without_new_can_frame_latches_and_stops_base (test_mppi_execution_gate.ExecutionGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 62 tests in 0.318s
+
+OK

@@ -1,0 +1,76 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/RobotModel
+      Name: Actual robot - visual mesh
+      Enabled: true
+      Alpha: 1
+      Robot Description: /robot_description
+      Visual Enabled: true
+      Collision Enabled: false
+      Update Interval: 0.1
+      TF Prefix: ""
+    - Class: rviz/RobotModel
+      Name: Original URDF collision mesh - toggle
+      Enabled: false
+      Alpha: 0.5
+      Robot Description: /robot_description
+      Visual Enabled: false
+      Collision Enabled: true
+      Update Interval: 0.1
+      TF Prefix: ""
+    - Class: rviz/Marker
+      Name: Planner collision spheres - toggle
+      Enabled: true
+      Marker Topic: /arm_inspection_spheres/vis_mm_check_ball
+      Queue Size: 100
+  Enabled: true
+  Global Options:
+    Background Color: 45; 48; 54
+    Fixed Frame: arm_base
+    Frame Rate: 10
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Target Frame: arm_base
+      Distance: 0.9
+      Focal Point: {X: 0.02, Y: 0, Z: 0.14}
+      Pitch: 0.2
+      Yaw: 1.57
+      Near Clip Distance: 0.01
+    Saved:
+      - Class: rviz/Orbit
+        Name: Shoulder and wrist close-up
+        Target Frame: arm_base
+        Distance: 0.4
+        Focal Point: {X: 0.015, Y: 0, Z: 0.075}
+        Pitch: 0.05
+        Yaw: 1.57
+        Near Clip Distance: 0.005
+      - Class: rviz/Orbit
+        Name: Whole robot
+        Target Frame: base_link
+        Distance: 2.0
+        Focal Point: {X: 0, Y: 0, Z: 0.4}
+        Pitch: 0.25
+        Yaw: 0.9
+        Near Clip Distance: 0.01
+Window Geometry:
+  Hide Left Dock: false
+  Hide Right Dock: false
+  Width: 1200
+  Height: 850
+  X: 40
+  Y: 45

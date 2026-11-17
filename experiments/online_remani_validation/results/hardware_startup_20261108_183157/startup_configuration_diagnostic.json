@@ -1,0 +1,160 @@
+{
+  "scope": "Pure offline recorded posture/current configuration model audit; no ROS node, CAN, parameter changes or external obstacle assumption used to clear configuration",
+  "input_q_rad": [
+    -0.042708206796301246,
+    -0.03331833542057175,
+    0.01645845484630653,
+    0.10458012877950022,
+    0.45671775866187614,
+    -0.10260790672474664
+  ],
+  "target_q_rad": [
+    0.0,
+    0.5209807817203074,
+    -1.048907973863552,
+    -3.490658503988659e-05,
+    0.9472949048124424,
+    5.235987755982989e-05
+  ],
+  "sampling": {
+    "formula": "max(2,ceil(max(abs(target-q))/0.02))+1; np.linspace endpoints included",
+    "count": 55,
+    "max_actual_joint_step_rad": 0.019729007939071508,
+    "index_base": 0
+  },
+  "startup_plan_exception": "startup_joint_path_configuration_rejected",
+  "failed_count": 1,
+  "failed_indices": [
+    0
+  ],
+  "first_failure": {
+    "index": 0,
+    "alpha": 0.0,
+    "q_rad": [
+      -0.042708206796301246,
+      -0.03331833542057175,
+      0.01645845484630653,
+      0.10458012877950022,
+      0.45671775866187614,
+      -0.10260790672474664
+    ],
+    "configuration_gap_m": -0.007149111281437769,
+    "outside_joint_indices_zero_based": [],
+    "valid": false,
+    "violations": [
+      "arm_self_collision"
+    ],
+    "joint_gaps": {
+      "position": 0.016681664579428254
+    },
+    "min_self_gap": -0.007149111281437769,
+    "self_pair": [
+      0,
+      18
+    ],
+    "min_base_arm_gap": 0.02022327861731535,
+    "base_arm_pair": [
+      18,
+      45
+    ],
+    "min_ground_gap": 0.616,
+    "scope": "native sampled spheres, disclosed pair exclusions; shoulder/wrist convex support refinement; no external obstacle check"
+  },
+  "worst_failure": {
+    "index": 0,
+    "alpha": 0.0,
+    "q_rad": [
+      -0.042708206796301246,
+      -0.03331833542057175,
+      0.01645845484630653,
+      0.10458012877950022,
+      0.45671775866187614,
+      -0.10260790672474664
+    ],
+    "configuration_gap_m": -0.007149111281437769,
+    "outside_joint_indices_zero_based": [],
+    "valid": false,
+    "violations": [
+      "arm_self_collision"
+    ],
+    "joint_gaps": {
+      "position": 0.016681664579428254
+    },
+    "min_self_gap": -0.007149111281437769,
+    "self_pair": [
+      0,
+      18
+    ],
+    "min_base_arm_gap": 0.02022327861731535,
+    "base_arm_pair": [
+      18,
+      45
+    ],
+    "min_ground_gap": 0.616,
+    "scope": "native sampled spheres, disclosed pair exclusions; shoulder/wrist convex support refinement; no external obstacle check"
+  },
+  "start_check": {
+    "valid": false,
+    "violations": [
+      "arm_self_collision"
+    ],
+    "joint_gaps": {
+      "position": 0.016681664579428254
+    },
+    "min_self_gap": -0.007149111281437769,
+    "self_pair": [
+      0,
+      18
+    ],
+    "min_base_arm_gap": 0.02022327861731535,
+    "base_arm_pair": [
+      18,
+      45
+    ],
+    "min_ground_gap": 0.616,
+    "scope": "native sampled spheres, disclosed pair exclusions; shoulder/wrist convex support refinement; no external obstacle check"
+  },
+  "target_check": {
+    "valid": true,
+    "violations": [],
+    "joint_gaps": {
+      "position": 0.3027050951875576
+    },
+    "min_self_gap": 0.002999999999999961,
+    "self_pair": [
+      10,
+      18
+    ],
+    "min_base_arm_gap": 0.2022671208195565,
+    "base_arm_pair": [
+      9,
+      37
+    ],
+    "min_ground_gap": 0.616,
+    "scope": "native sampled spheres, disclosed pair exclusions; shoulder/wrist convex support refinement; no external obstacle check"
+  },
+  "path_minima": {
+    "position_bound_gap_rad": 0.016681664579428254,
+    "self_gap_m": -0.007149111281437769,
+    "base_arm_gap_m": 0.02022327861731535,
+    "ground_gap_m": 0.616
+  },
+  "offline_launch_comparison": {
+    "max_arm_sphere_difference": 0.0,
+    "max_fixed_sphere_difference": 0.0,
+    "max_configuration_gap_difference_m": 0.0,
+    "joint_limits_equal": true
+  },
+  "configuration_provenance": {
+    "helper": "src/mm_remani/test/test_mppi_startup.py:geometry; merges exp0,piper,remani_planner,fixed_collision_spheres_b YAML; current URDF/proxy; joint6 capped +/-0.35 rad",
+    "comparison": "Offline XmlLoader of current exp0_real.launch use_mppi=true/hardware_enabled=true, no parameter server read",
+    "runtime_limit": "Matches present launch-derived geometry numerically on this path. A live ROS parameter override or a previously loaded asset could differ; this audit does not assert the currently running parameter server contents."
+  },
+  "source_sha256": {
+    "src/mm_remani/scripts/mppi/active_arm_model.py": "b638efda94377aecb85bfc311e4f99646b11055b9fc1945c1008f9c8e629e53b",
+    "src/mm_remani/scripts/whole_body_mppi.py": "2d185bdfce2c872767907d95ae05c00f55e627d19df233b5c4ea83f00e06d8fe",
+    "src/mm_remani/config/mppi_shoulder_wrist_proxy.json": "3359bee77a77a58150da6741f0de242a2f44b22e618b0db22bbbe84266c00d68",
+    "src/my_description/robot/mm.urdf": "a60563d176db315181fd2aa11d5e61a9aa3f4722ff5d96d75bdfdf3325941069"
+  },
+  "interpretation": "Configuration rejection is a sampled model result, not proof of physical contact. No collision condition, target, limit or watchdog was relaxed."
+}

@@ -1,0 +1,98 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/usr/bin/g++",
+        "-std=c++14",
+        "-O3",
+        "-g0",
+        "-Wall",
+        "--param=ggc-min-expand=5",
+        "--param=ggc-min-heapsize=16384",
+        "-I/home/l/remani_ws/src/mm_remani_planner/plan_env/include",
+        "-I/usr/include/eigen3",
+        "-I/opt/ros/noetic/include",
+        "-c",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/before/esdf_worker.cpp",
+        "-o",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/before_worker.o"
+      ],
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/usr/bin/g++",
+        "-std=c++14",
+        "-O3",
+        "-g0",
+        "-Wall",
+        "--param=ggc-min-expand=5",
+        "--param=ggc-min-heapsize=16384",
+        "-I/home/l/remani_ws/src/mm_remani_planner/plan_env/include",
+        "-I/usr/include/eigen3",
+        "-I/opt/ros/noetic/include",
+        "-c",
+        "/home/l/remani_ws/src/mm_remani_planner/plan_env/src/esdf_worker.cpp",
+        "-o",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/after_worker.o"
+      ],
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/usr/bin/g++",
+        "-std=c++14",
+        "-O3",
+        "-g0",
+        "-Wall",
+        "--param=ggc-min-expand=5",
+        "--param=ggc-min-heapsize=16384",
+        "-I/home/l/remani_ws/src/mm_remani_planner/plan_env/include",
+        "-I/usr/include/eigen3",
+        "-I/opt/ros/noetic/include",
+        "-c",
+        "/home/l/remani_ws/src/mm_remani_planner/plan_env/test/test_esdf_worker.cpp",
+        "-o",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/test.o"
+      ],
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/usr/bin/g++",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/before_worker.o",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/test.o",
+        "-o",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/before_worker_test",
+        "-L/home/l/remani_ws/build/gtest/lib",
+        "-Wl,-rpath,/home/l/remani_ws/build/gtest/lib",
+        "-lgtest",
+        "-L/opt/ros/noetic/lib",
+        "-Wl,-rpath,/opt/ros/noetic/lib",
+        "-lrostime",
+        "-pthread"
+      ],
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/usr/bin/g++",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/after_worker.o",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/test.o",
+        "-o",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/after_worker_test",
+        "-L/home/l/remani_ws/build/gtest/lib",
+        "-Wl,-rpath,/home/l/remani_ws/build/gtest/lib",
+        "-lgtest",
+        "-L/opt/ros/noetic/lib",
+        "-Wl,-rpath,/opt/ros/noetic/lib",
+        "-lrostime",
+        "-pthread"
+      ],
+      "returncode": 0
+    }
+  ],
+  "elapsed_s": 54.8764086240044,
+  "installed": false,
+  "no_ROS_master": true
+}

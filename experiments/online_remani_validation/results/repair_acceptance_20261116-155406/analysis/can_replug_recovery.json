@@ -1,0 +1,38 @@
+{
+  "time": "2026-11-16 17:14:51 +0800",
+  "user_observation": "拔掉CAN通信后重新上电使能，已恢复",
+  "read_only": true,
+  "samples": [
+    {
+      "epoch": 1794820491.0168273,
+      "link": {
+        "returncode": 0,
+        "output": "10: can1: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UP mode DEFAULT group default qlen 10\n    link/can  promiscuity 0 minmtu 0 maxmtu 0 \n    can state ERROR-ACTIVE restart-ms 0 \n\t  bitrate 1000000 sample-point 0.750 \n\t  tq 62 prop-seg 5 phase-seg1 6 phase-seg2 4 sjw 1\n\t  gs_usb: tseg1 1..16 tseg2 1..8 sjw 1..4 brp 1..1024 brp-inc 1\n\t  clock 48000000 \n\t  re-started bus-errors arbit-lost error-warn error-pass bus-off\n\t  0          0          0          0          0          0         numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 \n    RX: bytes  packets  errors  dropped overrun mcast   \n    1485016    185666   0       6       0       0       \n    TX: bytes  packets  errors  dropped carrier collsns \n    21320      2665     0       0       0       0       \n"
+      },
+      "queue": {
+        "returncode": 0,
+        "output": "qdisc pfifo_fast 0: root refcnt 2 bands 3 priomap 1 2 2 2 1 2 0 0 1 1 1 1 1 1 1 1\n Sent 42640 bytes 2665 pkt (dropped 0, overlimits 0 requeues 0) \n backlog 0b 0p requeues 0\n"
+      }
+    },
+    {
+      "epoch": 1794820492.0296588,
+      "link": {
+        "returncode": 0,
+        "output": "10: can1: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UP mode DEFAULT group default qlen 10\n    link/can  promiscuity 0 minmtu 0 maxmtu 0 \n    can state ERROR-ACTIVE restart-ms 0 \n\t  bitrate 1000000 sample-point 0.750 \n\t  tq 62 prop-seg 5 phase-seg1 6 phase-seg2 4 sjw 1\n\t  gs_usb: tseg1 1..16 tseg2 1..8 sjw 1..4 brp 1..1024 brp-inc 1\n\t  clock 48000000 \n\t  re-started bus-errors arbit-lost error-warn error-pass bus-off\n\t  0          0          0          0          0          0         numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 \n    RX: bytes  packets  errors  dropped overrun mcast   \n    1504636    188119   0       6       0       0       \n    TX: bytes  packets  errors  dropped carrier collsns \n    21672      2709     0       0       0       0       \n"
+      },
+      "queue": {
+        "returncode": 0,
+        "output": "qdisc pfifo_fast 0: root refcnt 2 bands 3 priomap 1 2 2 2 1 2 0 0 1 1 1 1 1 1 1 1\n Sent 43344 bytes 2709 pkt (dropped 0, overlimits 0 requeues 0) \n backlog 0b 0p requeues 0\n"
+      }
+    }
+  ],
+  "final_counters": {
+    "tx_packets": "2709",
+    "rx_packets": "188144",
+    "tx_errors": "0",
+    "rx_errors": "0",
+    "tx_dropped": "0",
+    "rx_dropped": "6"
+  },
+  "limits": "用户执行了拔插、上电和使能，无法从此次恢复单独区分各操作作用；未发送控制报文，未改运行代码。"
+}

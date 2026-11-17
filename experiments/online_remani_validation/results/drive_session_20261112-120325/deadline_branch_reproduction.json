@@ -1,0 +1,48 @@
+{
+  "method": "Actual cycle, mocked publishers, fresh permission/state/map, controlled solver clock. No ROS node, sockets, CAN, sleep or runtime edits.",
+  "code_sha256": "845c264dadc1db757a9e271c9d651d7c348d994a0eba9c3d6c3eb770b621deee",
+  "deadline_ms": 95,
+  "cases": [
+    {
+      "controlled_elapsed_ms": 50.0,
+      "feasible_return": false,
+      "rejection": "no_feasible_candidate",
+      "fault_true_calls": 1,
+      "arm_publications": 0,
+      "base_commands": [
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "controlled_elapsed_ms": 120.0,
+      "feasible_return": false,
+      "rejection": "no_feasible_candidate",
+      "fault_true_calls": 1,
+      "arm_publications": 0,
+      "base_commands": [
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "controlled_elapsed_ms": 120.0,
+      "feasible_return": true,
+      "rejection": "planning_deadline_exceeded",
+      "fault_true_calls": 0,
+      "arm_publications": 0,
+      "base_commands": [
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    }
+  ],
+  "conclusion": "At identical 120ms simulated solver latency, no-result raises a navigation fault while a feasible result is treated as local deadline retry.",
+  "boundary": "This proves the code branch defect. Real bag cycle_ms includes rejection work; the exact real solve elapsed was not recorded."
+}

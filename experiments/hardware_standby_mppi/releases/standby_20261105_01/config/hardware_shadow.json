@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "version": "standby_20261105_01",
+  "namespace": "/standby_trial_20261105_01",
+  "mode": "shadow",
+  "hardware_motion_enabled": false,
+  "world_frame": "odom",
+  "base_frame": "base_link",
+  "topics": {
+    "odom": "/odom",
+    "joints": "/joint_states_single",
+    "raw_cloud": "/livox/lidar_pcl2",
+    "filtered_cloud": "/velodyne_points",
+    "dynamic_cloud": "/standby_trial_20261105_01/perception/dynamic_points",
+    "perception_health": "/standby_trial_20261105_01/perception/dynamic_obstacle_tracker/perception_healthy",
+    "static_cloud": "/map_generator/global_cloud"
+  },
+  "model": {
+    "parameters": "model/parameters.yaml",
+    "urdf": "model/mm.urdf"
+  },
+  "max_age_s": 0.25,
+  "cloud_max_points": 4000,
+  "static_max_points": 15000,
+  "rate_hz": 2.0,
+  "horizon": 20,
+  "step": 0.1,
+  "random_samples": 6,
+  "deadline_s": 0.4,
+  "seed": 11,
+  "postures": [],
+  "kernel_config": {},
+  "joint_limit_overrides": {
+    "joint6": [
+      -0.35,
+      0.35
+    ]
+  },
+  "arm_limits": {
+    "lower": [
+      -2.618,
+      -0.05,
+      -2.697,
+      -1.832,
+      -1.25,
+      -0.35
+    ],
+    "upper": [
+      2.618,
+      3.14,
+      0.05,
+      1.832,
+      1.25,
+      0.35
+    ],
+    "velocity": [
+      0.45,
+      0.45,
+      0.45,
+      0.45,
+      0.45,
+      0.45
+    ],
+    "acceleration": [
+      0.9,
+      0.9,
+      0.9,
+      0.9,
+      0.9,
+      0.9
+    ]
+  }
+}

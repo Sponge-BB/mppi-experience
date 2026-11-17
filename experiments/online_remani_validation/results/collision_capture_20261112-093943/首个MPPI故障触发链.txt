@@ -1,0 +1,23 @@
+首个tracking_fault触发链（只读离线核对）
+
+证据范围：capture.bag，首次故障时间1794447880.9458132；同目录first_mppi_fault_audit.json保留来源callerid与附近消息。
+
+确定事实：
+1. 1794447880.7762637，/whole_body_mppi成功发送nominal控制，feasible=3，external_min_gap=0.4316600665m，min_gap=0.003m，base_v=0.179498m/s，base_w=-0.073954rad/s。
+2. 1794447880.9458132，/tracking_fault=True来源callerid明确是/whole_body_mppi。
+3. 1794447880.946850，REMANI发布安全速度上限0；1794447880.9522316取消旧轨迹；随后FSM打印“Tracker reported excessive trajectory error”。这条打印是处理共享tracking_fault信号的通用文字，本次不能据此认定实测轨迹跟踪误差超限。
+4. 1794447880.9610631，MPPI状态no_feasible_candidate，cycle_ms=124.48；随后native_reference_cancelled。
+5. 整包1580帧/dynamic_points均为0点，首次故障前后6个相邻样本也全空。动态跟踪器同时报告motion_qualified=0、nonmoving_confirmed=5。这轮不能归因于动态点预测直接碰撞。
+
+代码对应：
+whole_body_mppi.py reject()会先停底盘；几类地图/反馈/交付超时在LOCAL_RETRY_REJECTIONS中，仅本地重试，不直接发tracking_fault；no_feasible_candidate不在豁免范围，且同一导航目标已发过控制，因此它发tracking_fault触发慢层恢复重规划。
+cycle()先检查result is None而抛出no_feasible，再检查规划deadline。因此124.48ms确实超过95ms预算，但故障原因标签是候选全不可用，不能把此处写成deadline触发的重规划。
+active_arm_mppi.py evaluate()可能因外部距离/动态预测、配置自碰/地面、关节界限、制动尾未停稳而否决；plan()已有每类候选可行性、external/config gaps、bounds、braking_stopped等info。
+然而whole_body_mppi.py仅simulation=True时将这些info复制到candidate_diagnostics；本次实车simulation=False，最终失败status只保留state/execute/cycle，原周期的候选否决证据没有进入bag。
+
+不能确定的部分：
+不能用1Hz的12帧collision_diagnostic替代124ms失败周期的实际snapshot。缺少原周期所取state、reference/phase、map版本、结构化/随机候选的否决明细，无法严格判定是哪一个候选首先在哪种检查失败。可见的邻周期地图、当前点云和成功周期正距离，都不能当作该失败周期的完整重放。
+
+结论：
+这次确有一次MPPI no_feasible触发的慢层恢复重规划，并非所有地图过期警告都触发重规划；暂时能确定触发分支，不能严谨指定候选全部失败的底层几何/制动原因。下一次若需定位这一分支，应保留已有info中少量结构化拒绝指标与原周期版本标识，无需新增大型录制/仿真系统。
+本轮未修改运行代码、未连接ROS、未发送运动指令。

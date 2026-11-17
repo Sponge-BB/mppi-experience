@@ -1,0 +1,1400 @@
+{
+  "scope": "Read-only recorded bag/parameter and current-source audit. No ROS nodes, no CAN or hardware commands, no compilation. Equivalent wheel quantities below are kinematic proxies, not wheel encoder measurements.",
+  "runtime_limits": {
+    "planner": {
+      "mobile_base_wheel_radius": 0.07,
+      "mobile_base_wheel_base": 0.37,
+      "mobile_base_max_wheel_omega": 3.28,
+      "mobile_base_max_wheel_alpha": 4.25,
+      "mobile_base_non_singul_vel": 0.05
+    },
+    "mppi": {
+      "vmax": 0.25,
+      "wmax": 0.35,
+      "accel": 0.25,
+      "angular_accel": 0.8,
+      "track": 0.37,
+      "wheel_v": 0.25,
+      "wheel_a": 0.2975
+    },
+    "planner_equivalent_wheel_v": 0.2296,
+    "planner_equivalent_wheel_a": 0.29750000000000004,
+    "planner_acceptance_wheel_v_5pct": 0.24108000000000002,
+    "mppi_v_relative_to_planner": 0.08885017421602792
+  },
+  "source_formulas": {
+    "measured_proxy": "omega_L=(v-track*w/2)/radius; omega_R=(v+track*w/2)/radius",
+    "native_polynomial": "v=gear*norm(p_dot), omega=(p_ddot.T*B*p_dot)/norm(p_dot)^2; alpha uses p_jerk and inverse norm(p_dot)^2,^4. Wheel constraints are checked at t=.05, not measured physical wheels.",
+    "native_global_init": "planFromGlobalTraj copies mm_state_pos_, mm_state_vel_; zero acceleration/jerk; mmCarOdomCallback raises planar speed norms below .05 to +.05 along current heading and sets gear=0. Yaw rate is recorded separately and is not inserted into initial p_ddot when global acceleration is zero.",
+    "limits": "No final rejected polynomial coefficients/first knot/headState or planner-consumed odom source timestamp were recorded. Nearby odom does not prove exact optimizer initial state."
+  },
+  "all_active_commands": {
+    "count": 343,
+    "max_abs_v": 0.2213823049624011,
+    "max_abs_w": 0.35,
+    "peak_equivalent_wheel_omega": 3.2339948449878873,
+    "peak_row": {
+      "receipt": 1794456468.4904685,
+      "v": 0.2213823049624011,
+      "w": -0.027012617225681268,
+      "equivalent_wheel_omega": [
+        3.2339948449878873,
+        3.0912138682235724
+      ]
+    },
+    "above_slow_nominal_count": 0,
+    "above_slow_acceptance_count": 0
+  },
+  "all_active_odom": {
+    "count": 373,
+    "max_abs_v": 0.15112307145893242,
+    "max_abs_w": 0.37414642851121394,
+    "peak_equivalent_wheel_omega": 2.2579680018292874,
+    "peak_row": {
+      "receipt": 1794456463.8434541,
+      "source": 1794456463.8188803,
+      "frame": "odom",
+      "child": "base_link",
+      "v": 0.09150029389486013,
+      "vy": 0.012001495594888018,
+      "w": -0.3597700877469731,
+      "yaw": -0.5529105164218444,
+      "equivalent_wheel_omega": [
+        2.2579680018292874,
+        0.3563261094524301
+      ],
+      "base_speed_norm": 0.0922840163807357,
+      "x": -0.17330087594317545,
+      "y": -0.06684177031010533
+    },
+    "above_slow_nominal_count": 0,
+    "above_slow_acceptance_count": 0
+  },
+  "final_recovery_odom": {
+    "count": 29,
+    "max_abs_v": 0.037958400215424105,
+    "max_abs_w": 0.21831672876139252,
+    "peak_equivalent_wheel_omega": 1.1149171466605632,
+    "peak_row": {
+      "receipt": 1794456497.2355764,
+      "source": 1794456497.2193696,
+      "frame": "odom",
+      "child": "base_link",
+      "v": 0.03765560544538181,
+      "vy": 0.010968628003818781,
+      "w": 0.21831672876139252,
+      "yaw": -1.1847738589799048,
+      "equivalent_wheel_omega": [
+        -0.03904270536394012,
+        1.1149171466605632
+      ],
+      "base_speed_norm": 0.0392205994567195,
+      "x": 0.5842504572656073,
+      "y": -1.2502739164883783
+    },
+    "above_slow_nominal_count": 0,
+    "above_slow_acceptance_count": 0
+  },
+  "final_wheel_rejections": [
+    {
+      "receipt": 1794456497.669172,
+      "source": 1794456497.3969767,
+      "message": "-12.441464 max left wheel omega is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456497.4422505,
+        "source": 1794456497.4190927,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.013192294332294251,
+        "vy": -0.009729338528909304,
+        "w": 0.10230338736381267,
+        "yaw": -1.1805855886532393,
+        "equivalent_wheel_omega": [
+          -0.08191189042872989,
+          0.45883458563713697
+        ],
+        "base_speed_norm": 0.01639196931305089,
+        "x": 0.5801702410508004,
+        "y": -1.2525674271732512
+      },
+      "odom_source_minus_log_ms": 22.11594581604004,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456497.3336167,
+        "source": 1794456497.319212,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.037958400215424105,
+        "vy": 0.0016641461146767265,
+        "w": 0.1550971764282224,
+        "yaw": -1.181010858589037,
+        "equivalent_wheel_omega": [
+          0.13236317966004227,
+          0.9521625407806464
+        ],
+        "base_speed_norm": 0.03799486187901335,
+        "x": 0.5842697472096772,
+        "y": -1.2544238711057916
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456497.369801,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456497.4727125,
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "plan_time": 1794456497.3687196,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": -12.441464,
+      "unit": "rad/s",
+      "native_acceptance_limit_with_5pct_tolerance": 3.444,
+      "factor_over_acceptance_limit": 3.6125040650406506,
+      "equivalent_left_wheel_linear": -0.87090248
+    },
+    {
+      "receipt": 1794456497.7716968,
+      "source": 1794456497.5310526,
+      "message": "-12.441464 max left wheel omega is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456497.5347564,
+        "source": 1794456497.519369,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.00803756581692906,
+        "vy": -0.016078886335061035,
+        "w": 0.056277739819266474,
+        "yaw": -1.1835135004793513,
+        "equivalent_wheel_omega": [
+          -0.26355639547847654,
+          0.03391165785193194
+        ],
+        "base_speed_norm": 0.017975901925557976,
+        "x": 0.5757848776185265,
+        "y": -1.2492158889468092
+      },
+      "odom_source_minus_log_ms": -11.68370246887207,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456497.5347564,
+        "source": 1794456497.519369,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.00803756581692906,
+        "vy": -0.016078886335061035,
+        "w": 0.056277739819266474,
+        "yaw": -1.1835135004793513,
+        "equivalent_wheel_omega": [
+          -0.26355639547847654,
+          0.03391165785193194
+        ],
+        "base_speed_norm": 0.017975901925557976,
+        "x": 0.5757848776185265,
+        "y": -1.2492158889468092
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456497.4753296,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456497.4727125,
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "plan_time": 1794456497.3687196,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": -12.441464,
+      "unit": "rad/s",
+      "native_acceptance_limit_with_5pct_tolerance": 3.444,
+      "factor_over_acceptance_limit": 3.6125040650406506,
+      "equivalent_left_wheel_linear": -0.87090248
+    },
+    {
+      "receipt": 1794456497.8294346,
+      "source": 1794456497.7991996,
+      "message": "-12.441464 max left wheel omega is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456497.8546913,
+        "source": 1794456497.819763,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.002129717412385086,
+        "vy": -0.011939612476618802,
+        "w": 0.014034411009434826,
+        "yaw": -1.182707632943011,
+        "equivalent_wheel_omega": [
+          -0.006666408919433669,
+          0.06751547784472182
+        ],
+        "base_speed_norm": 0.012128068368394349,
+        "x": 0.5721042193722057,
+        "y": -1.2535745649910335
+      },
+      "odom_source_minus_log_ms": 20.563364028930664,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456497.7569427,
+        "source": 1794456497.718927,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.0057016770040296625,
+        "vy": -0.017361562453291426,
+        "w": 0.03845932726146588,
+        "yaw": -1.1795488283186697,
+        "equivalent_wheel_omega": [
+          -0.020189979133450355,
+          0.1830950363914407
+        ],
+        "base_speed_norm": 0.01827383297170627,
+        "x": 0.5724506482023458,
+        "y": -1.253923582040176
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456497.7816796,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456497.7836127,
+        "state": "native_reference_cancelled",
+        "plan_time": 1794456497.7724907,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": [
+          0.0057016770040296625,
+          0.03845932726146588
+        ],
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": -12.441464,
+      "unit": "rad/s",
+      "native_acceptance_limit_with_5pct_tolerance": 3.444,
+      "factor_over_acceptance_limit": 3.6125040650406506,
+      "equivalent_left_wheel_linear": -0.87090248
+    },
+    {
+      "receipt": 1794456497.9871895,
+      "source": 1794456497.955004,
+      "message": "-12.441464 max left wheel omega is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456497.9481118,
+        "source": 1794456497.9192874,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.005556802046573917,
+        "vy": -0.0012331824241649516,
+        "w": 0.007806969372335811,
+        "yaw": -1.1830816738118761,
+        "equivalent_wheel_omega": [
+          0.05875018160988274,
+          0.10001559114937202
+        ],
+        "base_speed_norm": 0.00569199331307385,
+        "x": 0.5742711712394796,
+        "y": -1.2539712082955556
+      },
+      "odom_source_minus_log_ms": -35.71653366088867,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456497.9481118,
+        "source": 1794456497.9192874,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.005556802046573917,
+        "vy": -0.0012331824241649516,
+        "w": 0.007806969372335811,
+        "yaw": -1.1830816738118761,
+        "equivalent_wheel_omega": [
+          0.05875018160988274,
+          0.10001559114937202
+        ],
+        "base_speed_norm": 0.00569199331307385,
+        "x": 0.5742711712394796,
+        "y": -1.2539712082955556
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456497.869919,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456497.8838356,
+        "state": "native_reference_cancelled",
+        "plan_time": 1794456497.8691278,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": [
+          0.002129717412385086,
+          0.014034411009434826
+        ],
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": -12.441464,
+      "unit": "rad/s",
+      "native_acceptance_limit_with_5pct_tolerance": 3.444,
+      "factor_over_acceptance_limit": 3.6125040650406506,
+      "equivalent_left_wheel_linear": -0.87090248
+    },
+    {
+      "receipt": 1794456498.256643,
+      "source": 1794456498.2326765,
+      "message": "-26.604736 max left wheel omega is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456498.2503004,
+        "source": 1794456498.2189848,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.0009088327656723079,
+        "vy": 0.010037111317618478,
+        "w": -0.0035113855210336395,
+        "yaw": -1.1830541504714467,
+        "equivalent_wheel_omega": [
+          0.022263415529479018,
+          0.003703234918301209
+        ],
+        "base_speed_norm": 0.010078173475299209,
+        "x": 0.5802491566764886,
+        "y": -1.2515048046788104
+      },
+      "odom_source_minus_log_ms": -13.69166374206543,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456498.2503004,
+        "source": 1794456498.2189848,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.0009088327656723079,
+        "vy": 0.010037111317618478,
+        "w": -0.0035113855210336395,
+        "yaw": -1.1830541504714467,
+        "equivalent_wheel_omega": [
+          0.022263415529479018,
+          0.003703234918301209
+        ],
+        "base_speed_norm": 0.010078173475299209,
+        "x": 0.5802491566764886,
+        "y": -1.2515048046788104
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456498.176481,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456498.20687,
+        "state": "native_reference_cancelled",
+        "plan_time": 1794456498.1736305,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": [
+          0.0034442433288880627,
+          0.00853547936941379
+        ],
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": -26.604736,
+      "unit": "rad/s",
+      "native_acceptance_limit_with_5pct_tolerance": 3.444,
+      "factor_over_acceptance_limit": 7.724952380952381,
+      "equivalent_left_wheel_linear": -1.8623315200000001
+    },
+    {
+      "receipt": 1794456498.5559359,
+      "source": 1794456498.387651,
+      "message": "-26.604736 max left wheel omega is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456498.4490383,
+        "source": 1794456498.4198465,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.004653992135335422,
+        "vy": 0.0052199378652504425,
+        "w": 0.011315474469882417,
+        "yaw": -1.1788946763591512,
+        "equivalent_wheel_omega": [
+          0.03658041940581678,
+          0.09639078446090954
+        ],
+        "base_speed_norm": 0.006993382165507567,
+        "x": 0.581634949378698,
+        "y": -1.2527730183301728
+      },
+      "odom_source_minus_log_ms": 32.1955680847168,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456498.3334527,
+        "source": 1794456498.3193436,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.005297535686091731,
+        "vy": 0.011708313397963644,
+        "w": 0.002555345956133909,
+        "yaw": -1.1816669788282756,
+        "equivalent_wheel_omega": [
+          0.06892566691724225,
+          0.08243249554252148
+        ],
+        "base_speed_norm": 0.012851011126380305,
+        "x": 0.5821365594139626,
+        "y": -1.2521895720994993
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456498.3699014,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456498.3827655,
+        "state": "collision_snapshot_unavailable",
+        "plan_time": 1794456498.3688972,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": -26.604736,
+      "unit": "rad/s",
+      "native_acceptance_limit_with_5pct_tolerance": 3.444,
+      "factor_over_acceptance_limit": 7.724952380952381,
+      "equivalent_left_wheel_linear": -1.8623315200000001
+    },
+    {
+      "receipt": 1794456498.7107701,
+      "source": 1794456498.579874,
+      "message": "-26.604736 max left wheel omega is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456498.6353974,
+        "source": 1794456498.619513,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.003454388690392807,
+        "vy": 0.004501135978625033,
+        "w": 0.0032694344886624125,
+        "yaw": -1.1804743451877764,
+        "equivalent_wheel_omega": [
+          0.04070776157128943,
+          0.05798905815421933
+        ],
+        "base_speed_norm": 0.005673889875771864,
+        "x": 0.5824250846189732,
+        "y": -1.2526098836868997
+      },
+      "odom_source_minus_log_ms": 39.63899612426758,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456498.555337,
+        "source": 1794456498.5189729,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.00014033093956924156,
+        "vy": 0.004759381363893892,
+        "w": -0.004515543710122525,
+        "yaw": -1.1822566458718362,
+        "equivalent_wheel_omega": [
+          0.013938664656312981,
+          -0.009929209240048937
+        ],
+        "base_speed_norm": 0.004761449751869788,
+        "x": 0.5816835826917813,
+        "y": -1.2518702904316803
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456498.5721703,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456498.5720012,
+        "state": "collision_snapshot_unavailable",
+        "plan_time": 1794456498.568918,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": -26.604736,
+      "unit": "rad/s",
+      "native_acceptance_limit_with_5pct_tolerance": 3.444,
+      "factor_over_acceptance_limit": 7.724952380952381,
+      "equivalent_left_wheel_linear": -1.8623315200000001
+    },
+    {
+      "receipt": 1794456499.0409825,
+      "source": 1794456498.8074756,
+      "message": "-26.604736 max left wheel omega is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456498.8376658,
+        "source": 1794456498.819247,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.0014449173770020615,
+        "vy": -0.003804036827319807,
+        "w": -0.008181948051987152,
+        "yaw": -1.1836112377264287,
+        "equivalent_wheel_omega": [
+          0.0009820430373651658,
+          -0.04226539666599549
+        ],
+        "base_speed_norm": 0.0040692115219005094,
+        "x": 0.5794082904506854,
+        "y": -1.2528325466648265
+      },
+      "odom_source_minus_log_ms": 11.771440505981445,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456498.7464986,
+        "source": 1794456498.7193692,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.0011319742916872232,
+        "vy": -0.009584348595209718,
+        "w": -0.0019610291314249547,
+        "yaw": -1.1816401403635843,
+        "equivalent_wheel_omega": [
+          0.021353781157154854,
+          0.010988341462480093
+        ],
+        "base_speed_norm": 0.009650963878884807,
+        "x": 0.5790022654287118,
+        "y": -1.2536701545622337
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456498.7785876,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456498.9773839,
+        "state": "native_reference_cancelled",
+        "plan_time": 1794456498.7730489,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": [
+          0.0011319742916872232,
+          -0.0019610291314249547
+        ],
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": -26.604736,
+      "unit": "rad/s",
+      "native_acceptance_limit_with_5pct_tolerance": 3.444,
+      "factor_over_acceptance_limit": 7.724952380952381,
+      "equivalent_left_wheel_linear": -1.8623315200000001
+    },
+    {
+      "receipt": 1794456499.187591,
+      "source": 1794456499.0368617,
+      "message": "77.940914 max left wheel alpha is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456499.0364242,
+        "source": 1794456499.0193172,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.010866619972640386,
+        "vy": -0.007110536397974064,
+        "w": 0.012218669078987925,
+        "yaw": -1.1791485413949172,
+        "equivalent_wheel_omega": [
+          0.122945231328966,
+          0.18752962503218787
+        ],
+        "base_speed_norm": 0.01298626803576381,
+        "x": 0.5784907644836782,
+        "y": -1.2562638598091052
+      },
+      "odom_source_minus_log_ms": -17.54450798034668,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456499.0364242,
+        "source": 1794456499.0193172,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.010866619972640386,
+        "vy": -0.007110536397974064,
+        "w": 0.012218669078987925,
+        "yaw": -1.1791485413949172,
+        "equivalent_wheel_omega": [
+          0.122945231328966,
+          0.18752962503218787
+        ],
+        "base_speed_norm": 0.01298626803576381,
+        "x": 0.5784907644836782,
+        "y": -1.2562638598091052
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456498.9802997,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456499.156221,
+        "state": "collision_snapshot_unavailable",
+        "plan_time": 1794456498.9759836,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": 77.940914,
+      "unit": "rad/s^2",
+      "native_acceptance_limit_with_5pct_tolerance": 4.4625,
+      "factor_over_acceptance_limit": 17.465751036414566,
+      "equivalent_left_wheel_linear": 5.455863980000001
+    },
+    {
+      "receipt": 1794456499.1956685,
+      "source": 1794456499.1732504,
+      "message": "77.940914 max left wheel alpha is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456499.2353384,
+        "source": 1794456499.2184427,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.001171814585000301,
+        "vy": 0.007398200439504625,
+        "w": 0.0032918989016818686,
+        "yaw": -1.1802836397905454,
+        "equivalent_wheel_omega": [
+          0.008040189831273647,
+          0.025440226883020663
+        ],
+        "base_speed_norm": 0.007490428503410594,
+        "x": 0.5824257217893398,
+        "y": -1.2540666762512351
+      },
+      "odom_source_minus_log_ms": 45.19224166870117,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456499.1334007,
+        "source": 1794456499.1191876,
+        "frame": "odom",
+        "child": "base_link",
+        "v": 0.011353134499174177,
+        "vy": 0.010483323866380675,
+        "w": 0.0019562465236972904,
+        "yaw": -1.1808565794635568,
+        "equivalent_wheel_omega": [
+          0.15701755560414538,
+          0.16735771580083106
+        ],
+        "base_speed_norm": 0.015452952541303088,
+        "x": 0.582942692671489,
+        "y": -1.2557576115370088
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456499.155509,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456499.156221,
+        "state": "collision_snapshot_unavailable",
+        "plan_time": 1794456498.9759836,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": 77.940914,
+      "unit": "rad/s^2",
+      "native_acceptance_limit_with_5pct_tolerance": 4.4625,
+      "factor_over_acceptance_limit": 17.465751036414566,
+      "equivalent_left_wheel_linear": 5.455863980000001
+    },
+    {
+      "receipt": 1794456499.591709,
+      "source": 1794456499.4735796,
+      "message": "67.877407 max left wheel alpha is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456499.5347478,
+        "source": 1794456499.5188997,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.0035743348836977853,
+        "vy": 0.0032755382672476183,
+        "w": -0.0003041550502607094,
+        "yaw": -1.1805328326680966,
+        "equivalent_wheel_omega": [
+          -0.050258088562850765,
+          -0.051865765257085944
+        ],
+        "base_speed_norm": 0.004848197685843925,
+        "x": 0.5826490953560071,
+        "y": -1.2531609483429031
+      },
+      "odom_source_minus_log_ms": 45.32003402709961,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456499.4771168,
+        "source": 1794456499.420071,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.0011681455440321628,
+        "vy": 0.004595475413708533,
+        "w": 0.0008045891473494251,
+        "yaw": -1.180299275385337,
+        "equivalent_wheel_omega": [
+          -0.01881420766131152,
+          -0.014561379311035988
+        ],
+        "base_speed_norm": 0.004741619796023486,
+        "x": 0.5828761597439939,
+        "y": -1.2539270468128405
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456499.4706128,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456499.579884,
+        "state": "state_feedback_stale",
+        "plan_time": 1794456499.4697745,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": 67.877407,
+      "unit": "rad/s^2",
+      "native_acceptance_limit_with_5pct_tolerance": 4.4625,
+      "factor_over_acceptance_limit": 15.210623417366946,
+      "equivalent_left_wheel_linear": 4.751418490000001
+    },
+    {
+      "receipt": 1794456499.6132076,
+      "source": 1794456499.588271,
+      "message": "67.877407 max left wheel alpha is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456499.6453974,
+        "source": 1794456499.6183612,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.0010771995155935228,
+        "vy": -0.0045452053671527284,
+        "w": -0.011274360811200295,
+        "yaw": -1.1836805522158698,
+        "equivalent_wheel_omega": [
+          0.014407960492550453,
+          -0.045185089509508246
+        ],
+        "base_speed_norm": 0.004671108072608564,
+        "x": 0.5810264554097605,
+        "y": -1.2542048928350207
+      },
+      "odom_source_minus_log_ms": 30.09033203125,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456499.5347478,
+        "source": 1794456499.5188997,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.0035743348836977853,
+        "vy": 0.0032755382672476183,
+        "w": -0.0003041550502607094,
+        "yaw": -1.1805328326680966,
+        "equivalent_wheel_omega": [
+          -0.050258088562850765,
+          -0.051865765257085944
+        ],
+        "base_speed_norm": 0.004848197685843925,
+        "x": 0.5826490953560071,
+        "y": -1.2531609483429031
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456499.580814,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456499.6072311,
+        "state": "native_reference_cancelled",
+        "plan_time": 1794456499.579908,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": [
+          -0.0035743348836977853,
+          -0.0003041550502607094
+        ],
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": 67.877407,
+      "unit": "rad/s^2",
+      "native_acceptance_limit_with_5pct_tolerance": 4.4625,
+      "factor_over_acceptance_limit": 15.210623417366946,
+      "equivalent_left_wheel_linear": 4.751418490000001
+    },
+    {
+      "receipt": 1794456499.6586528,
+      "source": 1794456499.6340966,
+      "message": "67.877407 max left wheel alpha is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456499.6453974,
+        "source": 1794456499.6183612,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.0010771995155935228,
+        "vy": -0.0045452053671527284,
+        "w": -0.011274360811200295,
+        "yaw": -1.1836805522158698,
+        "equivalent_wheel_omega": [
+          0.014407960492550453,
+          -0.045185089509508246
+        ],
+        "base_speed_norm": 0.004671108072608564,
+        "x": 0.5810264554097605,
+        "y": -1.2542048928350207
+      },
+      "odom_source_minus_log_ms": -15.735387802124023,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456499.6453974,
+        "source": 1794456499.6183612,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.0010771995155935228,
+        "vy": -0.0045452053671527284,
+        "w": -0.011274360811200295,
+        "yaw": -1.1836805522158698,
+        "equivalent_wheel_omega": [
+          0.014407960492550453,
+          -0.045185089509508246
+        ],
+        "base_speed_norm": 0.004671108072608564,
+        "x": 0.5810264554097605,
+        "y": -1.2542048928350207
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456499.580814,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456499.6072311,
+        "state": "native_reference_cancelled",
+        "plan_time": 1794456499.579908,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": [
+          -0.0035743348836977853,
+          -0.0003041550502607094
+        ],
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": 67.877407,
+      "unit": "rad/s^2",
+      "native_acceptance_limit_with_5pct_tolerance": 4.4625,
+      "factor_over_acceptance_limit": 15.210623417366946,
+      "equivalent_left_wheel_linear": 4.751418490000001
+    },
+    {
+      "receipt": 1794456500.2974324,
+      "source": 1794456499.8280702,
+      "message": "89.163544 max left wheel alpha is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456499.837291,
+        "source": 1794456499.8205717,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.004746482899804376,
+        "vy": -0.0007827203088762455,
+        "w": -9.036598765798081e-05,
+        "yaw": -1.18237891746736,
+        "equivalent_wheel_omega": [
+          -0.0675680741726807,
+          -0.06804572296458718
+        ],
+        "base_speed_norm": 0.00481058738617881,
+        "x": 0.5802654984863628,
+        "y": -1.2540714954856846
+      },
+      "odom_source_minus_log_ms": -7.498502731323242,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456499.837291,
+        "source": 1794456499.8205717,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.004746482899804376,
+        "vy": -0.0007827203088762455,
+        "w": -9.036598765798081e-05,
+        "yaw": -1.18237891746736,
+        "equivalent_wheel_omega": [
+          -0.0675680741726807,
+          -0.06804572296458718
+        ],
+        "base_speed_norm": 0.00481058738617881,
+        "x": 0.5802654984863628,
+        "y": -1.2540714954856846
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456499.7957048,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456500.1741064,
+        "state": "collision_snapshot_unavailable",
+        "plan_time": 1794456499.768929,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": 89.163544,
+      "unit": "rad/s^2",
+      "native_acceptance_limit_with_5pct_tolerance": 4.4625,
+      "factor_over_acceptance_limit": 19.980626106442575,
+      "equivalent_left_wheel_linear": 6.2414480800000005
+    },
+    {
+      "receipt": 1794456500.3003511,
+      "source": 1794456499.895227,
+      "message": "89.163544 max left wheel alpha is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456499.9498186,
+        "source": 1794456499.9207184,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.005892268804035004,
+        "vy": -0.0081213242486066,
+        "w": -0.0024303446492073503,
+        "yaw": -1.1830575139143507,
+        "equivalent_wheel_omega": [
+          -0.07775221491330919,
+          -0.09059832234483377
+        ],
+        "base_speed_norm": 0.010033680242563526,
+        "x": 0.57794530247501,
+        "y": -1.2541514985464746
+      },
+      "odom_source_minus_log_ms": 25.49147605895996,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456499.837291,
+        "source": 1794456499.8205717,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.004746482899804376,
+        "vy": -0.0007827203088762455,
+        "w": -9.036598765798081e-05,
+        "yaw": -1.18237891746736,
+        "equivalent_wheel_omega": [
+          -0.0675680741726807,
+          -0.06804572296458718
+        ],
+        "base_speed_norm": 0.00481058738617881,
+        "x": 0.5802654984863628,
+        "y": -1.2540714954856846
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456499.7957048,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456500.1741064,
+        "state": "collision_snapshot_unavailable",
+        "plan_time": 1794456499.768929,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": 89.163544,
+      "unit": "rad/s^2",
+      "native_acceptance_limit_with_5pct_tolerance": 4.4625,
+      "factor_over_acceptance_limit": 19.980626106442575,
+      "equivalent_left_wheel_linear": 6.2414480800000005
+    },
+    {
+      "receipt": 1794456500.3899236,
+      "source": 1794456499.948644,
+      "message": "89.163544 max left wheel alpha is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456499.9498186,
+        "source": 1794456499.9207184,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.005892268804035004,
+        "vy": -0.0081213242486066,
+        "w": -0.0024303446492073503,
+        "yaw": -1.1830575139143507,
+        "equivalent_wheel_omega": [
+          -0.07775221491330919,
+          -0.09059832234483377
+        ],
+        "base_speed_norm": 0.010033680242563526,
+        "x": 0.57794530247501,
+        "y": -1.2541514985464746
+      },
+      "odom_source_minus_log_ms": -27.925491333007812,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456499.9498186,
+        "source": 1794456499.9207184,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.005892268804035004,
+        "vy": -0.0081213242486066,
+        "w": -0.0024303446492073503,
+        "yaw": -1.1830575139143507,
+        "equivalent_wheel_omega": [
+          -0.07775221491330919,
+          -0.09059832234483377
+        ],
+        "base_speed_norm": 0.010033680242563526,
+        "x": 0.57794530247501,
+        "y": -1.2541514985464746
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456499.7957048,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456500.1741064,
+        "state": "collision_snapshot_unavailable",
+        "plan_time": 1794456499.768929,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": 89.163544,
+      "unit": "rad/s^2",
+      "native_acceptance_limit_with_5pct_tolerance": 4.4625,
+      "factor_over_acceptance_limit": 19.980626106442575,
+      "equivalent_left_wheel_linear": 6.2414480800000005
+    },
+    {
+      "receipt": 1794456500.441144,
+      "source": 1794456500.0060441,
+      "message": "89.163544 max left wheel alpha is not feasible at relative time 0.050000! opt failed",
+      "nearest_odom_source": {
+        "receipt": 1794456500.033718,
+        "source": 1794456500.0192828,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.0008364874761863672,
+        "vy": -0.007357754235137245,
+        "w": 0.0002710007309779795,
+        "yaw": -1.1825363266264035,
+        "equivalent_wheel_omega": [
+          -0.012666037305961334,
+          -0.011233604870792011
+        ],
+        "base_speed_norm": 0.007405150821049948,
+        "x": 0.5777225779843463,
+        "y": -1.2551533925658425
+      },
+      "odom_source_minus_log_ms": 13.238668441772461,
+      "latest_recorded_odom_source_before_log": {
+        "receipt": 1794456499.9498186,
+        "source": 1794456499.9207184,
+        "frame": "odom",
+        "child": "base_link",
+        "v": -0.005892268804035004,
+        "vy": -0.0081213242486066,
+        "w": -0.0024303446492073503,
+        "yaw": -1.1830575139143507,
+        "equivalent_wheel_omega": [
+          -0.07775221491330919,
+          -0.09059832234483377
+        ],
+        "base_speed_norm": 0.010033680242563526,
+        "x": 0.57794530247501,
+        "y": -1.2541514985464746
+      },
+      "latest_cmd_received_before_log": {
+        "receipt": 1794456499.7957048,
+        "v": 0.0,
+        "w": 0.0,
+        "equivalent_wheel_omega": [
+          0.0,
+          0.0
+        ]
+      },
+      "nearest_mppi_plan_before_log": {
+        "receipt": 1794456500.1741064,
+        "state": "collision_snapshot_unavailable",
+        "plan_time": 1794456499.768929,
+        "base_v": null,
+        "base_w": null,
+        "measured_vw": null,
+        "native_phase": null,
+        "native_gear": null,
+        "native_time_scale": null
+      },
+      "candidate_left_value": 89.163544,
+      "unit": "rad/s^2",
+      "native_acceptance_limit_with_5pct_tolerance": 4.4625,
+      "factor_over_acceptance_limit": 19.980626106442575,
+      "equivalent_left_wheel_linear": 6.2414480800000005
+    }
+  ],
+  "recovery_nearby_odom_low_speed_count": 29,
+  "final_mppi_statuses": [
+    {
+      "receipt": 1794456496.9523084,
+      "state": "state_feedback_stale",
+      "plan_time": 1794456496.489383,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": null,
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456496.9910603,
+      "state": "command_delivered",
+      "plan_time": null,
+      "base_v": 0.07087390486351866,
+      "base_w": 0.35,
+      "measured_vw": null,
+      "native_phase": 0.19286271031573707,
+      "native_gear": null,
+      "native_time_scale": 0.3519920424
+    },
+    {
+      "receipt": 1794456497.3699381,
+      "state": "no_feasible_candidate",
+      "plan_time": 1794456497.04778,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": [
+        -0.0023600938152473295,
+        0.004477470853991571
+      ],
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456497.4727125,
+      "state": "waiting_explicit_arm_enable_or_normal_status",
+      "plan_time": 1794456497.3687196,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": null,
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456497.6806653,
+      "state": "native_reference_cancelled",
+      "plan_time": 1794456497.6738899,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": [
+        -9.962963084503285e-05,
+        0.03438347619106742
+      ],
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456497.7836127,
+      "state": "native_reference_cancelled",
+      "plan_time": 1794456497.7724907,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": [
+        0.0057016770040296625,
+        0.03845932726146588
+      ],
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456497.8838356,
+      "state": "native_reference_cancelled",
+      "plan_time": 1794456497.8691278,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": [
+        0.002129717412385086,
+        0.014034411009434826
+      ],
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456497.9764535,
+      "state": "native_reference_cancelled",
+      "plan_time": 1794456497.9688728,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": [
+        0.005556802046573917,
+        0.007806969372335811
+      ],
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456498.0853481,
+      "state": "collision_snapshot_unavailable",
+      "plan_time": 1794456498.0688913,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": null,
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456498.20687,
+      "state": "native_reference_cancelled",
+      "plan_time": 1794456498.1736305,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": [
+        0.0034442433288880627,
+        0.00853547936941379
+      ],
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456498.3570523,
+      "state": "collision_snapshot_unavailable",
+      "plan_time": 1794456498.2689073,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": null,
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456498.3827655,
+      "state": "collision_snapshot_unavailable",
+      "plan_time": 1794456498.3688972,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": null,
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    },
+    {
+      "receipt": 1794456498.4697347,
+      "state": "collision_snapshot_unavailable",
+      "plan_time": 1794456498.4688873,
+      "base_v": null,
+      "base_w": null,
+      "measured_vw": null,
+      "native_phase": null,
+      "native_gear": null,
+      "native_time_scale": null
+    }
+  ],
+  "conclusion": "MPPI nominal wheel_v=.25 is 8.885% above slow nominal .2296, but no recorded active command or odometry wheel-speed proxy exceeded slow nominal. This run therefore does not support cap mismatch as the cause of final recovery initialization failure. Candidate first0.05s wheel speeds/accelerations are far larger and originate in polynomial derivatives. Final recovery odometry is below the native .05 non-singular threshold; inspect exact near-zero/gear/target initial conditions next, but missing rejected coefficients and consumed-odom timestamp prevent exact replay or proven root cause.",
+  "evidence_boundaries": [
+    "runtime parameters explicitly .07*3.28, not .056*4.1; the latter product happens to equal .2296 but is not this run configuration.",
+    "cmd and status are receipt-timed/no cycle id; odom is source-stamped, recorder queue_size=1 may drop messages. Counts and maxima apply to saved messages only.",
+    "Equivalent wheel rates use nonholonomic planar v,w formula and are not encoder measurements. Odom lateral velocity is preserved in evidence; its existence is not proof of actual side slip.",
+    "No rejected first-knot velocities, accelerations, jerks, durations or planner-consumed odom source stamp recorded. Current source mechanism is explanatory and not an exact saved headState.",
+    "Angular velocity feedback is stored by FSM but planFromGlobalTraj begins with zero Cartesian acceleration/jerk. Native polynomial yaw rate therefore comes from its own curvature; raw physical yaw feedback is not itself the logged candidate wheel omega.",
+    "No production code changed; no ROS nodes, hardware commands, compilation or additional simulation."
+  ],
+  "current_source_sha256": {
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "84972ecd254daa28026d3bdb78219ce6f988d6bc6919a69d7b554d310a219450",
+    "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp": "6e4d19964670e8827b6fc87d57f7efc59116a99ec5a5c436364ba5cd1ec337c3"
+  }
+}

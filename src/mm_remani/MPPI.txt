@@ -1,0 +1,97 @@
+当前工作目录：/home/l/remani_ws。后续直接修改此主工程，不再通过实验发布目录运行。
+入口仍为 mm_remani/launch/exp0_real.launch；use_mppi 默认 false，保留原控制方式。
+本次已接入整机 MPPI、参考轨迹和原驱动接口，尚未完成这条新链路的实车运动验证。
+
+l 端保留原来的分布式 ROS 环境，先 source /home/l/remani_ws/devel/setup.bash。
+仅查看候选、不启动底盘与机械臂执行驱动：
+  roslaunch mm_remani exp0_real.launch use_mppi:=true hardware_enabled:=false
+此时 MPPI 不发布执行指令，定位、规划和点云处理仍会运行。
+当前 exp0_real.launch 内 Livox 驱动段仍被注释，真实雷达数据需按原流程提供；
+hardware_enabled 不会关闭其他终端已经启动的驱动。
+候选预测仍需要新鲜的 /odom、/joint_states_single 和碰撞地图，缺输入时会等待。
+
+进入实车测试阶段的启动方式：
+  roslaunch mm_remani exp0_real.launch use_mppi:=true hardware_enabled:=true can_port:=can0
+can_port 根据实际设备改成 can0 或 can1（launch 原默认 can1）。
+MPPI 模式不会自动使能机械臂，也不会自动复位；需要单独人工使能后才会发出整机指令。
+驱动会在指令超时后快停并锁定，不会自行重新使能。
+
+hai 端继续使用原 RViz，在同一 ROS Master 下向 /move_base_simple/goal 发布目标。
+RViz Fixed Frame 使用 world，可增加两项显示：
+  Path：/mppi/predicted_base，预测底盘轨迹。
+  Marker：/mppi/predicted_arm，机械臂代表点的预测轨迹。
+/mppi/status 提供等待原因、求解耗时、候选/执行状态和底盘偏移量。
+没有目标时使用当前位姿作为待机参考；有目标时跟随原 REMANI 参考轨迹。
+底盘与机械臂均参与候选优化，底盘没有被固定锁死。
+保留 /planning/safety_speed_limit 的底盘限速与停止语义；零速时机械臂仍可规划。
+当前参数为 10 Hz，底盘最高 0.05 m/s、0.15 rad/s，关节最高 0.15 rad/s。
+这里只接入慢层参考与原控制器虚拟相位；尚未将快层预测前缀注入慢层优化。
+
+恢复原控制方式：停止当前 launch，再启动原命令或传 use_mppi:=false。
+相关参数：config/mppi.yaml；主节点：scripts/whole_body_mppi.py。
+驱动/反馈离线复验（不连接 ROS 或 CAN）：
+  PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 /home/l/remani_ws/src/mm_remani/test/test_piper_feedback_command.py
+
+2026-11-06 软件验证记录：
+  remani_planner_node 单线程增量编译、链接成功，编译进程虚拟内存上限 2 GiB。
+  链接器仍提示原环境 OpenCV 4.2/4.5 混用；本次没有替换系统依赖。
+  原模式、MPPI 模式及关闭执行驱动模式均已离线展开 launch，未启动节点。
+  12 项参考相位检查、7 项碰撞/保持区间检查、12 组驱动反馈检查全部通过。
+  默认姿态的虚拟无障碍算例三轮约 44.6–46.9 ms，进程峰值约 54 MiB。
+  一次完整候选周期（含输出前复核）通过，未创建实车执行发布者。
+  上述耗时不是实车动态障碍场景的性能或避障成功率。
+  最后记录的收拢姿态在原 URDF mesh 上出现 link1–link5 表面相交，
+  其余 5 对肩腕/上臂 mesh 未检出表面相交。旧姿态 6 对结果复现一致。
+  这不是实物碰撞结论，也不是当前实测姿态；不能按粗模型误报直接放行。
+  MPPI 及命令发布前检查均已验证会拒绝该姿态，新增回归通过。
+  结果保存在 test/data/arm_pose_mesh_check_20261106.json；因此尚不能开始运动；
+  没有放宽碰撞阈值，也没有自动启动机械臂或底盘。
+
+相位与碰撞离线复验（先 source devel/setup.bash）：
+  PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 OPENBLAS_NUM_THREADS=1 /usr/bin/python3 -m unittest discover -s /home/l/remani_ws/src/mm_remani/test -p 'test_mppi_*.py'
+主节点只使用系统 Python 包，避免用户 NumPy 与系统 SciPy 的版本冲突；未改全局环境。
+
+2026-11-06 晚间待机仿真记录：
+  当前主工程已完成原生控制、MPPI 固定臂、MPPI 活动臂的共同感知对照。
+  底盘自由；独立 5 ms 数值执行模型，20 ms 测量延迟，0.30 s 指令超时。
+  最终默认不确定度三组均在约 8.08 s 与高位移动圆柱发生球模型接触，
+  尚未验证成功避障，毫米级底盘位移不能视为成功的臂优先避障证据。
+  MPPI 活动臂周期 P95=82.48 ms（95 ms 门限），主要阻断为动态点存在时无可行候选。
+  零预测不确定度仅为仿真归因实验；改善交付后仍碰撞，不能用于实车配置。
+  快照 NumPy 接收、等价三线性插值加速已生效；7 项碰撞回归通过。
+  完整地图缓存实验 mppi/retain_complete_snapshot 默认关闭，仅仿真启动器开启；
+  保留源时间戳并执行过期检查，明确允许有界地图处理延迟。
+  仿真启动器：scripts/run_standby_sim.py；图表工具：scripts/plot_standby_sim.py。
+  数据与报告：experiments/online_remani_validation/results/main_standby_20261106/。
+  仿真仅用 localhost:11466、/sim/* 执行话题；未连接 CAN、底盘或机械臂驱动。
+
+2026-11-06 后续修正（完整移动避障仍未通过）：
+  修复候选之间刹停尾段相互影响；修复待机拒绝误触发导航持久停车锁。
+  仿真新增与position执行相符的预测/交付检查，名义响应模型只在standby simulation启用。
+  小型原生积分库保留10ms离散，34项回归通过；四组修正后串行ROS复测完成。
+  空场39/40周期交付；默认动态场8.075s碰撞，零不确定性诊断8.105s碰撞。
+  默认不确定性已使固定结构的硬可行集为空；零不确定性动态诊断实时性能仍不达标。
+  尚无收臂候选实际交付，不能据微小关节/底盘位移宣称臂优先避障。
+  数据、PNG、GIF和中文报告：experiments/online_remani_validation/results/standby_candidate_followup_20261106/。
+
+2026-11-06 最新检查（运行时加速与收臂时机）：
+  融合原有底盘/机械臂推进，并以保守距离界裁剪动态查询；保持候选、积分步长与验收标准。
+  41项相关回归通过；同记录输入规划加交付检查78.57→57.12ms，控制和预测轨迹一致。
+  零膨胀诊断seed11交付80/82，周期P95=90.04ms，收臂候选实际交付7次；seed23交付75/81，仍有4次交付超时。
+  关节变化达到4.76°/5.71°，但两组仍在8.13/8.16s碰撞；完整避障未通过。
+  默认膨胀组交付31/81，50次无可行候选，8.07s碰撞；没有修改实车不确定性参数。
+  未发现重复膨胀；固定三维膨胀0.8s达0.52m，当前单场景误差不能替代实车标定。
+  独立执行模型的指定收臂对照：2.365s开始可完成24s，最小间隙55.25mm；7.04s开始则8.095s碰撞。
+  上述指定动作只是可行性见证，不是MPPI避障成功；零膨胀MPPI短视评分仍使收臂启动偏晚。
+  本轮3组ROS串行运行，图总峰值RSS≤433.45MiB；未启动真实驱动。
+  数据、PNG、GIF和中文报告：experiments/online_remani_validation/results/standby_runtime_followup_20261106/。
+
+2026-11-07 研究方向调整：导航过程中机械臂优先避障
+  底盘继续沿原参考运动，目标是减少避障引入的额外偏移；待机问题暂不继续处理。
+  导航核已有保持名义底盘、变化机械臂的候选，但后续随机扰动原先仍可改变底盘。
+  已修正为：臂优先候选有可行解时，随机采样与加权合成都保持名义底盘控制；这些候选全部不可行才开放原有整机补偿。
+  mode=nominal/arm_only/whole_body_fallback；arm_only表示搜索阶段，不保证最终关节一定运动。
+  保持的是当前MPPI跟踪器从实测状态生成的名义序列；发布前限速/停止仍有效，不承诺实测底盘误差为零。
+  简化移动障碍回归验证臂避让、底盘补偿、正常跟踪三种情形；44项相关测试通过，峰值69MiB。
+  尚未完成这一新场景的完整机器人ROS对照；未解除位置伺服导航限制或修改动态膨胀参数。
+  检查记录：experiments/online_remani_validation/results/navigation_arm_priority_20261107/。

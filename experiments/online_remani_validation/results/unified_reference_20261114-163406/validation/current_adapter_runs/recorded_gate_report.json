@@ -1,0 +1,231 @@
+{
+  "scope": "Full production NativeReferenceAdapter.plan -> WholeBodyMPPI.plan -> original independent 5ms bounded/lagged Plant; real two-gear polynomial and original 100Hz native phase clock. Clear one-sphere scene, ideal fixed arm, no full robot collision/map/replanning/terminal FSM. Recorded gates copied by source walltime when specified, no new actuator authority or ROS publishing. This is not hardware validation.",
+  "params": {
+    "yaw_hold_speed": 0.04,
+    "virtual_time_scale_rise_rate": 0.8,
+    "virtual_time_scale_fall_rate": 2.0,
+    "base_tracking_slow_distance": 0.08,
+    "base_tracking_stop_distance": 0.16,
+    "base_tracking_resume_distance": 0.05,
+    "base_tracking_slow_yaw": 0.25,
+    "base_tracking_stop_yaw": 0.55,
+    "base_tracking_resume_yaw": 0.15,
+    "base_tracking_min_time_scale": 0.1
+  },
+  "base_limits": {
+    "vmax": 0.25,
+    "wmax": 0.35,
+    "accel": 0.25,
+    "angular_accel": 0.8,
+    "track": 0.37,
+    "wheel_v": 0.25,
+    "wheel_a": 0.2975
+  },
+  "initial_state": [
+    -0.2833449222587313,
+    -0.04042236853228637,
+    -0.0039423133529168635,
+    -0.0009187268940778481,
+    0.003948068807535607,
+    -0.006998770300497261,
+    0.5107182457185807,
+    -1.050182064217508,
+    0.0,
+    0.9388475112327896,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "final_state": [
+    0.5274336600936346,
+    -1.3300007396393216,
+    1.8168280521386113,
+    -0.06528899629511327,
+    -0.18720416705677545,
+    -0.006998770300497261,
+    0.5107182457185807,
+    -1.050182064217508,
+    0.0,
+    0.9388475112327896,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "native_duration": 13.48169309704538,
+  "elapsed": 19.42,
+  "clock_completed": true,
+  "final_phase": 13.48169309704538,
+  "final_scale": 1.0,
+  "final_goal_position_error": 0.06932990868515596,
+  "final_endpoint_position_error": 0.06932990868515654,
+  "final_goal_yaw_error": 0.23906461391381884,
+  "freeze_events": 0,
+  "resume_events": 0,
+  "frozen_seconds": 0.0,
+  "max_reference_position_error": 0.14319619949753934,
+  "max_reference_yaw_error": 0.44714477645980555,
+  "angular_flips_ge_005": 0,
+  "angular_flips_scale_mode": 0,
+  "angular_flips_endpoint_2_5cm": 0,
+  "scale_transitions": 0,
+  "scale_transition_command_flips": 0,
+  "events": [],
+  "flips": [],
+  "transitions": [],
+  "nonzero_sign_changes": 2,
+  "nonzero_sign_changes_scale_mode": 0,
+  "nonzero_sign_changes_endpoint_2_5cm": 0,
+  "nonzero_sign_change_definition": "Consecutive controls with abs(w)>=.05, skipping smaller/zero commands; counts can include ordinary smooth sign changes over long intervals. Inspect attached rows for root cause.",
+  "nonzero_sign_change_rows": [
+    {
+      "before": {
+        "delivery_event": {
+          "t": 1.6149227619171143,
+          "allow": true,
+          "state": "command_delivered",
+          "mode": "nominal",
+          "recorded_zero": false,
+          "source_time": 1794643931.1784806,
+          "receipt_time": 1794643931.1821873
+        },
+        "t": 1.615,
+        "phase": 1.6100000000000012,
+        "scale": 1.0,
+        "hold": false,
+        "block": 0,
+        "gear": 1,
+        "position": [
+          -0.16231701783921829,
+          -0.06518872408730096
+        ],
+        "yaw": -0.3405509032753002,
+        "command": [
+          0.22215721136299463,
+          -0.05832855405867063
+        ],
+        "reference_position_error": 0.04191158418628167,
+        "reference_yaw_error": 0.04116578810871108,
+        "current_distance": 0.04308876425391336,
+        "end_distance": 0.36587994955202013,
+        "pause_align": false
+      },
+      "after": {
+        "delivery_event": {
+          "t": 1.7957415580749512,
+          "allow": true,
+          "state": "command_delivered",
+          "mode": "nominal",
+          "recorded_zero": false,
+          "source_time": 1794643931.3592994,
+          "receipt_time": 1794643931.366242
+        },
+        "t": 1.8,
+        "phase": 1.8000000000000014,
+        "scale": 1.0,
+        "hold": false,
+        "block": 0,
+        "gear": 1,
+        "position": [
+          -0.1362082071953191,
+          -0.07497330312775212
+        ],
+        "yaw": -0.3727738058746432,
+        "command": [
+          0.23928474486414067,
+          0.05792029803167207
+        ],
+        "reference_position_error": 0.04949392615736093,
+        "reference_yaw_error": 0.0010048955135317783,
+        "current_distance": 0.05142723157504614,
+        "end_distance": 0.33831242617809487,
+        "pause_align": false
+      },
+      "scale_mode_changed": false,
+      "same_gear": true,
+      "endpoint_2_5cm_crossed": false
+    },
+    {
+      "before": {
+        "delivery_event": {
+          "t": 10.205670833587646,
+          "allow": true,
+          "state": "command_delivered",
+          "mode": "nominal",
+          "recorded_zero": false,
+          "source_time": 1794643939.7692287,
+          "receipt_time": 1794643939.7720082
+        },
+        "t": 10.21,
+        "phase": 8.323000663017226,
+        "scale": 0.5566097365592498,
+        "hold": false,
+        "block": 1,
+        "gear": -1,
+        "position": [
+          0.13746977523057316,
+          -0.5223570257146513
+        ],
+        "yaw": 2.1106409057674536,
+        "command": [
+          -0.10832999305595316,
+          0.08016699829872298
+        ],
+        "reference_position_error": 0.11941246786140002,
+        "reference_yaw_error": 0.21492340012726885,
+        "current_distance": 0.1204656078474411,
+        "end_distance": 0.9633123339627547,
+        "pause_align": true
+      },
+      "after": {
+        "delivery_event": {
+          "t": 10.396158456802368,
+          "allow": true,
+          "state": "command_delivered",
+          "mode": "nominal",
+          "recorded_zero": false,
+          "source_time": 1794643939.9597163,
+          "receipt_time": 1794643939.9623234
+        },
+        "t": 10.4,
+        "phase": 8.429152388840556,
+        "scale": 0.55991558205538,
+        "hold": false,
+        "block": 1,
+        "gear": -1,
+        "position": [
+          0.1483002038077353,
+          -0.5397380090024271
+        ],
+        "yaw": 2.1406731257474525,
+        "command": [
+          -0.10812954943368287,
+          -0.056405834173443914
+        ],
+        "reference_position_error": 0.11911861492841068,
+        "reference_yaw_error": 0.22959786127046478,
+        "current_distance": 0.12019283810235781,
+        "end_distance": 0.9430061635930206,
+        "pause_align": true
+      },
+      "scale_mode_changed": false,
+      "same_gear": true,
+      "endpoint_2_5cm_crossed": false
+    }
+  ],
+  "wall_seconds": 2.234979730001214,
+  "variant": "current",
+  "actual_plan_calls": 195,
+  "actual_plan_failures": [],
+  "source_sha256": {
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "e5ac13e9387138c0464607996ae362297925a6b2abca34bcf0a51f65d38b303d",
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": "61a005718e77306d8768aa4b69e8104a6d345c688256e677395bd92d2b5fdbed"
+  }
+}

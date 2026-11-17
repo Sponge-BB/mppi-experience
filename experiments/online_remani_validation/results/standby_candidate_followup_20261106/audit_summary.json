@@ -1,0 +1,823 @@
+{
+  "scope": "Recorded candidate audit; no ROS launch, rollout or source modification performed for this analysis.",
+  "selection_time_basis": "Nearest candidate_diagnostics.plan_time - runner.start_ros_time to each requested time; status elapsed also retained.",
+  "units": {
+    "gaps": "m",
+    "cost": "existing objective value",
+    "terminal_arm_delta": "rad, H-step endpoint minus measured joints; before braking tail",
+    "first_external_violation_s": "relative to plan_time, includes braking tail; null means none"
+  },
+  "limitations": [
+    "These recordings predate the separately assigned batch-tail correction; later code changes do not alter this recorded evidence.",
+    "Configuration clearance refers to the current sampled collision model, not a new mesh validation.",
+    "Zero uncertainty is a diagnosis configuration, not a validated deployment setting."
+  ],
+  "runs": {
+    "audit_current": {
+      "source_status_sha256": "ed0d283f03187694b53399f8a5d5f6fe89b4f51f58e7eff93f402069ae8b2513",
+      "result": {
+        "reason": "collision",
+        "elapsed_s": 8.075,
+        "max_base_displacement_m": 0.0012904863678838163,
+        "max_arm_change_deg": 0.1862805525550174
+      },
+      "scene_statuses": 81,
+      "audited_statuses": 81,
+      "status_counts": {
+        "command_delivered": 31,
+        "command_hold_or_braking_rejected_by_latest_state_or_map": 2,
+        "no_feasible_candidate": 48
+      },
+      "candidate_infeasibility_counts": {
+        "candidate_evaluations": 1721,
+        "invalid": 1011,
+        "external_negative": 1011
+      },
+      "hold_validity_counts": {
+        "posture_hold_present": 81,
+        "posture_hold_valid": 33,
+        "reference_hold_valid": 33
+      },
+      "hold_cost_comparisons_when_both_valid": {
+        "both_valid": 33,
+        "reference_lower_or_equal_cost": 33
+      },
+      "selected_posture_outcomes": {},
+      "selected_posture_events": [],
+      "frames": [
+        {
+          "target_elapsed_s": 2.5,
+          "plan_elapsed_s": 2.5400000010000667,
+          "status_elapsed_s": 2.615000000000009,
+          "status": "no_feasible_candidate",
+          "solve_ms": 72.66,
+          "cycle_ms": 73.96,
+          "selected_family": null,
+          "selection": "none",
+          "snapshot": {
+            "sequence": 94.0,
+            "esdf_revision": 47.0,
+            "dynamic_points": 38.0,
+            "map_age_at_plan_s": 0.12999999999999545,
+            "dynamic_age_at_plan_s": 0.10500000000001819,
+            "uncertainty_coefficients": [
+              0.08,
+              0.25,
+              0.75
+            ]
+          },
+          "candidates": {
+            "reference/hold": {
+              "valid": false,
+              "bounds_valid": true,
+              "first_external_violation_s": 0.55,
+              "terminal_arm_delta": [
+                2.0203716215132255e-05,
+                -0.00039972277671496137,
+                -0.0014296496375190149,
+                -0.0021386766827233773,
+                0.0015775818336244418,
+                -0.0016512095551059673
+              ],
+              "cost": 10.989875858391372,
+              "external_gap_m": -0.7796983754970679,
+              "configuration_gap_m": 0.002999999999999864,
+              "infeasibility_reasons": [
+                "external_collision"
+              ]
+            },
+            "current/hold": {
+              "valid": false,
+              "bounds_valid": true,
+              "first_external_violation_s": 0.55,
+              "terminal_arm_delta": [
+                -5.251702946026127e-05,
+                -9.579821087712936e-05,
+                -1.2183235037932505e-05,
+                6.247019188288351e-05,
+                -5.500119445667195e-06,
+                7.17768331899662e-05
+              ],
+              "cost": 10.986385153975242,
+              "external_gap_m": -0.7796898465459474,
+              "configuration_gap_m": 0.0029999999999998778,
+              "infeasibility_reasons": [
+                "external_collision"
+              ]
+            },
+            "posture_0/hold": {
+              "valid": false,
+              "bounds_valid": true,
+              "first_external_violation_s": 0.55,
+              "terminal_arm_delta": [
+                2.0203716215132255e-05,
+                0.0904356442936658,
+                -0.0014296496400507674,
+                -0.0021386766827233773,
+                -0.08759580751280704,
+                -0.0016512095551059673
+              ],
+              "cost": 10.590798058379377,
+              "external_gap_m": -0.7785717353979906,
+              "configuration_gap_m": 0.0029999999999998916,
+              "infeasibility_reasons": [
+                "external_collision"
+              ]
+            }
+          }
+        },
+        {
+          "target_elapsed_s": 4.0,
+          "plan_elapsed_s": 4.040000001000067,
+          "status_elapsed_s": 4.115000000000009,
+          "status": "no_feasible_candidate",
+          "solve_ms": 73.68,
+          "cycle_ms": 73.96,
+          "selected_family": null,
+          "selection": "none",
+          "snapshot": {
+            "sequence": 124.0,
+            "esdf_revision": 62.0,
+            "dynamic_points": 37.0,
+            "map_age_at_plan_s": 0.12999999999999545,
+            "dynamic_age_at_plan_s": 0.10500000000001819,
+            "uncertainty_coefficients": [
+              0.08,
+              0.25,
+              0.75
+            ]
+          },
+          "candidates": {
+            "reference/hold": {
+              "valid": false,
+              "bounds_valid": true,
+              "first_external_violation_s": 0.4,
+              "terminal_arm_delta": [
+                -0.00026814153315524327,
+                -0.000699947028511394,
+                -0.0011501084234712966,
+                -0.0009522533203892773,
+                0.0015941583332934606,
+                -0.0003697749174515132
+              ],
+              "cost": 31.798536675212492,
+              "external_gap_m": -0.8821461004943221,
+              "configuration_gap_m": 0.0029999999999999055,
+              "infeasibility_reasons": [
+                "external_collision"
+              ]
+            },
+            "current/hold": {
+              "valid": false,
+              "bounds_valid": true,
+              "first_external_violation_s": 0.4,
+              "terminal_arm_delta": [
+                1.5834646548917104e-05,
+                -1.7671107531258556e-05,
+                1.5683038083524892e-05,
+                1.1145430903307125e-05,
+                -3.159236848682134e-05,
+                -1.9527316168158634e-05
+              ],
+              "cost": 31.795620757483377,
+              "external_gap_m": -0.8821907779677944,
+              "configuration_gap_m": 0.002999999999999864,
+              "infeasibility_reasons": [
+                "external_collision"
+              ]
+            },
+            "posture_0/hold": {
+              "valid": false,
+              "bounds_valid": true,
+              "first_external_violation_s": 0.4,
+              "terminal_arm_delta": [
+                -0.00026814153315524327,
+                0.08824539869973003,
+                -0.001150108426002161,
+                -0.0009522533203892773,
+                -0.08686432725754256,
+                -0.0003697749174515132
+              ],
+              "cost": 30.698704019312395,
+              "external_gap_m": -0.879873810616734,
+              "configuration_gap_m": 0.002999999999999864,
+              "infeasibility_reasons": [
+                "external_collision"
+              ]
+            }
+          }
+        },
+        {
+          "target_elapsed_s": 6.0,
+          "plan_elapsed_s": 6.040000001000067,
+          "status_elapsed_s": 6.105000000000018,
+          "status": "command_delivered",
+          "solve_ms": 63.33,
+          "cycle_ms": 69.36,
+          "selected_family": [
+            "reference",
+            "hold"
+          ],
+          "selection": "structured",
+          "snapshot": {
+            "sequence": 164.0,
+            "esdf_revision": 82.0,
+            "dynamic_points": 0.0,
+            "map_age_at_plan_s": 0.12999999999999545,
+            "dynamic_age_at_plan_s": 0.10500000000001819,
+            "uncertainty_coefficients": [
+              0.08,
+              0.25,
+              0.75
+            ]
+          },
+          "candidates": {
+            "reference/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.00019239718207005345,
+                -0.0007476592461104214,
+                -0.0010278154231546655,
+                -0.0008643265617357761,
+                0.0013764355757843738,
+                -0.0004389078199749484
+              ],
+              "cost": 6.823229539245555e-05,
+              "external_gap_m": 0.1905459518221734,
+              "configuration_gap_m": 0.0029999999999999055,
+              "infeasibility_reasons": []
+            },
+            "current/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -5.996184053116797e-06,
+                7.124434317828943e-06,
+                7.521682357625181e-06,
+                1.8820561140571197e-06,
+                -1.3057050556541938e-05,
+                6.331536672284132e-06
+              ],
+              "cost": 6.828787337353828e-05,
+              "external_gap_m": 0.1905447794681507,
+              "configuration_gap_m": 0.0029999999999999055,
+              "infeasibility_reasons": []
+            },
+            "posture_0/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.00019239718207005345,
+                0.08755027083808753,
+                -0.001027815425685974,
+                -0.0008643265617357761,
+                -0.08738395356762374,
+                -0.0004389078199749484
+              ],
+              "cost": 0.0009222789624202361,
+              "external_gap_m": 0.19053570933738068,
+              "configuration_gap_m": 0.0029999999999998778,
+              "infeasibility_reasons": []
+            }
+          }
+        },
+        {
+          "target_elapsed_s": 7.0,
+          "plan_elapsed_s": 7.040000001000067,
+          "status_elapsed_s": 7.115000000000009,
+          "status": "no_feasible_candidate",
+          "solve_ms": 78.1,
+          "cycle_ms": 78.36,
+          "selected_family": null,
+          "selection": "none",
+          "snapshot": {
+            "sequence": 184.0,
+            "esdf_revision": 92.0,
+            "dynamic_points": 31.0,
+            "map_age_at_plan_s": 0.12999999999999545,
+            "dynamic_age_at_plan_s": 0.10500000000001819,
+            "uncertainty_coefficients": [
+              0.08,
+              0.25,
+              0.75
+            ]
+          },
+          "candidates": {
+            "reference/hold": {
+              "valid": false,
+              "bounds_valid": true,
+              "first_external_violation_s": 0.0,
+              "terminal_arm_delta": [
+                -0.00035423980339850664,
+                -0.000649035958166122,
+                -0.0009465740174825488,
+                -0.0009022544497497048,
+                0.0011962812506250975,
+                -0.0003296198153374201
+              ],
+              "cost": 133.21679486259782,
+              "external_gap_m": -1.1088174837925042,
+              "configuration_gap_m": 0.0029999999999998916,
+              "infeasibility_reasons": [
+                "external_collision"
+              ]
+            },
+            "current/hold": {
+              "valid": false,
+              "bounds_valid": true,
+              "first_external_violation_s": 0.0,
+              "terminal_arm_delta": [
+                1.792461663083656e-07,
+                5.659606561181363e-08,
+                1.255987482906562e-07,
+                1.9907617456057201e-07,
+                -1.0543364026283086e-07,
+                -1.1980596613630871e-08
+              ],
+              "cost": 133.1775403526408,
+              "external_gap_m": -1.1087530533045455,
+              "configuration_gap_m": 0.0029999999999999194,
+              "infeasibility_reasons": [
+                "external_collision"
+              ]
+            },
+            "posture_0/hold": {
+              "valid": false,
+              "bounds_valid": true,
+              "first_external_violation_s": 0.0,
+              "terminal_arm_delta": [
+                -0.00035423980339850664,
+                0.0877484133638986,
+                -0.0009465740200140793,
+                -0.0009022544497497048,
+                -0.08774704423233098,
+                -0.0003296198153374201
+              ],
+              "cost": 126.95822060365168,
+              "external_gap_m": -1.0822978117214104,
+              "configuration_gap_m": 0.0029999999999998916,
+              "infeasibility_reasons": [
+                "external_collision"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "audit_zero_uncertainty": {
+      "source_status_sha256": "4e25b80b9fb18e7361b646453809cb002c91c009b45acaf0bc0bb64ef9c2622f",
+      "result": {
+        "reason": "collision",
+        "elapsed_s": 8.079999999999998,
+        "max_base_displacement_m": 0.0024226290419327645,
+        "max_arm_change_deg": 0.18888428121912232
+      },
+      "scene_statuses": 80,
+      "audited_statuses": 80,
+      "status_counts": {
+        "command_delivered": 56,
+        "delivery_deadline_exceeded": 15,
+        "planning_deadline_exceeded": 3,
+        "command_hold_or_braking_rejected_by_latest_state_or_map": 3,
+        "no_feasible_candidate": 3
+      },
+      "candidate_infeasibility_counts": {
+        "candidate_evaluations": 1750,
+        "invalid": 134,
+        "external_negative": 134
+      },
+      "hold_validity_counts": {
+        "posture_hold_present": 80,
+        "posture_hold_valid": 75,
+        "reference_hold_valid": 74
+      },
+      "hold_cost_comparisons_when_both_valid": {
+        "both_valid": 74,
+        "reference_lower_or_equal_cost": 69,
+        "posture_lower_cost": 5
+      },
+      "selected_posture_outcomes": {
+        "delivery_deadline_exceeded": 2,
+        "planning_deadline_exceeded": 2,
+        "command_hold_or_braking_rejected_by_latest_state_or_map": 3
+      },
+      "selected_posture_events": [
+        {
+          "plan_elapsed_s": 6.914999999999964,
+          "status_elapsed_s": 7.024999999999977,
+          "state": "delivery_deadline_exceeded",
+          "selected_family": [
+            "posture_0",
+            "hold"
+          ],
+          "selection": "exponential_mean",
+          "solve_ms": 93.5,
+          "cycle_ms": 102.18
+        },
+        {
+          "plan_elapsed_s": 7.024999999999977,
+          "status_elapsed_s": 7.125,
+          "state": "delivery_deadline_exceeded",
+          "selected_family": [
+            "posture_0",
+            "hold"
+          ],
+          "selection": "structured",
+          "solve_ms": 94.02,
+          "cycle_ms": 102.97
+        },
+        {
+          "plan_elapsed_s": 7.219999998999924,
+          "status_elapsed_s": 7.324999998999942,
+          "state": "planning_deadline_exceeded",
+          "selected_family": [
+            "posture_0",
+            "hold"
+          ],
+          "selection": "exponential_mean",
+          "solve_ms": 95.0,
+          "cycle_ms": 95.49
+        },
+        {
+          "plan_elapsed_s": 7.324999998999942,
+          "status_elapsed_s": 7.4249999999999545,
+          "state": "command_hold_or_braking_rejected_by_latest_state_or_map",
+          "selected_family": [
+            "posture_0",
+            "hold"
+          ],
+          "selection": "structured",
+          "solve_ms": 93.25,
+          "cycle_ms": 100.11
+        },
+        {
+          "plan_elapsed_s": 7.614999998999906,
+          "status_elapsed_s": 7.709999998999933,
+          "state": "command_hold_or_braking_rejected_by_latest_state_or_map",
+          "selected_family": [
+            "posture_0",
+            "turn_right"
+          ],
+          "selection": "structured",
+          "solve_ms": 89.85,
+          "cycle_ms": 95.65
+        },
+        {
+          "plan_elapsed_s": 7.714999998999929,
+          "status_elapsed_s": 7.809999998999956,
+          "state": "planning_deadline_exceeded",
+          "selected_family": [
+            "posture_0",
+            "turn_right"
+          ],
+          "selection": "exponential_mean",
+          "solve_ms": 99.85,
+          "cycle_ms": 100.59
+        },
+        {
+          "plan_elapsed_s": 7.914999999999964,
+          "status_elapsed_s": 8.014999999999986,
+          "state": "command_hold_or_braking_rejected_by_latest_state_or_map",
+          "selected_family": [
+            "posture_0",
+            "curve_right"
+          ],
+          "selection": "exponential_mean",
+          "solve_ms": 89.57,
+          "cycle_ms": 96.96
+        }
+      ],
+      "frames": [
+        {
+          "target_elapsed_s": 2.5,
+          "plan_elapsed_s": 2.5149999999999864,
+          "status_elapsed_s": 2.6099999989999105,
+          "status": "delivery_deadline_exceeded",
+          "solve_ms": 89.88,
+          "cycle_ms": 96.69,
+          "selected_family": [
+            "reference",
+            "hold"
+          ],
+          "selection": "exponential_mean",
+          "snapshot": {
+            "sequence": 94.0,
+            "esdf_revision": 47.0,
+            "dynamic_points": 38.0,
+            "map_age_at_plan_s": 0.12000000000000455,
+            "dynamic_age_at_plan_s": 0.10500000000001819,
+            "uncertainty_coefficients": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "candidates": {
+            "reference/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.00011653624451495979,
+                -0.00046602007605689444,
+                -0.0012455374778035377,
+                -0.002072810611054906,
+                0.0011554483294432538,
+                -0.0016212380934478793
+              ],
+              "cost": 0.0001254733749582318,
+              "external_gap_m": 0.3349993003154169,
+              "configuration_gap_m": 0.0029999999999999333,
+              "infeasibility_reasons": []
+            },
+            "current/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -4.385756581151017e-05,
+                -7.021498905990242e-05,
+                2.0448398228012366e-05,
+                -3.160591844157288e-05,
+                -0.00010473345784267618,
+                -3.2135935981868376e-06
+              ],
+              "cost": 0.00012636659389278872,
+              "external_gap_m": 0.3349842332946864,
+              "configuration_gap_m": 0.002999999999999864,
+              "infeasibility_reasons": []
+            },
+            "posture_0/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.00011653624451495979,
+                0.08971843430553772,
+                -0.00124553748033418,
+                -0.002072810611054906,
+                -0.08481386151853604,
+                -0.0016212380934478793
+              ],
+              "cost": 0.0009753405453360418,
+              "external_gap_m": 0.33581848626664224,
+              "configuration_gap_m": 0.0029999999999999055,
+              "infeasibility_reasons": []
+            }
+          }
+        },
+        {
+          "target_elapsed_s": 4.0,
+          "plan_elapsed_s": 4.014999999999986,
+          "status_elapsed_s": 4.094999998999924,
+          "status": "command_delivered",
+          "solve_ms": 75.92,
+          "cycle_ms": 82.38,
+          "selected_family": [
+            "reference",
+            "hold"
+          ],
+          "selection": "exponential_mean",
+          "snapshot": {
+            "sequence": 124.0,
+            "esdf_revision": 62.0,
+            "dynamic_points": 37.0,
+            "map_age_at_plan_s": 0.12000000000000455,
+            "dynamic_age_at_plan_s": 0.10500000000001819,
+            "uncertainty_coefficients": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "candidates": {
+            "reference/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.00035303784849618797,
+                0.00031242963430822,
+                0.0001928674709266165,
+                -0.0006387508849350049,
+                0.0002854872441988565,
+                -0.0005999464572945181
+              ],
+              "cost": 0.0001696020022632972,
+              "external_gap_m": 0.22171857071544146,
+              "configuration_gap_m": 0.0029999999999998916,
+              "infeasibility_reasons": []
+            },
+            "current/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.0001019109942486636,
+                6.653515198862259e-05,
+                3.714663203613355e-05,
+                2.475996611864381e-05,
+                -2.7727686413792085e-05,
+                -2.9241536363678027e-06
+              ],
+              "cost": 0.00016968960915020494,
+              "external_gap_m": 0.22167804478606098,
+              "configuration_gap_m": 0.0029999999999998916,
+              "infeasibility_reasons": []
+            },
+            "posture_0/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.00035303784849618797,
+                0.08588472767778321,
+                0.00019286746839575208,
+                -0.0006387508849350049,
+                -0.0869726712575063,
+                -0.0005999464572945181
+              ],
+              "cost": 0.0010165427520186627,
+              "external_gap_m": 0.22461524865648066,
+              "configuration_gap_m": 0.0029999999999999055,
+              "infeasibility_reasons": []
+            }
+          }
+        },
+        {
+          "target_elapsed_s": 6.0,
+          "plan_elapsed_s": 6.014999999999986,
+          "status_elapsed_s": 6.084999998999933,
+          "status": "command_delivered",
+          "solve_ms": 64.89,
+          "cycle_ms": 71.76,
+          "selected_family": [
+            "reference",
+            "hold"
+          ],
+          "selection": "structured",
+          "snapshot": {
+            "sequence": 164.0,
+            "esdf_revision": 82.0,
+            "dynamic_points": 0.0,
+            "map_age_at_plan_s": 0.12000000000000455,
+            "dynamic_age_at_plan_s": 0.10500000000001819,
+            "uncertainty_coefficients": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "candidates": {
+            "reference/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.0018468662078293101,
+                4.676342296838776e-05,
+                -5.1371187511639604e-05,
+                -0.00026679224824219163,
+                0.0007077052540938045,
+                0.0013093633530476205
+              ],
+              "cost": 0.00016952153580033022,
+              "external_gap_m": 0.1909184945278886,
+              "configuration_gap_m": 0.002999999999999864,
+              "infeasibility_reasons": []
+            },
+            "current/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                2.283425947825074e-05,
+                1.3263165434818092e-06,
+                2.5453063434710543e-08,
+                -1.008966451090693e-06,
+                -5.145623202751359e-06,
+                -1.6994093653487086e-05
+              ],
+              "cost": 0.0001701398628293576,
+              "external_gap_m": 0.19079917943126287,
+              "configuration_gap_m": 0.002999999999999864,
+              "infeasibility_reasons": []
+            },
+            "posture_0/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.0018468662078293101,
+                0.08771281752629756,
+                -5.137119004228197e-05,
+                -0.00026679224824219163,
+                -0.08760574559832307,
+                0.0013093633530476205
+              ],
+              "cost": 0.0010192546319332306,
+              "external_gap_m": 0.1909184945278886,
+              "configuration_gap_m": 0.002999999999999864,
+              "infeasibility_reasons": []
+            }
+          }
+        },
+        {
+          "target_elapsed_s": 7.0,
+          "plan_elapsed_s": 7.024999999999977,
+          "status_elapsed_s": 7.125,
+          "status": "delivery_deadline_exceeded",
+          "solve_ms": 94.02,
+          "cycle_ms": 102.97,
+          "selected_family": [
+            "posture_0",
+            "hold"
+          ],
+          "selection": "structured",
+          "snapshot": {
+            "sequence": 184.0,
+            "esdf_revision": 92.0,
+            "dynamic_points": 31.0,
+            "map_age_at_plan_s": 0.12999999999999545,
+            "dynamic_age_at_plan_s": 0.1150000000000091,
+            "uncertainty_coefficients": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "candidates": {
+            "reference/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.0024241959720959884,
+                -0.0003505391634832655,
+                -0.0015930810110735827,
+                -0.0018260379932226547,
+                -0.00036558732053282306,
+                6.447240482730814e-05
+              ],
+              "cost": 0.0047550229769516205,
+              "external_gap_m": 0.010467491940628702,
+              "configuration_gap_m": 0.0029999999999998778,
+              "infeasibility_reasons": []
+            },
+            "current/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -5.952774139887217e-06,
+                -2.051488957155456e-06,
+                -9.118743653058203e-06,
+                -8.872243086186643e-06,
+                -6.551970075263647e-06,
+                -5.492903614629608e-06
+              ],
+              "cost": 0.0048969449668927615,
+              "external_gap_m": 0.01020443593794896,
+              "configuration_gap_m": 0.0029999999999999055,
+              "infeasibility_reasons": []
+            },
+            "posture_0/hold": {
+              "valid": true,
+              "bounds_valid": true,
+              "first_external_violation_s": null,
+              "terminal_arm_delta": [
+                -0.0024241959720959884,
+                0.08780751223911576,
+                -0.001593081013604447,
+                -0.0018260379932226547,
+                -0.08756631952325766,
+                6.447240482730814e-05
+              ],
+              "cost": 0.002945342087400404,
+              "external_gap_m": 0.03162216449441134,
+              "configuration_gap_m": 0.0029999999999998778,
+              "infeasibility_reasons": []
+            }
+          }
+        }
+      ]
+    }
+  },
+  "evidence_conclusions": [
+    "Default uncertainty: the requested early and late dynamic frames reject both reference/hold and posture_0/hold for external negative clearance, while configuration clearance and joint bounds pass.",
+    "Zero uncertainty: posture_0/hold is feasible at the four selected frames. At 2.515 s and 4.015 s its objective is higher than reference/hold, so maintaining the reference is the lower-cost structured option.",
+    "Near plan elapsed 7.025 s, zero-uncertainty posture_0/hold is feasible and lower-cost than reference/hold; it is selected but rejected by the delivery deadline.",
+    "Across the zero-uncertainty recording, posture_0 is selected seven times and delivered zero times: two delivery deadlines, two planning deadlines, three delivered-command hold/braking rejections.",
+    "No sampled structured candidate in either recording failed configuration clearance or joint bounds; external infeasibility and final delivery rejection explain the recorded failures."
+  ],
+  "minimal_next_steps": [
+    "Complete the separately assigned candidate-independent braking-tail correction, then compare the same held candidate alone versus in the mixed batch; retain the recorded audit as the pre-fix baseline.",
+    "Do not add posture candidates to solve a supposedly missing action: the existing posture is feasible and selected in the diagnostic recording.",
+    "Keep acceptance thresholds intact. After correcting the tail, inspect the remaining selected-posture deadline and command-hold rejection cases before changing weights or expanding samples.",
+    "If early reference preference persists, compare the existing objective and horizon at the first dynamic approach; increasing sample count alone cannot remove a systematic cost preference."
+  ]
+}

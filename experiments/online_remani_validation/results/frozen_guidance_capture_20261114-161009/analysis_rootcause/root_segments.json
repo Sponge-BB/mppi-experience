@@ -1,0 +1,184 @@
+{
+  "goal": 1794643929.0358756,
+  "finish": 1794643966.1027727,
+  "segments": [
+    {
+      "label": "before",
+      "count": 1166,
+      "states": {
+        "command_delivered": 610,
+        "collision_snapshot_unavailable": 210,
+        "collision_snapshot_expired_during_plan": 105,
+        "planning_deadline_exceeded": 135,
+        "delivery_deadline_exceeded": 63,
+        "inputs_expired_before_delivery": 43
+      },
+      "modes": {
+        "standby_extension": 610,
+        "None": 556
+      },
+      "nonzero": 542,
+      "scales": {
+        "none": 1166
+      }
+    },
+    {
+      "label": "navigation",
+      "count": 371,
+      "states": {
+        "reference_changed_during_plan": 1,
+        "command_delivered": 310,
+        "state_feedback_stale": 1,
+        "collision_snapshot_expired_during_plan": 34,
+        "collision_snapshot_unavailable": 15,
+        "inputs_expired_before_delivery": 8,
+        "delivery_deadline_exceeded": 2
+      },
+      "modes": {
+        "None": 61,
+        "reference_wait_hold": 5,
+        "nominal": 295,
+        "terminal_pose_alignment": 10
+      },
+      "nonzero": 305,
+      "scales": {
+        "none": 76,
+        "positive": 256,
+        "zero": 39
+      }
+    },
+    {
+      "label": "after_finish",
+      "count": 1203,
+      "states": {
+        "command_delivered": 774,
+        "planning_deadline_exceeded": 61,
+        "collision_snapshot_expired_during_plan": 100,
+        "collision_snapshot_unavailable": 144,
+        "inputs_expired_before_delivery": 48,
+        "delivery_deadline_exceeded": 74,
+        "feedback_expired_during_plan": 1,
+        "state_feedback_stale": 1
+      },
+      "modes": {
+        "standby_extension": 774,
+        "None": 429
+      },
+      "nonzero": 687,
+      "scales": {
+        "none": 1203
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643929.0368369,
+      "received": 1794643929.0458374,
+      "msg": "[FSM] Manual target keeps current arm pose. Restore stand-by after goal: false",
+      "rel": 0.0009613037109375
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643929.037098,
+      "received": 1794643929.0512981,
+      "msg": "[FSM] Frozen planning-boundary ESDF requirement at seq=1186 in GEN_NEW_TRAJ.",
+      "rel": 0.001222372055053711
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643929.0371728,
+      "received": 1794643929.0519953,
+      "msg": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=1186, esdf_seq=1185, wait=0.00 s).",
+      "rel": 0.0012972354888916016
+    },
+    {
+      "topic": "/planning/trajectory",
+      "t": 1794643929.5954008,
+      "stamp": 1794643929.5635579,
+      "gear": 1,
+      "id": 1,
+      "duration": 4.313436067817962,
+      "rel": 0.5595252513885498
+    },
+    {
+      "topic": "/planning/trajectory",
+      "t": 1794643929.63079,
+      "stamp": 1794643929.5635579,
+      "gear": -1,
+      "id": 2,
+      "duration": 9.168257029227417,
+      "rel": 0.594914436340332
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643929.603621,
+      "received": 1794643929.636409,
+      "msg": "[MMctrl] Terminal yaw captured from trajectory: 1.578 rad.",
+      "rel": 0.5677454471588135
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643929.6037204,
+      "received": 1794643929.6381333,
+      "msg": "[MMctrl] Reset virtual trajectory clock for update 1.",
+      "rel": 0.5678448677062988
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643929.603828,
+      "received": 1794643929.64723,
+      "msg": "[MMctrl] Receive the trajectory. STAY --> POLY_TRAJ",
+      "rel": 0.5679523944854736
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643934.9131455,
+      "received": 1794643934.9411352,
+      "msg": "[MMctrl] Base tracking lag (position 0.050 m, yaw 0.553 rad); freeze reference progress until feedback catches up.",
+      "rel": 5.877269983291626
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643938.1934292,
+      "received": 1794643938.2165382,
+      "msg": "[MMctrl] Base tracking recovered (position 0.036 m, yaw 0.129 rad).",
+      "rel": 9.157553672790527
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643939.203124,
+      "received": 1794643939.3044095,
+      "msg": "[MMctrl] Base tracking lag (position 0.025 m, yaw 0.551 rad); freeze reference progress until feedback catches up.",
+      "rel": 10.167248487472534
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643940.5931299,
+      "received": 1794643940.5982115,
+      "msg": "[MMctrl] Base tracking recovered (position 0.026 m, yaw 0.132 rad).",
+      "rel": 11.557254314422607
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643964.5456655,
+      "received": 1794643964.5566168,
+      "msg": "[FSM] Final position reached; wait for bounded MPPI yaw/arm settling (yaw=0.376 rad, arm=0.004 rad, 0.0/8.0 s).",
+      "rel": 35.50978994369507
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643964.56308,
+      "received": 1794643964.5710669,
+      "msg": "[MMctrl] Stop execute the trajectory. POLY_TRAJ --> STAY",
+      "rel": 35.527204513549805
+    },
+    {
+      "topic": "/rosout_agg",
+      "t": 1794643965.5513628,
+      "received": 1794643965.5593896,
+      "msg": "[FSM] Final position reached; wait for bounded MPPI yaw/arm settling (yaw=0.231 rad, arm=0.004 rad, 1.0/8.0 s).",
+      "rel": 36.51548719406128
+    }
+  ]
+}

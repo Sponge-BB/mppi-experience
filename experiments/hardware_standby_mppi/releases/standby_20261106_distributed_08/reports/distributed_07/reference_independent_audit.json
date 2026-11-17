@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "scope": "Independent numerical audit from recorded native coefficients; imports neither adapter nor MPPI implementation",
+  "success": true,
+  "configuration": {
+    "horizon": 8,
+    "step_s": 0.1
+  },
+  "accepted_native_prefix_versions": 26,
+  "used_native_prefix_versions": 26,
+  "unique_recomputed_reference_hashes": 26,
+  "trajectory_callback_outcomes": {
+    "replace": 26
+  },
+  "checks": {
+    "native_rows_checked": 565,
+    "reference_hash_exact_matches": 565,
+    "joint_horizons_within_1e_12_rad": 565,
+    "sample_time_exact_matches": 565,
+    "source_follows_goal_timestamp_and_receipt": 565,
+    "horizons_extending_past_prefix_end": 197,
+    "native_rows_with_proposed_controls": 558
+  },
+  "native_status_counts": {
+    "shadow_candidate_only_not_validated_for_execution": 558,
+    "surface_candidates_rejected_self_filter_and_geometry_unvalidated": 6,
+    "shadow_solve_deadline_missed": 1
+  },
+  "maximum_joint_sample_error_rad": 0.0,
+  "maximum_sample_timestamp_error_s": 0.0,
+  "maximum_whole_reference_joint_excursion_rad": 0.09516511830440813,
+  "maximum_horizon_joint_excursion_rad": 0.059472109895287686,
+  "mismatches": [],
+  "mismatch_count": 0,
+  "message_serialized_byte_hashes_verified": false,
+  "message_hash_limitation": "Coefficient JSON omits full ROS serialized fields including header.seq and exact secs/nsecs; byte hashes were not independently reconstructed.",
+  "reference_hash_semantics": "SHA256 over little-endian float64 rows [relative_time,x,y,yaw,signed_speed,q1..q6]; absolute source_stamp is separate. Hash identifies received sampled content, not a time-varying per-solve H-step reference.",
+  "limitations": [
+    "Base MPPI follows geometric reference progress; arm reference follows original wall-clock phase. Unified whole-body phase tracking is not established.",
+    "Native protocol lacks goal_id and atomic bundle length; timestamps and quiet interval do not prove goal ownership or complete delivery.",
+    "No hardware actuation or safety certification; native_coefficients are a numerical input audit only."
+  ],
+  "source_files": [
+    "native_reference.jsonl",
+    "shadow_1793951128736941686.jsonl.gz"
+  ],
+  "elapsed_s": 5.131906555998285,
+  "max_rss_kib": 30580,
+  "archive_note": "Lossless gzip after numerical audit; decoded content unchanged."
+}

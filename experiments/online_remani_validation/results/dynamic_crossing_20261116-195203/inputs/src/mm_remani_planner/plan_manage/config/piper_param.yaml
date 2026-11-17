@@ -1,0 +1,25 @@
+mm:
+  mobile_base_dof            : 2    # degree of freedom of the mobile base
+  mobile_base_length         : 0.5  # length of the mobile base
+  mobile_base_width          : 0.5  # width of the mobile base
+  mobile_base_height         : 0.6 # height of the mobile base
+  mobile_base_wheel_base     : 0.37 # please modify the value of ${mobile_base_wheel_base} in poly_traj_utils.hpp if you change this value
+  mobile_base_wheel_radius   : 0.07 # please modify the value of ${mobile_base_wheel_radius} in poly_traj_utils.hpp if you change this value
+  mobile_base_non_singul_vel : 0.05 # minimum linear velocity to avoid singularity
+  mobile_base_max_wheel_omega: 10.0 # maximum rotation speed of the wheel
+  mobile_base_max_wheel_alpha: 20.0 # maximum rotation acceleration of the wheel
+  mobile_base_check_radius   : 0.08 # radius of the circle used to check the collision of the mobile base
+
+  manipulator_dof    : 6    # degree of freedom of the manipulator
+  manipulator_max_vel: 1.57 # maximum velocity of the manipulator
+  manipulator_max_acc: 3.14 # maximum acceleration of the manipulator
+
+  base_mani_fixed_joint_xyz_ypr: [0.005, 0.0, 0.68, 0.0, 0.0, 0.0] # the position and orientation of the manipulator relative to the base
+
+  # param for Piper (replaced FastArmer/UR5)
+  use_fast_armer       : false # false activates the customized Piper branch in mm_config.cpp
+  manipulator_thickness: 0.034 # radius of the circle used to check the collision of the manipulator for Piper
+  manipulator_config   : [0.123, 0.28503, -0.021984, 0.25075, 0.0, 0.211] # Not actually required due to hardcoded DH, but kept matching joint links
+  manipulator_min_pos  : [-2.618,  0.0,  -2.697, -1.832, -1.22, -0.35] # minimum joint position for Piper
+  manipulator_max_pos  : [ 2.618,  3.14,  0.0,    1.832,  1.22,  0.35] # maximum joint position for Piper
+  # manipulator_max_pos  : [ 3.14,  3.14,  3.14,  3.14,  3.14,  3.14] # maximum joint position for UR5

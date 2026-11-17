@@ -1,0 +1,62 @@
+{
+  "review_status": "passed",
+  "hardware_validation": false,
+  "blocking_findings": [],
+  "baseline": "20261114-164751-before-phase-capacity",
+  "parent_guidance": "20261114-164726-unified-reference",
+  "actual_source_sha256": {
+    "src/mm_controller/src/mm_controller_fsm.cpp": "8f35fd4171b4e06a22e7b70797c20e9d0db33ed228d9728d57dc320b3fbc5023",
+    "src/mm_controller/include/mm_controller/mm_controller_fsm.hpp": "6d118dcff1a746f2083a1aff69abe572562e23cf91e7efdbeb3966f4a110e964",
+    "src/mm_controller/test/test_execution_capacity.cpp": "995c68ffbfd7cbde163710a0682457bbc3c1319fe11bf319132368da87369d3a",
+    "src/mm_controller/CMakeLists.txt": "1f1e62a5eff001f573b6ffb578b5b40ca79c7cd36997610ccb85436818af2ace",
+    "src/mm_remani/launch/exp0_real.launch": "631e1eb2a966d67e874d59942d81fe0faea8b4333b5cf04a5158dfc8d5eef116",
+    "src/mm_remani/config/mppi.yaml": "44034906e3142eb990d9270e634c2c3272879e21be3833911965763fa85cf99b",
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": "7e6685aaee4d3a32c624636ad4712372f8b0bd4d44811e594daeee1ac6f11d6a"
+  },
+  "source_checks": {
+    "all_preexisting_clock_control_and_freeze_code_unchanged_after_removing_intended_capacity_insertions": true,
+    "other_controller_functions_byte_identical_to_baseline": {
+      "process": true,
+      "CMD_CTRL_process": true,
+      "syncTrajectoryClock": true,
+      "publishTrajectoryProgress": true,
+      "cal_traj_ctrl_input": true,
+      "cal_stay_ctrl_input": true,
+      "publish_ctrl_cmd": true
+    },
+    "explicit_disable": "exp0_real.launch sets controller/use_mppi_execution_limits true or false outside the MPPI-only group; false short-circuits capacity_at before derivative evaluation and returns scale=1 regardless of stale MPPI params",
+    "startup_parameters": "same /whole_body_mppi/base_limits vmax,wmax,wheel_v,track are read once; enabled invalid/missing limits fail startup rather than using mismatched defaults",
+    "shared_numerical_values": {
+      "/mm_controller_node/controller/use_mppi_execution_limits": true,
+      "/whole_body_mppi/base_limits/vmax": 0.25,
+      "/whole_body_mppi/base_limits/wmax": 0.35,
+      "/whole_body_mppi/base_limits/wheel_v": 0.25,
+      "/whole_body_mppi/base_limits/track": 0.37
+    },
+    "tangent_convention": "unscaled speed > controller/yaw_hold_speed; native adapter consumes same parameter; default .04. Undefined near-stop yaw has omega=0",
+    "signed_wheel_equivalence": "max(abs(v-track*w/2),abs(v+track*w/2)) equals abs(v)+track*abs(w)/2, including reverse gear",
+    "old_phase_guard": "target_scale begins at execution_scale and retains minima from tracking/safety/arm; after existing rise/fall smoothing, scale is clipped again to old-phase cap before exactly one phase integration",
+    "new_phase_guard": "after phase advances once, current published scale is clipped to capacity_at(new phase), without integrating again",
+    "force_freeze": "existing force_freeze sets scale exactly zero before both nonnegative upper bounds; perception/odom/joint freshness and base hold behavior remain intact. Existing arm-error target-zero smoothing remains unchanged",
+    "feedforward_parameter": "max_feedforward_omega unchanged; it clips legacy car_cmd only and does not substitute for MPPI angular limit",
+    "logging_correction": "pure capacity slowdown no longer logs Base tracking lag; unchanged lag message emits only if position/yaw tracking itself requests slowdown",
+    "headers": "explicit algorithm/cmath/stdexcept dependencies added; no dependence on incidental header inclusion",
+    "launch_parse": "actual ROS launch config parsed for use_mppi=true and false, assign_machines=False, no ROS node/master/hardware started; parameter and executable choice correct",
+    "deployment": "private class layout changed, root must deploy freshly rebuilt libcontroller_utils.so and mm_controller_node together; this review did not deploy"
+  },
+  "test_scope": {
+    "cpp_helper_tests": 9,
+    "cpp_execution": "owned by root build/test phase, not claimed by this source review",
+    "independent_launch_config": "independent_launch_capacity_config.json",
+    "integration_review": "actual source reconstruction confirms no unintended changes to original clock logic"
+  },
+  "limits_of_claim": [
+    "Bounds the nominal velocity demand at the published phase; not a full acceleration feasibility proof.",
+    "Adapter time extrapolation and its future horizon can still see slightly changing curvature; real actuator saturation, stopping checks, and coupled validation remain required.",
+    "Source/offline approval is not hardware acceptance."
+  ],
+  "authorized_review_edits": [
+    "one existing log condition now tests position/yaw scales rather than total capacity-constrained scale",
+    "explicit algorithm and cmath includes in header"
+  ]
+}

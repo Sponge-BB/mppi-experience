@@ -1,0 +1,54 @@
+本轮实车恢复与卡顿分析（只读小topic离线分析；无运行代码修改）
+
+时间依据：rosout、goal、odom、execution_state使用消息header源时间。
+cmd_vel、String status、Float64 speed_limit、Bool finish没有header，保留bag接收时间，
+不将其当作指令发布源时间；跨topic近邻关系不是严格周期一一对应。
+ABORT轨迹action=2的header.stamp为0，停轨源时间以控制器/慢层日志为准。
+
+实际导航窗口：
+1) 15:32:36.314972首个目标，至15:33:50.898082第二目标。
+2) 15:33:50.898082第二目标，至15:35:01.541155收到planning/finish=True。
+之后主要是standby_extension，不能混入导航卡顿比例。
+
+两段导航共1133个MPPI状态，730次command_delivered；其中10条为reference_wait_hold
+且base_v/base_w=0，真正非零720次。
+三类snapshot/input失效拒绝291次（25.68%），其中265条明确map_age>350ms。
+首段112 unavailable /32 expired_during_plan /21 predelivery；
+第二段75 unavailable /39 expired_during_plan /12 predelivery。
+指令按接收序列零阶保持：零83.113秒，非零61.827秒，421次零/非零切换。
+第一段成功周期中位34.63ms、最大92.03ms，无planning/delivery超时；
+第二段仅2次planning+7次delivery超预算，不能把反复停车全部称作求解超时。
+
+750ms LiDAR停止与恢复（全部为日志源时间）：
+  stop 15:33:23.801742 -> 新恢复轨迹交付15:33:24.129472，0.327730秒；
+  stop 15:33:32.299082 -> 15:33:35.234092，2.935010秒；
+  stop 15:34:06.019834 -> 15:34:07.104396，1.084563秒；
+  stop 15:34:18.992792 -> 15:34:20.185925，1.193133秒；
+  stop 15:34:46.886336 -> 15:34:47.649203，0.762867秒；
+  stop 15:34:51.507353 -> 15:34:52.328468，0.821115秒。
+每次都有Live input timed out / Depth Lost / 控制器Abort，随后新鲜感知验证
+恢复轨迹并释放perception stop，speed_limit恢复为-1。
+六个停止到交付恢复窗口合计7.124秒；恢复逻辑本轮确实触发且成功。
+这6次事件不能解释全部83.113秒零指令，仍有350ms快层地图失效及反馈许可暂停。
+15:36:05和15:36:57另两次LiDAR超时已在finish之后，不属于导航卡顿。
+
+地图处理性能（首目标到finish，29个5秒窗口，777次occupancy/778次ESDF）：
+  占据avg中位23.74ms，各窗口19.15-27.32ms；
+  ESDF compute_avg中位98.41ms，各窗口90.75-109.78ms；
+  ESDF单次最高143.25ms（15:34:27.898窗口）；
+  main_commit avg中位6.75ms，单次最高18.19ms；
+  snapshot avg中位2.47ms，单次最高17.08ms。
+以上中位数为5秒窗口平均数的中位数，不是单帧P50。
+本轮导航没有证据显示ESDF耗时突然暴涨到几百ms，约100ms的基线计算和输入间歇
+仍会共同压缩350ms有效期；具体传输/计算责任需对应现场源戳探针。
+
+同窗口自滤波拒绝日志39条（日志有节流，不等于拒绝云帧数）：
+  21条等扫描时刻关节反馈超时；
+  15条关节反馈不可用/陈旧；3条关节插值间隔超过50ms。
+AsyncESDF worker >50ms日志132条；occupancy>50ms仅1条50.31ms。
+两段导航execution_state分别3040/2833条，均使能、反馈有效且未锁停。
+
+生成文件：recovery_stutter_analysis.json、recovery_pipeline_metrics.json、
+recovery_map_feedback_warnings.json、recovery_runtime_logs.jsonl、
+recovery_small_status.jsonl、recovery_zero_nonzero_runs.json。
+复现脚本analyze_recovery_stops.py，峰值RSS约111MiB。

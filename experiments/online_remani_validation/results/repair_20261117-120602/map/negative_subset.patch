@@ -1,0 +1,185 @@
+--- a/src/mm_remani_planner/plan_env/src/esdf_worker.cpp
++++ b/src/mm_remani_planner/plan_env/src/esdf_worker.cpp
+@@ -747,6 +747,8 @@
+   result->positive_ms.fill(0.0);
+   result->negative_ms.fill(0.0);
+   result->negative_fallback_count = 0;
++  result->negative_subset_count = result->negative_subset_cells = 0;
++  result->negative_subset_z_layers = result->negative_subset_yz_lines = 0;
+   if (job.distance_cap <= 0.0 || job.changed_cells.empty())
+     return computeDense(job, result);
+ 
+@@ -886,6 +888,10 @@
+     result->near_free_ms += dense.near_free_ms;
+     result->negative_apply_ms += dense.negative_apply_ms;
+     result->negative_fallback_count += dense.negative_fallback_count;
++    result->negative_subset_count += dense.negative_subset_count;
++    result->negative_subset_cells += dense.negative_subset_cells;
++    result->negative_subset_z_layers += dense.negative_subset_z_layers;
++    result->negative_subset_yz_lines += dense.negative_subset_yz_lines;
+     for (std::size_t axis = 0; axis < 3; ++axis)
+     {
+       result->positive_ms[axis] += dense.positive_ms[axis];
+@@ -1024,8 +1030,9 @@
+   finish_phase(result->positive_ms[2]);
+ 
+   // All integer offsets within radius two, ordered by squared distance.
+-  // Scratch holds exact candidates; a single unresolved occupied cell sends
+-  // the whole job through the original negative EDT before results change.
++  // Resolve shallow occupied cells exactly. A bounded set of unresolved
++  // queries can share full-source Z transforms and select only needed Y/X
++  // lines. Broad/overflowing query sets retain the original dense fallback.
+   static const int near_free[][4] = {
+       {-1,0,0,1}, {1,0,0,1}, {0,-1,0,1}, {0,1,0,1}, {0,0,-1,1}, {0,0,1,1},
+       {-1,-1,0,2}, {-1,1,0,2}, {1,-1,0,2}, {1,1,0,2},
+@@ -1034,10 +1041,13 @@
+       {-1,-1,-1,3}, {-1,-1,1,3}, {-1,1,-1,3}, {-1,1,1,3},
+       {1,-1,-1,3}, {1,-1,1,3}, {1,1,-1,3}, {1,1,1,3},
+       {-2,0,0,4}, {2,0,0,4}, {0,-2,0,4}, {0,2,0,4}, {0,0,-2,4}, {0,0,2,4}};
+-  std::atomic<bool> unresolved(false);
++  const std::size_t subset_limit = 8192;
++  std::vector<std::size_t> unresolved_keys(subset_limit);
++  std::atomic<std::size_t> unresolved_count(0);
++  std::atomic<bool> subset_overflow(false);
+   if (!parallelFor(static_cast<std::size_t>(nx) * ny, lineThreshold(nz),
+           [&](std::size_t line) {
+-            if (unresolved.load(std::memory_order_relaxed)) return;
++            if (subset_overflow.load(std::memory_order_relaxed)) return;
+             const int x = static_cast<int>(line / ny), y = static_cast<int>(line % ny);
+             for (int z = 0; z < nz; ++z)
+             {
+@@ -1059,14 +1069,45 @@
+                 }
+               if (!found)
+               {
+-                unresolved.store(true, std::memory_order_relaxed);
+-                return;
++                tmp_buffer1_[index] = -1.0;
++                const std::size_t slot = unresolved_count.fetch_add(
++                    1, std::memory_order_relaxed);
++                if (slot >= subset_limit)
++                {
++                  subset_overflow.store(true, std::memory_order_relaxed);
++                  return;
++                }
++                // Z/Y/X ordering makes each complete X query line adjacent.
++                unresolved_keys[slot] =
++                    (static_cast<std::size_t>(z) * ny + y) * nx + x;
+               }
+             }
+           }))
+     return false;
++  const std::size_t query_count = unresolved_count.load(std::memory_order_relaxed);
++  struct NegativeLine { int y, z; std::size_t begin, end; };
++  std::vector<int> needed_z;
++  std::vector<NegativeLine> needed_yz;
++  bool use_subset = false;
++  if (!subset_overflow.load(std::memory_order_relaxed) && query_count > 0)
++  {
++    unresolved_keys.resize(query_count);
++    std::sort(unresolved_keys.begin(), unresolved_keys.end());
++    for (std::size_t q = 0; q < query_count; ++q)
++    {
++      const std::size_t yz = unresolved_keys[q] / nx;
++      const int z = static_cast<int>(yz / ny), y = static_cast<int>(yz % ny);
++      if (needed_z.empty() || needed_z.back() != z) needed_z.push_back(z);
++      if (needed_yz.empty() || needed_yz.back().z != z || needed_yz.back().y != y)
++        needed_yz.push_back(NegativeLine{y, z, q, q + 1});
++      else
++        needed_yz.back().end = q + 1;
++    }
++    use_subset = needed_z.size() * 2 <= static_cast<std::size_t>(nz) &&
++        needed_yz.size() * 2 <= static_cast<std::size_t>(ny) * nz;
++  }
+   finish_phase(result->near_free_ms);
+-  if (!unresolved.load(std::memory_order_relaxed))
++  if (query_count == 0)
+   {
+     if (!parallelFor(static_cast<std::size_t>(nx) * ny, lineThreshold(nz),
+             [&](std::size_t line) {
+@@ -1084,6 +1125,27 @@
+     return !computationCancelled();
+   }
+ 
++  if (use_subset)
++  {
++    ++result->negative_subset_count;
++    result->negative_subset_cells += query_count;
++    result->negative_subset_z_layers += needed_z.size();
++    result->negative_subset_yz_lines += needed_yz.size();
++    // Save resolved contributions before Z overwrites the near-free scratch.
++    // Unresolved entries are marked -1 and will be updated exactly once by X.
++    if (!parallelFor(static_cast<std::size_t>(nx) * ny, lineThreshold(nz),
++        [&](std::size_t line) {
++          for (int z = 0; z < nz; ++z)
++          {
++            const std::size_t index = line * nz + z;
++            if (job.occupancy[index] != 1 || tmp_buffer1_[index] < 0.0) continue;
++            const double negative_distance = job.resolution * std::sqrt(tmp_buffer1_[index]);
++            if (negative_distance > 0.0)
++              result->distance_all[index] += -negative_distance + job.resolution;
++          }
++        })) return false;
++    finish_phase(result->negative_apply_ms);
++  }
+   ++result->negative_fallback_count;
+   // Negative distance.  The original implementation materializes an inverse
+   // occupancy byte grid; reading the inverse predicate directly is equivalent
+@@ -1105,12 +1167,14 @@
+     return false;
+   finish_phase(result->negative_ms[0]);
+ 
++  const std::size_t y_z_count = use_subset ? needed_z.size() : static_cast<std::size_t>(nz);
+   if (!parallelFor(
+-          static_cast<std::size_t>(nx) * static_cast<std::size_t>(nz),
++          static_cast<std::size_t>(nx) * y_z_count,
+           lineThreshold(ny),
+           [&](std::size_t line) {
+-            const int x = static_cast<int>(line / static_cast<std::size_t>(nz));
+-            const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
++            const int x = static_cast<int>(line / y_z_count);
++            const int z = use_subset ? needed_z[line % y_z_count]
++                                    : static_cast<int>(line % y_z_count);
+             fillDistanceTransform(
+                 ny, job.min_index.y(),
+                 [&](int y) { return tmp_buffer1_[address(x, y, z)]; },
+@@ -1122,15 +1186,23 @@
+   finish_phase(result->negative_ms[1]);
+ 
+   if (!parallelFor(
+-          static_cast<std::size_t>(ny) * static_cast<std::size_t>(nz),
++          use_subset ? needed_yz.size() : static_cast<std::size_t>(ny) * nz,
+           lineThreshold(nx),
+           [&](std::size_t line) {
+-            const int y = static_cast<int>(line / static_cast<std::size_t>(nz));
+-            const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
++            const int y = use_subset ? needed_yz[line].y : static_cast<int>(line / nz);
++            const int z = use_subset ? needed_yz[line].z : static_cast<int>(line % nz);
++            std::size_t cursor = use_subset ? needed_yz[line].begin : 0;
++            const std::size_t end = use_subset ? needed_yz[line].end : 0;
+             fillDistanceTransform(
+                 nx, job.min_index.x(),
+                 [&](int x) { return tmp_buffer2_[address(x, y, z)]; },
+                 [&](int x, double value) {
++                  if (use_subset)
++                  {
++                    if (cursor == end || unresolved_keys[cursor] % nx != static_cast<std::size_t>(x))
++                      return;
++                    ++cursor;
++                  }
+                   const double negative_distance =
+                       job.resolution * std::sqrt(value);
+                   const std::size_t index = address(x, y, z);
+--- a/src/mm_remani_planner/plan_env/include/plan_env/esdf_worker.h
++++ b/src/mm_remani_planner/plan_env/include/plan_env/esdf_worker.h
+@@ -78,6 +78,10 @@
+   std::array<double, 3> positive_ms{{0.0, 0.0, 0.0}};
+   std::array<double, 3> negative_ms{{0.0, 0.0, 0.0}};
+   std::size_t negative_fallback_count = 0;
++  std::size_t negative_subset_count = 0;
++  std::size_t negative_subset_cells = 0;
++  std::size_t negative_subset_z_layers = 0;
++  std::size_t negative_subset_yz_lines = 0;
+ };
+ 
+ struct ESDFWorkerStats

@@ -1,0 +1,73 @@
+{
+  "scope": "Independent source review and lightweight numerical checks of frozen native-reference guidance",
+  "baseline_version": "20261114-155510-before-frozen-guidance",
+  "result": "PASS_NO_BLOCKING_FINDINGS",
+  "hardware_validated": false,
+  "ros_started": false,
+  "production_sources_changed_by_reviewer": false,
+  "reviewed_sha256": {
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "2036a78262b984d1a438b6ba4a4cfae87554fe8a6c97686d23ec45caa9a9f3a1",
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": "5ec9389c4b7b1afe74cd9c6f81adcc2f9f11dddfa8d703b8a8728fcaffd511c1",
+    "src/mm_remani/scripts/whole_body_mppi.py": "9ea310e18b5ef165981cd0f4fe1295ba652e766db72f26f9c3e16253deb5a7c4"
+  },
+  "environment": {
+    "PYTHONNOUSERSITE": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "reason_for_no_user_site": "Initial import without isolation encountered pre-existing user NumPy/system SciPy incompatibility (numpy.typeDict missing); isolated system packages passed."
+  },
+  "ordinary_path_equivalence": {
+    "method": "Load baseline and edited active_arm_mppi.py as separate modules; force both _legacy_native=None; compare guide and full proposals on identical seeded states, references and limits.",
+    "seed": 217,
+    "cases": 100,
+    "coverage": "Alternating forward/reverse references, varied state/yaw/velocity/joints, curved paths, and 20 duplicated endpoints inside the historical terminal envelope.",
+    "max_guide_absolute_difference": 0.0,
+    "max_proposals_absolute_difference": 0.0,
+    "labels_identical": true,
+    "passed": true
+  },
+  "candidate_phase_isolation": {
+    "method": "Generate all six base modes together, then each mode independently from fresh kernels at a frozen 4.5 cm target; compare complete candidate control sequences exactly.",
+    "modes": [[1.0, 0.0], [0.65, 0.0], [0.0, 0.0], [0.8, -0.5], [0.8, 0.5], [-0.55, 0.0]],
+    "cases": 6,
+    "batch_and_isolated_sequences_identical": true,
+    "predicted_recovery_did_not_change_measured_pause_align": true,
+    "passed": true
+  },
+  "hysteresis_and_resets": {
+    "resume_distance_m": 0.05,
+    "enter_fraction": 0.7,
+    "measured_distance_sequence_m": [0.06, 0.04, 0.0349, 0.045, 0.05, 0.05001, 0.04, 0.034, 0.04],
+    "expected_and_observed_align": [false, false, true, true, true, false, false, true, true],
+    "warm_previous_cleared_on_phase_key_gear_mode_and_measured_stage_changes": true,
+    "source_identity_review": "Adapter pause key includes goal stamp, native start/epoch/revision, gear block, explicit gear and frozen phase. New goals/references/cancel/finish alter or remove this identity before navigation resumes; existing revision checks also discard previous commands.",
+    "passed": true
+  },
+  "explicit_reverse_gear": {
+    "sampled_speed_magnitudes": [0.0, 0.000001, 0.009, 0.011],
+    "methods": ["guide", "proposals first nominal control"],
+    "all_cases_negative_v_and_zero_w_for_aligned_reverse_path": true,
+    "passed": true
+  },
+  "new_regression_suite": {
+    "command": "PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python3 src/mm_remani/test/test_mppi_frozen_guidance.py",
+    "tests_run": 11,
+    "tests_passed": 11,
+    "elapsed_test_seconds": 0.535,
+    "source_reviewed": true,
+    "coverage": "Old 2.5 cm threshold oscillation, configured hysteresis radii, explicit native gear at small/zero scale, candidate independence, identity reset, yaw wrapping, closed-loop recovery, collision/lease rejection, legacy numeric outputs and adapter propagation."
+  },
+  "source_review": {
+    "shared_guidance": "Both guide and proposals use _base_guide; frozen guidance uses the same position/yaw and explicit native gear. Each candidate owns its horizon align array; only measured-state setup updates persistent stage.",
+    "standby_compatibility": "Adapter only supplies tracking keyword for active navigation; standby subclass retains its previous call signature and implementation.",
+    "parameter_consistency": "Node reads existing controller base_tracking_resume_distance and applies the same slow-distance/resume clamp as MMControllerFSM.",
+    "safety_path": "Physical speed cap remains before maneuver scale; advance/evaluate, configuration bounds, collision and braking checks, node base_command/checked_first_step, fresh-map checks and planning/delivery deadlines are unchanged by this diff.",
+    "scope_control": "No changes to controller thresholds, ROS messages, deployed native libraries or hardware state in the reviewed production diff."
+  },
+  "limitations": [
+    "Offline checks establish software behavior, not real-vehicle convergence or safety validation.",
+    "Numerical equivalence and candidate independence checks use the NumPy integrator; deployment libraries are outside this change and were not modified.",
+    "A frozen pose outside the resume envelope with a large yaw error may require more than 20 seconds under the existing angular/linear limits; closed-loop run duration must be distinguished from a stalled algorithm."
+  ]
+}

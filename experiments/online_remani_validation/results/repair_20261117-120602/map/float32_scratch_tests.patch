@@ -1,0 +1,51 @@
+--- a/src/mm_remani_planner/plan_env/test/test_esdf_worker.cpp
++++ b/src/mm_remani_planner/plan_env/test/test_esdf_worker.cpp
+@@ -293,7 +293,8 @@
+   // convention; planar layers exercise nonzero constant intermediate lines.
+   const std::vector<Eigen::Vector3i> sizes{
+       Eigen::Vector3i(23, 7, 5), Eigen::Vector3i(5, 23, 7),
+-      Eigen::Vector3i(7, 5, 23)};
++      Eigen::Vector3i(7, 5, 23), Eigen::Vector3i(33, 35, 3),
++      Eigen::Vector3i(33, 3, 35), Eigen::Vector3i(3, 33, 35)};
+   plan_env::ESDFWorker worker(3, 1);
+   std::uint64_t request_id = 0;
+   for (const auto &size : sizes)
+@@ -776,3 +777,38 @@
+   testing::InitGoogleTest(&argc, argv);
+   return RUN_ALL_TESTS();
+ }
++
++TEST(ESDFWorker, ExactFloatScratchGuardIncludesLimitAndFallsBackAboveIt)
++{
++  const std::vector<Eigen::Vector3i> sizes{
++      Eigen::Vector3i(1, 4097, 1), Eigen::Vector3i(1, 4098, 1),
++      Eigen::Vector3i(1, 1, 4097), Eigen::Vector3i(1, 1, 4098),
++      Eigen::Vector3i(2, 4097, 1), Eigen::Vector3i(7, 9, 11)};
++  for (const int threads : {1, 3})
++  {
++    plan_env::ESDFWorker worker(threads, 1);
++    std::uint64_t request = 0;
++    for (const auto &size : sizes)
++    {
++      auto job = makeJob(++request, 1, Eigen::Vector3i(-3, 5, 2), size, 0);
++      job.occupancy[0] = 1;
++      std::uint64_t bound = 0;
++      for (int axis = 0; axis < 3; ++axis)
++        bound += static_cast<std::uint64_t>(size[axis]-1) * (size[axis]-1);
++      ASSERT_TRUE(worker.submit(job));
++      plan_env::ESDFResult actual;
++      ASSERT_TRUE(worker.waitForResult(&actual, std::chrono::milliseconds(10000)));
++      ASSERT_EQ(voxelCount(job), actual.distance_all.size());
++      EXPECT_EQ(bound <= (std::uint64_t{1} << 24) ? 1U : 0U,
++                actual.exact_float_scratch_count) << size.transpose();
++      for (int x = 0; x < size.x(); ++x)
++        for (int y = 0; y < size.y(); ++y)
++          for (int z = 0; z < size.z(); ++z)
++          {
++            const std::size_t q = (static_cast<std::size_t>(x)*size.y()+y)*size.z()+z;
++            const double expected = job.resolution * std::sqrt(static_cast<double>(x*x+y*y+z*z));
++            ASSERT_EQ(expected, actual.distance_all[q]) << "threads=" << threads << " size=" << size.transpose() << " voxel=" << q;
++          }
++    }
++  }
++}

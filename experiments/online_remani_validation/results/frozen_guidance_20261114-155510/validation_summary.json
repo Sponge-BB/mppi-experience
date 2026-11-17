@@ -1,0 +1,57 @@
+{
+  "offline_passed": true,
+  "hardware_validation": false,
+  "purpose": "修复冻结参考丢失倒档信息及位置朝向分支反复切换引起的摆头",
+  "baseline_version": "20261114-155510-before-frozen-guidance",
+  "reviewed_runtime_sha256": {
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "2036a78262b984d1a438b6ba4a4cfae87554fe8a6c97686d23ec45caa9a9f3a1",
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": "5ec9389c4b7b1afe74cd9c6f81adcc2f9f11dddfa8d703b8a8728fcaffd511c1",
+    "src/mm_remani/scripts/whole_body_mppi.py": "9ea310e18b5ef165981cd0f4fe1295ba652e766db72f26f9c3e16253deb5a7c4"
+  },
+  "syntax_checked": [
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+    "src/mm_remani/scripts/whole_body_mppi.py",
+    "src/mm_remani/test/test_mppi_native_phase.py",
+    "src/mm_remani/test/test_mppi_collision.py",
+    "src/mm_remani/test/test_mppi_frozen_guidance.py"
+  ],
+  "regression_tests": {
+    "historical": 144,
+    "navigation": 20,
+    "new_frozen_guidance": 11,
+    "total_unique": 175,
+    "all_passed": true
+  },
+  "replay": {
+    "matched_baseline_first_controls": 680,
+    "frozen_threshold_flips_before": 83,
+    "frozen_threshold_flips_after": 0,
+    "all_flips_before": 84,
+    "all_flips_after": 3,
+    "remaining_flips": "single approach-to-alignment stage entries",
+    "numerical_closed_loop_cases_passed": 33
+  },
+  "independent_review": "PASS_NO_BLOCKING_FINDINGS",
+  "deployment": {
+    "python_entry": "src/mm_remani/scripts/whole_body_mppi.py",
+    "python_sources_are_runtime": true,
+    "compiled_planner_unchanged_sha256": "b8f02e48ce0dd7df558a15469799402fe8b96a47cc773021fda99b0e97b2f7bd",
+    "compiled_planner_path": "devel/lib/remani_planner/remani_planner_node",
+    "cpp_rebuild_required": false,
+    "drivers_sdk_firmware_changed": false
+  },
+  "changes": [
+    "Pass explicit native gear independently of zero/tiny scaled velocity",
+    "Use measured-stage hysteresis tied to existing controller resume distance; nominal 3.5cm enter/5cm exit",
+    "Keep per-candidate predicted stages independent and reset warm path on stage/reference identity changes"
+  ],
+  "known_limits": [
+    "Offline verification only; real-vehicle convergence remains unverified.",
+    "Counterfactual replay uses recorded old states; it is not a newly executed hardware trajectory.",
+    "Closed-loop fixtures use a clear synthetic collision query, not the captured full occupancy map.",
+    "Existing perception/map latency and related command rejection remain separate unresolved issues.",
+    "No change to collision/deadline/driver gates, configured speed caps or ordinary guidance minimum speed."
+  ],
+  "evidence_directory": "/home/l/remani_ws/experiments/online_remani_validation/results/frozen_guidance_20261114-155510"
+}

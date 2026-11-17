@@ -1,0 +1,431 @@
+{
+  "scope": "Seven serial numerical simulation diagnostics; no new ROS run or benchmark performed for this summary.",
+  "filter": "0 <= logged status.elapsed_s <= result.elapsed_s + 1e-6; null warmup timestamps and later status records excluded.",
+  "percentiles": "Linear interpolation on scene cycle_ms values; milliseconds are wall-clock cycle measurements.",
+  "posture_count_definition": "Explicit selected_family[0] starts with posture_; counted in candidate_diagnostics even if later rejected. previous family is not inferred to be a posture.",
+  "native_integrator_note": "Prefer direct successful-status arm_servo_native evidence. Older unaccelerated servo_empty identified separately; using a native integrator does not prove the deadline is met.",
+  "comparison_limits": [
+    "These are engineering diagnostics with multiple sequential fixes, not a single-factor efficacy experiment.",
+    "Historical audit/servo_empty base motion is confounded by the standby tracking-fault latch.",
+    "A completed empty scene only checks delivery and drift; it does not demonstrate avoidance.",
+    "Zero uncertainty is not a validated deployment setting."
+  ],
+  "runs": [
+    {
+      "run": "audit_current",
+      "scene": "arm_crossing",
+      "reason": "collision",
+      "completed": false,
+      "elapsed_s": 8.075,
+      "collision_time_s": 8.075,
+      "max_base_displacement_m": 0.0012904863678838163,
+      "base_path_length_m": 0.003056546338749591,
+      "max_base_yaw_change_rad": 0.007779333668592041,
+      "max_base_yaw_change_deg": 0.44572298663434745,
+      "base_cumulative_turn_deg": 1.671204207034049,
+      "max_arm_change_deg": 0.1862805525550174,
+      "scene_cycle_count": 81,
+      "command_delivered_count": 31,
+      "delivery_fraction": 0.38271604938271603,
+      "cycle_ms": {
+        "p50": 73.96,
+        "p95": 81.16,
+        "max": 87.58
+      },
+      "reported_cycle_over_95ms": 0,
+      "status_counts": {
+        "command_delivered": 31,
+        "command_hold_or_braking_rejected_by_latest_state_or_map": 2,
+        "no_feasible_candidate": 48
+      },
+      "planning_deadline_count": 0,
+      "delivery_deadline_count": 0,
+      "deadline_count": 0,
+      "no_feasible_count": 48,
+      "hold_brake_rejection_count": 2,
+      "max_delivery_gap_with_boundaries_s": 2.190000001000044,
+      "posture_selected_count": 0,
+      "posture_delivered_count": 0,
+      "posture_first_selected_plan_elapsed_s": null,
+      "posture_first_delivered_plan_elapsed_s": null,
+      "posture_selected_outcomes": {},
+      "successful_zero_speed_limit_count": 7,
+      "successful_nonzero_base_command_count": 19,
+      "successful_speed_limit_counts": {
+        "None": 24,
+        "0.0": 7
+      },
+      "arm_position_servo": false,
+      "native_integrator_used": false,
+      "native_integrator_evidence": "arm_position_servo=false; velocity legacy model does not invoke the servo integrator.",
+      "successful_native_flag_counts": {
+        "not_recorded": 31
+      },
+      "uncertainty_coefficients": [
+        0.08,
+        0.25,
+        0.75
+      ],
+      "peak_graph_rss_mib": 415.29296875,
+      "note": "Historical standby fault latch present; base-displacement results are not avoidance-efficiency evidence."
+    },
+    {
+      "run": "audit_zero_uncertainty",
+      "scene": "arm_crossing",
+      "reason": "collision",
+      "completed": false,
+      "elapsed_s": 8.079999999999998,
+      "collision_time_s": 8.079999999999998,
+      "max_base_displacement_m": 0.0024226290419327645,
+      "base_path_length_m": 0.004210518526557851,
+      "max_base_yaw_change_rad": 0.007477371098982291,
+      "max_base_yaw_change_deg": 0.4284218058247834,
+      "base_cumulative_turn_deg": 1.9726534279075867,
+      "max_arm_change_deg": 0.18888428121912232,
+      "scene_cycle_count": 80,
+      "command_delivered_count": 56,
+      "delivery_fraction": 0.7,
+      "cycle_ms": {
+        "p50": 89.475,
+        "p95": 100.73599999999999,
+        "max": 104.59
+      },
+      "reported_cycle_over_95ms": 22,
+      "status_counts": {
+        "command_delivered": 56,
+        "delivery_deadline_exceeded": 15,
+        "planning_deadline_exceeded": 3,
+        "command_hold_or_braking_rejected_by_latest_state_or_map": 3,
+        "no_feasible_candidate": 3
+      },
+      "planning_deadline_count": 3,
+      "delivery_deadline_count": 15,
+      "deadline_count": 18,
+      "no_feasible_count": 3,
+      "hold_brake_rejection_count": 3,
+      "max_delivery_gap_with_boundaries_s": 1.5799999999999983,
+      "posture_selected_count": 7,
+      "posture_delivered_count": 0,
+      "posture_first_selected_plan_elapsed_s": 6.914999999999964,
+      "posture_first_delivered_plan_elapsed_s": null,
+      "posture_selected_outcomes": {
+        "delivery_deadline_exceeded": 2,
+        "planning_deadline_exceeded": 2,
+        "command_hold_or_braking_rejected_by_latest_state_or_map": 3
+      },
+      "successful_zero_speed_limit_count": 32,
+      "successful_nonzero_base_command_count": 19,
+      "successful_speed_limit_counts": {
+        "None": 24,
+        "0.0": 32
+      },
+      "arm_position_servo": false,
+      "native_integrator_used": false,
+      "native_integrator_evidence": "arm_position_servo=false; velocity legacy model does not invoke the servo integrator.",
+      "successful_native_flag_counts": {
+        "not_recorded": 56
+      },
+      "uncertainty_coefficients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "peak_graph_rss_mib": 432.86328125,
+      "note": "Historical standby fault latch present; base-displacement results are not avoidance-efficiency evidence."
+    },
+    {
+      "run": "servo_empty",
+      "scene": "empty",
+      "reason": "completed",
+      "completed": true,
+      "elapsed_s": 4.000000000000001,
+      "collision_time_s": null,
+      "max_base_displacement_m": 0.0,
+      "base_path_length_m": 0.0,
+      "max_base_yaw_change_rad": 0.0,
+      "max_base_yaw_change_deg": 0.0,
+      "base_cumulative_turn_deg": 0.0,
+      "max_arm_change_deg": 0.33214801995694293,
+      "scene_cycle_count": 41,
+      "command_delivered_count": 4,
+      "delivery_fraction": 0.0975609756097561,
+      "cycle_ms": {
+        "p50": 100.12,
+        "p95": 115.69,
+        "max": 116.83
+      },
+      "reported_cycle_over_95ms": 38,
+      "status_counts": {
+        "delivery_deadline_exceeded": 12,
+        "command_delivered": 4,
+        "planning_deadline_exceeded": 25
+      },
+      "planning_deadline_count": 25,
+      "delivery_deadline_count": 12,
+      "deadline_count": 37,
+      "no_feasible_count": 0,
+      "hold_brake_rejection_count": 0,
+      "max_delivery_gap_with_boundaries_s": 3.1150000009999985,
+      "posture_selected_count": 0,
+      "posture_delivered_count": 0,
+      "posture_first_selected_plan_elapsed_s": null,
+      "posture_first_delivered_plan_elapsed_s": null,
+      "posture_selected_outcomes": {},
+      "successful_zero_speed_limit_count": 4,
+      "successful_nonzero_base_command_count": 0,
+      "successful_speed_limit_counts": {
+        "0.0": 4
+      },
+      "arm_position_servo": true,
+      "native_integrator_used": false,
+      "native_integrator_evidence": "Known intermediate run before native acceleration was added; field not yet logged.",
+      "successful_native_flag_counts": {
+        "not_recorded": 4
+      },
+      "uncertainty_coefficients": [
+        0.08,
+        0.25,
+        0.75
+      ],
+      "peak_graph_rss_mib": 427.21484375,
+      "note": "Unaccelerated position-servo intermediate run; many commands rejected by deadline; historical standby fault latch still active."
+    },
+    {
+      "run": "servo_fast_empty",
+      "scene": "empty",
+      "reason": "completed",
+      "completed": true,
+      "elapsed_s": 4.0,
+      "collision_time_s": null,
+      "max_base_displacement_m": 0.003036590194086834,
+      "base_path_length_m": 0.007505944239723807,
+      "max_base_yaw_change_rad": 0.00970877516905393,
+      "max_base_yaw_change_deg": 0.5562718414282025,
+      "base_cumulative_turn_deg": 2.881381217271838,
+      "max_arm_change_deg": 0.39923569501693723,
+      "scene_cycle_count": 40,
+      "command_delivered_count": 39,
+      "delivery_fraction": 0.975,
+      "cycle_ms": {
+        "p50": 84.18,
+        "p95": 91.2895,
+        "max": 95.55
+      },
+      "reported_cycle_over_95ms": 1,
+      "status_counts": {
+        "command_delivered": 39,
+        "delivery_deadline_exceeded": 1
+      },
+      "planning_deadline_count": 0,
+      "delivery_deadline_count": 1,
+      "deadline_count": 1,
+      "no_feasible_count": 0,
+      "hold_brake_rejection_count": 0,
+      "max_delivery_gap_with_boundaries_s": 0.21000000000003638,
+      "posture_selected_count": 0,
+      "posture_delivered_count": 0,
+      "posture_first_selected_plan_elapsed_s": null,
+      "posture_first_delivered_plan_elapsed_s": null,
+      "posture_selected_outcomes": {},
+      "successful_zero_speed_limit_count": 0,
+      "successful_nonzero_base_command_count": 30,
+      "successful_speed_limit_counts": {
+        "None": 39
+      },
+      "arm_position_servo": true,
+      "native_integrator_used": true,
+      "native_integrator_evidence": "Direct arm_servo_native=true in successful status records.",
+      "successful_native_flag_counts": {
+        "True": 39
+      },
+      "uncertainty_coefficients": [
+        0.08,
+        0.25,
+        0.75
+      ],
+      "peak_graph_rss_mib": 423.46484375,
+      "note": "After standby tracking-fault routing correction; zero uncertainty, where used, remains diagnostic only."
+    },
+    {
+      "run": "corrected_legacy_zero",
+      "scene": "arm_crossing",
+      "reason": "collision",
+      "completed": false,
+      "elapsed_s": 8.084999999999999,
+      "collision_time_s": 8.084999999999999,
+      "max_base_displacement_m": 0.0029590877420752806,
+      "base_path_length_m": 0.007455157258402423,
+      "max_base_yaw_change_rad": 0.008653703451618412,
+      "max_base_yaw_change_deg": 0.49582068493552794,
+      "base_cumulative_turn_deg": 3.3687713023788652,
+      "max_arm_change_deg": 0.22665275457018438,
+      "scene_cycle_count": 81,
+      "command_delivered_count": 45,
+      "delivery_fraction": 0.5555555555555556,
+      "cycle_ms": {
+        "p50": 94.11,
+        "p95": 100.73,
+        "max": 103.06
+      },
+      "reported_cycle_over_95ms": 35,
+      "status_counts": {
+        "command_delivered": 45,
+        "delivery_deadline_exceeded": 24,
+        "planning_deadline_exceeded": 7,
+        "no_feasible_candidate": 2,
+        "command_hold_or_braking_rejected_by_latest_state_or_map": 3
+      },
+      "planning_deadline_count": 7,
+      "delivery_deadline_count": 24,
+      "deadline_count": 31,
+      "no_feasible_count": 2,
+      "hold_brake_rejection_count": 3,
+      "max_delivery_gap_with_boundaries_s": 1.3749999989999733,
+      "posture_selected_count": 7,
+      "posture_delivered_count": 0,
+      "posture_first_selected_plan_elapsed_s": 6.920000001000062,
+      "posture_first_delivered_plan_elapsed_s": null,
+      "posture_selected_outcomes": {
+        "delivery_deadline_exceeded": 3,
+        "planning_deadline_exceeded": 2,
+        "command_hold_or_braking_rejected_by_latest_state_or_map": 2
+      },
+      "successful_zero_speed_limit_count": 0,
+      "successful_nonzero_base_command_count": 35,
+      "successful_speed_limit_counts": {
+        "None": 45
+      },
+      "arm_position_servo": false,
+      "native_integrator_used": false,
+      "native_integrator_evidence": "Direct arm_servo_native=false in successful status records.",
+      "successful_native_flag_counts": {
+        "False": 45
+      },
+      "uncertainty_coefficients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "peak_graph_rss_mib": 420.71484375,
+      "note": "After standby tracking-fault routing correction; zero uncertainty, where used, remains diagnostic only."
+    },
+    {
+      "run": "corrected_servo_current",
+      "scene": "arm_crossing",
+      "reason": "collision",
+      "completed": false,
+      "elapsed_s": 8.075,
+      "collision_time_s": 8.075,
+      "max_base_displacement_m": 0.002321025121913022,
+      "base_path_length_m": 0.004312926909919587,
+      "max_base_yaw_change_rad": 0.00820493387232912,
+      "max_base_yaw_change_deg": 0.47010808206839,
+      "base_cumulative_turn_deg": 2.05915171230292,
+      "max_arm_change_deg": 0.5117457044855575,
+      "scene_cycle_count": 81,
+      "command_delivered_count": 29,
+      "delivery_fraction": 0.35802469135802467,
+      "cycle_ms": {
+        "p50": 85.14,
+        "p95": 94.03,
+        "max": 110.48
+      },
+      "reported_cycle_over_95ms": 3,
+      "status_counts": {
+        "command_delivered": 29,
+        "planning_deadline_exceeded": 1,
+        "command_hold_or_braking_rejected_by_latest_state_or_map": 3,
+        "no_feasible_candidate": 48
+      },
+      "planning_deadline_count": 1,
+      "delivery_deadline_count": 0,
+      "deadline_count": 1,
+      "no_feasible_count": 48,
+      "hold_brake_rejection_count": 3,
+      "max_delivery_gap_with_boundaries_s": 2.299999998999965,
+      "posture_selected_count": 0,
+      "posture_delivered_count": 0,
+      "posture_first_selected_plan_elapsed_s": null,
+      "posture_first_delivered_plan_elapsed_s": null,
+      "posture_selected_outcomes": {},
+      "successful_zero_speed_limit_count": 0,
+      "successful_nonzero_base_command_count": 22,
+      "successful_speed_limit_counts": {
+        "None": 29
+      },
+      "arm_position_servo": true,
+      "native_integrator_used": true,
+      "native_integrator_evidence": "Direct arm_servo_native=true in successful status records.",
+      "successful_native_flag_counts": {
+        "True": 29
+      },
+      "uncertainty_coefficients": [
+        0.08,
+        0.25,
+        0.75
+      ],
+      "peak_graph_rss_mib": 426.41015625,
+      "note": "After standby tracking-fault routing correction; zero uncertainty, where used, remains diagnostic only."
+    },
+    {
+      "run": "corrected_servo_zero",
+      "scene": "arm_crossing",
+      "reason": "collision",
+      "completed": false,
+      "elapsed_s": 8.105,
+      "collision_time_s": 8.105,
+      "max_base_displacement_m": 0.002685843632223273,
+      "base_path_length_m": 0.0043866770724233116,
+      "max_base_yaw_change_rad": 0.008122619158854587,
+      "max_base_yaw_change_deg": 0.4653917963944706,
+      "base_cumulative_turn_deg": 2.139091799709043,
+      "max_arm_change_deg": 0.3930849803637998,
+      "scene_cycle_count": 81,
+      "command_delivered_count": 27,
+      "delivery_fraction": 0.3333333333333333,
+      "cycle_ms": {
+        "p50": 98.52,
+        "p95": 108.78,
+        "max": 130.7
+      },
+      "reported_cycle_over_95ms": 51,
+      "status_counts": {
+        "command_delivered": 27,
+        "planning_deadline_exceeded": 49,
+        "delivery_deadline_exceeded": 2,
+        "no_feasible_candidate": 3
+      },
+      "planning_deadline_count": 49,
+      "delivery_deadline_count": 2,
+      "deadline_count": 51,
+      "no_feasible_count": 3,
+      "hold_brake_rejection_count": 0,
+      "max_delivery_gap_with_boundaries_s": 4.699999998999942,
+      "posture_selected_count": 2,
+      "posture_delivered_count": 0,
+      "posture_first_selected_plan_elapsed_s": 7.384999999999991,
+      "posture_first_delivered_plan_elapsed_s": null,
+      "posture_selected_outcomes": {
+        "planning_deadline_exceeded": 2
+      },
+      "successful_zero_speed_limit_count": 0,
+      "successful_nonzero_base_command_count": 21,
+      "successful_speed_limit_counts": {
+        "None": 27
+      },
+      "arm_position_servo": true,
+      "native_integrator_used": true,
+      "native_integrator_evidence": "Direct arm_servo_native=true in successful status records.",
+      "successful_native_flag_counts": {
+        "True": 27
+      },
+      "uncertainty_coefficients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "peak_graph_rss_mib": 432.546875,
+      "note": "After standby tracking-fault routing correction; zero uncertainty, where used, remains diagnostic only."
+    }
+  ]
+}

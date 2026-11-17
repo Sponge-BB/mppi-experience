@@ -1,0 +1,560 @@
+--- parent/src/mm_remani/scripts/whole_body_mppi.py
++++ current/src/mm_remani/scripts/whole_body_mppi.py
+@@ -56,6 +56,10 @@
+     'planning_deadline_exceeded', 'delivery_deadline_exceeded',
+     'collision_snapshot_unavailable', 'collision_snapshot_expired_during_plan',
+     'state_feedback_stale', 'feedback_expired_during_plan',
++    # Missing phase feedback invalidates this delivery, not the native curve.
++    # Resume only after a new source-stamped progress sample passes validation.
++    'native_progress_stale', 'native_progress_stale_during_plan',
++    'native_progress_stale_before_delivery',
+     'inputs_expired_before_delivery',
+     'waiting_explicit_arm_enable_or_normal_status',
+ ))
+@@ -271,6 +275,7 @@
+         self.startup_settled_since = None
+         self.enable_feedback_stamp = self.enable_feedback_until = 0.
+         self.base = self.joints = self.snapshot = None
++        self.snapshot_cache = None
+         self.base_stamp = self.joint_stamp = 0.
+         self.anchor = self.arm_anchor = None
+         self.execution_stamp = self.execution_valid_until = 0.
+@@ -356,10 +361,13 @@
+ 
+     def on_snapshot(self, msg):
+         try:
+-            with self.lock: previous = self.snapshot
++            # Keep one decoded field for matching deltas. A bad packet revokes
++            # execution below, but must not destroy the unchanged field cache.
++            with self.lock: previous = getattr(self, 'snapshot_cache', self.snapshot)
+             candidate = Snapshot.decode(msg.data, previous)
+             with self.lock:
+                 self.snapshot = candidate
++                self.snapshot_cache = candidate
+                 self.input_errors.pop('collision_snapshot', None)
+         except (ValueError, OverflowError) as exc:
+             with self.lock: self.snapshot = None; self.input_errors['collision_snapshot'] = str(exc)
+@@ -449,6 +457,7 @@
+         navigation stays blocked until source-stamped driver acknowledgement.
+         """
+         with self.reference.lock, self.lock:
++            now = rospy.get_time()
+             if not self.execution_ready(now):
+                 raise ValueError('waiting_native_arm_startup')
+             if self.joints is None or not fresh(self.joint_stamp, now):
+@@ -497,6 +506,9 @@
+         record = dict(state=reason, execute=self.execute,
+             cycle_ms=round((time.monotonic()-self.cycle_began)*1000, 2))
+         if reason.startswith(('collision_snapshot', 'inputs_expired')):
++            input_error = getattr(self, 'input_errors', {}).get('collision_snapshot')
++            if input_error:
++                record['input_error'] = input_error
+             h = getattr(getattr(self, 'snapshot', None), 'header', None)
+             if isinstance(h, np.ndarray) and h.shape == (32,):
+                 now = rospy.get_time()
+@@ -517,9 +529,14 @@
+ 
+     def capture(self, now):
+         with self.lock:
++            # Callbacks may publish newer samples while this cycle waits for
++            # the lock. Check their age at acquisition, not cycle start.
++            now = rospy.get_time()
+             for value, source in ((self.base, 'odometry'), (self.joints, 'joint_feedback'),
+                                   (self.snapshot, 'collision_snapshot')):
+                 if value is None:
++                    if source == 'collision_snapshot':
++                        raise ValueError('collision_snapshot_unavailable')
+                     raise ValueError(self.input_errors.get(source, 'waiting_'+source))
+             if not fresh(self.base_stamp, now) or not fresh(self.joint_stamp, now):
+                 raise ValueError('state_feedback_stale')
+@@ -537,10 +554,11 @@
+         native_startup = startup and getattr(self, 'native_arm_startup', False)
+         try:
+             with self.lock:
++                gate_time = rospy.get_time()
+                 execution_revision = self.execution_revision
+                 if self.execute and not self.simulation and self.execution_latched:
+                     raise ValueError('arm_stop_latched')
+-                if not startup and self.execute and not self.simulation and not self.execution_ready(now):
++                if not startup and self.execute and not self.simulation and not self.execution_ready(gate_time):
+                     raise ValueError('waiting_explicit_arm_enable_or_normal_status')
+             if native_startup:
+                 self.native_startup_gate(now)
+--- parent/src/mm_remani/test/test_mppi_collision.py
++++ current/src/mm_remani/test/test_mppi_collision.py
+@@ -79,7 +79,7 @@
+     def test_same_goal_real_failures_still_request_navigation_recovery(self):
+         for reason in ('no_feasible_candidate', 'command_hold_or_braking_rejected_by_latest_state_or_map',
+                        'arm_target_exceeds_current_feedback_lead', 'invalid_selected_arm_target',
+-                       'native_progress_stale', 'native_progress_stale_during_plan',
++                       'invalid_native_progress', 'native_progress_reversed',
+                        'arm_stop_latched', 'feedback_invalidated_during_plan',
+                        'joint_feedback_outside_limits', 'native_world_odom_alignment_changed',
+                        'unexpected_error'):
+@@ -97,6 +97,8 @@
+         reasons = ('planning_deadline_exceeded', 'delivery_deadline_exceeded',
+                    'collision_snapshot_unavailable', 'collision_snapshot_expired_during_plan',
+                    'state_feedback_stale', 'feedback_expired_during_plan',
++                   'native_progress_stale', 'native_progress_stale_during_plan',
++                   'native_progress_stale_before_delivery',
+                    'inputs_expired_before_delivery', 'waiting_explicit_arm_enable_or_normal_status')
+         for existing_fault in (False, True):
+             node = SimpleNamespace(stop_base=Mock(), sent_command=True, fault_pub=Mock(),
+@@ -117,6 +119,41 @@
+                     self.assertEqual(node.reference.revision, 7)
+                     self.assertTrue(node.reference.active)
+                     self.assertEqual(json.loads(node.info_pub.publish.call_args[0][0].data)['state'], reason)
++
++    def test_stale_progress_stops_then_fresh_progress_resumes_the_same_reference(self):
++        fixture = gates.ExecutionDeliveryTests(methodName='runTest')
++        fixture.setUp()
++        node = fixture.node
++        kernel = phases.Kernel()
++        kernel.arm_position_servo, kernel._servo_native = False, None
++        adapter = NativeReferenceAdapter(kernel, kernel, clock=lambda: fixture.now)
++        adapter.feed_goal(phases.goal(), 10.01)
++        adapter.feed_trajectory(phases.trajectory(), 10.11)
++        adapter.feed_progress(phases.progress(99.7), 99.7)
++        node.reference, node.kernel = adapter, kernel
++        node.sent_command, node.sent_navigation_goal = True, adapter.goal_stamp
++        fixture.feed(gates.message(100.))
++        revision, native = adapter.revision, adapter.native
++
++        fixture.cycle()
++        self.assertEqual(json.loads(node.info_pub.publish.call_args.args[0].data)['state'],
++                         'native_progress_stale')
++        node.arm_pub.publish.assert_not_called()
++        node.fault_pub.publish.assert_not_called()
++        self.assertEqual(node.base_pub.publish.call_args.args[0].linear.x, 0.)
++        self.assertEqual(kernel.calls, [])  # A stale reference never reaches the solver.
++
++        self.assertEqual(adapter.feed_progress(phases.progress(100., phase=.45), 100.), 'accepted')
++        fixture.cycle()
++        self.assertEqual(json.loads(node.info_pub.publish.call_args.args[0].data)['state'],
++                         'command_delivered')
++        node.arm_pub.publish.assert_called_once()
++        node.fault_pub.publish.assert_called_once()
++        self.assertFalse(node.fault_pub.publish.call_args.args[0].data)
++        self.assertIs(adapter.native, native)
++        self.assertEqual(adapter.revision, revision)
++        self.assertEqual(node.sent_navigation_goal, adapter.goal_stamp)
++        self.assertEqual(adapter.progress[0], 100.)  # Original source stamp is preserved.
+ 
+     @classmethod
+     def setUpClass(cls):
+--- parent/src/mm_remani/test/test_mppi_startup.py
++++ current/src/mm_remani/test/test_mppi_startup.py
+@@ -186,11 +186,13 @@
+             self.node.on_joints(msg)
+         self.assertNotIn('joint_feedback', self.node.input_errors)
+         self.node.base = None
+-        with self.assertRaisesRegex(ValueError, '^waiting_odometry$'):
++        with patch('whole_body_mppi.rospy.get_time', return_value=self.now), \
++                self.assertRaisesRegex(ValueError, '^waiting_odometry$'):
+             self.node.capture(self.now)
+         self.node.base = np.zeros(5)
+         self.node.snapshot = None
+-        with self.assertRaisesRegex(ValueError, '^waiting_collision_snapshot$'):
++        with patch('whole_body_mppi.rospy.get_time', return_value=self.now), \
++                self.assertRaisesRegex(ValueError, '^collision_snapshot_unavailable$'):
+             self.node.capture(self.now)
+ 
+     def test_preflight_requests_enable_once_without_sending_an_arm_command(self):
+--- parent/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp
++++ current/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp
+@@ -840,13 +840,18 @@
+         std::fabs(controller_trajectory_start_time_ - traj.start_time) < 1e-3 &&
+         !controller_progress_stamp_.isZero();
+     if (progress_matches) {
+-      const double age = std::max(0.0, (now - controller_progress_stamp_).toSec());
+-      if (age <= controller_progress_timeout_) {
++      const double age = (now - controller_progress_stamp_).toSec();
++      if (age >= -0.005 && age <= controller_progress_timeout_) {
+         return std::max(
+             0.0, std::min(
+                 traj.duration,
+-                controller_trajectory_time_ + age * controller_trajectory_scale_));
+-      }
++                controller_trajectory_time_ +
++                    std::max(0.0, age) * controller_trajectory_scale_));
++      }
++      // Once this curve uses controller progress, missing feedback cannot
++      // turn its paused/slowed clock back into full-speed wall time. Keep the
++      // last reported phase; MPPI independently rejects stale execution input.
++      return std::max(0.0, std::min(traj.duration, controller_trajectory_time_));
+     }
+ 
+     return std::max(
+@@ -859,9 +864,12 @@
+     const bool progress_matches =
+         have_controller_progress_ &&
+         std::fabs(controller_trajectory_start_time_ - traj.start_time) < 1e-3 &&
+-        !controller_progress_stamp_.isZero() &&
+-        (now - controller_progress_stamp_).toSec() <= controller_progress_timeout_;
+-    return progress_matches ? controller_trajectory_scale_ : 1.0;
++        !controller_progress_stamp_.isZero();
++    if (!progress_matches)
++      return 1.0;
++    const double age = (now - controller_progress_stamp_).toSec();
++    return age >= -0.005 && age <= controller_progress_timeout_
++        ? controller_trajectory_scale_ : 0.0;
+   }
+ 
+   void REMANIReplanFSM::publishSafetySpeedLimit(double speed_limit)
+--- /dev/null
++++ current/src/mm_remani/test/test_mppi_capture_clock.py
+@@ -0,0 +1,111 @@
++"""Feedback age is checked at lock acquisition, not an earlier cycle clock."""
++import threading
++import unittest
++from unittest.mock import patch
++
++import numpy as np
++
++import test_mppi_execution_gate as gates
++
++
++class OneShotLock:
++    """Deterministically deliver a callback while the cycle is waiting."""
++    def __init__(self, callback):
++        self.lock = threading.RLock()
++        self.callback = callback
++
++    def __enter__(self):
++        self.lock.acquire()
++        callback, self.callback = self.callback, None
++        if callback is not None:
++            callback()
++        return self
++
++    def __exit__(self, *args):
++        self.lock.release()
++
++
++class CaptureClockTests(unittest.TestCase):
++    def setUp(self):
++        self.fixture = gates.ExecutionDeliveryTests(methodName='runTest')
++        self.fixture.setUp()
++        self.node = self.fixture.node
++
++    def capture(self, source_stamp, current_time, cycle_time=100.):
++        self.node.base_stamp = self.node.joint_stamp = source_stamp
++        with patch('whole_body_mppi.rospy.get_time', return_value=current_time):
++            return self.node.capture(cycle_time)
++
++    def test_new_feedback_received_after_cycle_start_is_not_future(self):
++        state, _, _, _ = self.capture(100.01, 100.02)
++        np.testing.assert_array_equal(state, np.r_[self.node.base, self.node.joints])
++
++    def test_feedback_that_expired_while_waiting_is_rejected_before_solve(self):
++        with self.assertRaisesRegex(ValueError, '^state_feedback_stale$'):
++            self.capture(99.86, 100.02)
++
++    def test_actual_future_feedback_still_rejected(self):
++        with self.assertRaisesRegex(ValueError, '^state_feedback_stale$'):
++            self.capture(100.03, 100.02)
++
++    def test_map_that_expired_while_waiting_is_rejected_before_solve(self):
++        self.node.snapshot.fresh = lambda now: now <= 100.01
++        with self.assertRaisesRegex(ValueError, '^collision_snapshot_unavailable$'):
++            self.capture(99.99, 100.02)
++
++    def test_new_health_and_feedback_after_lock_wait_deliver_with_original_stamp(self):
++        self.fixture.feed(gates.message(100.))
++
++        def newer_callback():
++            self.fixture.feed(gates.message(100.01), now=100.02)
++            self.node.base_stamp = self.node.joint_stamp = 100.01
++
++        self.node.lock = OneShotLock(newer_callback)
++        self.fixture.cycle()
++        self.node.reference.plan.assert_called_once()
++        self.node.arm_pub.publish.assert_called_once()
++        self.node.base_pub.publish.assert_called_once()
++        arm = self.node.arm_pub.publish.call_args.args[0]
++        self.assertEqual(arm.header.stamp.to_sec(), 100.)
++        self.assertEqual(self.node.base_pub.publish.call_args.args[0].linear.x, .02)
++
++    def test_expired_authority_after_lock_wait_does_not_start_solver(self):
++        self.fixture.feed(gates.message(100.))
++        self.node.lock = OneShotLock(lambda: setattr(self.fixture, 'now', 100.16))
++        self.fixture.cycle()
++        self.node.reference.plan.assert_not_called()
++        self.fixture.assert_no_motion_delivery()
++
++    def prepare_native_gate(self):
++        self.node.startup_complete = False
++        self.node.native_handoff_sent = False
++        self.node.startup_target = np.zeros(6)
++
++    def test_native_gate_uses_new_health_without_sending_startup_commands(self):
++        self.prepare_native_gate()
++        self.fixture.feed(gates.message(100.01), now=100.02)
++        self.node.joint_stamp = 100.01
++        with patch('whole_body_mppi.rospy.get_time', return_value=100.02):
++            self.node.native_startup_gate(100.)
++        self.assertFalse(self.node.startup_complete)
++        self.node.arm_pub.publish.assert_not_called()
++        self.node.base_pub.publish.assert_not_called()
++
++    def test_native_gate_rejects_authority_expired_while_waiting(self):
++        self.prepare_native_gate()
++        self.fixture.feed(gates.message(100.))
++        with patch('whole_body_mppi.rospy.get_time', return_value=100.16), \
++                self.assertRaisesRegex(ValueError, '^waiting_native_arm_startup$'):
++            self.node.native_startup_gate(100.)
++
++    def test_native_gate_still_rejects_actual_future_joints(self):
++        self.prepare_native_gate()
++        self.fixture.feed(gates.message(100.02), now=100.02)
++        self.node.joint_stamp = 100.03
++        with patch('whole_body_mppi.rospy.get_time', return_value=100.02), \
++                self.assertRaisesRegex(ValueError, '^native_startup_joint_feedback_unavailable$'):
++            self.node.native_startup_gate(100.02)
++
++
++if __name__ == '__main__':
++    unittest.main()
+--- /dev/null
++++ current/src/mm_remani/test/test_mppi_snapshot_recovery.py
+@@ -0,0 +1,113 @@
++"""Collision transport recovery through the real callback; no ROS master/CAN."""
++import json
++from pathlib import Path
++import sys
++import threading
++import time
++from types import SimpleNamespace
++import unittest
++from unittest.mock import Mock, patch
++
++import numpy as np
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts'))
++from whole_body_mppi import WholeBodyNode
++
++
++def packet(version=7, stamp=100., full=True):
++    h = np.zeros(32)
++    h[:2] = [3., 1.]
++    h[3:5] = [stamp, 1.]
++    h[5:8] = [8, 8, 8]
++    h[11:17] = [.1, 47, 0, version, .35, 2.]
++    h[18:21] = [stamp, 1., float(full)]
++    h[28] = 1.  # Enabled but observed empty dynamic layer.
++    return np.r_[h, np.zeros(47*7), np.ones(512) if full else []]
++
++
++class SnapshotRecoveryTests(unittest.TestCase):
++    def setUp(self):
++        self.node = WholeBodyNode.__new__(WholeBodyNode)
++        n = self.node
++        n.lock = threading.RLock()
++        n.base = np.zeros(5); n.joints = np.zeros(12)
++        n.base_stamp = n.joint_stamp = 100.
++        n.anchor = n.arm_anchor = n.snapshot = n.snapshot_cache = None
++        n.input_errors = {}
++
++    def feed(self, data):
++        self.node.on_snapshot(SimpleNamespace(data=data))
++
++    def capture(self, now):
++        self.node.base_stamp = self.node.joint_stamp = now
++        with patch('whole_body_mppi.rospy.get_time', return_value=now):
++            return self.node.capture(now)
++
++    def assert_unavailable(self, now=100.):
++        with self.assertRaisesRegex(ValueError, '^collision_snapshot_unavailable$'):
++            self.capture(now)
++
++    def test_malformed_packet_revokes_execution_but_fresh_matching_delta_recovers(self):
++        self.feed(packet())
++        cached = self.node.snapshot
++        self.feed(packet()[:-1])
++        self.assertIsNone(self.node.snapshot)
++        self.assertIs(self.node.snapshot_cache, cached)
++        self.assert_unavailable()
++        self.feed(packet(stamp=100.1, full=False))
++        self.assertIs(self.node.snapshot.distance, cached.distance)
++        self.assertNotIn('collision_snapshot', self.node.input_errors)
++        self.assertIs(self.capture(100.1)[1], self.node.snapshot)
++
++    def test_missed_new_full_waits_for_that_full_not_old_cached_geometry(self):
++        self.feed(packet())
++        cached = self.node.snapshot
++        for stamp in (100.05, 100.1, 100.15):
++            self.feed(packet(version=8, stamp=stamp, full=False))
++            self.assertIsNone(self.node.snapshot)
++            self.assertIs(self.node.snapshot_cache, cached)
++            self.assert_unavailable(stamp)
++        self.feed(packet(version=8, stamp=100.2))
++        self.assertIsNot(self.node.snapshot_cache.distance, cached.distance)
++        self.assertEqual(self.capture(100.2)[1].header[14], 8)
++
++    def test_grid_change_never_borrows_same_version_cached_field(self):
++        self.feed(packet())
++        changed = packet(stamp=100.1, full=False)
++        changed[8] += .1
++        self.feed(changed)
++        self.assert_unavailable(100.1)
++
++    def test_decoded_cache_does_not_extend_source_age_or_override_invalid_health(self):
++        self.feed(packet())
++        self.feed(packet()[:-1])
++        self.feed(packet(full=False))
++        self.assert_unavailable(100.36)
++        invalid = packet(stamp=100.4, full=False)
++        invalid[4] = 0.
++        self.feed(invalid)
++        self.assert_unavailable(100.4)
++
++    def test_missing_field_stops_locally_without_cancelling_valid_reference(self):
++        self.feed(packet(version=8, full=False))
++        n = self.node
++        n.stop_base = Mock(); n.fault_pub = Mock(); n.info_pub = Mock()
++        n.execute = True; n.sent_command = True; n.sent_navigation_goal = 99.
++        n.reference = SimpleNamespace(lock=threading.RLock(), active=True, goal_stamp=99.)
++        n.cycle_began = time.monotonic()
++        with patch('whole_body_mppi.rospy.logwarn'):
++            try:
++                self.capture(100.)
++            except ValueError as exc:
++                n.reject(str(exc))
++            else:
++                self.fail('A missing collision field must not authorize execution')
++        n.stop_base.assert_called_once_with()
++        n.fault_pub.publish.assert_not_called()
++        report = json.loads(n.info_pub.publish.call_args[0][0].data)
++        self.assertEqual(report['state'], 'collision_snapshot_unavailable')
++        self.assertEqual(report['input_error'], 'delta without identical cached ESDF')
++
++
++if __name__ == '__main__':
++    unittest.main()
+--- /dev/null
++++ current/src/mm_remani/test/test_planner_virtual_progress.py
+@@ -0,0 +1,124 @@
++"""Compile the actual planner phase helpers with ROS time, without a ROS graph."""
++from pathlib import Path
++import json
++import subprocess
++import tempfile
++import unittest
++
++
++SOURCE = (Path(__file__).resolve().parents[2] / 'mm_remani_planner' /
++          'plan_manage/src/remani_replan_fsm.cpp')
++
++
++def phase_methods():
++    source = SOURCE.read_text()
++    methods = []
++    for name in ('getCurrentTrajectoryTime', 'getCurrentTrajectoryScale'):
++        start = source.index('double REMANIReplanFSM::' + name + '(')
++        opening = source.index('{', start)
++        depth = 1
++        end = opening + 1
++        while depth:
++            depth += (source[end] == '{') - (source[end] == '}')
++            end += 1
++        methods.append(source[start:end])
++    return '\n'.join(methods)
++
++
++class PlannerVirtualProgressTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.temp = tempfile.TemporaryDirectory(prefix='remani_phase_test_')
++        cls.addClassCleanup(cls.temp.cleanup)
++        directory = Path(cls.temp.name)
++        cpp = directory / 'phase.cpp'
++        cls.binary = directory / 'phase'
++        cpp.write_text(r'''
++#include <algorithm>
++#include <cmath>
++#include <cstdlib>
++#include <iomanip>
++#include <iostream>
++#include <ros/time.h>
++struct SingulTrajData { double start_time, duration; };
++class REMANIReplanFSM {
++public:
++  bool have_controller_progress_;
++  double controller_trajectory_start_time_, controller_trajectory_time_;
++  double controller_trajectory_scale_, controller_progress_timeout_;
++  ros::Time controller_progress_stamp_;
++  double getCurrentTrajectoryTime(const SingulTrajData&, const ros::Time&) const;
++  double getCurrentTrajectoryScale(const SingulTrajData&, const ros::Time&) const;
++};
++''' + phase_methods() + r'''
++int main(int argc, char **argv) {
++  if (argc != 10) return 2;
++  REMANIReplanFSM f;
++  const ros::Time now(std::stod(argv[1]));
++  f.controller_progress_stamp_.fromSec(std::stod(argv[2]));
++  f.controller_trajectory_start_time_ = std::stod(argv[3]);
++  f.controller_trajectory_time_ = std::stod(argv[4]);
++  f.controller_trajectory_scale_ = std::stod(argv[5]);
++  f.have_controller_progress_ = std::stoi(argv[6]);
++  SingulTrajData t{std::stod(argv[8]), std::stod(argv[7])};
++  f.controller_progress_timeout_ = std::stod(argv[9]);
++  std::cout << std::setprecision(17) << "{\"phase\":"
++            << f.getCurrentTrajectoryTime(t, now) << ",\"scale\":"
++            << f.getCurrentTrajectoryScale(t, now) << "}\n";
++}
++''')
++        subprocess.run(['/usr/bin/c++', '-std=c++14', '-O0',
++                        '-I/opt/ros/noetic/include', str(cpp),
++                        '-L/opt/ros/noetic/lib', '-Wl,-rpath,/opt/ros/noetic/lib',
++                        '-lrostime', '-lcpp_common', '-o', str(cls.binary)],
++                       check=True, capture_output=True, text=True)
++
++    def evaluate(self, now=100., stamp=99.9, start=10., phase=.4, scale=.5,
++                 have=True, duration=5., trajectory_start=10., timeout=.5):
++        args = [now, stamp, start, phase, scale, int(have), duration,
++                trajectory_start, timeout]
++        return json.loads(subprocess.check_output(
++            [str(self.binary)] + [str(value) for value in args], text=True))
++
++    def test_fresh_virtual_phase_does_not_follow_elapsed_wall_time(self):
++        self.assertEqual(self.evaluate(), {'phase': .45, 'scale': .5})
++
++    def test_expired_matching_progress_cannot_complete_or_advance_handoff(self):
++        result = self.evaluate(stamp=99.4)
++        self.assertEqual(result, {'phase': .4, 'scale': 0.})
++        self.assertLess(result['phase'], 5. - .01)  # FSM completion threshold.
++        self.assertEqual(result['phase'] + .7 * result['scale'], .4)
++
++    def test_long_gap_and_paused_reference_hold_reported_phase(self):
++        for now in (100., 1000.):
++            for scale in (0., .5, 1.):
++                with self.subTest(now=now, scale=scale):
++                    self.assertEqual(self.evaluate(now=now, stamp=99.4, scale=scale),
++                                     {'phase': .4, 'scale': 0.})
++
++    def test_new_matching_feedback_resumes_without_trajectory_replacement(self):
++        self.assertEqual(self.evaluate(stamp=99.4)['scale'], 0.)
++        result = self.evaluate(stamp=100., phase=.47, scale=.6)
++        self.assertEqual(result, {'phase': .47, 'scale': .6})
++
++    def test_future_progress_does_not_authorize_forward_extrapolation(self):
++        for stamp in (100.006, 100.05, 101.):
++            with self.subTest(stamp=stamp):
++                self.assertEqual(self.evaluate(stamp=stamp), {'phase': .4, 'scale': 0.})
++        # One bounded transport/clock tick keeps the existing no-negative-phase policy.
++        self.assertEqual(self.evaluate(stamp=100.004), {'phase': .4, 'scale': .5})
++
++    def test_exact_expiry_boundary_and_duration_clamping(self):
++        self.assertEqual(self.evaluate(stamp=99.5), {'phase': .65, 'scale': .5})
++        self.assertEqual(self.evaluate(stamp=99.499), {'phase': .4, 'scale': 0.})
++        self.assertEqual(self.evaluate(stamp=99.4, phase=6.)['phase'], 5.)
++        self.assertEqual(self.evaluate(stamp=99.4, phase=-1.)['phase'], 0.)
++
++    def test_missing_or_different_trajectory_preserves_legacy_wall_clock(self):
++        for params in ({'have': False}, {'start': 9.}, {'stamp': 0.}):
++            with self.subTest(params=params):
++                self.assertEqual(self.evaluate(now=11., **params), {'phase': 1., 'scale': 1.})
++
++
++if __name__ == '__main__':
++    unittest.main()

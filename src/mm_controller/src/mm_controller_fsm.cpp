@@ -1,4 +1,5 @@
 #include "mm_controller/mm_controller_fsm.hpp"
+#include <stdexcept>
 using namespace std;
 
 namespace MMController{
@@ -10,6 +11,19 @@ MMControllerFSM::MMControllerFSM(const ros::NodeHandle& nh) : nh_(nh){
 	nh_.param("controller/curvature_ff_start_speed", curvature_ff_start_speed_, 0.04);
 	nh_.param("controller/curvature_ff_full_speed", curvature_ff_full_speed_, 0.10);
 	nh_.param("controller/max_feedforward_omega", max_feedforward_omega_, 0.60);
+	nh_.param("controller/use_mppi_execution_limits", base_execution_limits_.enabled, false);
+	if(base_execution_limits_.enabled) {
+		const bool have_limits =
+			nh_.getParam("/whole_body_mppi/base_limits/vmax", base_execution_limits_.linear) &&
+			nh_.getParam("/whole_body_mppi/base_limits/wmax", base_execution_limits_.angular) &&
+			nh_.getParam("/whole_body_mppi/base_limits/wheel_v", base_execution_limits_.wheel) &&
+			nh_.getParam("/whole_body_mppi/base_limits/track", base_execution_limits_.track);
+		if(!have_limits || baseExecutionTimeScale(Eigen::Vector2d::Zero(),
+		    Eigen::Vector2d::Zero(), 0.0, base_execution_limits_) != 1.0) {
+			ROS_FATAL("[MMctrl] MPPI execution limits are missing or invalid.");
+			throw std::invalid_argument("invalid MPPI execution limits");
+		}
+	}
 	nh_.param("controller/odom_timeout", odom_timeout_, 0.25);
 	nh_.param("controller/virtual_time_min_reference_speed", virtual_time_min_reference_speed_, 0.05);
 	nh_.param("controller/virtual_time_scale_rise_rate", virtual_time_scale_rise_rate_, 0.8);
@@ -125,7 +139,14 @@ MMControllerFSM::MMControllerFSM(const ros::NodeHandle& nh) : nh_(nh){
 void MMControllerFSM::process(){
 	// return;
 	ros::Time now_time = ros::Time::now();
-	if(!state_data.have_car_ || !state_data.have_mani_) return;
+	if(!state_is_received(now_time)){
+		// A feedback failure is not an ordinary reference pause. Do not keep
+		// publishing an old position goal with a new command timestamp.
+		virtual_time_scale_ = 0.0;
+		last_virtual_clock_stamp_ = now_time;
+		ROS_WARN_THROTTLE(1.0, "[MMctrl] Execution feedback unavailable/stale; suppressing commands.");
+		return;
+	}
 	syncTrajectoryClock(now_time);
 
 	static bool is_first_time = true;
@@ -270,8 +291,9 @@ void MMControllerFSM::update_stay_state(bool mani_goto_init){
 }
 
 bool MMControllerFSM::state_is_received(const ros::Time &now_time){
-	return (now_time - state_data.odom_rcv_stamp).toSec() < odom_timeout_ &&
-	       (now_time - state_data.joint_rcv_stamp).toSec() < odom_timeout_;
+	return state_data.have_car_ && state_data.have_mani_ &&
+	       State_Data_t::sourceFresh(state_data.odom_source_stamp, now_time, odom_timeout_) &&
+	       State_Data_t::sourceFresh(state_data.joint_source_stamp, now_time, arm_tracking_joint_timeout_);
 }
 
 void MMControllerFSM::safetySpeedLimitCallback(const std_msgs::Float64::ConstPtr &msg){
@@ -346,11 +368,19 @@ void MMControllerFSM::advanceTrajectoryClock(const ros::Time &now){
 	if(now < trajectory_activation_stamp_)
 		return;
 
-	double target_scale = 1.0;
+	const auto capacity_at = [this](double phase) {
+		if(!base_execution_limits_.enabled) return 1.0;
+		const double sample = std::min(phase, trajectory_data.singul_traj_data.duration);
+		return baseExecutionTimeScale(
+			trajectory_data.singul_traj_data.getVel(sample).head<2>(),
+			trajectory_data.singul_traj_data.getAcc(sample).head<2>(),
+			yaw_hold_speed_, base_execution_limits_);
+	};
+	const double execution_scale = capacity_at(virtual_traj_time_);
+	double target_scale = execution_scale;
 	bool force_freeze = false;
 	const bool odom_fresh =
-		!state_data.odom_rcv_stamp.isZero() &&
-		(now - state_data.odom_rcv_stamp).toSec() <= odom_timeout_;
+		state_data.have_car_ && State_Data_t::sourceFresh(state_data.odom_source_stamp, now, odom_timeout_);
 	if(!odom_fresh){
 		force_freeze = true;
 		ROS_ERROR_THROTTLE(1.0, "[MMctrl] Odom stale; freezing trajectory clock.");
@@ -413,7 +443,7 @@ void MMControllerFSM::advanceTrajectoryClock(const ros::Time &now){
 					ratio * (1.0 - base_tracking_min_time_scale_);
 			}
 			target_scale = std::min(target_scale, std::min(position_scale, yaw_scale));
-			if(target_scale < 0.999){
+			if(std::min(position_scale, yaw_scale) < 0.999){
 				ROS_WARN_THROTTLE(
 					1.0,
 					"[MMctrl] Base tracking lag position=%.3f m yaw=%.3f rad; scale whole-body progress to %.2f.",
@@ -448,8 +478,7 @@ void MMControllerFSM::advanceTrajectoryClock(const ros::Time &now){
 
 	const bool joint_fresh =
 		state_data.have_mani_ &&
-		!state_data.joint_rcv_stamp.isZero() &&
-		(now - state_data.joint_rcv_stamp).toSec() <= arm_tracking_joint_timeout_;
+		State_Data_t::sourceFresh(state_data.joint_source_stamp, now, arm_tracking_joint_timeout_);
 	if(!joint_fresh){
 		force_freeze = true;
 		ROS_ERROR_THROTTLE(1.0, "[MMctrl] Joint state stale; freezing trajectory clock.");
@@ -512,9 +541,15 @@ void MMControllerFSM::advanceTrajectoryClock(const ros::Time &now){
 			std::min(virtual_time_scale_ + max_change, target_scale));
 	}
 
+	// Rate smoothing cannot temporarily exceed the current executable envelope.
+	// This bounds the shared reference clock, not the physical actuator commands.
+	virtual_time_scale_ = std::min(virtual_time_scale_, execution_scale);
 	virtual_traj_time_ = std::min(
 		trajectory_data.singul_traj_data.duration,
 		virtual_traj_time_ + dt * virtual_time_scale_);
+	// Publish the advanced phase and its own limit as one consistent pair.
+	// Do not integrate a second time when curvature increases over this tick.
+	virtual_time_scale_ = std::min(virtual_time_scale_, capacity_at(virtual_traj_time_));
 }
 
 void MMControllerFSM::publishTrajectoryProgress(const ros::Time &stamp){

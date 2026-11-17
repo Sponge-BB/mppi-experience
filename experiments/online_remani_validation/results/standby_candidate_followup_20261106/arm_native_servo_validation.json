@@ -1,0 +1,111 @@
+{
+  "schema": "native_position_servo_equivalence_and_timing_v1",
+  "ros_started": false,
+  "hardware_opened": false,
+  "tests_run": 12,
+  "tests_passed": true,
+  "metrics": {
+    "first_100ms": {
+      "target_lead_rad": 0.025500000000000078,
+      "predicted_q_progress_rad": 0.0017500000000003624,
+      "plant_q_progress_rad": 0.0017500000000003624,
+      "maximum_q_error_rad": 0.0
+    },
+    "native_numpy_equivalence": {
+      "states": 240,
+      "hold_and_brake": true,
+      "update_comparisons": 3840,
+      "maximum_absolute_error": 4.163336342344337e-16
+    },
+    "periodic_2s": {
+      "predicted_q_progress_rad": 0.25082509209030146,
+      "plant_q_progress_rad": 0.24925996169595477,
+      "plant_final_dq_rad_s": 0.13552805826573244,
+      "maximum_q_error_rad": 0.001565130394346692,
+      "regression_q_error_budget_rad": 0.002,
+      "feedback_reset_single_step_q_errors_rad": [
+        0.0,
+        2.220446049250313e-16,
+        1.383463541504426e-07,
+        2.4900684364004277e-05,
+        2.55578801688916e-05,
+        2.2414304471141122e-05,
+        2.2512533802476753e-05,
+        2.2544451999895188e-05,
+        2.2553437153849387e-05,
+        2.25559665252284e-05,
+        2.2556678558771637e-05,
+        2.255687899976877e-05,
+        2.2556935424411506e-05,
+        2.2556951308594364e-05,
+        2.255695577835226e-05,
+        2.255695703823335e-05,
+        2.255695739261654e-05,
+        2.2556957491648433e-05,
+        2.255695752051423e-05,
+        2.255695752761966e-05
+      ],
+      "feedback_reset_max_q_error_rad": 2.55578801688916e-05,
+      "feedback_reset_max_velocity_error_rad_s": 0.0008715932361711975
+    },
+    "periodic_2s_20ms_feedback": {
+      "plant_q_progress_rad": 0.23609279017058027,
+      "plant_final_dq_rad_s": 0.12544541739650916
+    },
+    "watchdog_0.3": {
+      "samples": 17,
+      "maximum_q_error_rad": 0.0001828132065613275,
+      "final_joint_velocity_rad_s": 0.001956866768614643
+    },
+    "watchdog_0.275": {
+      "samples": 16,
+      "maximum_q_error_rad": 7.323107606671542e-05,
+      "final_joint_velocity_rad_s": 0.002381872125991709
+    }
+  },
+  "microbenchmarks": [
+    {
+      "states": 1,
+      "integration_s": 0.05,
+      "numpy_us": 210.3682175038557,
+      "native_us": 59.08629249461228,
+      "speedup": 3.5603556869478297,
+      "saved_us": 151.28192500924342
+    },
+    {
+      "states": 22,
+      "integration_s": 0.05,
+      "numpy_us": 275.0899900092918,
+      "native_us": 67.36266501320642,
+      "speedup": 4.08371595683396,
+      "saved_us": 207.72732499608537
+    },
+    {
+      "states": 56,
+      "integration_s": 0.05,
+      "numpy_us": 321.664065013465,
+      "native_us": 84.13199000642635,
+      "speedup": 3.823326477703606,
+      "saved_us": 237.53207500703866
+    }
+  ],
+  "compile_command": "g++ -O2 -std=c++11 -shared -fPIC src/mm_remani/src/mppi_position_servo.cpp -o devel/lib/libmppi_position_servo.so",
+  "unchanged": [
+    "10ms integration substep",
+    "position and velocity loop time constants",
+    "candidate count",
+    "joint and lead bounds",
+    "95ms online deadline",
+    "legacy velocity response"
+  ],
+  "native_loaded": true,
+  "source_sha256": {
+    "src/mm_remani/test/test_mppi_position_servo.py": "629f1a52482a0448980f23564869ecd14cb96bde79fadd76a4d43f2fd9e2a6d2",
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "f1537dfce80edee39fa2658e720b06156b9c71665b9adcd9d383783592039749",
+    "src/mm_remani/src/mppi_position_servo.cpp": "e9346c8193fe954598d619e3c119512b51edfc3628d296a2a0451653ccf13884",
+    "src/mm_remani/CMakeLists.txt": "eed3d29ec5bb092f4038aa63de64125ab5ab039f460d0f6b36fa57d980b7a1d4",
+    "devel/lib/libmppi_position_servo.so": "1a626d880d6812f3f9801459ff76501f4d93920cac312cd4d56341b95f2bacdd"
+  },
+  "rss_mib": 45.29296875,
+  "scope": "Isolated software equivalence and method microbenchmark; not full plan latency or online continuous delivery validation."
+}

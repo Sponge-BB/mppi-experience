@@ -1,0 +1,60 @@
+{
+  "purpose": "修复地图完整帧/增量帧缓存失配恢复与错误分类，避免缓存错误误触发慢层撤轨",
+  "offline_passed": true,
+  "hardware_validation": false,
+  "parent": "20261116-231305-before-snapshot-resync",
+  "tests": {
+    "tests": 65,
+    "failures": 0,
+    "errors": 0,
+    "passed": true,
+    "hardware": false,
+    "ros_master": false
+  },
+  "actual_recorded_packet_replay": "offline_replay/saved_packet_replay.json",
+  "build": {
+    "returncode": 0,
+    "elapsed_s": 217.7549898310026,
+    "child_peak_rss_mib": 1357.8359375,
+    "parallel_jobs": 1,
+    "fresh_objects": true,
+    "relink_runtime_rpath": {
+      "returncode": 0,
+      "elapsed_s": 7.4866475369999534,
+      "rpath": "/home/l/remani_ws/devel/lib:/opt/ros/noetic/lib",
+      "no_tmp_dependency": true
+    }
+  },
+  "deployment": {
+    "staged_sha256": "b8f7b4aa4440dc80ae6b5e8844d4aceea3f5143e645a884fbf8ef5b04cb7081d",
+    "deployed_sha256": "b8f7b4aa4440dc80ae6b5e8844d4aceea3f5143e645a884fbf8ef5b04cb7081d",
+    "deployment": "atomic replace after read-only confirmation control processes exited",
+    "link_check": true,
+    "rpath": "/home/l/remani_ws/devel/lib:/opt/ros/noetic/lib",
+    "temporary_rpath": false,
+    "actual_mppi_script": "/home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py",
+    "devel_mppi_wrapper_present": false,
+    "hardware_commands": false
+  },
+  "changes": [
+    "快照订阅保留同次TCP读取中的完整消息顺序，防完整帧被后续增量帧截去",
+    "解码失配暂停本轮交付并最多4Hz请求完整帧，保留字段缓存仅供严格匹配的增量解码",
+    "缓存键加入原始距离场复制时间以区分生产者重启",
+    "解码失配归为本地重试，不产生或清除tracking_fault；成功交付才按既有逻辑清除"
+  ],
+  "unchanged": [
+    "地图350ms有效期",
+    "反馈150ms有效期",
+    "95ms交付门限",
+    "碰撞半径/观测/规划空间",
+    "机械臂驱动、使能、CAN与固件"
+  ],
+  "known_limits": [
+    "未实车验证；C++实际发布/网络恢复尚未进行集成实测",
+    "当前协议限定单exporter/单连接顺序回调；不扩展多生产者仲裁",
+    "历史首故障缺失完整field1175载荷，本次用实际保存的field1164/1177报文验证同协议",
+    "约100ms地图计算与95ms预算仍是独立停车来源，本版本不声称全部解决走走停停",
+    "后续raw_latest近车体回波碰撞停车需要另行核对，未盲目扩大自滤波遮罩"
+  ],
+  "no_robot_motion_or_enable": true
+}

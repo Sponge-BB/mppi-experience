@@ -1,0 +1,61 @@
+{
+  "scope": "stage1仅FSM占据暂停/恢复；不重复跑地图算法、SDK/CAN或全部MPPI数值测试。",
+  "modules": [
+    "test_transient_obstacle_recovery",
+    "test_perception_recovery",
+    "test_goal_terminal",
+    "test_mppi_native_phase",
+    "test_mppi_reference_wait",
+    "test_mppi_deadline_priority",
+    "test_mppi_execution_gate"
+  ],
+  "existing_unittest_method_counts": {
+    "test_transient_obstacle_recovery": "new test pending implementation",
+    "test_perception_recovery": 2,
+    "test_goal_terminal": 2,
+    "test_mppi_native_phase": 27,
+    "test_mppi_reference_wait": 8,
+    "test_mppi_deadline_priority": 9,
+    "test_mppi_execution_gate": 16
+  },
+  "command": [
+    "nice",
+    "-n",
+    "15",
+    "/usr/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_transient_obstacle_recovery",
+    "test_perception_recovery",
+    "test_goal_terminal",
+    "test_mppi_native_phase",
+    "test_mppi_reference_wait",
+    "test_mppi_deadline_priority",
+    "test_mppi_execution_gate"
+  ],
+  "cwd": "/home/l/remani_ws",
+  "environment": {
+    "PYTHONNOUSERSITE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MALLOC_ARENA_MAX": "2",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/l/remani_ws/src/mm_remani/test:/home/l/remani_ws/src/mm_remani/scripts:/home/l/remani_ws/src/mm_remani/scripts/mppi:/home/l/remani_ws/devel/lib/python3/dist-packages:/opt/ros/noetic/lib/python3/dist-packages"
+  },
+  "why": {
+    "test_transient_obstacle_recovery": "本轮占据碰撞暂停、保目标、清除后的重新验收；新增逻辑必须实际执行。",
+    "test_perception_recovery": "复用通路不得破坏原感知失效、两阶段交付、原目标/新目标分离。",
+    "test_goal_terminal": "同样改FSM，保留到点验收与终端窗口，避免恢复错误转finish或WAIT_TARGET。",
+    "test_mppi_native_phase": "ABORT/new ADD/未来激活/旧progress保持正确，参考取消后不可执行旧结果。",
+    "test_mppi_reference_wait": "新轨未激活时合法等待与真正取消分开，不凭空维持旧速度。",
+    "test_mppi_deadline_priority": "短时deadline不得升格成永久导航失败或改变恢复目标。",
+    "test_mppi_execution_gate": "恢复过程中执行许可改变、软间隙和明确硬停仍正确阻断。"
+  },
+  "not_rerun_if_unchanged": [
+    "96项plan_env全量及ESDFbenchmark",
+    "piper驱动/CAN测试或实车启动",
+    "MPPI arm-only/数值servo/候选分配全量；算法及配置不在stage1改动范围"
+  ],
+  "run_status": "prepared only; not executed by this agent"
+}

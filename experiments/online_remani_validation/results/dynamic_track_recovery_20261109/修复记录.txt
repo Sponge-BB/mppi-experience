@@ -1,0 +1,41 @@
+2026-11-09 动态目标丢失后的恢复修复
+
+实际故障
+10:46:00 的 2D Nav Goal 已被原生 REMANI 接收，但候选被 lost_observation 拒绝；连续五轮失败后返回 WAIT_TARGET。当前无动态目标不等于历史跟踪记录已退出。跟踪器漏配后会删除旧 ID，旧接收逻辑却一直等待所有旧 ID 重现，空帧和新 ID 都不能恢复。
+
+本次改动（直接修改 /home/l/remani_ws 原工程）
+1. 接收端按 ID 保存最后真实观测的几何和源时间。旧目标 A 丢失期间出现、随后又丢失的 B 也保留，避免只清 A 就漏掉 B。
+2. 复用现有 GridMap LiDAR 光束融合计数，在计数清零前采集真实自由穿越证据，不新增节点、消息或话题。只有晚于该目标观测的有效新扫描，才能形成清除证据。
+3. 覆盖旧目标观测表面及配置的位置余量后，按 ID 退休旧记录，再接收最新完整观测；不要求已经被生产端删除的旧编号重新出现，也不把旧点换成新时间。
+4. 样本间隔不超过地图分辨率，覆盖当前实车 0.08 m 位置余量内的中间体素。近期稀疏扫描可以累计；新命中、静态占据会撤销对应自由证据，过期证据不可拼成清除。
+5. 遮挡、盲区、无效/零/过期/未来时间戳、只有空的动态输出或占据超时删除，都不能自行清除旧目标。既有 ESDF、碰撞验收和停车保护保留。
+6. 历史几何上限为 4 * max_points，清除证据上限 100 万时间戳（约 8 MB）；真实重观测及分辨率变化会释放旧证据。容量不足时保持 lost_observation，不无限增长或静默忘记目标。
+
+修改文件
+src/mm_remani_planner/plan_env/include/plan_env/dynamic_point_buffer.h
+src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp
+src/mm_remani_planner/plan_env/src/grid_map.cpp
+src/mm_remani_planner/plan_env/test/test_dynamic_point_buffer.cpp
+src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp
+
+验证结果
+test_dynamic_point_buffer：27 项通过（新增 13 项，包含清空恢复、部分 ID、A→B→空、逐 ID 源时间、重新观测优先、命中撤销证据、位置余量中间体素和容量限制）。
+test_grid_map_parallel：51 项通过（新增 4 项，使用实际 raycastProcess 验证自由光束恢复、端点/静态/遮挡拒绝、depth/无效时间拒绝及跨帧命中撤销；其余地图与增量 ESDF 回归保持通过）。
+地图测试使用独立 localhost:11439 测试 ROS master，测试后已退出；未连接实车 master 发送控制指令。
+remani_planner_node、mm_controller_node 及其相关共享库已编译完成。16 个依赖相关头文件的生产/测试对象均已核对，未发现过期对象。可视化模拟程序不直接访问 GridMap，本次生产构建白名单不包含这些可选目标。
+编译单线程；子任务虚拟内存上限 1536 MiB；采用 -g0 和 GCC 垃圾回收参数控制编译内存。初次编译触及预设上限后安全停止，调整回收参数后完成。成功编译阶段峰值 RSS 1437516 KiB，最后增量阶段 876244 KiB。
+链接输出先写新文件再替换，避免截断运行中进程正在使用的库；临时链接包装已恢复。编译日志中的原项目 OpenCV 版本及符号比较警告未在本次扩大修改。
+
+生效与实际边界
+当前已运行的程序继续使用其已加载版本，需要退出后重新启动才能加载本次修复。此前目标已被放弃，重启并就绪后需要重新发布目标。
+本次未启动实车程序、未发布目标/速度/使能命令，实际导航效果仍需下一次现场验证。若旧区域始终位于雷达盲区或被遮挡，缺乏真实清除证据时仍会停车；本次没有将未知区域直接当成自由空间。
+恢复日志关键字：Retired ... missing track(s) after newer live LiDAR rays observed their retained regions free.
+若需 MPPI 模式，原工程启动参数为 use_mppi:=true；无此参数仍是原生控制模式。本次恢复机制在两种模式共用的地图层生效，未改默认模式。
+
+文件证据
+修改前源码：before_sources.tar.gz。
+源码差异与哈希：source_changes.diff、source_sha256.json。
+最终编译：build_final.log、build_final_resources.json、build_consistency.json。
+测试：test_results.json、test_dynamic_point_buffer.summary.txt、test_grid_map_parallel.log。
+
+后续更新：运行中排查发现异步时间基准缺陷并修正，当前最新验证为 80 项通过。详情及当前源码哈希见 live_diagnosis/排查与修复记录.txt 和 live_diagnosis/source_sha256.json；上文 78 项为前一阶段记录。

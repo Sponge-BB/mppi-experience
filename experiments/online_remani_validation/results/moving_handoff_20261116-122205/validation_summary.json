@@ -1,0 +1,44 @@
+{
+  "purpose": "MPPI移动动态修复统一生效时刻、提前交付及旧参考等待段验收",
+  "offline_passed": true,
+  "hardware_validation": false,
+  "tests": {
+    "timing_policy": "PASS",
+    "future_adapter": 5,
+    "native_phase_regression": 28,
+    "perception_transient_unittests": 4
+  },
+  "build": {
+    "command": [
+      "nice",
+      "-n",
+      "15",
+      "cmake",
+      "--build",
+      "/tmp/remani_moving_handoff_build_20261116_gc",
+      "--parallel",
+      "1",
+      "--target",
+      "remani_planner_node"
+    ],
+    "exit_code": 0,
+    "elapsed_s": 215.892481977,
+    "peak_build_group_rss_mib": 1369.86328125,
+    "lowest_available_mib": 1563.1015625,
+    "stop_reason": null,
+    "jobs": 1,
+    "clean_build": true,
+    "build_dir": "/tmp/remani_moving_handoff_build_20261116_gc",
+    "runtime_destination_untouched": true
+  },
+  "deployment_verified": true,
+  "known_limits": [
+    "尚无本版本实车连续交接验证",
+    "桥接使用旧参考及冻结时间比例，非真实MPPI动作前缀；每条实际控制仍独立碰撞验收",
+    "慢层等待生效期间尚非完整pending参考管理",
+    "执行进度回退及碰撞恢复入口下一轮独立处理",
+    "原有OpenCV 4.2/4.5链接警告仍存在，ldd -r通过；本轮未改依赖版本"
+  ],
+  "controls_sent": false,
+  "source_and_deploy_versioned": true
+}

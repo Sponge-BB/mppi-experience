@@ -1,0 +1,31 @@
+{
+  "no_master_or_ros_node": true,
+  "stale_cloud_then_fresh_pair": {
+    "stale_dropped": true,
+    "fresh_scan_and_joint_immediately_recovers": true
+  },
+  "late_stale_joint_invalidates_newer_state": {
+    "valid_before": true,
+    "old_packet_clears_newer_valid_state": true,
+    "next_fresh_recovers": true,
+    "applicability": "Demonstrable robustness defect, but this capture does not establish that out-of-order old joint packets reached the self-filter."
+  },
+  "tcpros_queue1_chunk_test": {
+    "payload_bytes": 204800,
+    "frames": 8,
+    "recv64k_delivered": [
+      "frame00:",
+      "frame01:",
+      "frame02:",
+      "frame03:",
+      "frame04:",
+      "frame05:",
+      "frame06:",
+      "frame07:"
+    ],
+    "recv_entire_queued_stream_delivered": [
+      "frame07:"
+    ],
+    "applicability": "Proves queue_size=1 alone is not a cross-recv latest-frame guarantee; this synthetic test does not reproduce or measure the observed 51-second duration."
+  }
+}

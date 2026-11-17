@@ -1,0 +1,40 @@
+2026-11-08 实车启动尝试结果
+
+结论：原实车程序、机械臂反馈、Livox 雷达和定位已运行，但未进入运动测试，未完成待机姿态初始化。
+用户已确认本次上电、急停值守和运动区域清空，并使用原 can_activate.sh 恢复 can1。
+
+本次启动经过
+1. 第一轮错误地给整套 launch 设置了 PYTHONNOUSERSITE=1，导致用户目录内的原 piper_sdk/open3d 无法导入。这是本次操作失误，已停止该轮进程并撤销全局设置后重启，没有安装或替换依赖。
+2. 使用原入口 exp0_real.launch use_mppi:=true can_port:=can1。原 launch 的雷达驱动启动块被注释，另用已有 Livox msg_MID360.launch 启动，xfer_format=1，关闭额外 RViz 和驱动录包。
+3. 取得真实关节、定位、地图后，发现下面两个阻塞，已停止 whole_body_mppi，未绕过检查继续使能。
+
+阻塞一：地图时效
+59 条实测快照中 h4 有效标志为真的仅 16 条；考虑接收时刻后仍在 350 ms 时效内的为 15 条。
+12 个完整新地图代次：融合至导出开始中位数 255.9 ms，导出开始至首次接收 62.8 ms，融合至首次接收 318.7 ms；代次间隔中位数 251.3 ms。
+新快照送达时通常仅余约 21–36 ms 有效时间，不能可靠完成后续检查和交付。
+当前实车全图为 15×10×3 m、分辨率 0.05 m（约 360 万体素）；全图 ESDF 更新是主要耗时。昨日小地图仿真通过不能证明这一实车负载满足时效。
+没有放宽 350 ms 门限或改写融合时间戳。
+
+阻塞二：收拢姿态的模型自碰检查
+真实初始关节角（度）：[-2.447, -1.909, 0.943, 5.992, 26.168, -5.879]。
+按真实运行参数及原待机目标采样 55 个路径点，仅第 0 个点被模型拒绝；肩/腕碰撞球对 [0,18] 的模型间隙为 -7.149 mm。
+关节限位、机械臂与底盘间隙、地面间隙均通过；独立离线复核与运行参数复核一致。
+这表示当前模型未证明该姿态无自碰，不表示已经确认实物碰撞。未删除碰撞对、修改限位或跳过起点检查。
+
+动作与内存记录
+约 119.93 s 的 startup_with_lidar.bag：startup_ready 为 0 次，机械臂控制消息为 0 条，enabled=true 为 0 次，底盘指令全部为零；六关节反馈峰峰变化均为 0 度。
+状态拒绝主要为 collision_snapshot_unavailable 931 次、startup_joint_path_configuration_rejected 191 次。
+采样可用系统内存约 1791–1992 MiB，本次未编译。
+
+结束时状态（只读再次核对）
+whole_body_mppi 进程已退出；/cmd_vel、/joint_ctrl_single、/enable_flag 均无发布者。
+Piper 反馈 enabled=false、feedback_valid=true、stop_latched=false。
+原 launch、Piper 反馈、地图/定位、Livox 驱动仍运行，可在 hai 端观察；本次没有自动关机，也未发布导航目标。
+这份记录不是运动验收通过。重新尝试前需解决实车地图耗时与当前收拢姿态的碰撞模型判定，并先离线/只读复核。
+
+证据文件
+first_hardware_attempt_summary.json：录包审计与内存摘要。
+snapshot_headers_live.json：真实地图时序。
+startup_path_live_parameters.json、planner_parameters_at_attempt.json：实际运行参数及启动路径检查。
+startup_configuration_diagnostic.json：独立离线复核。
+startup_with_lidar.bag、launch.log、livox.log：本次原始记录。

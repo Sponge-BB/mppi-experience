@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-11-13T23:41:36",
+  "baseline": "20261113-233324-before-terminal-settle",
+  "scope": "C++ terminal helpers and extracted GEN prefix; offline only; no main-package build or robot actions",
+  "cwd": "/home/l/remani_ws/src/mm_remani/test",
+  "reproduce_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MALLOC_ARENA_MAX=2 /usr/bin/python3 -m unittest -v test_goal_terminal test_perception_recovery",
+  "measurement": "Actual final run used unittest.TextTestRunner with resource.getrusage(SELF/CHILDREN) to measure RSS; same module load and tests as reproduce_command.",
+  "result": "PASS",
+  "unittest_methods": 4,
+  "terminal_cpp_scenarios": [
+    "bounded_settle",
+    "capture_envelope",
+    "source_validity",
+    "stop_owners",
+    "late_arrival_recheck",
+    "recheck_scope_and_timeout"
+  ],
+  "existing_perception_cpp_scenarios": 15,
+  "elapsed_s": 4.83,
+  "parent_peak_rss_mib": 17.16,
+  "child_peak_rss_mib": 167.76,
+  "files_sha256": {
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "f46590e5e013c8d1bd366aac292ff5b05203df2e08cca11d08337ed8ad9af041",
+    "src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h": "d3fd226c5423bb56d9d9f860e7057513591afbf5591f889da7988d78ba373c86",
+    "src/mm_remani/test/test_goal_terminal.py": "72f24983a6e3c8691bd3c1e3148d4c73cb6fa7c3ed34b465520a65249f93cfd0",
+    "src/mm_remani/test/test_perception_recovery.py": "f6aa8b023bd2bc45d458835ab40d9c1abf11246e5eb25f70a83f224e06b6e69a"
+  },
+  "final_output": "Ran 4 tests in 4.830s; OK; parent_peak_mib=17.16 child_peak_mib=167.76"
+}

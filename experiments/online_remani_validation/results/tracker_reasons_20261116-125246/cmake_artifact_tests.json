@@ -1,0 +1,44 @@
+{
+  "actual_cmake_shared_library_tested": "/tmp/remani_tracker_diag_devel_20261116/lib/libdynamic_obstacle_tracker_core.so",
+  "library_sha256": "9ee6ed67b633e25478fb4f56694945710ac98f1eee406cf1b77c4eeb42082f62",
+  "unittest_count": 37,
+  "passed": true,
+  "commands": [
+    {
+      "command": [
+        "/usr/bin/c++",
+        "/tmp/remani_tracker_diag_stage/standalone_build/test.o",
+        "/tmp/remani_tracker_diag_devel_20261116/lib/libdynamic_obstacle_tracker_core.so",
+        "/usr/lib/aarch64-linux-gnu/libgtest.a",
+        "-pthread",
+        "-Wl,-rpath,/tmp/remani_tracker_diag_devel_20261116/lib",
+        "-o",
+        "/tmp/remani_tracker_diag_stage/standalone_build/test_cmake_core"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/tmp/remani_tracker_diag_stage/standalone_build/test_cmake_core",
+        "--gtest_color=no",
+        "--gtest_output=xml:/home/l/remani_ws/experiments/online_remani_validation/results/tracker_reasons_20261116-125246/cmake_tests.xml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/usr/bin/c++",
+        "/tmp/remani_tracker_diag_stage/standalone_build/fixture.o",
+        "/tmp/remani_tracker_diag_devel_20261116/lib/libdynamic_obstacle_tracker_core.so",
+        "-Wl,-rpath,/tmp/remani_tracker_diag_devel_20261116/lib",
+        "-o",
+        "/tmp/remani_tracker_diag_stage/standalone_build/fixture_cmake_core"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "fixture_matches_original_O0_bytes": false,
+  "fixture_output_sha256": "7e84ad0101e6760a5553ce1d07c1660c8fd01b0684017b8437bda8353facb5c6",
+  "fixture_output_lines": 547,
+  "boundary": "Offline fixtures only, not hardware detection performance; node does not run."
+}

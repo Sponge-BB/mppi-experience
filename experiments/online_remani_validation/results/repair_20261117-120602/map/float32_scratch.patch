@@ -1,0 +1,194 @@
+--- a/src/mm_remani_planner/plan_env/src/esdf_worker.cpp
++++ b/src/mm_remani_planner/plan_env/src/esdf_worker.cpp
+@@ -125,6 +125,22 @@
+   if (!compactVoxelCount(region->input_min, region->input_max,
+                          &size, &region->voxel_count))
+     throw std::invalid_argument("invalid ESDF patch bounds");
++}
++
++// Binary EDT intermediates are integer squared distances. Float storage is
++// exact only after computeDense proves the ROI's maximum squared distance
++// is <= 2^24. The no-seed sentinel is translated without changing its meaning.
++inline double loadSquared(double value) { return value; }
++inline double loadSquared(float value)
++{
++  return value == std::numeric_limits<float>::infinity()
++      ? std::numeric_limits<double>::max() : static_cast<double>(value);
++}
++inline void storeSquared(double &target, double value) { target = value; }
++inline void storeSquared(float &target, double value)
++{
++  target = value == std::numeric_limits<double>::max()
++      ? std::numeric_limits<float>::infinity() : static_cast<float>(value);
+ }
+ 
+ template <typename GetValue, typename SetValue>
+@@ -747,6 +763,7 @@
+   result->positive_ms.fill(0.0);
+   result->negative_ms.fill(0.0);
+   result->negative_fallback_count = 0;
++  result->exact_float_scratch_count = 0;
+   if (job.distance_cap <= 0.0 || job.changed_cells.empty())
+     return computeDense(job, result);
+ 
+@@ -886,6 +903,7 @@
+     result->near_free_ms += dense.near_free_ms;
+     result->negative_apply_ms += dense.negative_apply_ms;
+     result->negative_fallback_count += dense.negative_fallback_count;
++    result->exact_float_scratch_count += dense.exact_float_scratch_count;
+     for (std::size_t axis = 0; axis < 3; ++axis)
+     {
+       result->positive_ms[axis] += dense.positive_ms[axis];
+@@ -952,9 +970,35 @@
+     return false;
+ 
+   result->distance_all.assign(voxel_count, 10000.0);
+-  tmp_buffer1_.resize(voxel_count);
+-  tmp_buffer2_.resize(voxel_count);
+-
++  // Check the integer range without overflowing even for rejected large
++  // dimensions. Every finite partial-axis distance is bounded by this sum.
++  std::uint64_t squared_bound = 0;
++  bool use_exact_float = true;
++  for (int axis = 0; axis < 3; ++axis)
++  {
++    const std::uint64_t extent = static_cast<std::uint64_t>(size[axis] - 1);
++    if (extent > 4096) { use_exact_float = false; break; }
++    squared_bound += extent * extent;
++  }
++  use_exact_float = use_exact_float && squared_bound <= (std::uint64_t{1} << 24);
++  if (use_exact_float)
++  {
++    // Keep only the selected two full-size buffers allocated across jobs.
++    if (tmp_buffer1_.capacity() != 0) std::vector<double>().swap(tmp_buffer1_);
++    if (tmp_buffer2_.capacity() != 0) std::vector<double>().swap(tmp_buffer2_);
++    compact_buffer1_.resize(voxel_count);
++    compact_buffer2_.resize(voxel_count);
++    ++result->exact_float_scratch_count;
++  }
++  else
++  {
++    if (compact_buffer1_.capacity() != 0) std::vector<float>().swap(compact_buffer1_);
++    if (compact_buffer2_.capacity() != 0) std::vector<float>().swap(compact_buffer2_);
++    tmp_buffer1_.resize(voxel_count);
++    tmp_buffer2_.resize(voxel_count);
++  }
++
++  const auto compute_with_scratch = [&](auto &scratch1, auto &scratch2) {
+   if (computationCancelled())
+     return false;
+ 
+@@ -982,9 +1026,9 @@
+             fillBinaryDistanceTransform(
+                 nz,
+                 [&](int z) { return job.occupancy[address(x, y, z)] == 1; },
+-                [&](int z) { return tmp_buffer1_[address(x, y, z)]; },
++                [&](int z) { return loadSquared(scratch1[address(x, y, z)]); },
+                 [&](int z, double value) {
+-                  tmp_buffer1_[address(x, y, z)] = value;
++                  storeSquared(scratch1[address(x, y, z)], value);
+                 });
+           }))
+     return false;
+@@ -998,9 +1042,9 @@
+             const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
+             fillDistanceTransform(
+                 ny, job.min_index.y(),
+-                [&](int y) { return tmp_buffer1_[address(x, y, z)]; },
++                [&](int y) { return loadSquared(scratch1[address(x, y, z)]); },
+                 [&](int y, double value) {
+-                  tmp_buffer2_[address(x, y, z)] = value;
++                  storeSquared(scratch2[address(x, y, z)], value);
+                 });
+           }))
+     return false;
+@@ -1014,7 +1058,7 @@
+             const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
+             fillDistanceTransform(
+                 nx, job.min_index.x(),
+-                [&](int x) { return tmp_buffer2_[address(x, y, z)]; },
++                [&](int x) { return loadSquared(scratch2[address(x, y, z)]); },
+                 [&](int x, double value) {
+                   result->distance_all[address(x, y, z)] =
+                       job.resolution * std::sqrt(value);
+@@ -1052,7 +1096,7 @@
+                     continue;  // Outside this immutable ROI is not free space.
+                   if (job.occupancy[address(sx, sy, sz)] == 0)
+                   {
+-                    tmp_buffer1_[index] = offset[3];
++                    scratch1[index] = offset[3];
+                     found = true;
+                     break;
+                   }
+@@ -1074,7 +1118,7 @@
+               {
+                 const std::size_t index = line * nz + z;
+                 if (job.occupancy[index] != 1) continue;
+-                const double negative_distance = job.resolution * std::sqrt(tmp_buffer1_[index]);
++                const double negative_distance = job.resolution * std::sqrt(loadSquared(scratch1[index]));
+                 if (negative_distance > 0.0)
+                   result->distance_all[index] += -negative_distance + job.resolution;
+               }
+@@ -1097,9 +1141,9 @@
+             fillBinaryDistanceTransform(
+                 nz,
+                 [&](int z) { return job.occupancy[address(x, y, z)] == 0; },
+-                [&](int z) { return tmp_buffer1_[address(x, y, z)]; },
++                [&](int z) { return loadSquared(scratch1[address(x, y, z)]); },
+                 [&](int z, double value) {
+-                  tmp_buffer1_[address(x, y, z)] = value;
++                  storeSquared(scratch1[address(x, y, z)], value);
+                 });
+           }))
+     return false;
+@@ -1113,9 +1157,9 @@
+             const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
+             fillDistanceTransform(
+                 ny, job.min_index.y(),
+-                [&](int y) { return tmp_buffer1_[address(x, y, z)]; },
++                [&](int y) { return loadSquared(scratch1[address(x, y, z)]); },
+                 [&](int y, double value) {
+-                  tmp_buffer2_[address(x, y, z)] = value;
++                  storeSquared(scratch2[address(x, y, z)], value);
+                 });
+           }))
+     return false;
+@@ -1129,7 +1173,7 @@
+             const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
+             fillDistanceTransform(
+                 nx, job.min_index.x(),
+-                [&](int x) { return tmp_buffer2_[address(x, y, z)]; },
++                [&](int x) { return loadSquared(scratch2[address(x, y, z)]); },
+                 [&](int x, double value) {
+                   const double negative_distance =
+                       job.resolution * std::sqrt(value);
+@@ -1145,6 +1189,10 @@
+   finish_phase(result->negative_ms[2]);
+ 
+   return !computationCancelled();
++  };
++  return use_exact_float
++      ? compute_with_scratch(compact_buffer1_, compact_buffer2_)
++      : compute_with_scratch(tmp_buffer1_, tmp_buffer2_);
+ }
+ 
+ }  // namespace plan_env
+--- a/src/mm_remani_planner/plan_env/include/plan_env/esdf_worker.h
++++ b/src/mm_remani_planner/plan_env/include/plan_env/esdf_worker.h
+@@ -78,6 +78,7 @@
+   std::array<double, 3> positive_ms{{0.0, 0.0, 0.0}};
+   std::array<double, 3> negative_ms{{0.0, 0.0, 0.0}};
+   std::size_t negative_fallback_count = 0;
++  std::size_t exact_float_scratch_count = 0;
+ };
+ 
+ struct ESDFWorkerStats
+@@ -200,6 +201,8 @@
+   // allocation of the two large EDT intermediate grids.
+   std::vector<double> tmp_buffer1_;
+   std::vector<double> tmp_buffer2_;
++  std::vector<float> compact_buffer1_;
++  std::vector<float> compact_buffer2_;
+ };
+ 
+ }  // namespace plan_env

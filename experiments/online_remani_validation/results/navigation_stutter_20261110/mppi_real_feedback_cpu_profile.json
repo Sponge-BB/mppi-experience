@@ -1,0 +1,759 @@
+{
+  "source_feedback": "joint_lead_fullrate.jsonl",
+  "model_parameters": "after_restart_runtime_config.json params /mm_controller_node",
+  "model_equivalence": "same Piper URDF/proxy and 47 fixed + 20 arm spheres; joint6 runtime bounds retained",
+  "configuration": {
+    "horizon": 8,
+    "step_s": 0.1,
+    "random_samples": 4,
+    "base_limits": {
+      "vmax": 0.05,
+      "wmax": 0.15,
+      "accel": 0.1,
+      "angular_accel": 0.3,
+      "track": 0.37,
+      "wheel_v": 0.2296,
+      "wheel_a": 0.2975
+    },
+    "arm_velocity": [
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "arm_acceleration": [
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35
+    ],
+    "arm_execution_model": "velocity_legacy"
+  },
+  "synthetic_inputs": {
+    "base_state": "x=y=yaw=v=w=0; not a recorded base pose",
+    "reference": "navigation straight 1m at configured vmax; standby anchor at origin; nominal original standby arm pose",
+    "ESDF": "82x82x60 at .05m, constant 3m clear distance; NOT a recorded scene",
+    "dynamic_points": "none: no dynamic KDTree costs included"
+  },
+  "no_ROS_or_hardware": true,
+  "single_thread_env": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "source_sha256": {
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "980eadfd09349c0171db3cda55dc8dda9c99d5cf7f8481f692b534ad62e17c32",
+    "src/mm_remani/scripts/mppi/active_arm_model.py": "b57c6fe63a6155055949d60554d6ea01644f727d8370c511fdd30c7a4e759fa5",
+    "src/mm_remani/scripts/mppi/standby_whole_body_mppi.py": "c8bf285c7ca937ad8afa049da9f8a9e59ad344145842472df430d6941cac0baa",
+    "src/mm_remani/scripts/whole_body_mppi.py": "a8e2c19496b1eee6efd914b1e9b38ffadd5ba2511020c5fa3e282633bc5b78bd"
+  },
+  "cases": [
+    {
+      "kernel": "navigation",
+      "feedback_case": "recorded_zero_dq",
+      "record": {
+        "received": 1794302629.1339839,
+        "topic": "/joint_states_single",
+        "stamp": 1794302629.114273,
+        "name": [
+          "joint1",
+          "joint2",
+          "joint3",
+          "joint4",
+          "joint5",
+          "joint6"
+        ],
+        "q": [
+          -0.012636183784438947,
+          0.5328315673413488,
+          -1.051752860544303,
+          0.0,
+          0.9097528726020443,
+          0.0
+        ],
+        "dq": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "unprofiled_plan_ms": [
+        16.026203000365058,
+        15.449635997356381,
+        15.500421999604441
+      ],
+      "unprofiled_first_command_check_ms": [
+        5.6059499984257855,
+        5.267632001050515,
+        5.267440003080992
+      ],
+      "first_command_check_errors": [
+        null,
+        null,
+        null
+      ],
+      "profiled_plan_ms": 17.806944997573737,
+      "profile_groups_disjoint": {
+        "advance_including_base_small_numpy": {
+          "calls": 35,
+          "cumulative_ms": 6.348380000000001,
+          "fraction_of_profile_wall": 0.35651146228985325
+        },
+        "external_spheres_fk": {
+          "calls": 1,
+          "cumulative_ms": 1.0717230000000002,
+          "fraction_of_profile_wall": 0.06018567475476711
+        },
+        "ESDF_query_no_dynamic_points": {
+          "calls": 1,
+          "cumulative_ms": 1.2050720000000001,
+          "fraction_of_profile_wall": 0.06767426979553179
+        },
+        "configuration_collision_including_proxy": {
+          "calls": 1,
+          "cumulative_ms": 2.872466,
+          "fraction_of_profile_wall": 0.16131155570994263
+        },
+        "other": {
+          "cumulative_ms": 6.3093039975737355
+        }
+      },
+      "nested_context_do_not_sum": {
+        "advance_base": {
+          "calls": 35,
+          "cumulative_ms": 5.2879890000000005,
+          "fraction_of_profile_wall": 0.2969621684528429
+        },
+        "configuration_gaps_batch": {
+          "calls": 1,
+          "cumulative_ms": 2.6342170000000005,
+          "fraction_of_profile_wall": 0.14793200070865173
+        },
+        "self_gaps": {
+          "calls": 1,
+          "cumulative_ms": 0.38827100000000003,
+          "fraction_of_profile_wall": 0.0218044701128073
+        },
+        "shoulder_wrist_proxy_pair_gaps": {
+          "calls": 0,
+          "cumulative_ms": 0,
+          "fraction_of_profile_wall": 0.0
+        },
+        "proposals_includes_advance": {
+          "calls": 1,
+          "cumulative_ms": 6.005485,
+          "fraction_of_profile_wall": 0.3372552114255573
+        },
+        "evaluate_includes_all_acceptance": {
+          "calls": 1,
+          "cumulative_ms": 11.682606,
+          "fraction_of_profile_wall": 0.6560702019123325
+        }
+      },
+      "plan_result": {
+        "mode": "nominal",
+        "candidates": 3,
+        "feasible": 3,
+        "intervention": false
+      },
+      "median_unprofiled_plan_ms": 15.500421999604441,
+      "median_unprofiled_first_command_check_ms": 5.267632001050515
+    },
+    {
+      "kernel": "navigation",
+      "feedback_case": "recorded_peak_dq",
+      "record": {
+        "received": 1794302637.8735251,
+        "topic": "/joint_states_single",
+        "stamp": 1794302637.864319,
+        "name": [
+          "joint1",
+          "joint2",
+          "joint3",
+          "joint4",
+          "joint5",
+          "joint6"
+        ],
+        "q": [
+          -0.012636183784438947,
+          0.53248250149095,
+          -1.053550549673857,
+          0.0,
+          0.9075363044520114,
+          0.0
+        ],
+        "dq": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.44151817736471377,
+          0.0
+        ]
+      },
+      "unprofiled_plan_ms": [
+        18.662339000002248,
+        17.980968001211295,
+        17.608057001780253
+      ],
+      "unprofiled_first_command_check_ms": [
+        9.557401997881243,
+        9.234446002665209,
+        9.280687001592014
+      ],
+      "first_command_check_errors": [
+        null,
+        null,
+        null
+      ],
+      "profiled_plan_ms": 20.19686399944476,
+      "profile_groups_disjoint": {
+        "advance_including_base_small_numpy": {
+          "calls": 35,
+          "cumulative_ms": 6.433730000000001,
+          "fraction_of_profile_wall": 0.3185509394021207
+        },
+        "external_spheres_fk": {
+          "calls": 1,
+          "cumulative_ms": 1.200303,
+          "fraction_of_profile_wall": 0.05943016698201256
+        },
+        "ESDF_query_no_dynamic_points": {
+          "calls": 1,
+          "cumulative_ms": 1.248818,
+          "fraction_of_profile_wall": 0.061832272576293625
+        },
+        "configuration_collision_including_proxy": {
+          "calls": 1,
+          "cumulative_ms": 4.864417,
+          "fraction_of_profile_wall": 0.24085011416295768
+        },
+        "other": {
+          "cumulative_ms": 6.449595999444757
+        }
+      },
+      "nested_context_do_not_sum": {
+        "advance_base": {
+          "calls": 35,
+          "cumulative_ms": 5.337617,
+          "fraction_of_profile_wall": 0.26427949409109946
+        },
+        "configuration_gaps_batch": {
+          "calls": 1,
+          "cumulative_ms": 4.597334000000001,
+          "fraction_of_profile_wall": 0.22762613047879057
+        },
+        "self_gaps": {
+          "calls": 1,
+          "cumulative_ms": 0.6498820000000001,
+          "fraction_of_profile_wall": 0.032177371695817046
+        },
+        "shoulder_wrist_proxy_pair_gaps": {
+          "calls": 0,
+          "cumulative_ms": 0,
+          "fraction_of_profile_wall": 0.0
+        },
+        "proposals_includes_advance": {
+          "calls": 1,
+          "cumulative_ms": 6.0993770000000005,
+          "fraction_of_profile_wall": 0.3019962406127843
+        },
+        "evaluate_includes_all_acceptance": {
+          "calls": 1,
+          "cumulative_ms": 13.966601,
+          "fraction_of_profile_wall": 0.6915232483807369
+        }
+      },
+      "plan_result": {
+        "mode": "nominal",
+        "candidates": 3,
+        "feasible": 3,
+        "intervention": false
+      },
+      "median_unprofiled_plan_ms": 17.980968001211295,
+      "median_unprofiled_first_command_check_ms": 9.280687001592014
+    },
+    {
+      "kernel": "navigation",
+      "feedback_case": "peak_q_with_dq_zero_counterfactual",
+      "record": {
+        "received": 1794302637.8735251,
+        "topic": "/joint_states_single",
+        "stamp": 1794302637.864319,
+        "name": [
+          "joint1",
+          "joint2",
+          "joint3",
+          "joint4",
+          "joint5",
+          "joint6"
+        ],
+        "q": [
+          -0.012636183784438947,
+          0.53248250149095,
+          -1.053550549673857,
+          0.0,
+          0.9075363044520114,
+          0.0
+        ],
+        "dq": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "unprofiled_plan_ms": [
+        15.591785999276908,
+        15.956791998178232,
+        15.045748001284664
+      ],
+      "unprofiled_first_command_check_ms": [
+        5.4429029987659305,
+        5.235534998064395,
+        5.185868998523802
+      ],
+      "first_command_check_errors": [
+        null,
+        null,
+        null
+      ],
+      "profiled_plan_ms": 17.78396800000337,
+      "profile_groups_disjoint": {
+        "advance_including_base_small_numpy": {
+          "calls": 35,
+          "cumulative_ms": 6.602981000000001,
+          "fraction_of_profile_wall": 0.3712883986295269
+        },
+        "external_spheres_fk": {
+          "calls": 1,
+          "cumulative_ms": 1.088715,
+          "fraction_of_profile_wall": 0.061218902328197725
+        },
+        "ESDF_query_no_dynamic_points": {
+          "calls": 1,
+          "cumulative_ms": 1.237969,
+          "fraction_of_profile_wall": 0.06961151751958648
+        },
+        "configuration_collision_including_proxy": {
+          "calls": 1,
+          "cumulative_ms": 2.5136670000000003,
+          "fraction_of_profile_wall": 0.14134455257676598
+        },
+        "other": {
+          "cumulative_ms": 6.34063600000337
+        }
+      },
+      "nested_context_do_not_sum": {
+        "advance_base": {
+          "calls": 35,
+          "cumulative_ms": 5.508157000000001,
+          "fraction_of_profile_wall": 0.309725984662082
+        },
+        "configuration_gaps_batch": {
+          "calls": 1,
+          "cumulative_ms": 2.242137,
+          "fraction_of_profile_wall": 0.12607630648005974
+        },
+        "self_gaps": {
+          "calls": 1,
+          "cumulative_ms": 0.39918400000000004,
+          "fraction_of_profile_wall": 0.02244628420383597
+        },
+        "shoulder_wrist_proxy_pair_gaps": {
+          "calls": 0,
+          "cumulative_ms": 0,
+          "fraction_of_profile_wall": 0.0
+        },
+        "proposals_includes_advance": {
+          "calls": 1,
+          "cumulative_ms": 5.968748000000001,
+          "fraction_of_profile_wall": 0.33562521030170933
+        },
+        "evaluate_includes_all_acceptance": {
+          "calls": 1,
+          "cumulative_ms": 11.686831,
+          "fraction_of_profile_wall": 0.6571554222318543
+        }
+      },
+      "plan_result": {
+        "mode": "nominal",
+        "candidates": 3,
+        "feasible": 3,
+        "intervention": false
+      },
+      "median_unprofiled_plan_ms": 15.591785999276908,
+      "median_unprofiled_first_command_check_ms": 5.235534998064395
+    },
+    {
+      "kernel": "standby",
+      "feedback_case": "recorded_zero_dq",
+      "record": {
+        "received": 1794302629.1339839,
+        "topic": "/joint_states_single",
+        "stamp": 1794302629.114273,
+        "name": [
+          "joint1",
+          "joint2",
+          "joint3",
+          "joint4",
+          "joint5",
+          "joint6"
+        ],
+        "q": [
+          -0.012636183784438947,
+          0.5328315673413488,
+          -1.051752860544303,
+          0.0,
+          0.9097528726020443,
+          0.0
+        ],
+        "dq": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "unprofiled_plan_ms": [
+        44.978900001297006,
+        44.17608400035533,
+        42.08560199913336
+      ],
+      "unprofiled_first_command_check_ms": [
+        3.411399000469828,
+        3.562476998922648,
+        3.3511729998281226
+      ],
+      "first_command_check_errors": [
+        null,
+        null,
+        null
+      ],
+      "profiled_plan_ms": 46.43329399914364,
+      "profile_groups_disjoint": {
+        "advance_including_base_small_numpy": {
+          "calls": 77,
+          "cumulative_ms": 13.853730000000002,
+          "fraction_of_profile_wall": 0.29835768274926827
+        },
+        "external_spheres_fk": {
+          "calls": 3,
+          "cumulative_ms": 6.620646,
+          "fraction_of_profile_wall": 0.14258402602499196
+        },
+        "ESDF_query_no_dynamic_points": {
+          "calls": 3,
+          "cumulative_ms": 7.909305,
+          "fraction_of_profile_wall": 0.17033693539264885
+        },
+        "configuration_collision_including_proxy": {
+          "calls": 3,
+          "cumulative_ms": 9.906056,
+          "fraction_of_profile_wall": 0.21333950591966822
+        },
+        "other": {
+          "cumulative_ms": 8.143556999143641
+        }
+      },
+      "nested_context_do_not_sum": {
+        "advance_base": {
+          "calls": 77,
+          "cumulative_ms": 11.365732,
+          "fraction_of_profile_wall": 0.24477548373392624
+        },
+        "configuration_gaps_batch": {
+          "calls": 3,
+          "cumulative_ms": 8.697272,
+          "fraction_of_profile_wall": 0.18730680619299597
+        },
+        "self_gaps": {
+          "calls": 3,
+          "cumulative_ms": 1.3694300000000001,
+          "fraction_of_profile_wall": 0.029492415507399842
+        },
+        "shoulder_wrist_proxy_pair_gaps": {
+          "calls": 0,
+          "cumulative_ms": 0,
+          "fraction_of_profile_wall": 0.0
+        },
+        "proposals_includes_advance": {
+          "calls": 1,
+          "cumulative_ms": 3.57931,
+          "fraction_of_profile_wall": 0.07708498992266222
+        },
+        "evaluate_includes_all_acceptance": {
+          "calls": 3,
+          "cumulative_ms": 41.48151300000001,
+          "fraction_of_profile_wall": 0.8933571027884655
+        }
+      },
+      "plan_result": {
+        "mode": "standby_extension",
+        "candidates": 27,
+        "feasible": 26,
+        "intervention": false,
+        "selection": "exponential_mean"
+      },
+      "median_unprofiled_plan_ms": 44.17608400035533,
+      "median_unprofiled_first_command_check_ms": 3.411399000469828
+    },
+    {
+      "kernel": "standby",
+      "feedback_case": "recorded_peak_dq",
+      "record": {
+        "received": 1794302637.8735251,
+        "topic": "/joint_states_single",
+        "stamp": 1794302637.864319,
+        "name": [
+          "joint1",
+          "joint2",
+          "joint3",
+          "joint4",
+          "joint5",
+          "joint6"
+        ],
+        "q": [
+          -0.012636183784438947,
+          0.53248250149095,
+          -1.053550549673857,
+          0.0,
+          0.9075363044520114,
+          0.0
+        ],
+        "dq": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.44151817736471377,
+          0.0
+        ]
+      },
+      "unprofiled_plan_ms": [
+        53.24037999889697,
+        55.69362899768748,
+        53.40281799726654
+      ],
+      "unprofiled_first_command_check_ms": [
+        9.056838000105927,
+        9.189035998133477,
+        9.283632000006037
+      ],
+      "first_command_check_errors": [
+        null,
+        null,
+        null
+      ],
+      "profiled_plan_ms": 57.625705001555616,
+      "profile_groups_disjoint": {
+        "advance_including_base_small_numpy": {
+          "calls": 86,
+          "cumulative_ms": 15.863668,
+          "fraction_of_profile_wall": 0.27528805069841245
+        },
+        "external_spheres_fk": {
+          "calls": 3,
+          "cumulative_ms": 7.563724000000001,
+          "fraction_of_profile_wall": 0.1312560774709102
+        },
+        "ESDF_query_no_dynamic_points": {
+          "calls": 3,
+          "cumulative_ms": 9.633086,
+          "fraction_of_profile_wall": 0.16716647544251223
+        },
+        "configuration_collision_including_proxy": {
+          "calls": 3,
+          "cumulative_ms": 14.678692,
+          "fraction_of_profile_wall": 0.25472472743897445
+        },
+        "other": {
+          "cumulative_ms": 9.886535001555615
+        }
+      },
+      "nested_context_do_not_sum": {
+        "advance_base": {
+          "calls": 86,
+          "cumulative_ms": 13.019843000000002,
+          "fraction_of_profile_wall": 0.22593811216103177
+        },
+        "configuration_gaps_batch": {
+          "calls": 3,
+          "cumulative_ms": 13.19617,
+          "fraction_of_profile_wall": 0.228997979281013
+        },
+        "self_gaps": {
+          "calls": 3,
+          "cumulative_ms": 1.949197,
+          "fraction_of_profile_wall": 0.0338251306417402
+        },
+        "shoulder_wrist_proxy_pair_gaps": {
+          "calls": 0,
+          "cumulative_ms": 0,
+          "fraction_of_profile_wall": 0.0
+        },
+        "proposals_includes_advance": {
+          "calls": 1,
+          "cumulative_ms": 3.693874,
+          "fraction_of_profile_wall": 0.06410115069135004
+        },
+        "evaluate_includes_all_acceptance": {
+          "calls": 3,
+          "cumulative_ms": 52.232052,
+          "fraction_of_profile_wall": 0.9064019606977475
+        }
+      },
+      "plan_result": {
+        "mode": "standby_extension",
+        "candidates": 27,
+        "feasible": 26,
+        "intervention": false,
+        "selection": "exponential_mean"
+      },
+      "median_unprofiled_plan_ms": 53.40281799726654,
+      "median_unprofiled_first_command_check_ms": 9.189035998133477
+    },
+    {
+      "kernel": "standby",
+      "feedback_case": "peak_q_with_dq_zero_counterfactual",
+      "record": {
+        "received": 1794302637.8735251,
+        "topic": "/joint_states_single",
+        "stamp": 1794302637.864319,
+        "name": [
+          "joint1",
+          "joint2",
+          "joint3",
+          "joint4",
+          "joint5",
+          "joint6"
+        ],
+        "q": [
+          -0.012636183784438947,
+          0.53248250149095,
+          -1.053550549673857,
+          0.0,
+          0.9075363044520114,
+          0.0
+        ],
+        "dq": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "unprofiled_plan_ms": [
+        45.29126499983249,
+        44.61946199808153,
+        42.68664999835892
+      ],
+      "unprofiled_first_command_check_ms": [
+        3.4059270001307596,
+        3.3979270010604523,
+        3.621487001510104
+      ],
+      "first_command_check_errors": [
+        null,
+        null,
+        null
+      ],
+      "profiled_plan_ms": 47.51986600240343,
+      "profile_groups_disjoint": {
+        "advance_including_base_small_numpy": {
+          "calls": 77,
+          "cumulative_ms": 14.2708,
+          "fraction_of_profile_wall": 0.3003122946364836
+        },
+        "external_spheres_fk": {
+          "calls": 3,
+          "cumulative_ms": 7.0859760000000005,
+          "fraction_of_profile_wall": 0.149116077045369
+        },
+        "ESDF_query_no_dynamic_points": {
+          "calls": 3,
+          "cumulative_ms": 7.921209999999999,
+          "fraction_of_profile_wall": 0.16669259967187966
+        },
+        "configuration_collision_including_proxy": {
+          "calls": 3,
+          "cumulative_ms": 9.994283000000001,
+          "fraction_of_profile_wall": 0.2103179962564397
+        },
+        "other": {
+          "cumulative_ms": 8.247597002403431
+        }
+      },
+      "nested_context_do_not_sum": {
+        "advance_base": {
+          "calls": 77,
+          "cumulative_ms": 11.773227,
+          "fraction_of_profile_wall": 0.2477537920541388
+        },
+        "configuration_gaps_batch": {
+          "calls": 3,
+          "cumulative_ms": 8.736729,
+          "fraction_of_profile_wall": 0.18385424318238017
+        },
+        "self_gaps": {
+          "calls": 3,
+          "cumulative_ms": 1.4031600000000002,
+          "fraction_of_profile_wall": 0.02952786104087566
+        },
+        "shoulder_wrist_proxy_pair_gaps": {
+          "calls": 0,
+          "cumulative_ms": 0,
+          "fraction_of_profile_wall": 0.0
+        },
+        "proposals_includes_advance": {
+          "calls": 1,
+          "cumulative_ms": 3.619376,
+          "fraction_of_profile_wall": 0.07616553463801731
+        },
+        "evaluate_includes_all_acceptance": {
+          "calls": 3,
+          "cumulative_ms": 42.463249000000005,
+          "fraction_of_profile_wall": 0.8935894094872304
+        }
+      },
+      "plan_result": {
+        "mode": "standby_extension",
+        "candidates": 27,
+        "feasible": 26,
+        "intervention": false,
+        "selection": "exponential_mean"
+      },
+      "median_unprofiled_plan_ms": 44.61946199808153,
+      "median_unprofiled_first_command_check_ms": 3.4059270001307596
+    }
+  ],
+  "limitations": [
+    "Synthetic clear scene and reference cannot reproduce live candidate selection or certify safety.",
+    "No ROS scheduling, snapshot decode, dynamic tree query, publisher or callback lock contention is measured.",
+    "cProfile adds overhead. Use unprofiled durations for absolute timing and the profile for function attribution.",
+    "Small sample count is intentional: this is a local cost diagnosis, not a latency percentile benchmark.",
+    "Only the numerical checked_first_step function is timed, not the surrounding node authority/reference/age/deadline gates or its .03 rad target-lead gate. A measured case is not necessarily deliverable on hardware."
+  ],
+  "loop_elapsed_s": 1.1595499670002027,
+  "peak_rss_kib": 60188,
+  "findings": [
+    "The recorded dq pulse raises standby plan cost by about 9 ms and first-command validation by about 6 ms relative to the same q with dq zero. Configuration checks and longer braking work both contribute.",
+    "Advance/base arithmetic is the largest individual named cumulative component, but collision configuration, ESDF interpolation, and sphere FK together exceed it. There is no single dominant shoulder/wrist proxy cost in these poses: pair_gaps is never called.",
+    "Clear nominal navigation returns after one evaluate; standby performs structured, random, and weighted-mean evaluation even though nominal external clearance is safe.",
+    "The existing optional native position-servo kernel is not called in velocity_legacy mode. Enabling it would change the prediction model; it is not an equivalent performance switch for this measured controller.",
+    "Potential equivalent optimizations should retain legacy model equations and all candidate/lease checks. Function attribution supports targeting base/advance small-array work, while this profile alone does not establish the cause of live 95 ms failures."
+  ]
+}

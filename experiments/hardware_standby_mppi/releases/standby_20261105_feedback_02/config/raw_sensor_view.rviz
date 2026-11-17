@@ -1,0 +1,60 @@
+Panels: []
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Name: Sensor coordinate grid (not ground height)
+      Enabled: true
+      Cell Size: 0.25
+      Plane: XY
+      Reference Frame: standby_feedback_02_livox_frame
+    - Class: rviz/MarkerArray
+      Name: Measured model and shadow suggestions
+      Enabled: false
+      Marker Topic: /standby_trial_20261105_feedback_02/markers
+      Queue Size: 1
+    - Class: rviz/PointCloud2
+      Name: Actual raw cloud (optional)
+      Enabled: true
+      Topic: /standby_trial_20261105_feedback_02/sensors/lidar_pcl2
+      Queue Size: 1
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: AxisColor
+      Position Transformer: XYZ
+    - Class: rviz/PointCloud2
+      Name: Actual filtered cloud (optional)
+      Enabled: false
+      Topic: /standby_trial_20261105_feedback_02/sensors/filtered_cloud_unavailable
+      Queue Size: 1
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: AxisColor
+      Position Transformer: XYZ
+  Enabled: true
+  Global Options:
+    Background Color: 35; 38; 45
+    Fixed Frame: standby_feedback_02_livox_frame
+    Frame Rate: 15
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 4
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0.65
+      Pitch: 0.35
+      Yaw: 0.8
+Window Geometry:
+  Hide Left Dock: true
+  Hide Right Dock: true
+  Width: 640
+  Height: 450

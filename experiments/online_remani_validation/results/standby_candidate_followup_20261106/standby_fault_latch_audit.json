@@ -1,0 +1,58 @@
+{
+  "finding": "Before the routing fix, a standby rejection after any successful command published tracking_fault=true, setting a planner stop that standby cannot release.",
+  "sources": [
+    {
+      "path": "/home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py",
+      "line": 256,
+      "meaning": "Current reject retains local stop and gates tracking_fault by reference.active; historical condition lacked that gate."
+    },
+    {
+      "path": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 792,
+      "meaning": "trackingFaultCallback: false releases only with recovery candidate and EXEC_TRAJ; true sets tracking stop even without target."
+    },
+    {
+      "path": "/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1111,
+      "meaning": "No-active-target safety callback republishes zero while tracking_safety_stop_active remains set."
+    }
+  ],
+  "inference_limits": "The /tracking_fault topic was not recorded. First fault times below are inferred from the historical reject condition and the first rejection after any delivery. Speed-limit and command values are direct successful-status observations.",
+  "fix_scope": "Gate tracking_fault=true by active navigation reference; preserve immediate local base stop, arm watchdog and all later collision/freshness/deadline/speed-limit checks. Existing planner latch is not force-cleared.",
+  "interpretation": "Historical small base displacement cannot be used as evidence that arm optimization reduces base interference or improves avoidance efficiency.",
+  "runs": {
+    "audit_current": {
+      "inferred_first_fault_ros_time": 1004.955,
+      "inferred_first_fault_relative_to_scene_start_s": 2.4100000010000713,
+      "inferred_trigger_status": "command_hold_or_braking_rejected_by_latest_state_or_map",
+      "first_observed_zero_limit_relative_to_scene_start_s": 3.4100000010000713,
+      "post_inferred_fault_success_count_including_warmup": 7,
+      "post_inferred_fault_success_limit_zero_count_including_warmup": 7,
+      "post_inferred_fault_success_nonzero_base_count": 0,
+      "scene_success_after_inferred_fault": 7,
+      "scene_success_limit_zero_after_inferred_fault": 7
+    },
+    "audit_zero_uncertainty": {
+      "inferred_first_fault_ros_time": 1005.08,
+      "inferred_first_fault_relative_to_scene_start_s": 2.509999999999991,
+      "inferred_trigger_status": "delivery_deadline_exceeded",
+      "first_observed_zero_limit_relative_to_scene_start_s": 2.694999998999947,
+      "post_inferred_fault_success_count_including_warmup": 32,
+      "post_inferred_fault_success_limit_zero_count_including_warmup": 32,
+      "post_inferred_fault_success_nonzero_base_count": 0,
+      "scene_success_after_inferred_fault": 32,
+      "scene_success_limit_zero_after_inferred_fault": 32
+    },
+    "servo_empty": {
+      "inferred_first_fault_ros_time": 1002.909999999,
+      "inferred_first_fault_relative_to_scene_start_s": -3.210000001000026,
+      "inferred_trigger_status": "delivery_deadline_exceeded",
+      "first_observed_zero_limit_relative_to_scene_start_s": -3.1200000000000045,
+      "post_inferred_fault_success_count_including_warmup": 12,
+      "post_inferred_fault_success_limit_zero_count_including_warmup": 12,
+      "post_inferred_fault_success_nonzero_base_count": 0,
+      "scene_success_after_inferred_fault": 4,
+      "scene_success_limit_zero_after_inferred_fault": 4
+    }
+  }
+}

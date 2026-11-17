@@ -1,0 +1,108 @@
+{
+  "scope": "Offline chronological log + closed followup bag + current-source audit; no ROS connection/code change",
+  "goal_epoch": 1794447939.4170218,
+  "events": [
+    {
+      "t": 1794447939.4170218,
+      "node": "/rviz",
+      "level": "INFO",
+      "msg": "Setting goal: Frame:world, Position(-0.235, -0.017, 0.000), Orientation(0.000, 0.000, 0.004, 1.000) = Angle: 0.009"
+    },
+    {
+      "t": 1794447939.4515488,
+      "node": "/remani_planner_node",
+      "level": "INFO",
+      "msg": "[FSM] Manual target keeps current arm pose. Restore stand-by after goal: true"
+    },
+    {
+      "t": 1794447939.8851001,
+      "node": "/remani_planner_node",
+      "level": "INFO",
+      "msg": "The optimization result is : Success: met stopping criteria (delta)."
+    },
+    {
+      "t": 1794447939.9478104,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Receive the trajectory. STAY --> POLY_TRAJ"
+    },
+    {
+      "t": 1794447940.337613,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Execution feedback unavailable/stale; suppressing commands."
+    },
+    {
+      "t": 1794447940.8078232,
+      "node": "/remani_planner_node",
+      "level": "ERROR",
+      "msg": "Depth Lost! EMERGENCY_STOP"
+    },
+    {
+      "t": 1794447940.8176186,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMCtrl] Aborting the trajectory."
+    },
+    {
+      "t": 1794447940.829677,
+      "node": "/remani_planner_node",
+      "level": "ERROR",
+      "msg": "[GridMap][LiDAR] Live input timed out: age 0.781s exceeds 0.750s (accepted/fused/pending=2142/2142/0). Static PCD availability does not mask this fault."
+    },
+    {
+      "t": 1794447940.9737697,
+      "node": "/robot_self_filter",
+      "level": "WARN",
+      "msg": "Robot self-filter suppressed cloud: self-filter timed out waiting for scan-aligned joint feedback"
+    },
+    {
+      "t": 1794447940.977731,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Stop execute the trajectory. POLY_TRAJ --> STAY"
+    },
+    {
+      "t": 1794447941.0796216,
+      "node": "/remani_planner_node",
+      "level": "INFO",
+      "msg": "[GridMap][LiDAR] Live input recovered (accepted/fused=2143/2142)."
+    },
+    {
+      "t": 1794447942.0120325,
+      "node": "/whole_body_mppi",
+      "level": "WARN",
+      "msg": "MPPI command rejected: native_reference_cancelled (cycle=0.69 ms; snapshot={})"
+    }
+  ],
+  "finding": "Return goal generated and delivered a new trajectory; transient live-LiDAR timeout moved FSM to EMERGENCY_STOP and set enable_fail_safe_=false. Input recovery does not restore this member, so automatic GEN_NEW_TRAJ remains disabled.",
+  "sources": {
+    "parameter_read": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:28",
+    "timeout_latch": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1135",
+    "emergency_recovery": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:739",
+    "new_goal_explicit_escape": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1825",
+    "abort_wire": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:3132",
+    "mppi_obeys_abort": "src/mm_remani/scripts/mppi/native_reference_adapter.py:217"
+  },
+  "flags": {
+    "enable_fail_safe": "Configured true at init, overwritten false on sensor timeout; no true assignment elsewhere in this FSM. Setting ROS parameter later does not re-read this member.",
+    "flag_escape_emergency": "True after successful new trajectory; first emergency tick publishes ACTION_ABORT, then sets false; subsequent ticks require enable_fail_safe_ for recovery.",
+    "have_target": "Sensor timeout/emergency branch does not clear accepted target or pending manual-arm restore; target survives but emergency execution state blocks planning.",
+    "manual_new_goal": "A later valid user goal can explicitly change state to GEN_NEW_TRAJ through planNextWaypoint; it does not restore the fail-safe member. No such later target is evidenced in reviewed interval."
+  },
+  "design_boundary": "Local original backup contains the same disable-on-depth-loss latch; this is inherited behavior, not introduced by diagnostic export. Current code deliberately suppresses automatic recovery; no comment or logged instruction establishes user intent that a short recovered real-LiDAR dropout must permanently require a new goal.",
+  "followup_bag": {
+    "interval": [
+      1794448152.7693036,
+      1794448158.766715
+    ],
+    "mppi_states": {
+      "native_reference_cancelled": 49,
+      "collision_snapshot_unavailable": 10
+    },
+    "cmd_vel_count": 61,
+    "max_abs_cmd": 0,
+    "new_trajectory_messages": 0
+  },
+  "limits": "rosout records arrive out of order and were sorted by message t. FSM state transitions are std::cout, not all captured by rosout; internal member values are inferred from executed branch plus complete assignment audit, not direct memory read. Why feedback/clouds paused remains a separate source-chain timing question."
+}

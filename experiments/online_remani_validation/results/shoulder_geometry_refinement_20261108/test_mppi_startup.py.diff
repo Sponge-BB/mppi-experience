@@ -1,0 +1,21 @@
+--- before/src/mm_remani/test/test_mppi_startup.py
++++ src/mm_remani/test/test_mppi_startup.py
+@@ -101,6 +101,18 @@
+         self.state[3] = .02
+         with self.assertRaisesRegex(ValueError, 'startup_waiting_stationary_base'):
+             self.plan(Environment())
++
++    def test_recorded_folded_pose_can_start_but_external_wrist_obstacle_still_blocks(self):
++        self.state[5:11] = np.deg2rad([-2.447, -1.909, .943, 5.992, 26.168, -5.879])
++        self.target = self.kernel.model.q_nominal.copy()
++        answer, info = self.plan(Environment())
++        self.assertIsNotNone(answer)
++        self.assertEqual(info['feasible'], 1)
++        controls, _ = answer
++        np.testing.assert_array_equal(controls[:, :2], 0.)
++        wrist = self.kernel.spheres(self.state[None])[0, 47+18, :3]
++        with self.assertRaisesRegex(ValueError, 'startup_joint_path_obstacle_rejected'):
++            self.plan(Environment(wrist))
+ 
+ 
+ class StartupCycleTests(unittest.TestCase):

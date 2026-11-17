@@ -1,0 +1,10 @@
+{
+  "formal_parameter": "/dynamic_obstacle_tracker/surface_diagnostics",
+  "default": false,
+  "enable": "Set private surface_diagnostics=true before starting the tracker node (e.g. _surface_diagnostics:=true).",
+  "behavior": "Diagnostic collection only; all classification conditions and thresholds are unchanged. Production core retains original forward && reverse short circuit; unevaluated directions report evaluated=false and squared errors=-1.0.",
+  "experimental_fixture": "fixture_core.cpp alone evaluates the otherwise short-circuited reverse direction and exports only the three exact original source-time/track-id events. It must not be deployed.",
+  "offline_replay_boundary": "Loopback master17641; monotonic originalbag receive clock; recordedTF batched and prefetched0.5s with offline tf_timeout0. Lookup retains exact cloud source stamps. Geometry/classification test, not callback timing benchmark.",
+  "memory": "All compiler jobs serial/nice15. Node parsing required1.2GiB virtual cap; peak RSS1066324KiB (17.3MiB over1GiB) honestly recorded. Python replay1GiB cap; one attempt needed malloc arenas2 and256KiB Python thread stacks to fit.",
+  "status": "Completed: original4836-frame exact replay and XY shared-pair4836-frame replay,45/45tests. See tracker_fix_report.txt."
+}

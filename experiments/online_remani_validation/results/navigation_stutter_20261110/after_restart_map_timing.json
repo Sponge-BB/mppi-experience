@@ -1,0 +1,492 @@
+{
+  "source": "experiments/online_remani_validation/results/startup_listen_20261110_171708/events.jsonl",
+  "analysis_cutoff_received": 1794302519.6927063,
+  "goal_stamp": 1794302330.4258,
+  "duration_after_goal_s": 189.267,
+  "post_goal_counts": {
+    "/mm_controller_node/trajectory_progress": 18873,
+    "/my_car_vel": 9411,
+    "/joint_states_single": 3415,
+    "/move_base_simple/goal": 1,
+    "/mppi/collision_snapshot": 3785,
+    "/cmd_vel": 1787,
+    "/piper_execution_state": 2976,
+    "/rosout_agg": 1136,
+    "/mppi/status": 1791,
+    "/joint_ctrl_single": 1020,
+    "/piper_motor_enable_states": 924,
+    "/tracking_fault": 936
+  },
+  "invalid_or_partial_lines": 0,
+  "timestamp_meaning": {
+    "h3": "original occupancy fusion completion ROS timestamp, not LiDAR scan source stamp",
+    "h17": "first export crop acquisition/start timestamp; retained when unchanged field is reused",
+    "received": "passive recorder subscriber receipt; does not equal MPPI callback receipt"
+  },
+  "new_field_selection": "first-ever observed header[14] version across the complete record, receipt >= goal, header[17] >= header[3]; no reuse-heartbeat treated as a new crop",
+  "new_field_count": 1231,
+  "snapshot_TTL_s": [
+    0.35
+  ],
+  "map_fusion_to_receive_ms_all_snapshots": {
+    "n": 3785,
+    "min": 103.026,
+    "p05": 149.547,
+    "p50": 220.353,
+    "p95": 328.578,
+    "p99": 414.381,
+    "max": 764.662
+  },
+  "map_fusion_to_receive_ms_first_new_fields": {
+    "n": 1231,
+    "min": 103.026,
+    "p05": 130.755,
+    "p50": 172.703,
+    "p95": 231.263,
+    "p99": 280.48,
+    "max": 328.422
+  },
+  "map_fusion_to_export_sample_ms_first_new_fields": {
+    "n": 1231,
+    "min": 95.143,
+    "p05": 124.039,
+    "p50": 165.291,
+    "p95": 223.03,
+    "p99": 271.497,
+    "max": 320.82
+  },
+  "map_export_sample_to_receive_ms_first_new_fields": {
+    "n": 1231,
+    "min": 4.797,
+    "p05": 5.271,
+    "p50": 6.821,
+    "p95": 12.215,
+    "p99": 15.587,
+    "max": 21.613
+  },
+  "comparison_old_capture_not_same_load": {
+    "old_all_snapshot_age_ms": {
+      "n": 404,
+      "p50": 281.252,
+      "p95": 379.048,
+      "max": 459.177
+    },
+    "old_new_field_fusion_to_sample_ms": {
+      "n": 120,
+      "p50": 172.291,
+      "p95": 223.03,
+      "max": 246.546
+    },
+    "old_new_field_sample_to_receive_ms": {
+      "n": 120,
+      "p50": 59.463,
+      "p95": 73.734,
+      "max": 223.954
+    },
+    "p50_change_ms": {
+      "all_snapshot_age": -60.899,
+      "fusion_to_sample": -7.0,
+      "sample_to_receive": -52.642
+    },
+    "limitation": "Old capture was a different interval with stationary commands; post-restart capture contains navigation. This is observational, not a controlled identical-load A/B."
+  },
+  "remaining_map_budget_at_snapshot_receipt_ms": {
+    "n": 3785,
+    "min": -414.662,
+    "p05": 21.422,
+    "p50": 129.647,
+    "p95": 200.453,
+    "p99": 223.978,
+    "max": 246.974,
+    "expired_at_or_below_0_ms": {
+      "count": 129,
+      "fraction": 0.0341
+    },
+    "less_than_25_ms": {
+      "count": 209,
+      "fraction": 0.0552
+    },
+    "less_than_50_ms": {
+      "count": 408,
+      "fraction": 0.1078
+    },
+    "less_than_95_ms": {
+      "count": 1237,
+      "fraction": 0.3268
+    }
+  },
+  "snapshot_h4_valid_true_count": 3646,
+  "snapshot_h4_true_but_age_over350_count": 1,
+  "mppi_states": {
+    "reference_changed_during_plan": 1,
+    "command_delivered": 1020,
+    "collision_snapshot_unavailable": 161,
+    "collision_snapshot_expired_during_plan": 52,
+    "arm_target_exceeds_current_feedback_lead": 6,
+    "native_reference_cancelled": 26,
+    "delivery_deadline_exceeded": 131,
+    "inputs_expired_before_delivery": 35,
+    "waiting_explicit_arm_enable_or_normal_status": 10,
+    "planning_deadline_exceeded": 347,
+    "native_reference_expired_during_plan": 1,
+    "joint_feedback_incomplete": 1
+  },
+  "mppi_cycle_ms_all": {
+    "n": 1791,
+    "min": 0.08,
+    "p05": 0.29,
+    "p50": 79.41,
+    "p95": 119.165,
+    "p99": 159.567,
+    "max": 228.02
+  },
+  "mppi_delivered_cycle_ms": {
+    "n": 1020,
+    "min": 6.17,
+    "p05": 10.585,
+    "p50": 72.635,
+    "p95": 93.46,
+    "p99": 96.009,
+    "max": 101.56
+  },
+  "mppi_delivered_solve_ms": {
+    "n": 1020,
+    "min": 1.37,
+    "p05": 1.728,
+    "p50": 62.76,
+    "p95": 84.92,
+    "p99": 88.529,
+    "max": 89.99
+  },
+  "map_rejection_diagnostics": {
+    "collision_snapshot_unavailable": {
+      "count": 161,
+      "map_age_ms": {
+        "n": 161,
+        "min": 206.46,
+        "p05": 351.48,
+        "p50": 378.83,
+        "p95": 502.14,
+        "p99": 666.348,
+        "max": 818.71
+      },
+      "remaining_map_budget_ms": {
+        "n": 161,
+        "min": -468.71,
+        "p05": -152.14,
+        "p50": -28.83,
+        "p95": -1.48,
+        "p99": 124.494,
+        "max": 143.54
+      },
+      "valid_true_count": 92,
+      "sample": {
+        "received": 1794302330.9649208,
+        "topic": "/mppi/status",
+        "state": "collision_snapshot_unavailable",
+        "execute": true,
+        "cycle_ms": 0.33,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 361.79,
+          "dynamic_age_ms": 158.39,
+          "cached_joint_age_ms": 55.26,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 81
+        }
+      },
+      "map_age_over350_count": 156,
+      "dynamic_age_over350_count": 1,
+      "cached_joint_age_over250_count": 6,
+      "h4_invalid_count": 69
+    },
+    "collision_snapshot_expired_during_plan": {
+      "count": 52,
+      "map_age_ms": {
+        "n": 52,
+        "min": 350.76,
+        "p05": 353.57,
+        "p50": 373.995,
+        "p95": 420.607,
+        "p99": 432.646,
+        "max": 433.11
+      },
+      "remaining_map_budget_ms": {
+        "n": 52,
+        "min": -83.11,
+        "p05": -70.608,
+        "p50": -23.995,
+        "p95": -3.57,
+        "p99": -1.204,
+        "max": -0.76
+      },
+      "valid_true_count": 37,
+      "sample": {
+        "received": 1794302331.307939,
+        "topic": "/mppi/status",
+        "state": "collision_snapshot_expired_during_plan",
+        "execute": true,
+        "cycle_ms": 43.78,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 350.76,
+          "dynamic_age_ms": 102.21,
+          "cached_joint_age_ms": 38.67,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 83
+        }
+      },
+      "map_age_over350_count": 52,
+      "dynamic_age_over350_count": 0,
+      "cached_joint_age_over250_count": 0,
+      "h4_invalid_count": 15
+    },
+    "inputs_expired_before_delivery": {
+      "count": 35,
+      "map_age_ms": {
+        "n": 35,
+        "min": 181.19,
+        "p05": 202.267,
+        "p50": 354.26,
+        "p95": 380.304,
+        "p99": 384.195,
+        "max": 384.62
+      },
+      "remaining_map_budget_ms": {
+        "n": 35,
+        "min": -34.62,
+        "p05": -30.304,
+        "p50": -4.26,
+        "p95": 147.733,
+        "p99": 164.645,
+        "max": 168.81
+      },
+      "valid_true_count": 35,
+      "sample": {
+        "received": 1794302345.1089373,
+        "topic": "/mppi/status",
+        "state": "inputs_expired_before_delivery",
+        "execute": true,
+        "cycle_ms": 42.18,
+        "snapshot": {
+          "valid": true,
+          "map_age_ms": 358.66,
+          "dynamic_age_ms": 101.29,
+          "cached_joint_age_ms": 42.78,
+          "dynamic_valid": true,
+          "ground_valid": true,
+          "self_collision_valid": true,
+          "field_version": 188
+        }
+      },
+      "map_age_over350_count": 30,
+      "dynamic_age_over350_count": 0,
+      "cached_joint_age_over250_count": 0,
+      "h4_invalid_count": 0
+    }
+  },
+  "estimated_solve_start_map_budget": {
+    "method": "estimated cycle start = status recorder receipt - reported cycle_ms; choose latest snapshot already received by recorder. Approximate only: status transport and subscriber scheduling are unmeasured. Production checks use its own latest snapshot, which can refresh during solve.",
+    "all_cycles_remaining_ms": {
+      "n": 1790,
+      "min": -413.883,
+      "p05": -15.575,
+      "p50": 95.033,
+      "p95": 177.351,
+      "p99": 199.766,
+      "max": 227.698,
+      "expired_at_or_below_0_ms": {
+        "count": 126,
+        "fraction": 0.0704
+      },
+      "less_than_25_ms": {
+        "count": 210,
+        "fraction": 0.1173
+      },
+      "less_than_50_ms": {
+        "count": 431,
+        "fraction": 0.2408
+      },
+      "less_than_95_ms": {
+        "count": 893,
+        "fraction": 0.4989
+      }
+    },
+    "fresh_h4_valid_positive_budget_cycles": 1663,
+    "fresh_cycles_remaining_ms": {
+      "n": 1663,
+      "min": 0.089,
+      "p05": 24.752,
+      "p50": 98.958,
+      "p95": 178.147,
+      "p99": 200.329,
+      "max": 227.698,
+      "expired_at_or_below_0_ms": {
+        "count": 0,
+        "fraction": 0.0
+      },
+      "less_than_25_ms": {
+        "count": 84,
+        "fraction": 0.0505
+      },
+      "less_than_50_ms": {
+        "count": 305,
+        "fraction": 0.1834
+      },
+      "less_than_95_ms": {
+        "count": 767,
+        "fraction": 0.4612
+      }
+    },
+    "fresh_cycles_reported_duration_exceeds_initial_budget_count": 592,
+    "by_state": {
+      "reference_changed_during_plan": {
+        "count": 0,
+        "remaining_ms": {
+          "n": 0
+        }
+      },
+      "command_delivered": {
+        "count": 1019,
+        "remaining_ms": {
+          "n": 1019,
+          "min": 0.569,
+          "p05": 32.561,
+          "p50": 108.051,
+          "p95": 179.089,
+          "p99": 199.459,
+          "max": 221.945
+        }
+      },
+      "collision_snapshot_unavailable": {
+        "count": 78,
+        "remaining_ms": {
+          "n": 78,
+          "min": 1.982,
+          "p05": 56.733,
+          "p50": 120.466,
+          "p95": 170.856,
+          "p99": 209.305,
+          "max": 227.698
+        }
+      },
+      "collision_snapshot_expired_during_plan": {
+        "count": 38,
+        "remaining_ms": {
+          "n": 38,
+          "min": 1.462,
+          "p05": 3.373,
+          "p50": 36.121,
+          "p95": 88.054,
+          "p99": 134.024,
+          "max": 147.857
+        }
+      },
+      "arm_target_exceeds_current_feedback_lead": {
+        "count": 6,
+        "remaining_ms": {
+          "n": 6,
+          "min": 23.635,
+          "p05": 33.813,
+          "p50": 105.4,
+          "p95": 151.755,
+          "p99": 159.454,
+          "max": 161.378
+        }
+      },
+      "native_reference_cancelled": {
+        "count": 24,
+        "remaining_ms": {
+          "n": 24,
+          "min": 14.127,
+          "p05": 19.986,
+          "p50": 78.574,
+          "p95": 159.598,
+          "p99": 166.963,
+          "max": 168.49
+        }
+      },
+      "delivery_deadline_exceeded": {
+        "count": 129,
+        "remaining_ms": {
+          "n": 129,
+          "min": 3.003,
+          "p05": 28.188,
+          "p50": 92.572,
+          "p95": 184.547,
+          "p99": 200.252,
+          "max": 207.045
+        }
+      },
+      "inputs_expired_before_delivery": {
+        "count": 34,
+        "remaining_ms": {
+          "n": 34,
+          "min": 19.789,
+          "p05": 25.668,
+          "p50": 57.614,
+          "p95": 154.241,
+          "p99": 175.331,
+          "max": 178.163
+        }
+      },
+      "waiting_explicit_arm_enable_or_normal_status": {
+        "count": 6,
+        "remaining_ms": {
+          "n": 6,
+          "min": 1.155,
+          "p05": 11.841,
+          "p50": 55.95,
+          "p95": 147.564,
+          "p99": 170.946,
+          "max": 176.791
+        }
+      },
+      "planning_deadline_exceeded": {
+        "count": 328,
+        "remaining_ms": {
+          "n": 328,
+          "min": 0.089,
+          "p05": 16.683,
+          "p50": 80.675,
+          "p95": 178.075,
+          "p99": 213.199,
+          "max": 224.516
+        }
+      },
+      "native_reference_expired_during_plan": {
+        "count": 1,
+        "remaining_ms": {
+          "n": 1,
+          "min": 48.101,
+          "p05": 48.101,
+          "p50": 48.101,
+          "p95": 48.101,
+          "p99": 48.101,
+          "max": 48.101
+        }
+      },
+      "joint_feedback_incomplete": {
+        "count": 0,
+        "remaining_ms": {
+          "n": 0
+        }
+      }
+    }
+  },
+  "direct_evidence": {
+    "map_expired_after_capture_count": 52,
+    "inputs_expired_after_first_check_count": 35,
+    "map_unavailable_at_capture_count": 161,
+    "planner_or_delivery_deadline_exceeded_count": 478
+  },
+  "conclusion_boundaries": [
+    "The export-queue change reduces measured sampling and output delays; residual map age still crosses 350 ms: every collision_snapshot_expired_during_plan diagnostic is over the map limit. inputs_expired_before_delivery is mixed; use its map_age_over350_count rather than attributing all such failures to the map.",
+    "Map delay is not the only remaining rejection: solve/delivery deadlines, bounded-arm lead, and reference cancellation also occur.",
+    "This record has no timestamp separating ESDF commit, immutable full-map publication, and export wake-up; it cannot attribute the remaining h17-h3 delay to a specific one of those stages."
+  ]
+}

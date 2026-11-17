@@ -1,0 +1,46 @@
+{
+  "baseline": "20261116-122205-before-moving-handoff",
+  "recorded_at": "2026-11-16T12:35:24.515668+08:00",
+  "provenance": "Copied verbatim from completed tool outputs; tests were not rerun during planner compilation. The PTY/tool output is a merged stream.",
+  "tests": [
+    {
+      "name": "policy_compile",
+      "cwd": "/home/l/remani_ws",
+      "command": "g++ -std=c++14 -O0 -g0 -Wall -Wextra -I src/mm_remani_planner/plan_manage/include src/mm_remani_planner/plan_manage/test/test_moving_handoff_timing.cpp -o /tmp/remani_moving_handoff_timing_test",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool_wall_time_seconds": 0.742800502
+    },
+    {
+      "name": "policy_execute",
+      "cwd": "/home/l/remani_ws",
+      "command": "/tmp/remani_moving_handoff_timing_test",
+      "exit_code": 0,
+      "stdout": "moving handoff timing behavior: PASS\n",
+      "stderr": "",
+      "stdout_file": "policy.stdout.log",
+      "tool_wall_time_seconds": 5.933e-05
+    },
+    {
+      "name": "perception_transient",
+      "cwd": "/home/l/remani_ws/src/mm_remani/test",
+      "command": "PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /usr/bin/python3 -m unittest -v test_perception_recovery test_transient_obstacle_recovery",
+      "exit_code": 0,
+      "stdout": "test_integration_stages_before_transport_and_invalidates_new_goal (test_perception_recovery.PerceptionRecoveryTests) ... ok\ntest_production_recovery_transitions (test_perception_recovery.PerceptionRecoveryTests) ... ok\ntest_raw_live_stop_enters_shared_recovery (test_transient_obstacle_recovery.TransientObstacleRecoveryTests) ... ok\ntest_transient_recovery_behaviour (test_transient_obstacle_recovery.TransientObstacleRecoveryTests) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 5.134s\n\nOK\n",
+      "stderr_note": "exec_command returns one merged output stream; unittest normally writes to stderr",
+      "stdout_file": "perception_transient.stdout.log",
+      "unittest_reported_seconds": 5.134
+    }
+  ],
+  "scope": "Offline policy/adapter/recovery behavior, not hardware or closed-loop navigation validation",
+  "source_sha256": {
+    "src/mm_remani_planner/plan_manage/include/plan_manage/planner_manager.h": "7469d7cd37e546769e311d363a31720da60e7208ba549a76a429ae80b68f6ed6",
+    "src/mm_remani_planner/plan_manage/src/planner_manager.cpp": "c2e92c8475320b7f5ad033a2cc4d37bbff6b53c2aab699772f31ff37bca1590b",
+    "src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h": "95756810b1de1574d3074571145bcbe5a52cce621bb2065e0ee6d0fe2a9f15ee",
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "0891a05b24426ed196546b5de7e9aec2910d8a15e6448c866b58b63564de0348",
+    "src/mm_remani_planner/plan_manage/include/plan_manage/moving_handoff_timing.hpp": "05722343ef98bb24ed234eb40a4eb2ccf6d8739ce13ca92ee45afc6461420ca2",
+    "src/mm_remani_planner/plan_manage/test/test_moving_handoff_timing.cpp": "06fcd9b9d09d1fcae8003392c88e07c6c73c7ac5e72ca0194a9c85a02a27c58d",
+    "src/mm_remani/test/test_mppi_future_handoff.py": "e764e70dada943f001662f146b28d20488c4c88665a65dd29e0859c6a79f0d3a"
+  }
+}

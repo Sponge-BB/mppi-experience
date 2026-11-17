@@ -1,0 +1,209 @@
+{
+  "/filter_joint_states/velocity_window_s": [
+    1,
+    "Parameter [/filter_joint_states/velocity_window_s]",
+    0.05
+  ],
+  "/whole_body_mppi": [
+    1,
+    "Parameter [/whole_body_mppi]",
+    {
+      "rate_hz": 10.0,
+      "deadline_s": 0.095,
+      "horizon": 5,
+      "random_samples": 4,
+      "base_limits": {
+        "vmax": 0.25,
+        "wmax": 0.35,
+        "accel": 0.25,
+        "angular_accel": 0.8,
+        "track": 0.37,
+        "wheel_v": 0.25,
+        "wheel_a": 0.2975
+      },
+      "arm_velocity": [
+        0.15,
+        0.15,
+        0.15,
+        0.15,
+        0.15,
+        0.15
+      ],
+      "arm_acceleration": [
+        0.35,
+        0.35,
+        0.35,
+        0.35,
+        0.35,
+        0.35
+      ],
+      "postures": [
+        [
+          0.0,
+          2.4434609528,
+          -1.0471975512,
+          0.0,
+          0.2617993878,
+          0.0
+        ]
+      ],
+      "execute": true,
+      "native_arm_startup": true
+    }
+  ],
+  "/remani_planner_node/mppi/enable": [
+    1,
+    "Parameter [/remani_planner_node/mppi/enable]",
+    true
+  ],
+  "/whole_body_mppi_live": {
+    "lookup": [
+      1,
+      "node api",
+      "http://slave:40633/"
+    ],
+    "pid": [
+      1,
+      "",
+      95400
+    ],
+    "subscriptions": [
+      1,
+      "subscriptions",
+      [
+        [
+          "/tf",
+          "tf2_msgs/TFMessage"
+        ],
+        [
+          "/tf_static",
+          "tf2_msgs/TFMessage"
+        ],
+        [
+          "/odom",
+          "nav_msgs/Odometry"
+        ],
+        [
+          "/mm/joint_states",
+          "sensor_msgs/JointState"
+        ],
+        [
+          "/mppi/collision_snapshot",
+          "std_msgs/Float64MultiArray"
+        ],
+        [
+          "/planning/trajectory",
+          "quadrotor_msgs/PolynomialTraj"
+        ],
+        [
+          "/mm_controller_node/trajectory_progress",
+          "geometry_msgs/Vector3Stamped"
+        ],
+        [
+          "/move_base_simple/goal",
+          "geometry_msgs/PoseStamped"
+        ],
+        [
+          "/planning/finish",
+          "std_msgs/Bool"
+        ],
+        [
+          "/planning/safety_speed_limit",
+          "std_msgs/Float64"
+        ],
+        [
+          "/piper_execution_state",
+          "piper_msgs/PiperExecutionState"
+        ]
+      ]
+    ]
+  },
+  "/remani_planner_node_live": {
+    "lookup": [
+      1,
+      "node api",
+      "http://slave:45059/"
+    ],
+    "pid": [
+      1,
+      "",
+      95388
+    ],
+    "subscriptions": [
+      1,
+      "subscriptions",
+      [
+        [
+          "/tf",
+          "tf2_msgs/TFMessage"
+        ],
+        [
+          "/tf_static",
+          "tf2_msgs/TFMessage"
+        ],
+        [
+          "/dynamic_points",
+          "sensor_msgs/PointCloud2"
+        ],
+        [
+          "/pcl_render_node/depth",
+          "sensor_msgs/Image"
+        ],
+        [
+          "/velodyne_points_mapping",
+          "sensor_msgs/PointCloud2"
+        ],
+        [
+          "/odom",
+          "nav_msgs/Odometry"
+        ],
+        [
+          "/map_generator/global_cloud",
+          "sensor_msgs/PointCloud2"
+        ],
+        [
+          "/mm/joint_states",
+          "sensor_msgs/JointState"
+        ],
+        [
+          "/mm/mani/gripper_state",
+          "std_msgs/Bool"
+        ],
+        [
+          "/mm_controller_node/trajectory_progress",
+          "geometry_msgs/Vector3Stamped"
+        ],
+        [
+          "/tracking_fault",
+          "std_msgs/Bool"
+        ],
+        [
+          "/move_base_simple/goal",
+          "geometry_msgs/PoseStamped"
+        ]
+      ]
+    ]
+  },
+  "/filter_joint_states_live": {
+    "lookup": [
+      1,
+      "node api",
+      "http://slave:42541/"
+    ],
+    "pid": [
+      1,
+      "",
+      95387
+    ],
+    "subscriptions": [
+      1,
+      "subscriptions",
+      [
+        [
+          "/gazebo/joint_states",
+          "sensor_msgs/JointState"
+        ]
+      ]
+    ]
+  }
+}

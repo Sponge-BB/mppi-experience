@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.10)
+project(remani_controller_capacity_build)
+# Configure against current production sources after the explicit capacity baseline.
+add_subdirectory(/home/l/remani_ws/src/mm_controller controller)
+foreach(t controller_utils mm_controller_node test_execution_capacity test_feedback_source)
+  if(TARGET ${t})
+    # Target options occur after the package's -O3 -g flags: keep final -O1 -g0.
+    target_compile_options(${t} PRIVATE -O1 -g0)
+    set_target_properties(${t} PROPERTIES
+      BUILD_WITH_INSTALL_RPATH TRUE
+      INSTALL_RPATH "/opt/ros/noetic/lib;/home/l/remani_ws/devel/lib")
+  endif()
+endforeach()

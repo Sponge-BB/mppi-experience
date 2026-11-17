@@ -1,0 +1,101 @@
+{
+  "captured_at": 1794297917.7732632,
+  "restart_at": 1794297666.0,
+  "recorded_through": 1794297905.5087826,
+  "observed_s": 239.50878262519836,
+  "MPPI_status_counts": {
+    "waiting_native_arm_startup": 35,
+    "waiting_collision_snapshot": 1,
+    "collision_snapshot_unavailable": 166,
+    "command_delivered": 958,
+    "planning_deadline_exceeded": 451,
+    "delivery_deadline_exceeded": 246,
+    "collision_snapshot_expired_during_plan": 125,
+    "waiting_explicit_arm_enable_or_normal_status": 289,
+    "inputs_expired_before_delivery": 91,
+    "command_hold_or_braking_rejected_by_latest_state_or_map": 1,
+    "arm_target_exceeds_current_feedback_lead": 2,
+    "state_feedback_stale": 1
+  },
+  "delivered_command_count": 958,
+  "execution_counts": {
+    "(False, False, True)": 50,
+    "(True, False, True)": 3819
+  },
+  "stops": [],
+  "joint_ROS_age_ms": {
+    "p50": 20.735502243041992,
+    "p99": 97.74065017700195,
+    "max": 133.12149047851562
+  },
+  "last_execution": {
+    "received": 1794297905.502538,
+    "topic": "/piper_execution_state",
+    "stamp": 1794297905.4903843,
+    "enabled": true,
+    "command_active": true,
+    "stop_latched": false,
+    "feedback_valid": true,
+    "valid_until": 1794297905.6199055
+  },
+  "last_motor_enable": {
+    "received": 1794297905.5087826,
+    "topic": "/piper_motor_enable_states",
+    "enabled": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "last_mppi": {
+    "received": 1794297905.4888299,
+    "topic": "/mppi/status",
+    "mode": "standby_extension",
+    "reference_source": "standby",
+    "native_phase": null,
+    "native_time_scale": null,
+    "feasible": 26,
+    "min_gap": 0.002999999999999961,
+    "selection": "structured",
+    "arm_motion": 0.0,
+    "structured_candidates": 22,
+    "random_samples": 4,
+    "nominal_external_min_gap": 0.28881450248777374,
+    "external_min_gap": 0.28881450248777374,
+    "selected_family": [
+      "current",
+      "hold"
+    ],
+    "pending_start_stamp": null,
+    "state": "command_delivered",
+    "simulation": false,
+    "arm_enabled": true,
+    "seed": 11,
+    "arm_execution_model": "velocity_legacy",
+    "arm_servo_native": false,
+    "solve_ms": 53.18,
+    "base_v": 0.0,
+    "base_w": 0.0,
+    "cycle_ms": 59.85,
+    "base_safety_speed_limit": null,
+    "arm_target": [
+      0.009808750396208132,
+      0.5216440068360652,
+      -1.0437592525701689,
+      0.0,
+      0.9594249431138029,
+      0.0
+    ],
+    "base_anchor_error_m": 0.014403657835692536
+  },
+  "limitations": "Short standby observation; not proof of long-run or moving-robot reliability. ROS source age includes transport latency.",
+  "subsequent_failure": {
+    "local_time": "2026-11-10 16:05:57.571 +08:00",
+    "seconds_after_restart": 291.571,
+    "log": "[rosout][ERROR] 2026-11-10 16:05:57,571: Piper command stop latched: joint feedback expired; accepted_source_age_ms=155.034 sdk_source_age_ms=150.140 pair_update_age_ms=(16.16, 1.17, 15.763) pair_spread_ms=14.990 pair_advanced=(False, True, False); no automatic reset/re-enable.",
+    "conclusion": "Telemetry reduction did not resolve delayed CAN feedback; subsequent joint feedback source crossed 150ms."
+  }
+}

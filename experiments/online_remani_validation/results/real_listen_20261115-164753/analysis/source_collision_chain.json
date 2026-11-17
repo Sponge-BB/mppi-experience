@@ -1,0 +1,143 @@
+{
+  "schema": "live_collision_source_chain_v1",
+  "scope": "Read-only source mapping for raw_latest collision_type=0 base_sphere=12 and the logged approximately 0.06 m path-distance stop; no runtime changes, no new robot test.",
+  "onsite_context": "User reported that this run was basically smooth; turning around involved a brief pause. This source audit alone does not establish an unresolved overall navigation fault.",
+  "sources": {
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": {
+      "sha256": "f3c1ab3fa35db990dc88c06dd13daa20d2f8188989108094261e4552ba3b3757",
+      "matches_case_frozen_copy": true
+    },
+    "src/mm_remani/scripts/whole_body_mppi.py": {
+      "sha256": "87813ae8097c1d92ea71b05d43489fdafe557aa87ac60e812c17bf7d0e4b5e28",
+      "matches_case_frozen_copy": true
+    },
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": {
+      "sha256": "7e6685aaee4d3a32c624636ad4712372f8b0bd4d44811e594daeee1ac6f11d6a"
+    },
+    "src/mm_remani_planner/plan_env/src/grid_map.cpp": {
+      "sha256": "5ceaf8344977d205d47f0751d297bdf74a232b1095c430fb2020d2524e0ab51f"
+    },
+    "src/mm_remani_planner/mm_config/src/mm_config.cpp": {
+      "sha256": "5b75ba509c90967e163858e8c6ed339778e8d17620b0eb1df5fdbf5e77a51a62"
+    },
+    "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp": {
+      "sha256": "96ff28364f4f377d39295c772ee8723b1a975f7883c7135ad3fea6651d6258c0"
+    }
+  },
+  "facts": [
+    {
+      "file": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "line": 4453,
+      "fact": "getDynamicObstacleDistance reads occupied cells and excludes cells matching persistent static-map occupancy within dynamic_static_match_radius. It does not require tracked velocity, motion confirmation, or an object identity."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "line": 4499,
+      "fact": "The live query skips occupancy <= threshold or matches_static_map(id); remaining voxel-center distances are compared to the requested radius."
+    },
+    {
+      "file": "src/mm_remani_planner/mm_config/src/mm_config.cpp",
+      "line": 899,
+      "fact": "Car dynamic occupancy query checks each fixed-structure sphere at nominal car pose. With safe=false, threshold is the physical sphere radius plus one map resolution."
+    },
+    {
+      "file": "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp",
+      "line": 505,
+      "fact": "Dynamic trajectory query obtains pose and yaw from the native trajectory at sampled phase and calls whole-body checkDynamicObstacleCollision(...,safe=false)."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1651,
+      "fact": "dynamic_collision_path_distance accumulates XY arc length along the native trajectory from t_cur to the first raw occupied hit. A value of 0.06 m is not the sphere-to-obstacle clearance."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1461,
+      "fact": "Emergency path threshold is clamp(v^2/(2*deceleration)+v*reaction_time+margin,min_distance,max_distance). Recorded min/max parameters are 0.15/0.22 m."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1707,
+      "fact": "A raw collision inside dynamic_emergency_distance is immediately confirmed; it does not require two map frames."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1891,
+      "fact": "When the selected earliest collision is raw/live and its path distance is within the emergency threshold, FSM records LiveCollisionStop, applies zero safety speed, and begins transient obstacle recovery. This branch has no requirement to wait for an MPPI avoidance result."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 434,
+      "fact": "beginTransientObstacleRecovery latches recovery pending and zero safety speed, sets flag_escape_emergency, and enters EMERGENCY_STOP."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 965,
+      "fact": "The EMERGENCY_STOP FSM branch calls callEmergencyStop on its next execution callback when flag_escape_emergency is true."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 3508,
+      "fact": "callEmergencyStop publishes PolynomialTraj ACTION_ABORT and clears have_published_trajectory."
+    },
+    {
+      "file": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+      "line": 271,
+      "fact": "Trajectory actions 2 or 5 clear the MPPI native reference with native_reference_cancelled."
+    },
+    {
+      "file": "src/mm_remani/scripts/whole_body_mppi.py",
+      "line": 755,
+      "fact": "Before abort arrives, planner safety limit 0 forces both MPPI base components to zero; checked arm avoidance remains technically allowed at v=w=0 if all reference/input/command gates pass."
+    },
+    {
+      "file": "src/mm_remani/scripts/whole_body_mppi.py",
+      "line": 561,
+      "fact": "When MPPI rejects a cancelled reference, reject() publishes zero base command and does not republish a stale arm target."
+    },
+    {
+      "file": "src/mm_remani/scripts/whole_body_mppi.py",
+      "line": 601,
+      "fact": "Optional refresh events are emitted only after successful command publication, from an eligible avoidance episode. They do not override the independent raw emergency stop."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1016,
+      "fact": "tryMppiRefresh requires EXEC_TRAJ, published local reference, no perception recovery, no zero-speed dynamic guard, and fresh safety state. Raw emergency recovery therefore excludes this optional refresh path."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1049,
+      "fact": "Current production optional-refresh source states that the event contains no prefix initial guess; the log reports prefix_used=0."
+    }
+  ],
+  "motion_classification": {
+    "proves_object_is_moving": false,
+    "what_dynamic_means_in_raw_branch": "Live occupied voxel not matched to persistent PCD occupancy; it is an occupancy source distinction, not a velocity classification.",
+    "pcd_and_live_both_called_dynamic": false,
+    "qualification": "The direct raw branch excludes matched persistent PCD cells; unmatched currently stationary objects, new static objects, sensing/registration artifacts or retained live occupancy may still enter it. This audit does not establish which one caused this hit.",
+    "recorded_static_match_radius_m": 0.075
+  },
+  "sphere_12": {
+    "collision_type": 0,
+    "meaning": "Fixed structure/base sphere, not an arm sphere; index is zero-based.",
+    "local_xyz_radius_m": [
+      0.2212507501244545,
+      -0.20250076800584793,
+      0.09800009779632092,
+      0.10528264240422765
+    ],
+    "geometry_source": "runtime_parameters.json /parameters//remani_planner_node/mm/fixed_collision_spheres[12]"
+  },
+  "mppi_opportunity": {
+    "forced_wait_before_raw_stop": false,
+    "fact": "MPPI can already be running independently before this stop, but this FSM branch does not check whether a safe MPPI rollout has been accepted before stopping and aborting the native reference.",
+    "not_established_by_source": "Whether MPPI had previously delivered a usable bypass or why it did not in the particular wall-clock interval requires aligned command/status/trajectory data, not source code alone."
+  },
+  "remaining_unknowns": [
+    "Physical identity and motion of the hit voxel are not established by its raw_latest label.",
+    "The approximate 0.06 m log value does not establish physical obstacle clearance.",
+    "The source audit alone does not show whether the brief turning pause reported by the user was caused by this exact event."
+  ],
+  "production_modified": false
+}

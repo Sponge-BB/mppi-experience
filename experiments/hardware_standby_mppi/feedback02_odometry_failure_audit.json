@@ -1,0 +1,71 @@
+{
+  "release": "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02",
+  "diagnosis": "localization_quarantined_after_global_memory_exhaustion",
+  "actual_robot_motion_test_performed": false,
+  "actuator_commands_sent_by_diagnostics": false,
+  "evidence": {
+    "kernel_log": "/home/l/remani_ws/experiments/hardware_standby_mppi/feedback02_odometry_failure_kernel.log",
+    "kernel_log_sha256": "c73782411b572c481730765d6aa85a1188bb837fbae37609cf6f6ebc3a9bb2f5",
+    "global_oom_local_time": "2026-11-05 20:22:49 to 20:22:52 Asia/Shanghai",
+    "free_swap_at_oom_kb": 0,
+    "oom_victim_pid": 35094,
+    "oom_victim_name": "MainThread",
+    "last_normal_odom_stamp": 1793881319.3843055,
+    "last_normal_position_m": [
+      -0.2692457846884798,
+      -0.03152712005612667
+    ],
+    "first_observed_bad_status_stamp": 1793881375.2392364,
+    "first_bad_odom_stamp": 1793881375.1843436,
+    "first_bad_position_m": [
+      189.99087649709028,
+      137.20904603800358
+    ],
+    "gap_between_observed_odom_stamps_s": 55.80003809928894,
+    "first_batch_no_effective_points_ros_time": 1793881374.0434127,
+    "maximum_logged_position_radius_m": 38895.12718272682,
+    "raw_sensor_diagnostic": "/home/l/remani_ws/experiments/hardware_standby_mppi/feedback02_raw_sensor_diagnostic.json",
+    "original_fastlio_source_changes": "output frame-id strings only; no estimation or preprocessing changes",
+    "copied_fastlio_imu_handling": "normalizes mean acceleration to 9.81 m/s^2; current ~0.992g values expected"
+  },
+  "inference": {
+    "primary_explanation": "Global OOM and swap exhaustion caused long scheduling/input gaps; original large ROS queues and absent gap reset let resumed localization diverge.",
+    "certainty": "OOM and chronology proven by kernel/logs; internal estimator buffer contents not recorded, so precise propagation path is inferred.",
+    "not_supported": "A continuing LiDAR/IMU timestamp or acceleration-unit mismatch is not supported by the preceding stable period and the later 10-second raw sample."
+  },
+  "mitigation": {
+    "real_odometry_restarted": false,
+    "root_quarantine_record": "/home/l/remani_ws/experiments/hardware_standby_mppi/odometry_quarantine.json",
+    "new_pure_gate": "runtime/odometry_continuity.py",
+    "gates": [
+      "copied FASTLIO-to-base bridge before odom/base TF output",
+      "shadow observer independently before accepting robot pose"
+    ],
+    "limits": {
+      "max_age_s": 0.25,
+      "future_tolerance_s": 0.02,
+      "max_gap_s": 0.5,
+      "max_linear_speed_m_s": 1.0,
+      "position_noise_m": 0.02,
+      "max_angular_speed_rad_s": 3.0,
+      "angle_noise_rad": 0.05,
+      "initial_origin_xy": [
+        0.0,
+        0.0
+      ],
+      "max_initial_radius_m": 2.0
+    },
+    "failure_behavior": "latched requires_restart; no automatic reanchor or recovery; shadow clears geometry/anchor; bridge suppresses validated odom/base TF",
+    "raw_fastlio_tf_note": "FASTLIO native camera_init->body TF remains a raw untrusted output if restarted; only validated bridge odom->base TF is guarded.",
+    "loaded_into_live_processes_by_this_agent": false
+  },
+  "validation": {
+    "new_pure_gate_tests_passed": 11,
+    "new_offline_bridge_publication_tests_passed": 3,
+    "prior_input_tests_passed": 7,
+    "new_files_parse": true,
+    "original_fastlio_log_hashes_unchanged": true,
+    "original_fastlio_log_count": 11
+  },
+  "owned_diagnostic_subscription": "10-second raw IMU/LiDAR subscriber exited normally and unregistered all 3 subscriptions; no remaining diagnostic process"
+}

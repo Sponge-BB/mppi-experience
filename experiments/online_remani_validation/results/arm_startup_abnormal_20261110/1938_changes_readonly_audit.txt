@@ -1,0 +1,25 @@
+19:38 后方导航/0.20m/s 变更独立只读审计
+
+范围与基线：navigation_rear_20261110/before 四个 Python/YAML 文件、esdf_all_axes/before/esdf_worker.cpp，以及 final_install_manifest.json。当前五源文件与 libplan_env.so 的 SHA256 均匹配19:38安装清单。本轮仅读文件并写本报告，没有运行 ROS、CAN、SDK 或修改生产文件。
+
+精确变更：
+1. mppi.yaml：底盘 vmax 0.12→0.20m/s，预测步数8→7。机械臂速度/加速度、postures 和 native 启动目标未改。
+2. active_arm_mppi.py：给 guide/proposals/plan 增加可选离散 reference_gear，保留低速倒车档位。不改模块 import、构造函数、共享库加载或硬件接口。
+3. native_reference_adapter.py：导航激活时把 native_gear 传入 kernel.plan。不改 import、构造/回调、ROS 发布或服务。
+4. whole_body_mppi.py：首次动作碰撞拒绝时补诊断；失败时补候选诊断；deadline 检查移到 result is None 前，避免过期求解误报硬故障。没有改启动门、发布接口和目标转换公式。
+5. esdf_worker.cpp：局部更新从最长轴中点分块改为试三个轴的中点，保留85%收益阈值和8块上限。它在原生机械臂启动期也可能运行，但没有 CAN、SDK、关节指令或运动参数写入接口。
+6. libplan_env.so：本轮换入对应 ESDF worker。baseline_object_verification.json 记录替换前重链接产物与原库哈希相同，排除了误用旧 grid_map 对象这一具体问题。
+
+启动路径：
+whole_body_mppi.py:537-548 先执行 native_startup_gate；444-467 要求驱动 execution_ready 和待机姿态/速度满足。等待时异常进入 reject；477-498 只停止底盘、发布诊断，且未曾发送导航命令不会发 tracking_fault。/enable_flag publisher 在 native_arm_startup=true 时不创建。实际 /joint_ctrl_single 发布在695行，位于启动门、输入检查和规划之后。上述第2、3、4项变化均在启动门之后才进入执行。没有新服务调用或 import 侧效应。
+
+共享库：active_arm_mppi 构造阶段确实会加载 libmppi_position_servo.so，因此不能只凭“MPPI未接管”就声称所有MPPI代码都没运行。但相关加载代码未在19:38修改；库当前SHA与17:50清单相同（2e0692b187fbd220954c82a37498473d3b46c64074b4bfa7e23f0b59dacee604），且是纯数值计算实现，没有CAN/ROS接口。libplan_env与它是不同共享库。
+
+时间边界：
+17:16那轮修改过Piper驱动反馈/命令租约，SHA 8c11814f639a78543fa0e6e33c37c5d1922bf431452d96c35be57fb894a02fc5。17:50那轮改变过MPPI速度意图→MOVEJ位置小步目标的转换、终点朝向处理和数值库。19:38 before文件已经包含这些改变，不能把它们归于19:38，也不能把“本轮未改驱动”说成“驱动从未改过”。本次故障后仅补驱动诊断，manifest before_sha仍为上述17:16 SHA。
+
+尚未排除：
+A. 启动期新ESDF工作负载对调度/CAN收发的间接影响，静态diff不能完全排除，需实际时序或软件回退对照。现有后续总线记录应由主调查结合分析，不应将源码静态结论替代实车证据。
+B. 本轮虽没有找到发送参数写入或错误关节目标的新增路径，但只读审计不能证明软件修改与控制器参数零值绝对无因果关系；没有修改前的参数查询基线。
+C. 旧版软件是否也会复现尚无对照。不能由厂家已知问题直接断言本机就是固件损坏；也不能承诺回退一定恢复。
+D. 此审计范围只覆盖该轮清单和对应调用路径；其他时间段的命令发送、固件内部状态/此前参数写入，应另以日志/抓包审计。

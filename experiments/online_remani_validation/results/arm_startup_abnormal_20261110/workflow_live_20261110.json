@@ -1,0 +1,277 @@
+{
+  "time": 1794315751.5209932,
+  "processes": [
+    {
+      "pid": 15686,
+      "args": [
+        "/usr/bin/python3",
+        "/opt/ros/noetic/bin/roslaunch",
+        "piper",
+        "start_single_piper.launch",
+        "can_port:=can1",
+        "auto_enable:=true"
+      ]
+    },
+    {
+      "pid": 15727,
+      "args": [
+        "python3",
+        "/home/l/remani_ws/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+        "joint_ctrl_single:=/joint_ctrl_single",
+        "__name:=piper_ctrl_single_node",
+        "__log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/piper_ctrl_single_node-1.log"
+      ]
+    }
+  ],
+  "ros_state": [
+    1,
+    "current system state",
+    [
+      [
+        [
+          "/rosout_agg",
+          [
+            "/rosout"
+          ]
+        ],
+        [
+          "/rosout",
+          [
+            "/hardware_startup_readonly_10622_1794312199233",
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/joint_states_single",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/arm_status",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/end_pose",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/end_pose_euler",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/piper_motor_enable_states",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ]
+      ],
+      [
+        [
+          "/rosout",
+          [
+            "/rosout"
+          ]
+        ],
+        [
+          "/mppi/status",
+          [
+            "/hardware_startup_readonly_10622_1794312199233"
+          ]
+        ],
+        [
+          "/piper_execution_state",
+          [
+            "/hardware_startup_readonly_10622_1794312199233"
+          ]
+        ],
+        [
+          "/rosout_agg",
+          [
+            "/hardware_startup_readonly_10622_1794312199233"
+          ]
+        ],
+        [
+          "/piper_motor_enable_states",
+          [
+            "/hardware_startup_readonly_10622_1794312199233"
+          ]
+        ],
+        [
+          "/joint_states_single",
+          [
+            "/hardware_startup_readonly_10622_1794312199233"
+          ]
+        ],
+        [
+          "/joint_ctrl_single",
+          [
+            "/hardware_startup_readonly_10622_1794312199233",
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/pos_cmd",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/enable_flag",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ]
+      ],
+      [
+        [
+          "/rosout/get_loggers",
+          [
+            "/rosout"
+          ]
+        ],
+        [
+          "/rosout/set_logger_level",
+          [
+            "/rosout"
+          ]
+        ],
+        [
+          "/hardware_startup_readonly_10622_1794312199233/get_loggers",
+          [
+            "/hardware_startup_readonly_10622_1794312199233"
+          ]
+        ],
+        [
+          "/hardware_startup_readonly_10622_1794312199233/set_logger_level",
+          [
+            "/hardware_startup_readonly_10622_1794312199233"
+          ]
+        ],
+        [
+          "/piper_ctrl_single_node/get_loggers",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/piper_ctrl_single_node/set_logger_level",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/enable_srv",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/gripper_srv",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/stop_srv",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/reset_srv",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/go_zero_srv",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ],
+        [
+          "/block_arm",
+          [
+            "/piper_ctrl_single_node"
+          ]
+        ]
+      ]
+    ]
+  ],
+  "driver_params": [
+    1,
+    "Parameter [/piper_ctrl_single_node]",
+    {
+      "fixed_vel": 15,
+      "can_port": "can1",
+      "auto_enable": true,
+      "auto_enable_timeout": 10.0,
+      "exit_on_enable_timeout": false,
+      "auto_reenable_on_drop": true,
+      "auto_reenable_interval": 1.0,
+      "gripper_val_mutiple": 1,
+      "command_timeout": 0.0,
+      "max_command_age": 0.3,
+      "native_startup_to_standby": false,
+      "gripper_exist": true
+    }
+  ],
+  "node_connections": {
+    "/piper_ctrl_single_node": {
+      "lookup": [
+        1,
+        "node api",
+        "http://slave:33391/"
+      ],
+      "pid": [
+        1,
+        "",
+        15727
+      ],
+      "bus": [
+        1,
+        "bus info",
+        [
+          [
+            1,
+            "/rosout",
+            "o",
+            "TCPROS",
+            "/rosout",
+            true,
+            "TCPROS connection on port 38815 to [192.168.137.107:56208 on socket 7]"
+          ]
+        ]
+      ]
+    },
+    "/whole_body_mppi": {
+      "lookup": [
+        1,
+        "node api",
+        "http://slave:35717/"
+      ],
+      "error": "[Errno 111] Connection refused"
+    },
+    "/mm_controller_node": {
+      "lookup": [
+        -1,
+        "unknown node [/mm_controller_node]",
+        ""
+      ]
+    },
+    "/remani_planner_node": {
+      "lookup": [
+        -1,
+        "unknown node [/remani_planner_node]",
+        ""
+      ]
+    }
+  }
+}

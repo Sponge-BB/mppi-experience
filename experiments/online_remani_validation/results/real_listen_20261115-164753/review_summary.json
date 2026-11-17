@@ -1,0 +1,34 @@
+{
+  "task": "实车只读导航记录",
+  "onsite_observation": "基本流畅，就是调头的时候停了一下",
+  "bags_closed_and_sha256_recorded": true,
+  "production_code_modified": false,
+  "control_commands_published_by_assistant": false,
+  "new_goal_sent_by_assistant": false,
+  "reported_goal_count": 1,
+  "planner_finish_signal": true,
+  "goal_to_planner_finish_s": 22.7143176,
+  "mppi_delivered_cycles_during_navigation": 203,
+  "native_abort_to_new_reference_s": 2.1514597,
+  "turn_related_zero_command_duration_s": 2.327,
+  "main_pause_chain": [
+    "原生前进块将切换至倒车转向块前，安全检查在未来倒车段查到实时占据碰撞",
+    "沿原参考到碰撞点的累计路程约0.0602m，小于停车阈值0.15m",
+    "慢层取消参考，MPPI报native_reference_cancelled并停止底盘",
+    "恢复重规划两次轮角加速度检查未通过，随后新轨迹验收并恢复"
+  ],
+  "navigation_deadline_rejection_count": 1,
+  "no_navigation_map_expiry_or_no_feasible_candidate_observed": true,
+  "unresolved": [
+    "本次碰撞体素对应的真实物体或误占据来源；当前录包未包含完整原始点云及占据体素场",
+    "本次未加入人为动态障碍，不能评价MPPI动态绕行效果",
+    "目标world与里程计odom坐标系不同，录包未含TF，不能用直接坐标差认定严格到达误差"
+  ],
+  "evidence": [
+    "drive_small.bag",
+    "navigation_20261115-165749.bag",
+    "analysis/drive_small/navigation_findings.json",
+    "analysis/source_collision_chain.json",
+    "bag_integrity.json"
+  ]
+}

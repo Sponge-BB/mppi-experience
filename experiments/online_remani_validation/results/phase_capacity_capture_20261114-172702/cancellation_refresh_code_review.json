@@ -1,0 +1,162 @@
+{
+  "scope": "Read-only current source audit; does not by itself identify the cause of the recorded run",
+  "cancel_chain": [
+    {
+      "file": "src/Utils/quadrotor_msgs/msg/PolynomialTraj.msg",
+      "lines": [
+        8,
+        11
+      ],
+      "condition": "ACTION_ABORT=2; ACTION_WARN_IMPOSSIBLE=5"
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        964,
+        967,
+        3471,
+        3478
+      ],
+      "condition": "Emergency state first escape tick calls callEmergencyStop, which publishes ACTION_ABORT and clears have_published_trajectory"
+    },
+    {
+      "file": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+      "lines": [
+        59,
+        67,
+        267,
+        274,
+        457,
+        459
+      ],
+      "condition": "Active goal and received action2/5 clears native, arm pieces, progress, pending; retains active goal. active and no path returns None before navigation kernel.plan; cancelled state is sticky until accepted new reference/finish/goal event."
+    },
+    {
+      "file": "src/mm_remani/scripts/whole_body_mppi.py",
+      "lines": [
+        68,
+        74,
+        561,
+        562,
+        682,
+        695,
+        724,
+        728
+      ],
+      "condition": "cancelled is not in allowed reference_wait_hold reasons; None result leads reject, publishes zero base twist and no new arm target. It is classified reference transition, so this cancellation does not recursively publish another tracking fault."
+    },
+    {
+      "file": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+      "lines": [
+        275,
+        296,
+        319,
+        328,
+        330,
+        353
+      ],
+      "condition": "Resumption requires a new non-stale valid native polynomial plus matching fresh progress/quiet interval; no reference-free navigation fallback exists."
+    }
+  ],
+  "possible_abort_sources_current_code": [
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        1077,
+        1115
+      ],
+      "condition": "new tracking fault -> zero safety owner + EMERGENCY_STOP"
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        1888,
+        1895,
+        433,
+        444
+      ],
+      "condition": "raw/live dynamic collision within dynamic_emergency_distance -> transient recovery -> EMERGENCY_STOP"
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        1432,
+        1442
+      ],
+      "condition": "map OdomDepthTimeout -> perception recovery -> EMERGENCY_STOP"
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        1583,
+        1593,
+        2062,
+        2064
+      ],
+      "condition": "actual hard collision, or failed static close collision repair -> EMERGENCY_STOP"
+    }
+  ],
+  "refresh_chain": [
+    {
+      "file": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+      "lines": [
+        616,
+        622,
+        657,
+        659,
+        677,
+        679
+      ],
+      "condition": "intervention if nominal invalid or nominal external gap<0.12m; not necessarily dynamic obstacle. If all sampled candidates invalid, result None and no event."
+    },
+    {
+      "file": "src/mm_remani/scripts/whole_body_mppi.py",
+      "lines": [
+        601,
+        619,
+        826,
+        827
+      ],
+      "condition": "Only after publishing arm and base topics; execute, active valid goal, not startup/wait_hold/terminal; true intervention needed. Delivery here is ROS publish after validations, not independent actuator execution acknowledgement."
+    },
+    {
+      "file": "src/mm_remani/scripts/mppi/mppi_refresh_event.py",
+      "lines": [
+        12,
+        28
+      ],
+      "condition": "Same goal and continuing interventions repeats same episode id. 4 delivered nominal cycles end episode. Failed cycles are not clearance. Next episode gets first checked_at timestamp."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "lines": [
+        957,
+        958,
+        1019,
+        1032,
+        1034,
+        1063
+      ],
+      "condition": "Only unfinished EXEC_TRAJ with usable published reference and no recovery/fault/zero limit/unmetESDF/freshness guard; one attempt per episode even if failure; failed optional refresh restores old trajectory metadata rather than auto aborting it."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_refresh_event.hpp",
+      "lines": [
+        29,
+        37
+      ],
+      "condition": "Goal/reference IDs must match; event age<=0.25s; odom/joint<=0.15s; map/required dynamic<=0.35s; episode not consumed."
+    }
+  ],
+  "interpretation": [
+    "The early refresh path can be unavailable before a first intervention delivery, after cancellation, during delivery rejection, or while the slow layer owns a zero-speed recovery. In these cases existing slow recovery handles replanning; fast reference-free avoidance is not implemented.",
+    "An optional refresh itself does not mandate stopping. Slow safety independently evaluates its reference and can stop/cancel before or despite fast-layer intervention.",
+    "A zero safety limit zeros both base v/w at whole_body_mppi.py:755-762; with valid reference arm commands remain eligible, but cancellation additionally prevents new kernel planning.",
+    "Parent reported 744 cancelled statuses and 152 refresh messages in 4 episodes. These are not independently re-counted here. Cancelled status count does not count abort events, and refresh message/episode counts do not establish accepted/successful replans."
+  ],
+  "required_timeline_to_attribute": [
+    "First ACTION_ABORT source and preceding planner log owner (TRACKING/SAFETY/PERCEPTION/ACTUAL_STATE).",
+    "Last successful fast command/intervention, first rejection, safety limit zero, and episode publish times versus abort.",
+    "FSM MPPIRefresh acceptance/success logs versus request identities; map/feedback ages if valid episodes were not consumed."
+  ]
+}

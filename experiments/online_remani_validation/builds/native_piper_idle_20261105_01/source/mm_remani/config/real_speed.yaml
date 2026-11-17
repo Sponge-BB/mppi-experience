@@ -1,0 +1,57 @@
+# ============================================================
+# REMANI 真实机器人统一配置文件
+# 涵盖：底盘轮速、机械臂速度、ESDF 膨胀、规划约束、跟踪死区
+# 加载于 exp0_real.launch，覆盖 piper_param.yaml 的仿真默认值
+# ============================================================
+
+remani_planner_node:
+  # --- 底盘 ---
+  mm:
+    # 最大轮子角速度 (rad/s)，公式：线速度 = omega × 轮子半径(0.07m)
+    #   5.0  → 0.35 m/s   7.14 → 0.50 m/s   10.0 → 0.70 m/s (原厂极速)
+    mobile_base_max_wheel_omega: 3.28
+    # 最大轮子角加速度 (rad/s²)，公式：线加速度 = alpha × 轮子半径
+    mobile_base_max_wheel_alpha: 15.0
+    # 底盘最小非奇异速度 (m/s)，避免差速模型在零速附近的奇异性
+    mobile_base_non_singul_vel: 0.05
+    # 机械臂最大关节速度 (rad/s)
+    manipulator_max_vel: 1.57
+    # 机械臂最大关节加速度 (rad/s²)
+    manipulator_max_acc: 3.14
+
+  # --- 反应式避障: FSM 重规划参数 ---
+  fsm:
+    # 重规划间隔 (秒)。实车全局地图模式下保持 2.5，避免远距离规划频繁被打断
+    thresh_replan_time: 2.5
+    # 预期重规划耗时上限 (秒)，必须小于 thresh_replan_time
+    replan_trajectory_time: 0.4
+    # 靠近目标时停止重规划的距离阈值 (米)
+    thresh_no_replan_meter: 1.0
+    # 紧急停车时间窗口 (秒)，碰撞距离<此值时触发急停
+    emergency_time: 1
+
+  # --- 搜索参数 ---
+  search:
+    # Kino-A* 最大搜索时间 (秒)，适配 0.4s 重规划预算
+    max_seach_time: 0.9
+
+  # --- ESDF 地图障碍物膨胀 ---
+  grid_map:
+    # 障碍物膨胀半径 (米)，越大 = 障碍物周围禁飞区越大
+    # 分辨率为 0.05m，建议 0.1~0.3 (即 2~6 个体素)
+    obstacles_inflation: 0
+    # 预构建全局 PCD 的膨胀半径。设为和实时点云一致，保证雷达盲区后的 PCD 障碍进入碰撞检测。
+    global_map_obstacles_inflation: 0
+    # ESDF 局部边界额外膨胀量 (米)，0=不额外扩展
+    local_bound_inflate: 0.0
+
+# --- Piper 机械臂 CAN 驱动参数 ---
+piper_ctrl_single_node:
+  # 固定关节运动速度 (范围 0-100, 推荐 20-60)
+  fixed_vel: 15
+
+# --- 实车底盘轨迹追踪器的安全死区 ---
+real_base_tracker:
+  # 铁律：Tracker 的速度极限必须比规划出的车速大约大 15%~20%
+  tracker_max_v: 0.6   # 底盘绝对最大直线追赶速度 (m/s)
+  tracker_max_w: 1.5   # 底盘绝对最大转向极速 (rad/s)

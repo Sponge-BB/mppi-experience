@@ -1,0 +1,73 @@
+{
+  "scope": "Deterministic offline reproduction on unchanged production NativeReferenceAdapter; fake ROS messages, no ROS/CAN.",
+  "actual_clock": 20.02,
+  "cycle_now": 20.0,
+  "progress_source_stamp": 20.01,
+  "progress_actual_age_ms": 10.0,
+  "progress_age_against_cycle_now_ms": -10.0,
+  "original_plan_status": "native_progress_stale",
+  "status_at_actual_time": "native_reference_ready",
+  "plan_at_actual_time": "native_reference_ready",
+  "true_future_stamp_20_03_at_actual_20_02_rejected": true,
+  "true_future_reason": "native_progress_stale",
+  "actually_stale_stamp_20_01_at_actual_20_30_rejected": true,
+  "live_stale_events": [
+    {
+      "received": 1794301214.2867036,
+      "topic": "/mppi/status",
+      "state": "native_progress_stale",
+      "execute": true,
+      "cycle_ms": 12.45
+    },
+    {
+      "received": 1794301277.5854132,
+      "topic": "/mppi/status",
+      "state": "native_progress_stale",
+      "execute": true,
+      "cycle_ms": 22.06
+    }
+  ],
+  "nearby_relevant_rosout": [
+    {
+      "received": 1794301213.603965,
+      "topic": "/rosout_agg",
+      "stamp": 1794301213.6007826,
+      "node": "/remani_planner_node",
+      "level": 2,
+      "message": "[GridMap][pipeline] window=5.02s mode=async occ=32 avg/max=16.12/24.16ms esdf=32 compute_avg/max=102.53/131.96ms main_commit_avg/max=10.51/14.34ms snapshot_avg/max=2.24/3.91ms age=103.77ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=5726/5725/5726/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=32/32/0/52 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "received": 1794301214.289099,
+      "topic": "/rosout_agg",
+      "stamp": 1794301214.281052,
+      "node": "/remani_planner_node",
+      "level": 8,
+      "message": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+    },
+    {
+      "received": 1794301214.292475,
+      "topic": "/rosout_agg",
+      "stamp": 1794301214.2855535,
+      "node": "/whole_body_mppi",
+      "level": 4,
+      "message": "MPPI command rejected: native_progress_stale (cycle=12.45 ms; snapshot={})"
+    },
+    {
+      "received": 1794301277.6002707,
+      "topic": "/rosout_agg",
+      "stamp": 1794301277.560484,
+      "node": "/remani_planner_node",
+      "level": 8,
+      "message": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+    },
+    {
+      "received": 1794301277.6030884,
+      "topic": "/rosout_agg",
+      "stamp": 1794301277.5844626,
+      "node": "/whole_body_mppi",
+      "level": 4,
+      "message": "MPPI command rejected: native_progress_stale (cycle=22.06 ms; snapshot={})"
+    }
+  ],
+  "limitation": "The live recorder does not capture progress source stamps, so its two stale events cannot distinguish negative age from age exceeding 250ms. Their 12.45ms and 22.06ms cycles end before solving; this is consistent with, but does not prove, the old-cycle-time race."
+}

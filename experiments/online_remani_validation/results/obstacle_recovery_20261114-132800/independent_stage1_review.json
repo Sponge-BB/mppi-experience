@@ -1,0 +1,27 @@
+{
+  "reviewed_at": "2026-11-14T13:41:00.023947",
+  "reviewer": "trace_version_build_audit",
+  "status": "READ_ONLY_REVIEW_NO_BLOCKING_FINDINGS",
+  "source_sha256": {
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "15dc0efb034141ab5fc34583707c5f729ddc45f2b3cdd0d08bbb85f9366c7cef",
+    "src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h": "71c8393964799b630462c5a67261f734e6f475eff0c24ebd5697fcce884cb486",
+    "src/mm_remani/test/test_perception_recovery.py": "f7f5f2d86e22b5f8ea974697af2f6d5dfb15cc672cabe3bbf734a2658ae4330a",
+    "src/mm_remani/test/test_transient_obstacle_recovery.py": "7c1c9c60971acdb78c76946291a6d3b27cbf25f8e368421f46d11e455070b186"
+  },
+  "checks": [
+    "成功接受新目标后递增revision，立即使旧candidate失效；求解完成与交付前检查同目标。",
+    "重试key为(epoch, ESDF observation)，与GridMap真实接口语义一致；同代避免重复求解，新epoch允许重试。",
+    "地图或反馈失效、目标撤销、静态/实时/预测碰撞、起点偏移均不发布恢复轨迹。",
+    "新增临时停止复用原perception两阶段通路，失败不消耗普通GEN_NEW_TRAJ放弃目标计数。",
+    "finishNewTrajectory保留tracking及dynamic独立stop owner；pending期阻止误进入终端完成。",
+    "原perception测试仅扩展fixture，原15个场景保留；新测试8个行为场景覆盖超5次失败、节流、新map、目标替换/撤销、碰撞与状态偏移、其他stop owner。"
+  ],
+  "test_boundary": "生产C++方法执行，地图/求解/ROS边界仍是桩；没有在本次审查中再次运行测试，也不能将epoch场景称为完整实车地图reload验证。",
+  "known_limits": [
+    "仅修复近距离raw/live占据停止后的保目标恢复，不改变所有静态/point-flow停止分支。",
+    "地图key只有重试节流用途；发布依赖同代完整验收和最后时效/状态检查，不新增严格追逐最新generation的门。",
+    "不存在真实动态绕行或无停顿实车通过证据；保目标恢复不是MPPI前缀交接。"
+  ],
+  "runtime_files_modified_by_reviewer": false,
+  "hardware_actions": false
+}

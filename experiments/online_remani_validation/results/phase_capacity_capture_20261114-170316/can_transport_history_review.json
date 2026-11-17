@@ -1,0 +1,60 @@
+{
+  "scope": "Read-only source-history comparison; no runtime or hardware change",
+  "baseline": {
+    "repository": "/home/l/remani_ws/src",
+    "commit": "f138ec82dce5c58be2e7028548ed317efe541c4f",
+    "path": "piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+    "finding": "Original driver directly calls SDK ConnectPort/MotionCtrl/JointCtrl. No _configure_command_transport and no current command failure latch."
+  },
+  "confirmed_change": {
+    "code": "_configure_command_transport: bounded bus.send(timeout=0.005), followed by checked_send on transport.SendCanMessage enum return. Non-success becomes RuntimeError; watchdog/joint exception handling calls _stop_commands and latches further command acceptance.",
+    "mechanism": "Installed SDK SendCanMessage catches all bus.send exceptions and returns a failure enum. The outer checked_send makes this previously SDK-reported failure propagate to driver stop handling."
+  },
+  "earliest_observed_records": [
+    {
+      "record": "experiments/online_remani_validation/results/piper_receive_latency_20261109_2027/piper_ctrl_single_node.before_diagnostics.py",
+      "finding": "5 ms bus wrapper present, but no outer enum checked_send. Inner RuntimeError alone is caught by installed SDK. Record directory is dated 2026-11-09; this does not establish exact introduction time."
+    },
+    {
+      "record": "experiments/online_remani_validation/results/joint_feedback_refresh_20261110/piper_ctrl_single_node.py.before_fix",
+      "finding": "Full current 5 ms plus outer enum checked_send already present in before_fix source of 2026-11-10 task."
+    },
+    {
+      "record": "experiments/online_remani_validation/results/motor_feedback_diagnostic_20261110/before/piper_ctrl_single_node.py",
+      "finding": "Full wrapper also present in before source of 2026-11-10 diagnostic task."
+    },
+    {
+      "version": "20261110-204057-arm-startup-unresolved",
+      "record": "rollback/20261110-204057-arm-startup-unresolved/git_tracked_changes.diff",
+      "finding": "Earliest unified complete rollback record contains full checked_send. It proves present by this version, not introduced in it."
+    }
+  ],
+  "limitations": [
+    "No surviving edit record examined establishes exact moment or task introducing outer enum propagation.",
+    "This round guidance/capacity stages did not change Piper driver.",
+    "Original SDK bus.send omitted timeout; installed python-can SocketCAN maps None to 0. The added 5 ms is not a shorter send wait than original default.",
+    "Fail-on-send latch explains driver remaining stopped after send failure; source comparison cannot establish why kernel CAN TX queue stopped draining. Persistent RX with static TX and queued packets is separate runtime evidence observed by parent."
+  ],
+  "evidence": {
+    "current": {
+      "path": "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+      "sha256": "63d5c809a2686abb1c297c1f3459676dfba6f6ed83aa9b520b3d89d0aa81933f"
+    },
+    "nov9_pre_diagnostics": {
+      "path": "experiments/online_remani_validation/results/piper_receive_latency_20261109_2027/piper_ctrl_single_node.before_diagnostics.py",
+      "sha256": "3a8fe2ee6c4c8b4b57ecb817bdc3a2c0a59afeda5a6fbabcfcc9bbde0ba67922"
+    },
+    "nov10_pre_feedback_fix": {
+      "path": "experiments/online_remani_validation/results/joint_feedback_refresh_20261110/piper_ctrl_single_node.py.before_fix",
+      "sha256": "69824020e9f2a1664c977759b4ea8d9c80cdb28f3c0229b1395d971bd12f69b5"
+    },
+    "nov10_pre_motor_diagnostic": {
+      "path": "experiments/online_remani_validation/results/motor_feedback_diagnostic_20261110/before/piper_ctrl_single_node.py",
+      "sha256": "a94d3daff90e2acd119ae10f2ce1a0ddef8c32a478836b6d3649e02c35e1efc2"
+    },
+    "first_version_diff": {
+      "path": "rollback/20261110-204057-arm-startup-unresolved/git_tracked_changes.diff",
+      "sha256": "f6354439788f3aea0056883d243a5f2c3c6ddadcab10449910c1fb1d824c3fbd"
+    }
+  }
+}

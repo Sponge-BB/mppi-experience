@@ -1,0 +1,79 @@
+{
+  "mode": "read-only; no SDK, publisher, service or CAN send used by this audit",
+  "observation_ros_epoch": [
+    1794365210.157989,
+    1794365214.1678803
+  ],
+  "driver_pid": 17552,
+  "publisher_pid": 17996,
+  "parameters": {
+    "command_timeout": 0.0,
+    "native_startup_to_standby": false,
+    "fixed_vel": 15,
+    "auto_enable": true,
+    "can_port": "can1"
+  },
+  "command_messages": 402,
+  "command_rate_hz": 100.00271150516184,
+  "joint_feedback_rate_hz": 198.00174666991873,
+  "motor_enabled": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "arm_status": 1,
+  "arm_status_sdk_definition": "EMERGENCY_STOP=0x01",
+  "joint_position_rad": [
+    0,
+    -0.03145083312093781,
+    0.03946189438759179,
+    0.0075223690760955605,
+    0.38112754875800176,
+    0.009861110273767962
+  ],
+  "can": {
+    "0x151": {
+      "count": 400,
+      "first": "01010f0000000000",
+      "last": "01010f0000000000"
+    },
+    "0x155": {
+      "count": 400,
+      "first": "000000000000749a",
+      "last": "000000000000749a"
+    },
+    "0x156": {
+      "count": 400,
+      "first": "ffff153efffffffe",
+      "last": "ffff153efffffffe"
+    },
+    "0x157": {
+      "count": 400,
+      "first": "0000d40400000003",
+      "last": "0000d40400000003"
+    },
+    "0x2a1": {
+      "count": 801,
+      "first": "0101010001000000",
+      "last": "0101010001000000"
+    }
+  },
+  "prior_stop": {
+    "source": "piper_ctrl_single_node-21.log",
+    "time": "2026-11-11 10:43:14.875",
+    "reason": "node shutdown",
+    "action_from_source": "_stop_commands -> MotionCtrl_1(0x01,0,0)"
+  },
+  "assessment": {
+    "established": "Command delivered to driver and CAN with correct MOVEJ target; controller reports emergency stop while motors enabled.",
+    "not_established": "Origin of current controller emergency state cannot be proven solely from current sample; previous software shutdown stop is recorded. This does not diagnose earlier startup jitter."
+  },
+  "runtime_modified": false,
+  "source_sha256": {
+    "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py": "939b0445b41ea9308e8ae2ab0eefd817868567e720c362fd924fcaa2ca64ee06",
+    "src/piper_ros/src/piper/launch/start_single_piper.launch": "5fb2860b2785929a1fd516503fffa2df31f048a8d701ff2224d06a7874e2c9ae"
+  }
+}

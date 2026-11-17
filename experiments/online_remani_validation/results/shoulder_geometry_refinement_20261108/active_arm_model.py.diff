@@ -1,0 +1,82 @@
+--- before/src/mm_remani/scripts/mppi/active_arm_model.py
++++ src/mm_remani/scripts/mppi/active_arm_model.py
+@@ -83,7 +83,9 @@
+     The asset is built offline after applying the original collision origins
+     and mesh scene transforms. Runtime uses no mesh library. A positive gap
+     proves separation of (arm_base, link1), or both complete-triangle upper-arm
+-    hulls, from (link5, link6). A nonpositive gap never clears coarse rejection.
++    hulls, from (link5, link6). A complete-triangle link5 decomposition avoids
++    filling its concave waist when the whole-link hull cannot separate.
++    A nonpositive gap never clears coarse rejection.
+     """
+ 
+     numerical_tolerance = .0001  # Total 0.1 mm numerical padding, not calibration.
+@@ -186,6 +188,38 @@
+             vertices.setflags(write=False); axis.setflags(write=False)
+             self.upper_parts[name] = (vertices, axis, (float(projection.min()), float(projection.max())))
+ 
++        self.wrist_parts = []
++        wrist = data.get('wrist_certificate')
++        if wrist is not None:
++            parts, split = wrist['parts'], wrist['split']
++            if (split != {'frame': 'link5', 'axis': 1, 'value': .03,
++                          'crossing_triangles': 'complete crossing triangle included in both pieces'}
++                    or wrist.get('source_mesh_sha256') != data['proxies']['link5']['source_mesh_sha256']
++                    or wrist.get('collision_origin_and_scene_transforms_applied') is not True
++                    or set(parts) != {'low', 'high'}
++                    or wrist.get('original_triangle_count', 0) <= 0
++                    or wrist.get('covered_triangle_count') != wrist['original_triangle_count']
++                    or wrist.get('duplicated_crossing_triangles', -1) < 0
++                    or sum(p['triangle_count'] for p in parts.values()) !=
++                       wrist['original_triangle_count']+wrist['duplicated_crossing_triangles']):
++                raise ValueError('incomplete original wrist triangle coverage')
++            for name in ('low', 'high'):
++                item = parts[name]
++                vertices = np.asarray(item['vertices'], dtype=float)
++                axis = _vector(item['axis'], 3, 'wrist support axis')
++                if (item.get('coordinate_frame') != 'link5'
++                        or item.get('direction_frame') not in ('link1', 'link5')
++                        or vertices.ndim != 2 or vertices.shape[1] != 3
++                        or not 4 <= len(vertices) <= 4096
++                        or len(vertices) != item.get('hull_vertex_count')
++                        or not np.isfinite(vertices).all()
++                        or np.linalg.matrix_rank(vertices-vertices[0]) != 3
++                        or abs(np.linalg.norm(axis)-1.) > 1e-8
++                        or item['triangle_count'] <= 0):
++                    raise ValueError('invalid wrist hull: '+name)
++                vertices.setflags(write=False); axis.setflags(write=False)
++                self.wrist_parts.append((vertices, axis, int(item['direction_frame'][-1])))
++
+     def gaps(self, q):
+         """Shoulder (0,18) support gap, including numerical padding."""
+         return self.pair_gaps(q)[:, 0]
+@@ -249,6 +283,21 @@
+             gap = against_wrist(np.minimum(low_base, low_link), np.maximum(high_base, high_link),
+                                 direction, link5_interval, rows)
+             shoulder[rows] = np.maximum(shoulder[rows], gap)
++        rows = np.flatnonzero(refine_shoulder & (shoulder <= 0.))
++        if len(rows) and self.wrist_parts:
++            # Both complete triangle pieces, each together with the full tool,
++            # must separate from arm_base AND link1 at the actual joint angles.
++            # Directions belong to mesh/link frames, never to a recorded pose.
++            fine = np.full(len(rows), np.inf)
++            for vertices, axis, axis_frame in self.wrist_parts:
++                direction = frames[axis_frame][0][rows] @ axis
++                low_base, high_base = interval(self.vertices['arm_base'], direction, rows=rows)
++                low_link, high_link = interval(self.vertices['link1'], direction, frames[1], rows)
++                piece = interval(vertices, direction, frames[5], rows)
++                gap = against_wrist(np.minimum(low_base, low_link), np.maximum(high_base, high_link),
++                                    direction, piece, rows)
++                fine = np.minimum(fine, gap)
++            shoulder[rows] = np.maximum(shoulder[rows], fine)
+         upper = []
+         for vertices, axis, link5_interval in self.upper_parts.values():
+             direction = r5 @ axis
+@@ -509,6 +558,7 @@
+                     'wrist_meshes': ['link5', 'link6'],
+                     'method': 'positive support separation for every complete original mesh hull involved',
+                     'additional_shoulder_axes': len(self.shoulder_wrist_proxy.shoulder_axes),
++                    'complete_triangle_wrist_parts': len(self.shoulder_wrist_proxy.wrist_parts),
+                     'numerical_tolerance_m': self.shoulder_wrist_proxy.numerical_tolerance,
+                     'nonpositive_certificate': 'retain coarse rejection',
+                     'physical_calibration': False})}

@@ -1,0 +1,405 @@
+{
+  "status": "offline_source_review_not_live_CAN_validation",
+  "SDK_imported": false,
+  "SDK_instantiated": false,
+  "device_opened": false,
+  "excluded_branch_proof": "runtime/piper_lease_gate.py open_existing_sdk calls ConnectPort(piper_init=False)",
+  "source_paths": [
+    {
+      "path": "python/piper_sdk/interface/piper_interface.py",
+      "sha256": "ee63f0fa68286f7d0970ac9b53828c407f135ee68624064404fc419b0acede92",
+      "excluded_calls": [
+        "PiperInit"
+      ],
+      "reachable_methods": [
+        {
+          "method": "__new__",
+          "line": 349,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__init__",
+          "line": 373,
+          "self_calls": [
+            "AllCurrentMotorAngleLimitMaxSpd",
+            "AllCurrentMotorMaxAccLimit",
+            "ArmCtrlCode_151",
+            "ArmEndPose",
+            "ArmGripper",
+            "ArmGripperCtrl",
+            "ArmJoint",
+            "ArmJointCtrl",
+            "ArmModeCtrl",
+            "ArmMotorAngleLimitAndMaxVel",
+            "ArmMotorDriverInfoHighSpd",
+            "ArmMotorDriverInfoLowSpd",
+            "ArmRespSetInstruction",
+            "ArmStatus",
+            "CrashProtectionLevelFeedback",
+            "CurrentEndVelAndAccParam",
+            "CurrentMotorMaxAccLimit",
+            "GripperTeachingPendantParamFeedback"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "ConnectPort",
+          "line": 587,
+          "self_calls": [
+            "PiperInit",
+            "__CanMonitor"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "DisconnectPort",
+          "line": 691,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "isFilterAbnormalData",
+          "line": 782,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "ParseCANFrame",
+          "line": 790,
+          "self_calls": [
+            "__UpdateAllCurrentMotorAngleLimitMaxVel",
+            "__UpdateAllCurrentMotorMaxAccLimit",
+            "__UpdateArmCtrlCode151",
+            "__UpdateArmEndPoseState",
+            "__UpdateArmGripperCtrl",
+            "__UpdateArmGripperState",
+            "__UpdateArmJointCtrl",
+            "__UpdateArmJointState",
+            "__UpdateArmModeCtrl",
+            "__UpdateArmStatus",
+            "__UpdateCrashProtectionLevelFeedback",
+            "__UpdateCurrentEndVelAndAccParam",
+            "__UpdateCurrentMotorAngleLimitMaxVel",
+            "__UpdateCurrentMotorMaxAccLimit",
+            "__UpdateDriverInfoHighSpdFeedback",
+            "__UpdateDriverInfoLowSpdFeedback",
+            "__UpdateGripperTeachingPendantParamFeedback",
+            "__UpdatePiperCtrlFK",
+            "__UpdatePiperFeedbackFK",
+            "__UpdatePiperFirmware",
+            "__UpdateRespSetInstruction"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "GetCanFps",
+          "line": 886,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "GetArmStatus",
+          "line": 896,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "GetArmEndPoseMsgs",
+          "line": 965,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "GetArmJointMsgs",
+          "line": 988,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "GetArmGripperMsgs",
+          "line": 1040,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "GetArmHighSpdInfoMsgs",
+          "line": 1070,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "GetArmLowSpdInfoMsgs",
+          "line": 1117,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__CanMonitor",
+          "line": 1652,
+          "self_calls": [
+            "GetCanFps"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "__CalJointSDKLimit",
+          "line": 1668,
+          "self_calls": [
+            "GetSDKJointLimitParam"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "__CalGripperSDKLimit",
+          "line": 1676,
+          "self_calls": [
+            "GetSDKGripperRangeParam"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateArmStatus",
+          "line": 1684,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateArmEndPoseState",
+          "line": 1708,
+          "self_calls": [
+            "isFilterAbnormalData"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateArmJointState",
+          "line": 1752,
+          "self_calls": [
+            "__CalJointSDKLimit",
+            "isFilterAbnormalData"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateArmGripperState",
+          "line": 1797,
+          "self_calls": [
+            "__CalGripperSDKLimit",
+            "isFilterAbnormalData"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateDriverInfoHighSpdFeedback",
+          "line": 1822,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateDriverInfoLowSpdFeedback",
+          "line": 1884,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateCurrentMotorAngleLimitMaxVel",
+          "line": 1952,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateCurrentMotorMaxAccLimit",
+          "line": 1991,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateAllCurrentMotorAngleLimitMaxVel",
+          "line": 2025,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateAllCurrentMotorMaxAccLimit",
+          "line": 2072,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateCurrentEndVelAndAccParam",
+          "line": 2119,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateCrashProtectionLevelFeedback",
+          "line": 2156,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateGripperTeachingPendantParamFeedback",
+          "line": 2198,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateArmJointCtrl",
+          "line": 2230,
+          "self_calls": [
+            "__CalJointSDKLimit"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateArmGripperCtrl",
+          "line": 2259,
+          "self_calls": [
+            "__CalGripperSDKLimit"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateArmCtrlCode151",
+          "line": 2280,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateArmModeCtrl",
+          "line": 2307,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdatePiperFirmware",
+          "line": 2334,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdatePiperFeedbackFK",
+          "line": 2346,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdatePiperCtrlFK",
+          "line": 2363,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "__UpdateRespSetInstruction",
+          "line": 2380,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "GetSDKJointLimitParam",
+          "line": 3721,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "GetSDKGripperRangeParam",
+          "line": 3725,
+          "self_calls": [],
+          "transmit_calls": []
+        }
+      ]
+    },
+    {
+      "path": "python/piper_sdk/hardware_port/can_encapsulation.py",
+      "sha256": "b11c39ed16803d958b339729b75adf4cedeb5e9e6185fea280e2fd9ca62b4434",
+      "excluded_calls": [],
+      "reachable_methods": [
+        {
+          "method": "__init__",
+          "line": 45,
+          "self_calls": [
+            "Init",
+            "JudgeCanInfo"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "__del__",
+          "line": 63,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "Init",
+          "line": 72,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "Close",
+          "line": 86,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "JudgeCanInfo",
+          "line": 108,
+          "self_calls": [
+            "get_can_bitrate",
+            "is_can_port_up",
+            "is_can_socket_available"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "ReadCanMessage",
+          "line": 135,
+          "self_calls": [
+            "callback_function",
+            "is_can_bus_ok"
+          ],
+          "transmit_calls": []
+        },
+        {
+          "method": "is_can_bus_ok",
+          "line": 166,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "is_can_socket_available",
+          "line": 189,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "is_can_port_up",
+          "line": 234,
+          "self_calls": [],
+          "transmit_calls": []
+        },
+        {
+          "method": "get_can_bitrate",
+          "line": 248,
+          "self_calls": [],
+          "transmit_calls": []
+        }
+      ]
+    }
+  ],
+  "external_review": [
+    "C_STD_CAN.Init only creates can.interface.Bus(channel=..., bustype=socketcan); it sends no frames.",
+    "Frozen python-can socketcan.SocketcanBus.__init__ creates/binds a CAN_RAW socket and configures receive options; no send, periodic TX or BCM task starts.",
+    "C_STD_CAN.JudgeCanInfo checks sysfs/interface state and ip -details link show; it does not configure bitrate or bring interfaces up.",
+    "SDK ParseCANFrame calls decoder and cached feedback updates. ReadCan and CanMonitor thread functions are included by ast.walk of ConnectPort.",
+    "C_FPSCounter.start launches only its counter thread. No CAN handle is passed to it.",
+    "Original driver constructor is not invoked. No original subscription/automatic enable thread is started.",
+    "Gate allow_motion=false rejects all enable and command requests; disabled watchdog/shutdown has zero actuator calls."
+  ],
+  "limits": [
+    "Static method closure is not a formal proof of every dynamically dispatched dependency.",
+    "Actual driver RX-only startup still requires host TX counters and ROS publisher audit before and after.",
+    "Any connect_transport=true starts a real CAN socket; this audit itself never does so."
+  ]
+}

@@ -1,0 +1,20 @@
+Unified native-phase guidance: scope and equations
+
+The active native path uses exact degree-7 polynomial position, velocity and acceleration at tau + s*k*dt, k=0..H. Pose, velocity and arm samples share the same native virtual phase. Before a gear boundary the current block is retained; rollout samples at/past its endpoint hold position and set v/omega feedforward to zero. Gear identity is explicit and never inferred from slowed speed. Undefined tangent at raw speed <= existing controller yaw_hold_speed (.04 m/s) holds each candidate's own yaw.
+
+The signed linear feedforward is v_r = gear*s*||p'(tau)||. Angular feedforward is omega_r = s*(vx*ay-vy*ax)/(vx^2+vy^2) when the native tangent is defined. With body-frame errors ex, ey, e_theta, the common tracking law is:
+  v = v_r*cos(e_theta) + .9*ex
+  omega = omega_r + v_r*ey + 1.8*e_theta
+Physical command caps remain unchanged. Position/yaw gains reuse the existing guide's .9/1.8 values; lateral coefficient 1.0 matches the existing real_base_tracker value, with signed velocity for reverse stability.
+
+Fixed-point nonholonomic recovery cannot rely only on this smooth trajectory law: at v_r=0, ex=0, ey!=0 its translation would remain zero. Therefore a geometric capture stage activates if abs(ey) > the native resume radius, and exits only at position distance <= .7*resume radius. Its target is the SAME CURRENT phase point; v=gear*.9*distance*max(0,cos(bearing_error)), omega=2*bearing_error. This state exists across all time scales, is reset only on goal/trajectory/block/gear identity changes, and each prediction candidate owns an independent copy. There is no frozen-only mode, 30 cm future target, minimum .08 m/s native speed, or 2.5 cm endpoint switch. Longitudinal error alone uses the trajectory law instead of invoking a needless bearing maneuver.
+
+Native candidate scoring is also time indexed: predicted state k+1 is compared with target sample k+1, rather than the nearest point on a spatial path. Yaw error is converted to metres by the existing resume radius and included in the existing 9*position_error_squared term. This adds no parameter or weight tuning loop. Collision tests, braking-tail checks, random/sample budgets, arm-only priority, delivery/deadline gates, driver and SDK are unchanged. The spatial remaining-path sampler still exists only for preview/status and reference hashing; it is not passed to the active native kernel.
+
+Verification scope
+- Before runtime edit: tested prototype with exact recorded 2-gear, 5-piece polynomials, the original native clock and independent 5 ms Plant. Recorded delivery acceptance/zero cadence is imposed; original nonzero controls are never replayed.
+- Prototype recorded cadence completed at 19.42 s with no freeze/resume target-switch reversal. Two significant angular sign changes remain as ordinary path turns. Ideal delivery completed at 17.8 s.
+- Eight pure lateral stationary prototype cases, gears +/-1 and offsets +/- .06/.2 m, enter native recovery position/yaw bounds in 11.025 to 17.755 s. This shows liveness, not calibrated or fast vehicle performance.
+- Actual adapter/plan tests and independent production-kernel coupled tests are captured separately by the validation agent. Prototype results are supplementary, not substitutes for those tests or physical validation.
+- Geometry capture legitimately steers toward a displaced point, then turns back to its heading; one direction reversal during this two-part maneuver is expected. The removed defect was repeated conflicting target switching due solely to a clock-scale transition or the 2.5 cm boundary.
+- These are offline numerical tests with clear simplified geometry and ideal feedback apart from imposed delivery cadence. No physical-robot verification, complete perception-pipeline simulation, dynamic obstacle scene acceptance, or system-wide no-stutter claim is made.

@@ -1,0 +1,831 @@
+--- before/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py
++++ after/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py
+@@ -118,7 +118,7 @@
+         self._watchdog_done = threading.Event()
+         self.block_ctrl_flag = False
+         self._configure_native_startup()
+-        if self.command_timeout > 0:
++        if self.command_timeout > 0 and not self.native_startup_to_standby:
+             self.auto_enable = False
+             self.auto_reenable_on_drop = False
+         rospy.loginfo("%s is %s", rospy.resolve_name('~auto_enable_timeout'), self.auto_enable_timeout)
+@@ -155,14 +155,17 @@
+             # Install before the receive thread starts; all decoding and state
+             # updates retain the SDK's timestamps, filters and feedback locks.
+             self.piper._C_PiperInterface__arm_can.callback_function = FeedbackDispatch(self.piper)
++        if self.command_timeout > 0 and not self.native_startup_to_standby:
+             self.piper.ConnectPort(piper_init=False)
++        else:
++            # Original startup: SDK initialization and MOVEJ before auto-enable.
++            self.piper.ConnectPort()
++            self.piper.MotionCtrl_2(0x01, 0x01, 30, 0)
++        if self.command_timeout > 0:
+             rospy.loginfo("Piper CAN feedback uses selective SDK dispatch; source freshness checks unchanged.")
+             self._configure_command_transport()
+             threading.Thread(target=self._command_watchdog, daemon=True).start()
+             rospy.on_shutdown(self._shutdown_commands)
+-        else:
+-            self.piper.ConnectPort()
+-            self.piper.MotionCtrl_2(0x01, 0x01, 30, 0)
+         # 启动订阅线程
+         sub_pos_th = threading.Thread(target=self.SubPosThread)
+         sub_pos_th.daemon = True
+@@ -208,9 +211,7 @@
+         self._native_handoff = False
+         self._native_ready = False
+         self._native_standby_reached = False
+-        self._native_started = None
+-        self._native_last_enable = None
+-        self._native_last_target = None
++        self._native_command_stamp = 0.0
+         self._native_settled_since = None
+         self._native_motors_seen = False
+         self._native_target = None
+@@ -247,7 +248,7 @@
+         """Readiness is revocable and uses complete, source-derived feedback."""
+         if not self._native_pending():
+             return
+-        good = (not self._command_latched and self._native_motors_seen and
++        good = (not self._command_latched and not self.block_ctrl_flag and self._native_motors_seen and
+                 self._feedback_fresh() and self._arm_status_normal_fresh() and
+                 self._motors_enabled_fresh() and self._feedback_velocity is not None and
+                 all(abs(q - target) < .015 for q, target in
+@@ -268,104 +269,11 @@
+             self._native_ready = ready
+ 
+     def _native_startup_tick(self):
+-        """Original 5 Hz fixed target; bounded enable/arrival, no map dependency.
+-
+-        Called only with _command_lock held. The native sender and external
+-        JointCtrl callback therefore cannot overlap at handoff.
+-        """
++        """Observe original auto-enable/bridge startup; never generate motion."""
+         if not self._native_pending() or self._command_latched:
+             return
+-        now = time.monotonic()
+-        motor_diagnostics = {} if self._native_last_target is None else None
+-        motor_fresh, motors_enabled, motor_deadline = self._motor_feedback_sample(motor_diagnostics)
+-        joint_fresh = self._feedback_fresh()
+-        status, status_stamp, _, status_fresh, status_deadline = self._arm_status_sample()
+-        healthy = (joint_fresh and status_fresh and status.arm_status == 0 and
+-                   status.err_code == 0 and motor_fresh)
+-        if self.block_ctrl_flag:
+-            self._stop_commands('native startup blocked')
+-            return
+-        if not healthy:
+-            self._native_ready = False
+-            self._native_settled_since = None
+-            if self._native_started is not None:
+-                wall = time.time()
+-                # Preserve the failed checks and real source ages so a status
+-                # fault is distinguishable from receive or publish delay.
+-                self._stop_commands(
+-                    'native startup joint/status/motor feedback unavailable; '
+-                    'joint_fresh=%s source_age_ms=%.3f publish_age_ms=%.3f; '
+-                    'status_fresh=%s source_age_ms=%.3f arm_status=%s err_code=%s '
+-                    'valid_for_ms=%s; motor_fresh=%s enabled=%s valid_for_ms=%s' % (
+-                        joint_fresh, (wall-self._feedback_stamp)*1000,
+-                        (time.monotonic()-self._feedback_monotonic)*1000,
+-                        status_fresh, (wall-status_stamp)*1000,
+-                        status.arm_status, status.err_code,
+-                        '%.3f' % ((status_deadline-wall)*1000) if status_deadline > 0 else 'unknown',
+-                        motor_fresh, motors_enabled,
+-                        '%.3f' % ((motor_deadline-wall)*1000) if motor_deadline > 0 else 'unknown'))
+-            else:
+-                rospy.logwarn_throttle(2.0,
+-                    'Piper native startup waiting; no enable sent: joint_fresh=%s, '
+-                    'status_fresh=%s arm_status=%s err_code=%s, motor_fresh=%s. '
+-                    'A prior stop is never reset automatically.',
+-                    joint_fresh, status_fresh, status.arm_status, status.err_code, motor_fresh)
+-            return
+-        if self._native_started is None:
+-            rospy.loginfo(
+-                'Piper native startup before enable: q_deg=%s enabled=%s '
+-                'ctrl_mode=%s mode_feed=%s motion_status=%s; target_counts=%s.',
+-                tuple(round(math.degrees(q), 3) for q in self._feedback_position),
+-                motor_diagnostics['enabled'], status.ctrl_mode, status.mode_feedback,
+-                status.motion_status, self._native_target_counts)
+-            self._native_started = now
+-            self._native_last_enable = now
+-            # Reject queued external plans from before this startup request;
+-            # native target sends must never refresh this external timestamp.
+-            self._last_command_stamp = time.time()
+-            self.__enable_flag = True
+-            self.piper.EnableArm(7)
+-            rospy.loginfo('Piper native startup enable sent; motor timeout 10s, standby timeout 60s.')
+-        if not self._native_motors_seen:
+-            if now - self._native_started >= 10.0:
+-                self._stop_commands('native startup motor enable timeout')
+-                return
+-            if motors_enabled:
+-                self._native_motors_seen = True
+-            else:
+-                if now - self._native_last_enable >= 1.0:
+-                    self._native_last_enable = now
+-                    self.piper.EnableArm(7)
+-                    rospy.loginfo('Piper native startup waiting for all motors: '
+-                                  'elapsed=%.3fs enabled=%s; no standby target sent yet.',
+-                                  now - self._native_started, motor_diagnostics['enabled'])
+-                return
+-        elif not motors_enabled:
+-            self._stop_commands('native startup motor enable dropped')
+-            return
++        self._native_motors_seen = self.__enable_flag and self._motors_enabled_fresh()
+         self._refresh_native_ready()
+-        # The arrival deadline ends at first settled arrival. A later readiness
+-        # withdrawal while waiting for MPPI must not restart that old deadline.
+-        if not self._native_standby_reached and now - self._native_started >= 60.0:
+-            self._stop_commands('native startup standby timeout')
+-            return
+-        if self._native_last_target is None or now - self._native_last_target >= .20:
+-            self.piper.MotionCtrl_2(0x01, 0x01, 15, 0)
+-            self.piper.JointCtrl(*self._native_target_counts)
+-            if self._native_last_target is None:
+-                rospy.loginfo('Piper native startup first target sent: elapsed=%.3fs '
+-                              'MOVEJ speed=15 target_counts=%s; all six motors enabled.',
+-                              time.monotonic() - self._native_started,
+-                              self._native_target_counts)
+-            self._native_last_target = now
+-        if not self._native_standby_reached:
+-            rospy.loginfo_throttle(
+-                2.0, 'Piper native startup feedback: elapsed=%.3fs q_deg=%s '
+-                'ctrl_mode=%s mode_feed=%s motion_status=%s arm_status=%s err_code=%s.',
+-                now - self._native_started,
+-                tuple(round(math.degrees(q), 3) for q in self._feedback_position),
+-                status.ctrl_mode, status.mode_feedback, status.motion_status,
+-                status.arm_status, status.err_code)
+ 
+     def Pubilsh(self):
+         """机械臂消息发布"""
+@@ -378,17 +286,21 @@
+         elapsed_time_flag = False
+         while not rospy.is_shutdown():
+             if(self.auto_enable):
+-                while not (enable_flag):
++                while not enable_flag and self.auto_enable and not rospy.is_shutdown():
+                     elapsed_time = time.time() - start_time
+                     print("--------------------")
+                     enable_states = self.GetMotorEnableStates()
+                     enable_flag = len(enable_states) == 6 and all(enable_states)
+                     print("电机使能状态:", enable_states)
+                     print("使能状态:", enable_flag)
+-                    self.piper.EnableArm(7)
+-                    self.piper.GripperCtrl(0, 1000, 0x01, 0)
+-                    if(enable_flag):
+-                        self.__enable_flag = True
++                    with self._command_lock:
++                        if self._command_latched or not self.auto_enable:
++                            break
++                        self.piper.EnableArm(7)
++                        if self.gripper_exist:
++                            self.piper.GripperCtrl(0, 1000, 0x01, 0)
++                        if(enable_flag):
++                            self.__enable_flag = True
+                     print("--------------------")
+                     # 检查是否超过超时时间
+                     if elapsed_time > timeout:
+@@ -420,30 +332,31 @@
+             rate.sleep()
+ 
+     def MaintainAutoEnable(self):
+-        if not self.auto_enable or not self.auto_reenable_on_drop:
+-            return
+-
+-        enable_states = self.GetMotorEnableStates()
+-        all_enabled = len(enable_states) == 6 and all(enable_states)
+-        if all_enabled:
+-            if not self.__enable_flag:
+-                rospy.logwarn("Piper all motors enabled again: %s", enable_states)
+-            self.__enable_flag = True
+-            return
+-
+-        self.__enable_flag = False
+-        now = rospy.Time.now()
+-        if (now - self._last_enable_retry_time).to_sec() < self.auto_reenable_interval:
+-            return
+-
+-        self._last_enable_retry_time = now
+-        rospy.logwarn_throttle(
+-            2.0,
+-            "Piper motor enable drop detected: %s. Pause joint commands and retry EnableArm(7).",
+-            enable_states)
+-        self.piper.EnableArm(7)
+-        if self.gripper_exist:
+-            self.piper.GripperCtrl(0, 1000, 0x01, 0)
++        with self._command_lock:
++            if self._command_latched or not self.auto_enable or not self.auto_reenable_on_drop:
++                return
++
++            enable_states = self.GetMotorEnableStates()
++            all_enabled = len(enable_states) == 6 and all(enable_states)
++            if all_enabled:
++                if not self.__enable_flag:
++                    rospy.logwarn("Piper all motors enabled again: %s", enable_states)
++                self.__enable_flag = True
++                return
++
++            self.__enable_flag = False
++            now = rospy.Time.now()
++            if (now - self._last_enable_retry_time).to_sec() < self.auto_reenable_interval:
++                return
++
++            self._last_enable_retry_time = now
++            rospy.logwarn_throttle(
++                2.0,
++                "Piper motor enable drop detected: %s. Pause joint commands and retry EnableArm(7).",
++                enable_states)
++            self.piper.EnableArm(7)
++            if self.gripper_exist:
++                self.piper.GripperCtrl(0, 1000, 0x01, 0)
+ 
+     def GetMotorEnableStates(self):
+         # The SDK getter also computes six unused FPS values under locks.
+@@ -677,6 +590,7 @@
+             if self._command_latched:
+                 return
+             self._command_latched = True
++            self.auto_enable = self.auto_reenable_on_drop = False
+             self.__enable_flag = False
+             self._command_deadline = None
+             self._native_ready = False
+@@ -816,6 +730,9 @@
+     def SubJointThread(self):
+         """机械臂关节订阅"""
+         rospy.Subscriber('joint_ctrl_single', JointState, self.joint_callback, queue_size=1, tcp_nodelay=True)
++        if self.native_startup_to_standby:
++            rospy.Subscriber('/piper_startup_joint_ctrl', JointState, self.joint_callback,
++                             callback_args=True, queue_size=1, tcp_nodelay=True)
+         rospy.spin()
+     
+     def SubEnableThread(self):
+@@ -858,22 +775,24 @@
+                     self.piper.GripperCtrl(abs(gripper), 1000, 0x01, 0)
+                 self.piper.MotionCtrl_2(0x01, 0x00, self.fixed_vel)
+     
+-    def joint_callback(self, joint_data):
++    def joint_callback(self, joint_data, native_startup=False):
+         """机械臂关节角回调函数（固定速度核心逻辑）"""
+         with self._command_lock:
+             try:
+-                self._joint_command(joint_data)
++                self._joint_command(joint_data, native_startup=native_startup)
+             except Exception as exc:
+                 rospy.logerr('Piper joint command failed: %s', exc)
+                 if self.command_timeout > 0:
+                     self._stop_commands('joint command/send failed')
+ 
+-    def _joint_command(self, joint_data):
++    def _joint_command(self, joint_data, native_startup=False):
++        if native_startup and not self._native_pending():
++            return  # Includes queued bridge messages after permanent MPPI handoff.
+         if self.command_timeout > 0:
+             self._check_command_timeout()
+             if self._command_latched:
+                 return
+-            if self._native_pending() and not self._native_ready:
++            if not native_startup and self._native_pending() and not self._native_ready:
+                 return
+         if (len(joint_data.position) not in (6, 7) or
+                 not all(math.isfinite(q) for q in joint_data.position) or
+@@ -887,11 +806,18 @@
+         if self.command_timeout > 0:
+             stamp = joint_data.header.stamp.to_sec()
+             age = time.time() - stamp
+-            if (not math.isfinite(stamp) or stamp <= self._last_command_stamp or
++            last_stamp = self._native_command_stamp if native_startup else self._last_command_stamp
++            if (not math.isfinite(stamp) or stamp <= last_stamp or
+                     not 0 <= age < self.max_command_age or
+                     not self._motors_enabled_fresh()):
+                 return
+-            if any(abs(q-current) > .03+1e-9 for q, current in
++            if native_startup:
++                # The original bridge alone may request the original large
++                # standby move. It cannot submit navigation or arbitrary poses.
++                target_counts = tuple(round(q * 180000.0 / math.pi) for q in joint_data.position[:6])
++                if target_counts != self._native_target_counts or not self._arm_status_normal_fresh():
++                    return
++            elif any(abs(q-current) > .03+1e-9 for q, current in
+                    zip(joint_data.position[:6], self._feedback_position)):
+                 rospy.logwarn_throttle(2.0, 'Reject Piper joint target exceeding 0.03 rad feedback lead.')
+                 return
+@@ -913,11 +839,15 @@
+             else: joint_6 = None
+             if(self.GetEnableFlag()):
+                 # 关节角度控制时，使用可配置的固定速度参数
+-                self.piper.MotionCtrl_2(0x01, 0x01, self.fixed_vel, 0)
++                self.piper.MotionCtrl_2(0x01, 0x01, 15 if native_startup else self.fixed_vel, 0)
+                 
+                 # 给定关节角位置
+                 self.piper.JointCtrl(joint_0, joint_1, joint_2, joint_3, joint_4, joint_5)
+-                if self.command_timeout > 0:
++                if native_startup:
++                    if self._native_command_stamp == 0.0:
++                        rospy.loginfo('Piper original bridge standby target sent; MOVEJ speed=15.')
++                    self._native_command_stamp = stamp
++                elif self.command_timeout > 0:
+                     # Commit only after the SDK send succeeds. Preserve the
+                     # pre-send age limit rather than extending it by CAN time.
+                     self._command_deadline = command_deadline
+@@ -927,6 +857,7 @@
+                         return
+                     if self._native_pending():
+                         self._native_handoff = True
++                        self.auto_enable = self.auto_reenable_on_drop = False
+                         self._native_ready = False
+                         self._native_settled_since = None
+                         rospy.loginfo('Piper native startup handed off to leased MPPI commands.')
+
+--- before/src/mm_remani/launch/exp0_real.launch
++++ after/src/mm_remani/launch/exp0_real.launch
+@@ -188,8 +188,8 @@
+        ========================================================= -->
+   <rosparam file="$(find mm_remani)/config/real_speed.yaml" command="load" />
+   <group if="$(arg use_mppi)">
+-    <!-- Preserve the original standby target. Piper performs native startup;
+-         MPPI takes over only after measured arrival and driver acknowledgement. -->
++    <!-- Original controller/bridge performs standby motion. MPPI takes over
++         only after measured arrival and driver acknowledgement. -->
+     <param name="/mm_controller_node/fsm/capture_startup_standby" value="false" type="bool"/>
+   </group>
+ 
+@@ -333,8 +333,10 @@
+        对接实车 Piper 机械臂的指令桥梁（REMANI 规划器 -> Piper 真实驱动）
+        此节点会将规划器的 joint_cmd 包装为您源码中 piper 期待的 joint_ctrl_single
+        ========================================================= -->
+-  <node unless="$(arg use_mppi)" pkg="mm_controller" type="joint_cmd_bridge.py" name="joint_cmd_bridge" output="screen">
++  <node pkg="mm_controller" type="joint_cmd_bridge.py" name="joint_cmd_bridge" output="screen">
+     <param name="execute" value="$(arg hardware_enabled)" type="bool"/>
++    <!-- The driver closes this startup input permanently on MPPI handoff. -->
++    <remap from="/joint_ctrl_single" to="$(eval '/piper_startup_joint_ctrl' if arg('use_mppi') else '/joint_ctrl_single')"/>
+     <param name="clamp_joint6" value="true" />
+     <param name="joint6_min" value="-0.35" />
+     <param name="joint6_max" value="0.35" />
+@@ -346,10 +348,10 @@
+     <arg name="can_port" value="$(arg can_port)" />
+     <arg name="fixed_vel" value="$(eval 1 if arg('use_mppi') else 15)" />
+     <arg name="native_startup_to_standby" value="$(arg use_mppi)" />
+-    <arg name="auto_enable" value="$(eval not arg('use_mppi'))" />
+-    <arg name="auto_reenable_on_drop" value="$(eval not arg('use_mppi'))" />
++    <arg name="auto_enable" value="true" />
++    <arg name="auto_reenable_on_drop" value="true" />
+     <arg name="auto_reenable_interval" value="1.0" />
+-    <arg name="gripper_exist" value="$(eval not arg('use_mppi'))" />
++    <arg name="gripper_exist" value="true" />
+     <arg name="command_timeout" value="$(eval 0.30 if arg('use_mppi') else 0.0)" />
+     <arg name="max_command_age" value="$(eval 0.30 if arg('use_mppi') else 0.0)" />
+   </include>
+
+--- before/src/mm_remani/scripts/whole_body_mppi.py
++++ after/src/mm_remani/scripts/whole_body_mppi.py
+@@ -442,7 +442,7 @@
+                 fresh(self.execution_stamp, now) and now < self.execution_valid_until)
+ 
+     def native_startup_gate(self, now):
+-        """The driver owns native startup; this node only checks its handoff.
++        """The original controller/bridge moves the arm; the driver gates handoff.
+ 
+         No map or MPPI solve is needed while the driver moves to standby.
+         The first MPPI command still receives normal map/geometry validation;
+
+--- before/src/mm_remani/test/test_piper_feedback_command.py
++++ after/src/mm_remani/test/test_piper_feedback_command.py
+@@ -18,6 +18,10 @@
+ class Stamp:
+     def __init__(self, value=0): self.value = value
+     def to_sec(self): return self.value
++    def is_zero(self): return self.value == 0
++    def __sub__(self, other): return Stamp(self.value - other.value)
++    def __lt__(self, other): return self.value < other.value
++    def __le__(self, other): return self.value <= other.value
+     @classmethod
+     def from_sec(cls, value): return cls(value)
+     @classmethod
+@@ -69,6 +73,7 @@
+         self.calls.append(('stop',a))
+         if self.fail_stop: raise RuntimeError('fake stop TX error')
+     def MotionCtrl_2(self,*a): self.calls.append(('mode',a))
++    def GripperCtrl(self,*a): self.calls.append(('gripper',a))
+     def JointCtrl(self,*a):
+         self.calls.append(('joint',a))
+         if self.fail_joint: raise RuntimeError('fake TX error')
+@@ -84,7 +89,7 @@
+     n._feedback_stamp=0.; n._feedback_monotonic=0.; n._feedback_position=None
+     n._feedback_velocity=None
+     n.native_startup_to_standby=False; n._native_handoff=False; n._native_ready=False
+-    n._native_started=None; n._native_last_enable=None; n._native_last_target=None
++    n._native_command_stamp=0.; n.auto_enable=False; n.auto_reenable_on_drop=False
+     n._native_settled_since=None; n._native_motors_seen=False
+     n._native_target=None; n._native_target_counts=None
+     n._last_joint_counts=(0,0,0); n._previous_feedback=None
+@@ -564,13 +569,14 @@
+                  '/robot_description':robot_description}
+ rospy.get_param = lambda key,*default: native_params[key] if key in native_params else default[0]
+ def native_node():
+-    n=node(); n._configure_native_startup(); return n
++    n=node(); n._configure_native_startup(); n.auto_enable=True; n.auto_reenable_on_drop=True; return n
+ def native_feed(n, dt=.10, at_target=True, enabled=True, status=True):
+     clock.value+=dt
+     feed(n,raw=n._native_target_counts if at_target else 0,enabled=enabled,status=status)
+     n._check_command_timeout()
+ def native_ready():
+-    n=native_node(); feed(n,enabled=False); n._check_command_timeout()
++    n=native_node(); n._C_PiperRosNode__enable_flag=True; feed(n)
++    n.joint_callback(command(n,q=n._native_target),native_startup=True)
+     for _ in range(8): native_feed(n)
+     assert n._native_ready and not n._command_latched
+     return n
+@@ -599,118 +605,117 @@
+     pass
+ checks.append('native target reads original 8-value config; finite/URDF/wrist/lease validation precedes CAN')
+ 
++# Startup observation cannot invent enable/target commands or expire a healthy
++# original startup after 60 seconds. Only the original bridge supplies motion.
+ n=native_node(); n._check_command_timeout(); clock.value+=100; n._check_command_timeout()
+-assert not n.piper.calls and n._native_started is None
+-feed(n,enabled=False); n._check_command_timeout()
+-assert [kind for kind,_ in n.piper.calls]==['enable'] and n._native_started==clock.time()
+-stamp=n._last_command_stamp
+-for _ in range(6): native_feed(n,at_target=False,enabled=False)
+-assert not n._command_latched and n._command_deadline is None
+-assert n._last_command_stamp==stamp and not n._native_ready
+-for _ in range(100):
+-    native_feed(n,at_target=False,enabled=False)
+-    if n._command_latched: break
+-assert n._command_latched and not n._native_motors_seen
+-assert 1 <= sum(k=='enable' for k,_ in n.piper.calls) <= 10
+-assert not any(k=='joint' for k,_ in n.piper.calls)
+-count=len(n.piper.calls); native_feed(n)
+-assert len(n.piper.calls)==count and not n._request_enable(True)
+-checks.append('native enable waits for real source input, retries at 1s, stops within 10s without command lease')
+-
+-n=native_node(); feed(n,enabled=False); n._check_command_timeout()
+-native_feed(n,at_target=False)
+-native_feed(n)  # Large change: real measured velocity prevents ready.
+-assert not n._native_ready and max(abs(v) for v in n._feedback_velocity)>.02
+-before=len(n.piper.calls); n.joint_callback(command(n,q=[.2]*6))
+-assert len(n.piper.calls)==before and not n._command_seen
+-send_times=[]; previous_count=sum(k=='joint' for k,_ in n.piper.calls)
+-for _ in range(24):
+-    native_feed(n,dt=.05)
+-    count=sum(k=='joint' for k,_ in n.piper.calls)
+-    if count>previous_count: send_times.append(clock.time())
+-    previous_count=count
+-assert n._native_ready and n._command_deadline is None
+-assert all(b-a>=.20-1e-10 for a,b in zip(send_times,send_times[1:]))
+-assert all(args[2]==15 for kind,args in n.piper.calls if kind=='mode')
+-assert all(args==n._native_target_counts for kind,args in n.piper.calls if kind=='joint')
+-n.PublishExecutionState(); state=n.execution_state_pub.messages[-1]
+-assert state.enabled and state.feedback_valid and not state.command_active
+-assert state.valid_until.to_sec()>clock.time() and n._last_command_stamp==1000.
+-checks.append('native target uses original speed15 at at most5Hz; motion/settling gates ready; no early external command')
+-
+-n=native_ready(); n.gripper_exist=True
+-native_feed(n)
+-assert n._feedback_velocity is not None and all(v==0 for v in n._feedback_velocity)
+-assert n._native_ready  # Gripper presence does not reset the six-arm velocity.
+-clock.value+=.05
+-raw=list(n._native_target_counts); raw[0]+=2000
+-feed(n,raw=raw); n.PublishExecutionState()
+-assert not n._native_ready and not n.execution_state_pub.messages[-1].enabled
+-count=len(n.piper.calls); n.joint_callback(command(n))
+-assert len(n.piper.calls)==count and not n._command_seen
+-for _ in range(8): native_feed(n)
+-assert n._native_ready
+-checks.append('native readiness uses true six-joint velocity and is withdrawn on pose drift before command entry')
+-
+-n=native_ready()
++assert not n.piper.calls and not n._command_latched
++n._C_PiperRosNode__enable_flag=True
++for _ in range(610): native_feed(n,at_target=False)
++assert not n.piper.calls and not n._command_latched and not n._native_ready
++checks.append('startup observer emits no enable/position/quick-stop and has no60s arrival timeout')
++
++n=native_node(); n._C_PiperRosNode__enable_flag=True; feed(n)
++msg=command(n,q=n._native_target); stamp=n._last_command_stamp
++n.joint_callback(msg)  # External MPPI input cannot perform the large startup move.
++assert not n.piper.calls
++n.joint_callback(msg,native_startup=True)
++assert [kind for kind,_ in n.piper.calls]==['mode','joint']
++assert n.piper.calls[0][1]==(1,1,15,0) and n.piper.calls[1][1]==n._native_target_counts
++assert n._last_command_stamp==stamp and not n._command_seen and n._command_deadline is None
++count=len(n.piper.calls)
++n.joint_callback(msg,native_startup=True)  # Replayed bridge source stamp.
++for bad in (command(n,stamp=clock.time()-.4,q=n._native_target),
++            command(n,stamp=clock.time()+.1,q=n._native_target),
++            command(n,q=[.2]*6),command(n,q=[0]*5),command(n,q=[float('nan')]*6)):
++    n.joint_callback(bad,native_startup=True)
++assert len(n.piper.calls)==count
++clock.value+=.2; feed(n); n.gripper_exist=True
++msg=command(n,q=list(n._native_target)+[.08]); msg.name=list(names)+['joint7']
++n.joint_callback(msg,native_startup=True)
++assert n.piper.calls[-1]==('gripper',(80000.0,1000,1,0))
++assert not n._native_ready and not n._native_handoff
++checks.append('original bridge alone sends exact standby at speed15 including gripper; invalid/replayed/arbitrary targets rejected')
++
++for fault in ('joint','motor','status','disabled','blocked'):
++    n=native_node(); n._C_PiperRosNode__enable_flag=True; feed(n)
++    clock.value+=.2
++    feed(n,pairs=() if fault=='joint' else (0,1,2),enabled=fault!='disabled',status=fault!='status')
++    if fault=='motor': n.piper._C_PiperInterface__fps_counter.last_time['ArmMotorDriverInfoLowSpd_6']-=.2
++    if fault=='blocked': n.block_ctrl_flag=True
++    n.joint_callback(command(n,q=n._native_target),native_startup=True)
++    assert not n.piper.calls and not n._native_ready, fault
++checks.append('original startup withholds new motion on stale/disabled feedback or block without a new timeout quick-stop')
++
++# Pass actual original bridge output into the actual driver callback.
++bridge_source=ROOT/'src/mm_controller/scripts/joint_cmd_bridge.py'
++bridge_namespace=dict(rospy=rospy, math=math, JointState=JointState)
++bridge_tree=ast.parse(bridge_source.read_text())
++exec(compile(ast.Module(body=[x for x in bridge_tree.body if isinstance(x,ast.ClassDef)],
++                       type_ignores=[]),str(bridge_source),'exec'),bridge_namespace)
++Bridge=bridge_namespace['JointBridge']; bridge=Bridge.__new__(Bridge)
++bridge.execute=True; bridge.pub=Pub(); bridge.gripper_val=.08
++bridge._last_pub=Stamp(); bridge._last_source_stamp=Stamp(); bridge._min_interval=Stamp(.2)
++bridge.clamp_joint6=True; bridge.joint6_min=-.35; bridge.joint6_max=.35; bridge.command_timeout=.25
++n=native_node(); n._C_PiperRosNode__enable_flag=True; n.gripper_exist=True
++for _ in range(25):
++    clock.value+=.05; feed(n)
++    message=NS(header=NS(stamp=Stamp.now()),joint_names=list(names),
++               desired=NS(positions=list(n._native_target),velocities=[0.]*6,effort=[0.]*6))
++    count=len(bridge.pub.messages); bridge.joint_cb(message)
++    if len(bridge.pub.messages)>count:
++        n.joint_callback(bridge.pub.messages[-1],native_startup=True)
++targets=[args for kind,args in n.piper.calls if kind=='joint']
++assert 4 <= len(targets) <= 7 and len(targets)==len(bridge.pub.messages)
++assert all(target==n._native_target_counts for target in targets)
++assert n.piper.calls[-1]==('gripper',(80000.0,500,1,0))
++assert not n._command_seen and not n._native_handoff
++checks.append('actual original bridge at5Hz carries controller standby, source stamp and gripper through driver without MPPI authority')
++
++n=native_ready(); assert n._native_standby_reached
++before=len(n.piper.calls)
+ for _ in range(1400): native_feed(n)
+-assert not n._command_latched and n._command_deadline is None
+-assert sum(k=='enable' for k,_ in n.piper.calls)==1
+-assert not n._command_seen and not n._native_handoff
+-n.PublishExecutionState(); state=n.execution_state_pub.messages[-1]
+-assert state.enabled and not state.command_active and state.valid_until.to_sec()>clock.time()
+-checks.append('ready arm holds its original target beyond 138s while awaiting MPPI without renewing an external lease')
+-
+-# Current handoff readiness can be withdrawn after first arrival. It must not
+-# retroactively turn a long perception wait into a failed startup arrival.
+-count=len(n.piper.calls)
++assert len(n.piper.calls)==before and not n._command_latched
++n.PublishExecutionState(); assert n.execution_state_pub.messages[-1].enabled
++assert not n.execution_state_pub.messages[-1].command_active
+ clock.value+=.1; feed(n,raw=n._native_target_counts)
+ n._feedback_velocity=(.025,0.,0.,0.,0.,0.)
+-n._check_command_timeout(); n.PublishExecutionState()
+-assert n._native_standby_reached and not n._native_ready and not n._command_latched
+-assert not n.execution_state_pub.messages[-1].enabled
+-n.joint_callback(command(n))
+-assert not n._native_handoff and not n._command_seen
+-assert all(kind=='joint' or kind=='mode' for kind,_ in n.piper.calls[count:])
+-native_feed(n); assert not n._native_ready
+-for _ in range(4): native_feed(n)
++n.PublishExecutionState()
++assert not n._native_ready and not n.execution_state_pub.messages[-1].enabled
++for _ in range(8): native_feed(n)
+ assert n._native_ready and not n._command_latched
+-checks.append('late settling drift withdraws handoff without reusing initial60s timeout, then settles again')
+-
+-n=native_ready(); old_stamp=n._last_command_stamp
+-for bad in (command(n,stamp=old_stamp),command(n,stamp=clock.time()+.1),command(n,q=[0]*5)):
+-    n.joint_callback(bad)
+-assert not n._native_handoff and not n._command_seen and n._command_deadline is None
++checks.append('measured arrival and settling authorize handoff; long wait is passive and readiness remains revocable')
++
++n=native_ready(); clock.value+=.01; feed(n,raw=n._native_target_counts)
++first=command(n); count=len(n.piper.calls)
++# A newer bridge message must not invalidate a pending, still-fresh MPPI solve.
+ clock.value+=.01; feed(n,raw=n._native_target_counts)
+-first=command(n); before=len(n.piper.calls)
++n.joint_callback(command(n,q=n._native_target),native_startup=True)
++assert n._last_command_stamp < first.header.stamp.to_sec()
+ n.joint_callback(first)
+ assert n._native_handoff and n._command_seen and not n._native_ready
+-assert [k for k,_ in n.piper.calls[before:]]==['mode','joint']
++assert not n.auto_enable and not n.auto_reenable_on_drop
+ assert n.piper.calls[-2][1][2]==n.fixed_vel==1
+-assert 0 < n._command_deadline-clock.time() <= .3
+-n.PublishExecutionState(); state=n.execution_state_pub.messages[-1]
+-assert state.command_active and state.enabled and state.feedback_valid
+-for _ in range(2): native_feed(n)
+-assert len(n.piper.calls)==before+2  # Native sender is permanently gone.
+-native_feed(n,dt=.11)
+-assert not n._command_latched and n.GetEnableFlag() and n._native_handoff
+-assert n._command_deadline is None and len(n.piper.calls)==before+2
+-n.PublishExecutionState(); state=n.execution_state_pub.messages[-1]
+-assert state.enabled and state.feedback_valid and not state.command_active
+-count=len(n.piper.calls); native_feed(n)
+-assert len(n.piper.calls)==count  # Never resume the native fixed-target sender.
++count=len(n.piper.calls)
++# Both a queued startup command and a later fresh one stay silent after handoff.
++n.joint_callback(msg,native_startup=True)
++for _ in range(4): native_feed(n)
++n.joint_callback(command(n,q=n._native_target),native_startup=True)
++n.MaintainAutoEnable()
++assert len(n.piper.calls)==count and not n._command_latched and n._native_handoff
++assert n._command_deadline is None  # MPPI pause retains last bounded target.
+ n.joint_callback(command(n)); n.PublishExecutionState()
+ assert [kind for kind,_ in n.piper.calls[count:]]==['mode','joint']
+-assert n.execution_state_pub.messages[-1].command_active and n._native_handoff
+-checks.append('native handoff is permanent; external expiry holds without native fallback; a fresh external command resumes')
++assert n.execution_state_pub.messages[-1].command_active
++checks.append('atomic permanent handoff accepts older fresh MPPI solve; bridge and auto-reenable never resume after MPPI expiry')
+ 
+ n=native_ready(); clock.value+=.01; feed(n,raw=n._native_target_counts)
+ n.piper.fail_joint=True; n.joint_callback(command(n))
+ assert n._command_latched and not n._native_handoff and not n._command_seen
+-assert not n.execution_state_pub.messages[-1].command_active
++assert not n.auto_enable and not n.auto_reenable_on_drop
+ count=len(n.piper.calls); native_feed(n)
++n.joint_callback(command(n,q=n._native_target),native_startup=True); n.MaintainAutoEnable()
+ assert len(n.piper.calls)==count
+-checks.append('failed first external send locks stop, never acknowledges handoff or resumes native target sends')
++checks.append('failed first MPPI send locks stop without handoff, bridge fallback or automatic re-enable')
+ 
+ class FakeTransport:
+     class CAN_STATUS(Enum):
+@@ -730,6 +735,67 @@
+         except Exception:
+             return self.CAN_STATUS.SEND_MESSAGE_FAILED  # Installed SDK swallows the exception.
+         return self.CAN_STATUS.SEND_MESSAGE_SUCCESS
++
++# Exercise the real constructor and original auto-enable loop with inert
++# threads/transport. This checks ordering, not merely source-text presence.
++import contextlib
++import io
++saved_namespace = dict(namespace)
++saved_rospy = dict(vars(rospy))
++class InertThread:
++    def __init__(self, *args, **kwargs): pass
++    def start(self): pass
++for original_startup, guarded in ((True, True), (False, False), (False, True)):
++    clock.value = 1000.
++    params = dict(native_params, **{'~can_port':'can1', '~auto_enable':True,
++        '~native_startup_to_standby':original_startup,
++        '~command_timeout':.3 if guarded else 0., '~gripper_exist':True})
++    sdk = SDK(); sdk._C_PiperInterface__arm_can = FakeTransport()
++    sdk.ConnectPort = lambda **kwargs: sdk.calls.append(('connect', kwargs))
++    rospy.get_param = lambda key,*default: params[key] if key in params else default[0]
++    rospy.has_param = lambda key: key in params
++    rospy.init_node = lambda *a,**kw: None
++    rospy.resolve_name = lambda name: name
++    rospy.Publisher = lambda *a,**kw: Pub()
++    rospy.Service = lambda *a,**kw: None
++    rospy.on_shutdown = lambda *a: None
++    namespace.update(check_ros_master=lambda:None,
++        C_PiperInterface=lambda **kwargs:sdk, FeedbackDispatch=lambda value:None,
++        threading=NS(RLock=threading.RLock, Event=threading.Event, Thread=InertThread))
++    for name in ('Enable','Gripper','Trigger','GoZero','SetBool','UInt8MultiArray',
++                 'PoseStamped','PiperEulerPose'):
++        namespace[name] = NS
++    constructed = Node()
++    if guarded and not original_startup:
++        assert sdk.calls==[('connect',{'piper_init':False})]
++        assert not constructed.auto_enable
++        continue
++    assert sdk.calls==[('connect',{}), ('mode',(1,1,30,0))]
++    assert constructed.auto_enable
++    done=[False]
++    rospy.is_shutdown=lambda:done[0]
++    rospy.Rate=lambda rate:NS(sleep=lambda:done.__setitem__(0,True))
++    def sleep_and_receive(seconds):
++        clock.value+=seconds; feed(constructed)
++    clock.sleep=sleep_and_receive
++    constructed.PublishMotorEnableStates=lambda:None
++    constructed.PublishArmState=lambda:None
++    constructed.PublishArmEndPose=lambda:None
++    with contextlib.redirect_stdout(io.StringIO()):
++        constructed.Pubilsh()
++    assert constructed.GetEnableFlag()
++    assert [kind for kind,_ in sdk.calls][:4]==['connect','mode','enable','gripper']
++    assert not any(kind in ('joint','stop') for kind,_ in sdk.calls)
++    if original_startup:
++        constructed._native_startup_tick()
++        assert not any(kind in ('joint','stop') for kind,_ in sdk.calls)
++        clock.value+=.01; feed(constructed)
++        constructed.joint_callback(command(constructed,q=constructed._native_target),native_startup=True)
++        assert sdk.calls[-2:]==[('mode',(1,1,15,0)),('joint',constructed._native_target_counts)]
++namespace.clear(); namespace.update(saved_namespace)
++vars(rospy).clear(); vars(rospy).update(saved_rospy)
++del clock.sleep
++checks.append('real constructor+auto-enable preserve SDK init -> MOVEJ30 -> enable/gripper -> original bridge MOVEJ15; lease-only mode stays explicit')
+ 
+ n=node(); transport=FakeTransport()
+ n.piper._C_PiperInterface__arm_can=transport
+@@ -773,27 +839,19 @@
+ assert not n.execution_state_pub.messages[-1].command_active
+ checks.append('first external CAN send cannot acknowledge stale feedback or extend the pre-send deadline')
+ 
++# After handoff the existing source freshness / motor fault stop still applies.
+ for lost in ('joint','status','motor','disabled'):
+-    n=native_ready()
+-    for _ in range(610): native_feed(n)
++    n=native_ready(); clock.value+=.01; feed(n,raw=n._native_target_counts)
++    n.joint_callback(command(n)); assert n._native_handoff
+     clock.value+=.16
+     feed(n,pairs=() if lost=='joint' else (0,1,2),raw=n._native_target_counts,
+          enabled=lost!='disabled',status=lost!='status')
+-    if lost=='motor':
+-        n.piper._C_PiperInterface__fps_counter.last_time['ArmMotorDriverInfoLowSpd_6']-=.2
++    if lost=='motor': n.piper._C_PiperInterface__fps_counter.last_time['ArmMotorDriverInfoLowSpd_6']-=.2
+     n._check_command_timeout()
+     assert n._command_latched and not n._native_ready, lost
+-    assert sum(k=='enable' for k,_ in n.piper.calls)==1, lost
+-    assert not n.execution_state_pub.messages[-1].command_active
+-checks.append('native pre-handoff still stops on stale joint/status/any motor or dropped motor enable, with no auto re-enable')
+-
+-n=native_node(); feed(n,enabled=False); n._check_command_timeout()
+-for _ in range(610):
+-    native_feed(n,at_target=False)
+-    if n._command_latched: break
+-assert n._command_latched and 60 <= clock.time()-n._native_started < 60.2
+-assert sum(k=='enable' for k,_ in n.piper.calls)==1
+-checks.append('unreached standby stops at finite60s measured from first enable request')
++    count=len(n.piper.calls); n.MaintainAutoEnable()
++    assert len(n.piper.calls)==count and not n.execution_state_pub.messages[-1].enabled
++checks.append('after MPPI handoff source/motor faults still stop; original auto-enable cannot restart a latched stop')
+ 
+ n=node(); feed(n); assert n._request_enable(True)
+ n.PublishExecutionState(); assert not n.execution_state_pub.messages[-1].command_active
+
+--- before/src/mm_remani/test/test_original_arm_startup_launch.py
++++ after/src/mm_remani/test/test_original_arm_startup_launch.py
+@@ -0,0 +1,75 @@
++"""Parse the real launch only; never start ROS nodes, SDK, CAN or motors."""
++from pathlib import Path
++import unittest
++
++from roslaunch.config import ROSLaunchConfig
++from roslaunch.xmlloader import XmlLoader
++
++
++LAUNCH = Path(__file__).resolve().parents[1] / 'launch' / 'exp0_real.launch'
++
++
++class OriginalArmStartupLaunchTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.configurations = {}
++        for use_mppi in (False, True):
++            for hardware in (False, True):
++                config = ROSLaunchConfig()
++                # XmlLoader resolves XML and parameters. It does not launch
++                # processes or connect to a master, even with hardware=true.
++                XmlLoader().load(str(LAUNCH), config, argv=[
++                    'use_mppi:=' + str(use_mppi).lower(),
++                    'hardware_enabled:=' + str(hardware).lower(),
++                ], verbose=False)
++                cls.configurations[use_mppi, hardware] = config
++
++    def test_original_bridge_and_single_driver_are_present_in_each_mode(self):
++        for (use_mppi, hardware), config in self.configurations.items():
++            with self.subTest(use_mppi=use_mppi, hardware=hardware):
++                bridges = [n for n in config.nodes
++                           if n.package == 'mm_controller' and n.type == 'joint_cmd_bridge.py']
++                drivers = [n for n in config.nodes
++                           if n.package == 'piper' and n.type == 'piper_ctrl_single_node.py']
++                self.assertEqual(len(bridges), 1)
++                self.assertEqual(len(drivers), int(hardware))
++                self.assertIs(config.params['/joint_cmd_bridge/execute'].value, hardware)
++                remaps = dict(bridges[0].remap_args)
++                self.assertEqual(remaps.get('/joint_ctrl_single', '/joint_ctrl_single'),
++                                 '/piper_startup_joint_ctrl' if use_mppi else '/joint_ctrl_single')
++
++    def test_original_enable_and_standby_with_separate_mppi_execution_limits(self):
++        for use_mppi in (False, True):
++            with self.subTest(use_mppi=use_mppi):
++                config = self.configurations[use_mppi, True]
++                prefix = '/piper_ctrl_single_node/'
++                expected = {
++                    'can_port': 'can1',
++                    'auto_enable': True,
++                    'auto_reenable_on_drop': True,
++                    'gripper_exist': True,
++                    'native_startup_to_standby': use_mppi,
++                    'fixed_vel': 1 if use_mppi else 15,
++                    'command_timeout': .30 if use_mppi else 0.,
++                }
++                for name, value in expected.items():
++                    self.assertEqual(config.params[prefix + name].value, value, name)
++
++    def test_mppi_is_the_only_post_startup_command_path(self):
++        for (use_mppi, hardware), config in self.configurations.items():
++            with self.subTest(use_mppi=use_mppi, hardware=hardware):
++                nodes = [n for n in config.nodes
++                         if n.package == 'mm_remani' and n.type == 'whole_body_mppi.py']
++                self.assertEqual(len(nodes), int(use_mppi))
++                if use_mppi:
++                    self.assertIs(config.params['/whole_body_mppi/execute'].value, hardware)
++                    self.assertIs(config.params['/whole_body_mppi/native_arm_startup'].value, True)
++                    remaps = dict(nodes[0].remap_args)
++                    self.assertEqual(remaps.get('/joint_ctrl_single', '/joint_ctrl_single'),
++                                     '/joint_ctrl_single')
++                self.assertIs(config.params['/mm_controller_node/fsm/capture_startup_standby'].value,
++                              False)
++
++
++if __name__ == '__main__':
++    unittest.main()

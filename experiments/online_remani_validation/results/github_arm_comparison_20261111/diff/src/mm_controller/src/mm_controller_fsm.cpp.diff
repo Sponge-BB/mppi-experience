@@ -1,0 +1,50 @@
+--- github/src/mm_controller/src/mm_controller_fsm.cpp
++++ current/src/mm_controller/src/mm_controller_fsm.cpp
+@@ -125,7 +125,14 @@
+ void MMControllerFSM::process(){
+ 	// return;
+ 	ros::Time now_time = ros::Time::now();
+-	if(!state_data.have_car_ || !state_data.have_mani_) return;
++	if(!state_is_received(now_time)){
++		// A feedback failure is not an ordinary reference pause. Do not keep
++		// publishing an old position goal with a new command timestamp.
++		virtual_time_scale_ = 0.0;
++		last_virtual_clock_stamp_ = now_time;
++		ROS_WARN_THROTTLE(1.0, "[MMctrl] Execution feedback unavailable/stale; suppressing commands.");
++		return;
++	}
+ 	syncTrajectoryClock(now_time);
+ 
+ 	static bool is_first_time = true;
+@@ -270,8 +277,9 @@
+ }
+ 
+ bool MMControllerFSM::state_is_received(const ros::Time &now_time){
+-	return (now_time - state_data.odom_rcv_stamp).toSec() < odom_timeout_ &&
+-	       (now_time - state_data.joint_rcv_stamp).toSec() < odom_timeout_;
++	return state_data.have_car_ && state_data.have_mani_ &&
++	       State_Data_t::sourceFresh(state_data.odom_source_stamp, now_time, odom_timeout_) &&
++	       State_Data_t::sourceFresh(state_data.joint_source_stamp, now_time, arm_tracking_joint_timeout_);
+ }
+ 
+ void MMControllerFSM::safetySpeedLimitCallback(const std_msgs::Float64::ConstPtr &msg){
+@@ -349,8 +357,7 @@
+ 	double target_scale = 1.0;
+ 	bool force_freeze = false;
+ 	const bool odom_fresh =
+-		!state_data.odom_rcv_stamp.isZero() &&
+-		(now - state_data.odom_rcv_stamp).toSec() <= odom_timeout_;
++		state_data.have_car_ && State_Data_t::sourceFresh(state_data.odom_source_stamp, now, odom_timeout_);
+ 	if(!odom_fresh){
+ 		force_freeze = true;
+ 		ROS_ERROR_THROTTLE(1.0, "[MMctrl] Odom stale; freezing trajectory clock.");
+@@ -448,8 +455,7 @@
+ 
+ 	const bool joint_fresh =
+ 		state_data.have_mani_ &&
+-		!state_data.joint_rcv_stamp.isZero() &&
+-		(now - state_data.joint_rcv_stamp).toSec() <= arm_tracking_joint_timeout_;
++		State_Data_t::sourceFresh(state_data.joint_source_stamp, now, arm_tracking_joint_timeout_);
+ 	if(!joint_fresh){
+ 		force_freeze = true;
+ 		ROS_ERROR_THROTTLE(1.0, "[MMctrl] Joint state stale; freezing trajectory clock.");

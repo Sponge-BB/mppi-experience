@@ -1,0 +1,39 @@
+{
+  "baseline_before_this_turn": "20261116-122205-before-moving-handoff",
+  "completed_runtime_fix_rounds": [
+    {
+      "version": "20261116-123923-moving-handoff",
+      "rollback_parent": "20261116-122205-before-moving-handoff",
+      "purpose": "MPPI移动动态修复统一生效时刻、提前交付及旧参考等待段验收",
+      "hardware_validation": false
+    },
+    {
+      "version": "20261116-125002-feedback-phase",
+      "rollback_parent": "20261116-123949-before-feedback-phase",
+      "purpose": "慢层独立接收最新反馈，未知执行相位时等待且不消耗重规划预算，避免使用错误墙钟相位判断碰撞和到达",
+      "hardware_validation": false
+    },
+    {
+      "version": "20261116-125246-map-stop-recovery",
+      "rollback_parent": "20261116-125002-before-map-stop-recovery",
+      "purpose": "将地图碰撞紧急停车接入既有保留目标恢复流程，避免瞬间五次普通规划失败丢弃导航目标",
+      "hardware_validation": false
+    }
+  ],
+  "current_diagnostic_round": "20261116-125246-before-tracker-reasons",
+  "causal_scope": {
+    "handoff": "Fix wait-until-activation followed by insufficient-publication-lead rejection; one frozen epoch and full validation.",
+    "feedback_phase": "Drain small latest-message queue on FSM thread, require finite fresh matching progress and keep retry budget while progress unknown.",
+    "recovery": "Route urgent non-dynamic map collision through existing accepted-goal recovery path.",
+    "dynamic_recognition": "Expose existing qualification predicates only; no threshold or classifier changes."
+  },
+  "not_resolved_by_this_round": [
+    "Origin of synchronized raw joint/execution-state feedback gaps: CAN vs SDK/driver/scheduling not established.",
+    "Reason recorded human never motion-qualified: old capture lacks exact tracker input and per-gate evidence.",
+    "Physical splice quality of MPPI/REMANI moving handoff and avoidance performance need hardware validation."
+  ],
+  "hardware_commands_sent": false,
+  "driver_sdk_firmware_changed": false,
+  "feedback_timeout_or_classifier_threshold_changed": false,
+  "build_policy": "Serial optimized builds in isolated directories, process-group memory guard; runtime SHA/RPATH/link verification and exact source/deploy version archive."
+}

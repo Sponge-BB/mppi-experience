@@ -1,0 +1,53 @@
+地图延迟最小修改建议（方案；本轮只读，未修改运行代码或部署文件）
+
+结论：第一轮地图修改只处理 ESDFWorker::computeDense 的“一个厚占用格触发全ROI负距离变换”。建议保留现有正距离、区域划分、双halo和代际提交，增加有界的未解析格索引，让负距离Y/X变换只计算实际还需要负距离的层和线；大范围厚障碍仍走原dense路径。它针对目标2的负向开销：可争取的阶段成本上限为中位40.10ms，保留完整Z扫描且新增探测/索引成本后，实际收益必然低于该上限，测得才算。目标1正向中位93.70ms、占compute总耗时90.03%，本改动不能声称解决目标1主耗时。不是重写增量地图，也不是直接放宽时效门限。此改动降低地图CPU成本，不替代已定位的软件关节反馈停顿修复。
+
+一、约200万格来自哪里
+1. src/mm_remani_planner/plan_env/src/grid_map.cpp:2219 GridMap::prepareIncrementalESDF：逐字节比较当前inflated occupancy与上次已提交occupancy，把所有变化格合成一个changed AABB；radius=ceil(.6/.05)+1=13。changed AABB先扩13格成为write范围，再扩13格成为input范围，并裁到地图边界。第一层用于覆盖所有受新增/删除障碍影响的输出；第二层用于保留这些输出求距离所需的输入源。原生障碍内部有符号距离为 resolution-distance_to_free，故正/负场都不能随意删除“+1”或其中一层halo。
+2. 实测目标1/2 changed中位1687/1587、最大2132/2023，均未触submitAsyncESDFUpdate在grid_map.cpp:2381附近的8192个changed索引上限。例obs605：changed_lo=(101,10,3), hi=(223,166,58)，input=(75,0,0)..(249,192,59)，175*193*60=2,026,500格。变化格数量少但空间跨度大，不能按“只有千余个变化”推断输入小。
+3. esdf_worker.cpp:740 ESDFWorker::compute 已存在分块；setRegionGeometry(:117)为每块分别生成两层halo，遍历每个轴的非空切点(:785–833)，只接受含重复halo后至少省15%工作量的划分(:821)，最多8块；最终不足2块或总格数不省15%则computeDense(:850)。本次所有commit regions=1、compute_cells=input_cells。修改8192上限没有针对性；直接降低15%门槛可能用更多重复halo与复制换极小收益。没有证据表明这里只缺一个enable开关。
+
+二、负距离完整回退的准确触发
+esdf_worker.cpp:1026–1087：positive Z/Y/X完成后，near_free仅枚举欧氏半径2格内32个整点偏移，按平方距离1/2/3/4排列。任一occupied在不可变ROI内找不到free，unresolved=true，其他探测提前退出，随后对整个输入ROI执行negative Z、Y、X三轴变换。ROI之外不能当free。
+目标1回退2/284；目标2为1156/1156。目标2negative三轴合计p50=40.10ms、p95=64.34ms、max=100.12ms，占全部compute累计时间36.16%。其compute p50/p95=110.94/171.01ms。日志没有未解析格数量/分布，不能声称把探测半径2直接调成3必然解决目标2。
+
+三、推荐具体改法——同一computeDense函数内的有界负距离路径
+1. 近邻探测保留现有32个偏移和顺序。找到free的occupied仍把精确平方距离写入tmp_buffer1_；找不到的格记为未解析，并收集索引，最多8192个（64KiB的size_t数组）。超限立即选择原完整negative EDT，不为此建立新地图、KD-tree或整张占用副本。
+2. 对未解析索引排序分组，得到其Z层集合与(Y,Z)线集合。首版只在所需Z层数<=nz/2且所需(Y,Z)线数<=ny*nz/2时使用部分路径；否则走原完整路径。这是可回退的计算成本选择，不改变距离语义。附加索引/分组内存控制在0.5MiB以内。
+3. 选中部分路径后，先把已由near_free精确解决的占用格应用同一公式 += -resolution*sqrt(d2)+resolution；这一阶段结束后才允许覆盖tmp_buffer1_。空闲格负距离为0，无需修改。
+4. negative Z第一遍仍处理所有(X,Y)列，保留完整ROI内全部free源；不能只保留未解析格附近的源。
+5. negative Y第二遍只遍历“未解析格出现的Z层”，但每个所需Z层仍遍历全部X、每条Y线仍计算完整长度，以保留最终X变换所需的所有候选。
+6. negative X第三遍只遍历“含未解析格的(Y,Z)线”，每条线仍读取全部X候选并沿完整X长度执行原fillDistanceTransform；仅向本线未解析X位置写回负距离。已解决格不得再次减负距离。
+7. 每个parallelFor仍保留既有取消检查；所有部分结果仍只存在私有ESDFResult，整代计算成功后才发布。超限/收益不足的dense选择必须在修改已解决格之前完成，防止回退时重复应用负距离。
+8. 运行逻辑改动集中在esdf_worker.cpp的computeDense。测试扩展test_esdf_worker.cpp。可增加少量结果/日志标量（unresolved_count、negative_mode、negative_y_lines、negative_x_lines）以验证实际命中，不能把旧negative_fallbacks=1直接解释为仍全ROI三轴。
+
+正确性依据：三轴可分离EDT求某个(x,y,z)只依赖同一z层所有(x',y')的Z变换结果，随后依赖该(y,z)线上所有x'的Y结果。因此裁“所需输出层/线”而保留这些层/线的完整输入候选，不丢任何最近free源。已近邻解决的格按从小到大完整枚举的整数平方距离得到精确最近值。保留相同的sqrt、乘法及有符号组合表达式，要求与旧版未截断double逐格完全相等，而不只比较碰撞布尔值。
+
+代价/局限：目标2此前near_free发现首个未解析格即可退出，改后需完成有界分类，可能增加数毫秒扫描；厚墙/厚地板的未解析格若覆盖多数Z层，则不能从该方案获利。日志尚不能量化可节省比例，36.16%只是负向阶段占比，不是承诺能全部节省。离线若总compute不降或无fallback场景明显退化，拒绝候选，不部署。200万格的正向计算仍在，这是单轮范围内明确接受的边界。
+
+四、现有离线验证入口与准入条件
+1. plan_env/CMakeLists.txt:75已有test_esdf_worker gtest，不需新框架。优先跑MatchesSignedDistanceReferenceForEmptyFullAndMixedSnapshots、StridedEmptyPrefixesPlanesAndThickBlocksKeepExactSignedDistances、ExactNearFreeAndFallbackDistancesMatchBruteForceAtROIBounds、PhaseTimingPreservesDistancesAndCoversBothNegativePaths；再跑SparseInsertionsAndDeletionsMatchEveryCappedDenseVoxel、PatchHalosPreserveOutsideNeighborsAndSignedDistancesAtMapEdges、SeededSparseFrameChangesMatchTheWholeCappedField以及取消/epoch/部分patch禁止发布测试。生产库改后从干净受影响包构建，串行-j1，不能复用旧build安装覆盖。
+2. 需补实质边界：同代同时有已解决格与少量深格；深格跨单/多Z层且相同(Y,Z)线上混合两类X；全空、全满、厚块、ROI角/面、没有ROI内free；8192上限两侧；部分路径中途取消；强制完整路径与部分路径对同一输入逐格double相等。
+3. 可复用 experiments/online_remani_validation/results/esdf_z_tile_20261116-231828/dense_worker_benchmark.cpp、build_pair.sh、run_interleaved.py 的编译与交错A/B方法，但复制到新实验目录并替换候选名，不能覆盖旧结果或部署旧z_tile8候选。该旧候选已经因净变慢被拒绝（decision.json），这里仅复用测量入口。串行构建、一个worker进程逐个输入，保留低内存限制。
+4. 已有fixtures/metadata.json含16个40.344万格历史真实crop和3个220.8万格合成输入。它们可验证精确性与规模，不能冒充本次目标2完整worker输入；补合成“少数厚块/多数浅表点、边界深格、稠密未解析回退”。每帧分块memmap比较所有未截断double，零差异、零非有限值；至少1轮预热+5轮交错配对，记录compute p50/p95、负向Y/X实际线数、near_free新增开销和峰值RSS。
+5. 建议离线准入：命中部分路径的代表用例总compute有稳定净下降，完全回退和原near_free成功用例无显著退化；峰值RSS不增加超过计划scratch。若目标2未解析格分布尚无原始快照，最终实车收益仍待一次有界输入采样/重跑确认，不能提前标记“实车验证通过”。不修改350ms门限、碰撞检查、.6m cap、.05m分辨率、机器人安全距离或反馈健康规则。
+
+五、实施顺序与版本
+先修已经证实导致停顿的软件反馈链；地图优化作为独立版本，仅解决上述负向计算浪费。开始实际修改前核对rollback/VERSIONS.tsv与源码/实际部署库匹配，保存必要基线；离线通过后再保存新版本及父版本，保留完整恢复路径。本轮只新增此方案文本，不分配运行代码新版本。
+
+六、最小正向进一步候选：保留input支撑，只计算write输出
+现状审计：computeDense的positive Y遍历nx*nz条线、X遍历ny*nz条线，未使用write bounds。compute的多patch分支先为每块完整input调用computeDense，之后才复制write_min/max；单region分支:850–853直接return computeDense(job,result)，root.write_min/max未传入。确有可裁的输出外halo计算，不是已有功能重复实现。
+
+建议独立下一轮修改：为computeDense增加可选output_bounds。Z仍对完整input的所有(X,Y)列运行；Y只对output_z层运行，但每条Y的输入源和变换长度保持完整；X只对output_y/output_z线运行，但每条X的输入源和变换长度保持完整；最终只存output_x范围。负向必要计算可按同样依赖裁输出，near_free只需为输出占用格判断精确值，halo内厚格不必单独触发负向计算。input源一格也不删，.6m cap、radius=13与两层halo保持不变。
+
+返回与调用边界：cap有效且changed列表有效的增量single-region必须传root.write范围并返回一个已有ESDFPatch，父result.min/max仍为原input边界、父distance_all为空。不能把未计算的halo塞进distance_all冒充完整dense结果。grid_map.cpp:2542–2582现有单patch可接受，仍检查边界、完整changed影响覆盖、epoch、request_id及generation；无需新地图协议。初始化/无有效baseline、distance_cap=0、changed为空维持原完整dense接口；多region复用同一输出范围接口，避免最后那次input→write复制。应更新旧“所有单region必定patches.empty”的实现形态断言，保留全部write体素值与最终整张capped场一致的行为验证。
+
+数据依赖证明：在Z→Y→X可分离EDT中，输出(x,y,z)的Y中间值只涉及同一z层；输出最终只涉及同一(y,z)线，但这些线上的全部x候选都不可删。因此上述裁输出精确；把Y的源截到write_y或X的源截到write_x则不精确，禁止。
+
+真实可减少多少（从本次MapTrace每帧changed与input bounds计算，非性能实测）：
+- 目标1全部284帧、目标2全部1156帧的write_z与input_z都为60层。因此正向Y扫描在这批数据中减少0%。
+- 目标1正向X线数中位减少7.8125%，范围6.7358%..13.5417%；目标2中位减少14.2467%，范围6.7358%..18.1818%。
+- 最终输出double元素数中位减少20.88%/26.30%，可减少输出数组及一次crop复制的成本，两个完整input临时double buffer仍需要。
+- 将每帧实测positive_X_ms按X线削减率线性换算，仅得到约4.03/4.75ms中位工作量估计；不是测得收益，也不是整个compute能减少20%/26%。目标1正向约94ms的大部分仍在，不能夸大这项候选。
+
+正向候选验收：在同一旧/新输入上比较所有write体素的未截断double，以及把patch提交回旧场后的整张capped场；新增“最近源恰在write外但input内”“single-region裁边”“非零原点”“删除障碍”“full初始化兼容”用例。用上节现成交错A/B入口计入所有新分组、结果封装和复制成本。如果没有稳定净收益，保留旧运行库并拒绝候选；现有两层halo分区已不省工时不强制拆块，也不以降低cap/扩大350ms门限换性能。

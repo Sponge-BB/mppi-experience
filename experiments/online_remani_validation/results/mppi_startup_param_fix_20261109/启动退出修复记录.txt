@@ -1,0 +1,37 @@
+MPPI 启动退出修复，2026-11-09
+
+现场现象
+whole_body_mppi pid 240182 于16:10初始化后立即以 exit code 1 退出。
+rospy 日志仅记录初始化与 atexit，没有保存原始 Python traceback。
+未重新启动实车节点，没有发布控制命令。
+
+直接证据
+只读查询当前分布式 ROS master，发现：
+  /whole_body_mppi/native_arm_startup = true
+  /whole_body_mppi/startup_to_standby = true
+  /whole_body_mppi/execute = true
+  simulation、arm_position_servo 不存在；固定结构碰撞球数为47。
+新版 launch 配置的是原生驱动展开后交接，旧的 MPPI 自行展开参数残留在持续运行的 master 中。
+WholeBodyNode.__init__ 明确拒绝同时开启两种启动方式。
+用真实 launch 参数与该旧参数离线调用真实构造器，复现：
+  ValueError: invalid_or_conflicting_arm_startup_modes
+复现 traceback 保存在 reproduction.json；它是本次离线重建的异常，不是原进程遗留的 traceback。
+
+修复
+仅在 exp0_real.launch 的 whole_body_mppi 节点增加 clear_params="true"。
+roslaunch 在上传本次配置前清除 /whole_body_mppi/ 私有参数，再加载本次 mppi.yaml 和 native_arm_startup=true。
+不清空全局参数，不修改 CAN 或驱动，不删除任何源数据，也不放宽启动模式冲突检查。
+前次离线检查使用干净参数集，漏掉了分布式 master 残留参数场景；此次新增构造器回归覆盖该场景。
+
+验证
+test_mppi_launch_init.py 从真实 exp0_real.launch 解析参数，模拟 roslaunch 的先清理后上传语义。
+通过 Mock 阻断 Publisher、Subscriber、TF和shutdown注册，不连接 ROS master、不加载机械臂 SDK。
+检查原残留能复现异常，以及本次配置清除旧启动/仿真参数后真实构造器能够完成。
+详细结果见 constructor_tests.log。
+
+生效方式
+launch 文件无需编译。用户停止当前整机 launch 后，按原方式重新启动：
+  source /home/l/remani_ws/devel/setup.bash
+  roslaunch mm_remani exp0_real.launch
+重新启动会涉及真实驱动及机械臂展开，应由现场用户确认运动条件后操作。
+本次尚未替用户重新启动，也没有完成重新启动后的现场运行验收。

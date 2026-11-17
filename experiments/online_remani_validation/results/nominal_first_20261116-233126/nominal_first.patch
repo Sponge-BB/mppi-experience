@@ -1,0 +1,28 @@
+--- /home/l/remani_ws/src/mm_remani/scripts/mppi/active_arm_mppi.py
++++ /home/l/remani_ws/src/mm_remani/scripts/mppi/active_arm_mppi.py
+@@ -614,13 +614,22 @@
+         # First test continuing nominal base progress while changing only the
+         # arm. Broader base maneuvers are generated if this set is infeasible.
+         us,labels=self.proposals(state,reference,arm_reference,[(1.,0.)],tracking=tracking)
+-        cost,valid,gaps,states = self.evaluate(state,us,reference,arm_reference,snapshot,now,tracking=tracking)
+-        self.record_visual_rollouts(states, valid, reset=True)
++        cost,valid,gaps,states = self.evaluate(state,us[:1],reference,arm_reference,snapshot,now,tracking=tracking)
+         external_gaps=self.last_external_gaps.copy()
+         intervention=not valid[0] or external_gaps[0]<.12
++        if intervention and len(us)>1:
++            first_diagnostics=self.last_evaluation_diagnostics
++            rc,rv,rg,rs=self.evaluate(state,us[1:],reference,arm_reference,snapshot,now,tracking=tracking)
++            cost=np.r_[cost,rc];valid=np.r_[valid,rv];gaps=np.r_[gaps,rg]
++            states=np.concatenate((states,rs),axis=0)
++            external_gaps=np.r_[external_gaps,self.last_external_gaps]
++            self.last_external_gaps=external_gaps
++            self.last_evaluation_diagnostics={key:first_diagnostics[key]+value
++                for key,value in self.last_evaluation_diagnostics.items()}
++        self.record_visual_rollouts(states, valid, reset=True)
+         if not intervention:
+             self.previous=us[0].copy()
+-            return (us[0],states[0]),{'feasible':int(valid.sum()),'candidates':len(us),
++            return (us[0],states[0]),{'feasible':1,'candidates':1,
+                 'cost':float(cost[0]),'min_gap':float(gaps[0]),'external_min_gap':float(external_gaps[0]),
+                 'arm_motion':float(np.linalg.norm(states[0,-1,5:11]-state[5:11])),
+                 'intervention':False,'mode':'nominal'}

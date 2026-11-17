@@ -1,0 +1,26 @@
+首目标快照新鲜度与走停离线核对（只读；未更改运行代码）
+
+范围：首个目标1794447871.8519037发布，录包接收1794447871.8574836；首条轨迹ADD录包1794447872.3753316，到首次ABORT录包1794447880.9522316，共8.5769秒。capture.bag流式读取；另用rosout_followup时间链。
+
+已证明：
+1. 此8.58秒内83个MPPI状态周期：58次command_delivered；11次collision_snapshot_unavailable；6次collision_snapshot_expired_during_plan；7次inputs_expired_before_delivery；1次delivery_deadline_exceeded。24/83=28.9%为输入新鲜度拒绝，25/83=30.1%总拒绝。不是每次拒绝都代表障碍物或路径变化。
+2. /cmd_vel共84条，58条非零，26条全零。按相邻指令间保持时间，零速2.877秒、非零5.647秒，19段零速，最长0.320秒。这是实际下发指令的切换，不只日志。reject()会直接stop_base()。
+3. 24次输入新鲜度拒绝的打印快照中，22次map_age>350ms（351.63~413.14ms）；全部dynamic_valid/ground_valid/self_collision_valid为true，dynamic_age全部<350ms，cached_joint_age最大116.51ms。故主要拒绝来自地图时效；不是这些包的动态轨迹失联或自碰无效。
+4. 另2次inputs_expired_before_delivery打印map_age为238.09/298.92ms，不能硬归为地图。交付检查还包含/odom与关节150ms TTL。reject日志是except解锁后重新读取当前snapshot，可能已切新帧；没有原子失败时输入头，现有数据不能精确区分这2次。bag里有新odom不代表MPPI callback当时已更新。
+5. 58次成功周期：solve中位39.33ms、p95 58.47ms；全周期中位54.82ms、p95 78.53ms。只有1次交付deadline失败。因此不能解释为MPPI每次计算超时。
+6. 12份同代诊断快照：采样时地图年龄中位197.60ms、p95 321.23ms、最大326.68ms；采样到录包中位23.53ms、最大42.82ms；采样时关节年龄中位6.80ms、最大16.19ms。诊断线路不是控制快照线路，不能把其传输时间当控制快照实测时间。
+7. 实际地图窗口：占据融合约17ms，ESDF计算均值102.09→116.54ms，最大151.55→172.86ms；5秒约28~30次ESDF（5.6~6Hz），原始点云10Hz。部分时刻增量包围盒仍覆盖1778496~2211840体素。感知持续有数据而可用完整地图的时间预算不足，与真实雷达断流是不同问题。
+8. 第一次参考滞后日志：+3.57s位置误差81mm，+4.58s119mm，+5.58s143mm，+5.93s160mm触发冻结。此前已累计多次MPPI零速拒绝；减速/停顿使追踪落后有实测时序支持。但滞后也受参考策略、底盘响应影响，不能把全部滞后只归地图。
+
+代码确认：
+- h3来自md_.last_occ_update_time_，为占据融合结束ROS时间，并非雷达原始采样时间。ESDF完成后该时间不更新；这是保留真实地图年龄，未重复累计。
+- sample最大20Hz，从最新Complete（占据与ESDF同代）读取；output再检查now-h3；Python Snapshot.fresh在入口、规划后和交付前检查同一绝对年龄。没有把各阶段年龄相加两次；350ms是整个链路共同使用的总预算。
+- 该350ms直接复用dynamic_point_flow/max_age，同时作为静态/融合ESDF时效与动态点时效。实际地图生成节拍约6Hz和交付约55ms，样本落在完整地图周期后段就易跨过350ms；拒绝后立即零速造成走停。
+- 导出器状态有效期mppi/state_max_age默认250ms；Python真实/odom与关节fresh默认150ms，两者不同。此次已记录缓存关节并不老；不能把snapshot不可用全说成CAN延迟。
+- 交付阶段在self.lock内做checked_first_step，地图/状态callback在此期间不能更新；存在输入跨TTL的机制，但无法从本次状态日志量化为那2次失败的唯一原因。
+- 新鲜度类拒绝属于LOCAL_RETRY_REJECTIONS，不直接发布tracking_fault；会停车但不是每次都让慢层重规划。+9.09s那次ABORT是单独的no_feasible_candidate触发，需要几何候选证据分析。
+
+结论与下一步范围：
+核心不是空路被每次当成动态障碍，也不是MPPI单次求解普遍超预算；快照生成/消费的端到端时效与控制零速策略形成真实走停。地图场仍有大范围包围盒重算，应该继续按核心局部计算减少地图年龄，并独立审视地图与动态预测共用时效的设计；不能仅无限放宽TTL或关掉安全检查。完整停止恢复与参考冻结/追踪语义需结合另外两条审计，不应以单个最终returngoal原因代替首目标走停分析。
+
+机器数据：freshness_stops_audit.json。所有数值为本次采集及当前已部署代码的离线核对，不代表修复后实车通过。

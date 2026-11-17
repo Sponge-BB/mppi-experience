@@ -1,0 +1,219 @@
+{
+  "review_scope": "本轮到点、调头流程独立源码复核；只读生产代码，未连接ROS、未发控制命令、未编译。只补一次现有离线fixture重放。",
+  "core_conclusion": "核心是终端任务契约和FSM完成流程不一致：实际到点的复查、机械臂终端要求、可选待机恢复被耦合到重新生成整机轨迹。不是统一的通信超时，也不能把第二条目标的近碰停车直接定性成终端模式漏洞。",
+  "source_sha256": {
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "751dbbf78d9438156fb2bc69d2866e4138d3ab0879475ed03e779e23b13ee1bd",
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": "01859364dde415be76925042769eaa8c20a28d2660b1b842963de90bec5a25a8",
+    "src/mm_remani/scripts/whole_body_mppi.py": "5fa768b8b461e740ce23793df636d8dcb3f5c54a1d440a1153ebb945629539fd",
+    "src/mm_remani/test/test_mppi_terminal_yaw.py": "20d05f75141f2f92af9f83d7c87de37b2a3bd7e78c143174918e3a8599265fe9"
+  },
+  "defects": [
+    {
+      "id": "G1_STALE_ARRIVAL_DECISION",
+      "priority": "P1",
+      "status": "已证实：实际到点状态改变后，过时的重新规划决定不会被撤销",
+      "causal_chain": "目标1在轨迹结束时仅机械臂边界误差约0.120rad导致GOAL_FEEDBACK，切入GEN_NEW_TRAJ。随后实际关节误差已降到0.112574rad、小于0.12容差，底盘位置及朝向也已满足；但GEN_NEW_TRAJ只重试规划，不复查实际到点，优化成功又因车辆规划碰撞被拒，继续重复。",
+      "evidence": [
+        {
+          "source": 1794563133.5574837,
+          "text": "主日志：base=.026m,yaw=.014rad,arm=.120rad，Reference trajectory ended...replan from feedback。"
+        },
+        {
+          "source": 1794563134.7596755,
+          "text": "/mm/joint_states相对该导航终点的最大误差=.1125737368rad。"
+        },
+        {
+          "source": 1794563136.884639,
+          "text": "关节仍在同一容差内，重规划仍持续；主日志多次Success后car collision at8.04..8.08s。"
+        }
+      ],
+      "locations": [
+        {
+          "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 706,
+          "meaning": "实际机械臂目标误差和到点判据，仅在EXEC_TRAJ计算"
+        },
+        {
+          "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 830,
+          "meaning": "未满足到点的已结束参考进入GEN_NEW_TRAJ"
+        },
+        {
+          "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 531,
+          "meaning": "GEN_NEW_TRAJ没有实际到点复查"
+        },
+        {
+          "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 560,
+          "meaning": "直接调用planFromGlobalTraj并消耗失败预算"
+        }
+      ],
+      "minimal_fix": "对GOAL_FEEDBACK产生的终端重试，在进入昂贵整机规划前复用相同的实际到点判据；已满足时执行正常完成路径。必须保留新鲜状态、目标身份及其他停车原因的检查，不能借此解开感知、碰撞或硬件停车。",
+      "validation_limit": "触发瞬间0.120是日志舍入值；2.155ms后的最近样本为0.118647，不能替代FSM当时样本。后续0.112574已达标和GEN缺少复查则均有直接证据。"
+    },
+    {
+      "id": "G3_OPTIONAL_RESTORE_BLOCKS_NAV_FINISH",
+      "priority": "P1",
+      "status": "已证实：导航成功被可选待机恢复的失败吞掉",
+      "causal_chain": "目标3已达到位置、机械臂和偏航条件，32.808明确进入到点后的standby恢复。该恢复走全身GEN_NEW_TRAJ，25次优化成功后均未通过车辆碰撞验证，38.436耗尽5次预算并Giveup；已经达到的导航目标没有finish。",
+      "evidence": [
+        {
+          "source": 1794563192.715,
+          "text": "Position and arm reached; wait for bounded final yaw alignment(error=.153rad)。"
+        },
+        {
+          "source": 1794563192.808,
+          "text": "Manual target reached. Planning arm restore to stand-by pose. arm_error=.1732。"
+        },
+        {
+          "source": 1794563198.436,
+          "text": "Failed to generate new trajectory(5/5)，随后Give up current target。记录窗口内planning/finish计数0。"
+        }
+      ],
+      "locations": [
+        {
+          "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 765,
+          "meaning": "手动目标已达后，先决定是否恢复待机"
+        },
+        {
+          "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 781,
+          "meaning": "把待机恢复送入planNextWaypoint，成功后直接返回不发布finish"
+        },
+        {
+          "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 788,
+          "meaning": "仅立即的waypoint失败会作为已完成；之后优化失败不走此处理"
+        },
+        {
+          "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 573,
+          "meaning": "后续GEN失败直接丢弃目标，不发布finish"
+        },
+        {
+          "file": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+          "line": 87,
+          "meaning": "finish会清空目标与原生参考身份"
+        },
+        {
+          "file": "src/mm_remani/scripts/whole_body_mppi.py",
+          "line": 388,
+          "meaning": "接收planning/finish时调用adapter.finish"
+        }
+      ],
+      "minimal_fix": "明确导航完成与可选机械臂恢复的结果。最小行为选择是本任务无需强制回待机时关闭可选恢复、在已达安全姿态完成；若必须恢复，则用底盘保持的已验收机械臂恢复过程，恢复失败只报告该附加步骤，不能继续把已达导航目标判为不可达。",
+      "integration_constraint": "不能只提前发布现有planning/finish后继续发送当前native恢复轨迹：adapter.finish会清目标身份，后续轨迹会被忽略。需同步选择一种完整完成语义。",
+      "validation_limit": "车辆碰撞验证失败已证；这些占据是否误检、为什么恢复候选涉及该车辆几何不在本次结论中，不能通过关碰撞检查修复。"
+    },
+    {
+      "id": "ENDPOINT_ARM_CONVERGENCE_GAP",
+      "priority": "P2",
+      "status": "已证实的终端控制缺口；不把物理上必然可恢复当成已证事实",
+      "causal_chain": "慢层完成要求机械臂到终点容差内，快层参考过期后只提供yaw控制；q超出0.12时terminal_yaw_command返回None，cycle转为全零reference_wait_hold，关节目标保持在当前反馈。终点小机械臂误差只能依赖重新规划整机轨迹，缺少局部终端收敛途径，与前两条完成流程问题叠加。",
+      "locations": [
+        {
+          "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 2038,
+          "meaning": "2D导航目标未显式请求机械臂目标时仍继承当前q作为终点"
+        },
+        {
+          "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+          "line": 713,
+          "meaning": "完成仍硬检查终点q容差"
+        },
+        {
+          "file": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+          "line": 359,
+          "meaning": "机械臂误差超限时拒绝terminal yaw"
+        },
+        {
+          "file": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+          "line": 364,
+          "meaning": "terminal指令只可能包含yaw，所有机械臂分量为零"
+        },
+        {
+          "file": "src/mm_remani/scripts/whole_body_mppi.py",
+          "line": 575,
+          "meaning": "过期参考尝试yaw，失败后使用reference_wait_hold"
+        },
+        {
+          "file": "src/mm_remani/scripts/whole_body_mppi.py",
+          "line": 158,
+          "meaning": "reference_wait_hold产生全零控制"
+        }
+      ],
+      "offline_reproduction": {
+        "evidence_file": "endpoint_policy_replay.json",
+        "run_time_s": "约1秒",
+        "peak_rss_mib": 53.23,
+        "input": "实际生产cycle与adapter，既有无设备fixture；参考终点q0=2，当前q0=2.121，容差.12，位置已达、参考已过期。",
+        "observed": "state=command_delivered，mode=reference_wait_hold，8维控制全0，发布q0=2.121，未向2.0收敛。",
+        "boundary": "仅传输、求解边界与最终碰撞检查使用既有桩；证明策略选择，不证明该姿态在实物中的避障纠正必然可行。"
+      },
+      "minimal_fix": "在当前目标确实要求机械臂终点姿态时，将终端处理扩展为同一位置保持下的有界yaw/关节收敛，并复用最新碰撞、限位和交付检查；当前几何不允许收敛时保持安全停机并明确阻塞，不能只增加容差或强行拉回避障姿态。",
+      "existing_contract_tests": [
+        {
+          "file": "src/mm_remani/test/test_mppi_terminal_yaw.py",
+          "line": 40,
+          "meaning": "现有测试明确终端只允许yaw"
+        },
+        {
+          "file": "src/mm_remani/test/test_mppi_terminal_yaw.py",
+          "line": 65,
+          "meaning": "现有测试明确arm超限拒绝终端"
+        }
+      ]
+    }
+  ],
+  "G2_turn_review_not_a_confirmed_defect": {
+    "input": "目标2实际有.2804775m平移和3.0723272rad(176.03度)转向，不是严格的原地目标。",
+    "observations": "控制器曾因yaw跟踪误差.554/.562rad冻结相位；近目标时仍处于7.8626/10.1538s，没有过期。原始占据近碰在17:45:53.351和54.695触发ABORT，之后目标最终因规划失败被丢弃。全程terminal计数0。",
+    "judgement": "未进入terminal是当前明确的过期终点契约加实际近碰取消共同作用。本轮没有证据证明该场景安全可原地旋转，故不把去掉phase门槛或忽略近碰列作本轮修复。之前报告中的near-goal终端模式建议只能作为有附加几何证据时的备选，不是已证根因修复。",
+    "locations": [
+      {
+        "file": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+        "line": 353,
+        "meaning": "未完成的虚拟相位明确拒绝终端yaw"
+      },
+      {
+        "file": "src/mm_remani/test/test_mppi_terminal_yaw.py",
+        "line": 72,
+        "meaning": "现有测试验证unfinished progress never turns"
+      },
+      {
+        "file": "src/mm_remani/scripts/whole_body_mppi.py",
+        "line": 639,
+        "meaning": "零速度安全限制同时阻止旋转"
+      },
+      {
+        "file": "src/mm_remani/test/test_mppi_terminal_yaw.py",
+        "line": 153,
+        "meaning": "对应安全限制测试"
+      },
+      {
+        "file": "src/mm_remani/test/test_mppi_terminal_yaw.py",
+        "line": 182,
+        "meaning": "碰撞拒绝与驱动停车不能交付终端旋转"
+      }
+    ],
+    "offline_contract_check": "同一既有fixture：phase1.9/end2.0、scale0，物理位置到点时status仍native_reference_ready，terminal_yaw_command=None；这复现契约，不单独证明契约错误。",
+    "do_not_change": "不放宽碰撞距离、不清掉安全停车owner、不把未过期/已取消的轨迹强行当成已完成参考。"
+  },
+  "recommended_work_order": [
+    "先修GOAL_FEEDBACK重试复查与导航/可选恢复的完成语义；这是本轮已直接确认的主要重复规划链路。",
+    "若仍要求严格关节终点任务，再补有界全状态终端收敛；不要新建大调度框架。",
+    "G2保持既有近碰保护；在缺少物理旋转可行性证据前，不把phase保护作为错误删除。"
+  ],
+  "evidence_files": [
+    "turn_goal_diagnosis.json",
+    "goal_geometry_analysis.json",
+    "goal_completion_joint_samples.json",
+    "turn_goal_summary.json",
+    "turn_goal_timeline.jsonl",
+    "runtime_logs/hai_goal_completion_windows.log",
+    "endpoint_policy_replay.json"
+  ],
+  "validation_boundary": "本次为核心问题诊断；未修改生产或测试源码，未启动ROS、未发运动命令、未编译。"
+}

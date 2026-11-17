@@ -1,0 +1,28 @@
+<launch>
+  <!-- MID360 and a message converter only. No robot/control/enable nodes. -->
+  <group ns="/standby_trial_20261105_feedback_02/sensors">
+    <!-- The vendor node uses a public NodeHandle, so these parameters belong
+         to its enclosing namespace, rather than its private node namespace. -->
+    <param name="xfer_format" value="1" type="int" />
+    <param name="multi_topic" value="0" type="int" />
+    <param name="data_src" value="0" type="int" />
+    <param name="publish_freq" value="10.0" type="double" />
+    <param name="output_data_type" value="0" type="int" />
+    <param name="frame_id" value="standby_feedback_02_livox_frame" />
+    <param name="enable_lidar_bag" value="false" type="bool" />
+    <param name="enable_imu_bag" value="false" type="bool" />
+    <param name="user_config_path" value="$(dirname)/config/MID360_config.json" />
+    <node pkg="standby_hardware_trial" type="feedback02_livox_driver" name="livox_driver" required="true" output="screen">
+      <remap from="livox/lidar" to="lidar_custom" />
+      <remap from="livox/imu" to="imu" />
+    </node>
+    <node pkg="standby_hardware_trial" type="feedback02_livox_to_pcl" name="custom_to_pcl" required="true" output="screen">
+      <param name="input_topic" value="/standby_trial_20261105_feedback_02/sensors/lidar_custom" />
+      <param name="output_topic" value="/standby_trial_20261105_feedback_02/sensors/lidar_pcl2" />
+      <param name="subscriber_queue_size" value="1" type="int" />
+      <param name="publisher_queue_size" value="1" type="int" />
+      <param name="filter_low_confidence_tags" value="true" type="bool" />
+      <param name="low_confidence_tag_mask" value="63" type="int" />
+    </node>
+  </group>
+</launch>

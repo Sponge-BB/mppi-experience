@@ -4,6 +4,7 @@
 #include <cmath>
 #include <limits>
 #include <tuple>
+#include <utility>
 
 namespace mm_remani
 {
@@ -39,15 +40,124 @@ double trimmedCoordinateMean(
   return sum / static_cast<double>(coordinates.size() - 2 * trim_count);
 }
 
+std::vector<Eigen::Vector3f> observedSurface(
+    const DynamicDetection &detection)
+{
+  // Matches the node's maximum cluster size. Do not invent motion evidence by
+  // thinning a large stationary surface until its nearest neighbours vanish.
+  constexpr std::size_t maximum_surface_points = 1200;
+  if (detection.motion_surface.size() > maximum_surface_points)
+    return {};
+  std::vector<Eigen::Vector3f> surface;
+  surface.reserve(detection.motion_surface.size());
+  for (const Eigen::Vector3f &point : detection.motion_surface)
+  {
+    if (point.allFinite())
+      surface.push_back(point);
+  }
+  return surface;
+}
+
+bool surfaceSupportsTranslation(
+    const std::vector<Eigen::Vector3f> &previous,
+    const std::vector<Eigen::Vector3f> &current,
+    const Eigen::Vector2d &translation,
+    double tolerance, SurfaceTranslationDiagnostic *diagnostic = nullptr)
+{
+  if (diagnostic != nullptr)
+  {
+    diagnostic->evaluated = true;
+    diagnostic->previous_points = previous.size();
+    diagnostic->current_points = current.size();
+    diagnostic->translation_x = translation.x();
+    diagnostic->translation_y = translation.y();
+    diagnostic->tolerance = tolerance;
+  }
+  if (previous.size() < 3 || current.size() < 3)
+    return false;
+
+  const Eigen::Vector3f shift(
+      static_cast<float>(translation.x()),
+      static_cast<float>(translation.y()), 0.0f);
+  const double tolerance_squared = tolerance * tolerance;
+  const auto direction_supports_translation =
+      [tolerance_squared](const std::vector<Eigen::Vector3f> &source,
+                          const std::vector<Eigen::Vector3f> &target,
+                          const Eigen::Vector3f &offset,
+                          SurfaceDirectionDiagnostic *evidence)
+      {
+        // Qualification tests planar motion, matching the XY history/shift.
+        // Height sampling may change; retain all original XYZ collision points.
+        // Query at most 64 observed points against the complete bounded
+        // surface. Keeping all target neighbours prevents sampling itself
+        // from turning a changing visible subset into apparent movement.
+        const std::size_t count = std::min<std::size_t>(64, source.size());
+        std::vector<double> stationary_errors;
+        std::vector<double> translated_errors;
+        stationary_errors.reserve(count);
+        translated_errors.reserve(count);
+        for (std::size_t index = 0; index < count; ++index)
+        {
+          const Eigen::Vector3f &point = source[index * source.size() / count];
+          const Eigen::Vector3f translated = point + offset;
+          double stationary = std::numeric_limits<double>::infinity();
+          double moving = std::numeric_limits<double>::infinity();
+          for (const Eigen::Vector3f &neighbour : target)
+          {
+            stationary = std::min(
+                stationary, static_cast<double>((point - neighbour).head<2>().squaredNorm()));
+            moving = std::min(
+                moving, static_cast<double>((translated - neighbour).head<2>().squaredNorm()));
+          }
+          stationary_errors.push_back(stationary);
+          translated_errors.push_back(moving);
+        }
+        // The lower median rejects movement confined to a disappearing edge
+        // or an outlier. Both directions must improve: visibility loss alone
+        // can explain a subset of a stationary surface in one direction.
+        const std::size_t median = (count - 1) / 2;
+        std::nth_element(stationary_errors.begin(),
+                         stationary_errors.begin() + median,
+                         stationary_errors.end());
+        std::nth_element(translated_errors.begin(),
+                         translated_errors.begin() + median,
+                         translated_errors.end());
+        const double stationary = stationary_errors[median];
+        const double moving = translated_errors[median];
+        if (evidence != nullptr)
+        {
+          evidence->evaluated = true;
+          evidence->samples = count;
+          evidence->stationary_squared = stationary;
+          evidence->translated_squared = moving;
+          evidence->stationary_distinct = stationary > tolerance_squared;
+          evidence->translated_close = moving <= tolerance_squared;
+          evidence->translation_improves = moving < 0.25 * stationary;
+        }
+        return stationary > tolerance_squared &&
+               moving <= tolerance_squared &&
+               moving < 0.25 * stationary;
+      };
+  // Evidence follows the original short circuit; an unvisited direction
+  // remains evaluated=false. No extra nearest-neighbour search is introduced.
+  return direction_supports_translation(previous, current, shift,
+             diagnostic != nullptr ? &diagnostic->forward : nullptr) &&
+         direction_supports_translation(current, previous, -shift,
+             diagnostic != nullptr ? &diagnostic->reverse : nullptr);
+}
+
 }  // namespace
 
 Eigen::Vector3d estimateStableMotionCenter(
     const std::vector<Eigen::Vector3f> &complete_cluster_points,
     const StableMotionCenterParameters &parameters,
-    bool *used_stable_core)
+    bool *used_stable_core,
+    std::vector<Eigen::Vector3f> *motion_surface)
 {
   if (used_stable_core != nullptr)
     *used_stable_core = false;
+  if (motion_surface != nullptr)
+    motion_surface->clear();
 
   std::vector<Eigen::Vector3f> finite_points;
   finite_points.reserve(complete_cluster_points.size());
@@ -93,6 +203,8 @@ Eigen::Vector3d estimateStableMotionCenter(
       use_stable_core ? stable_core : finite_points;
   if (used_stable_core != nullptr)
     *used_stable_core = use_stable_core;
+  if (motion_surface != nullptr)
+    *motion_surface = motion_points;
 
   Eigen::Vector3d center;
   for (int axis = 0; axis < 3; ++axis)
@@ -101,6 +213,32 @@ Eigen::Vector3d estimateStableMotionCenter(
         motion_points, axis, parameters.trim_fraction);
   }
   return center;
+}
+
+std::string motionRejectionReasons(std::uint32_t mask)
+{
+  const std::pair<std::uint32_t, const char *> names[] = {
+      {MOTION_NEW_TRACK, "new_track"}, {MOTION_HITS, "hits"},
+      {MOTION_STEPS, "motion_steps"}, {MOTION_POINTS, "cluster_points"},
+      {MOTION_HISTORY, "history_duration"},
+      {MOTION_DISPLACEMENT, "net_displacement"},
+      {MOTION_SPEED, "net_speed"}, {MOTION_EFFICIENCY, "efficiency"},
+      {MOTION_DIRECTION, "direction"}, {MOTION_STEP_SPEED, "step_speed"},
+      {MOTION_BACKGROUND, "background_anchor"},
+      {MOTION_SURFACE, "surface_translation"},
+      {MOTION_EXIT_SPEED, "exit_speed"},
+      {MOTION_EXIT_EFFICIENCY, "exit_efficiency"},
+      {MOTION_EXIT_DIRECTION, "exit_direction"}};
+  std::string text;
+  for (const auto &name : names)
+  {
+    if ((mask & name.first) == 0)
+      continue;
+    if (!text.empty())
+      text += '|';
+    text += name.second;
+  }
+  return text.empty() ? "none" : text;
 }
 
 DynamicObstacleTrackerCore::DynamicObstacleTrackerCore()
@@ -141,6 +279,8 @@ DynamicObstacleTrackerCore::DynamicObstacleTrackerCore(
                     parameters_.dynamic_exit_speed));
   parameters_.minimum_dynamic_displacement =
       std::max(0.0, parameters_.minimum_dynamic_displacement);
+  parameters_.surface_motion_tolerance =
+      std::max(0.01, parameters_.surface_motion_tolerance);
   parameters_.direction_consistency_cosine = std::max(
       -1.0, std::min(1.0, parameters_.direction_consistency_cosine));
   parameters_.minimum_motion_duration =
@@ -196,6 +336,16 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
     const std::vector<DynamicDetection> &detections,
     double stamp_seconds)
 {
+  return update(detections, stamp_seconds, nullptr);
+}
+
+std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
+    const std::vector<DynamicDetection> &detections,
+    double stamp_seconds,
+    std::vector<MotionQualificationDiagnostic> *diagnostics)
+{
+  if (diagnostics)
+    diagnostics->clear();
   std::vector<TrackedDetection> result;
   if (!std::isfinite(stamp_seconds) ||
       (last_stamp_seconds_ >= 0.0 &&
@@ -290,6 +440,8 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
 
     Track &track = tracks_[static_cast<std::size_t>(assigned_track)];
     const int previous_missed_frames = track.missed_frames;
+    const bool was_motion_qualified = track.motion_qualified;
+    std::uint32_t exit_rejections = 0;
     const Eigen::Vector3d previous_position = track.position;
     const double raw_dt = stamp_seconds - track.stamp_seconds;
     const double update_dt = std::max(
@@ -346,11 +498,14 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
     if (previous_missed_frames > 0)
       track.motion_history.clear();
     track.motion_history.push_back(
-        MotionSample{detection.centroid, stamp_seconds});
+        MotionSample{detection.centroid, stamp_seconds,
+                     observedSurface(detection)});
     const double history_cutoff =
         stamp_seconds - parameters_.motion_history_duration;
     while (track.motion_history.size() > 2 &&
            track.motion_history[1].stamp_seconds <= history_cutoff)
+      track.motion_history.pop_front();
+    while (track.motion_history.size() > 64)
       track.motion_history.pop_front();
 
     double history_duration = 0.0;
@@ -514,13 +669,16 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
     }
 
     bool inside_stationary_background = false;
+    double matching_background_distance = -1.0;
     for (const Eigen::Vector2d &anchor :
          stationary_background_anchors_)
     {
-      if ((current_planar_position - anchor).norm() <=
+      const double distance = (current_planar_position - anchor).norm();
+      if (distance <=
           parameters_.stationary_background_release_radius)
       {
         inside_stationary_background = true;
+        matching_background_distance = distance;
         break;
       }
     }
@@ -599,9 +757,25 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
                           three_dimensional_speed;
     };
 
-    if (!track.motion_qualified && coherent_motion)
+    SurfaceTranslationDiagnostic surface_details;
+    const bool surface_evaluated = !track.motion_qualified && coherent_motion;
+    const bool supported_surface_motion =
+        surface_evaluated &&
+        surfaceSupportsTranslation(
+            track.motion_history.front().surface,
+            track.motion_history.back().surface,
+            history_net, parameters_.surface_motion_tolerance,
+            diagnostics != nullptr && parameters_.collect_surface_diagnostics
+                ? &surface_details : nullptr);
+    if (surface_evaluated && diagnostics != nullptr)
+    {
+      surface_details.first_stamp = track.motion_history.front().stamp_seconds;
+      surface_details.last_stamp = track.motion_history.back().stamp_seconds;
+    }
+    if (!track.motion_qualified && supported_surface_motion)
     {
       track.motion_qualified = true;
+      track.ever_motion_qualified = true;
       track.motion_hit_count = valid_step_count;
       track.stationary_hit_count = 0;
       track.motion_reference_position =
@@ -610,7 +784,7 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
     }
     else if (!track.motion_qualified)
     {
-      track.motion_hit_count = coherent_motion ? valid_step_count : 0;
+      track.motion_hit_count = 0;
       track.stationary_hit_count = 0;
     }
     else
@@ -626,6 +800,21 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
             direction_consistency <
                 0.5 *
                     parameters_.minimum_direction_consistency_fraction));
+      if (diagnostics && lost_motion_evidence)
+      {
+        if (inside_stationary_background)
+          exit_rejections |= MOTION_BACKGROUND;
+        if (latest_observed_planar_speed <= parameters_.dynamic_exit_speed)
+          exit_rejections |= MOTION_EXIT_SPEED;
+        if (history_duration >= parameters_.minimum_motion_duration)
+        {
+          if (motion_efficiency < 0.5 * parameters_.minimum_motion_efficiency)
+            exit_rejections |= MOTION_EXIT_EFFICIENCY;
+          if (direction_consistency <
+              0.5 * parameters_.minimum_direction_consistency_fraction)
+            exit_rejections |= MOTION_EXIT_DIRECTION;
+        }
+      }
       if (lost_motion_evidence)
         ++track.stationary_hit_count;
       else
@@ -669,7 +858,68 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
         track.hit_count >= parameters_.min_confirmed_hits;
     tracked.motion_qualified =
         tracked.confirmed && track.motion_qualified;
+    tracked.ever_motion_qualified = track.ever_motion_qualified;
     result.push_back(tracked);
+    if (diagnostics)
+    {
+      MotionQualificationDiagnostic evidence;
+      evidence.stamp_seconds = stamp_seconds;
+      evidence.detection_index = detection_index;
+      evidence.track_id = track.id;
+      evidence.observed_position = detection.centroid;
+      evidence.point_count = detection.point_count;
+      evidence.hit_count = track.hit_count;
+      evidence.valid_step_count = valid_step_count;
+      evidence.observation_dt = raw_dt;
+      evidence.history_duration = history_duration;
+      evidence.net_displacement = net_displacement;
+      evidence.robust_speed = robust_speed;
+      evidence.estimated_speed = track.velocity.norm();
+      evidence.latest_planar_speed = latest_observed_planar_speed;
+      evidence.motion_efficiency = motion_efficiency;
+      evidence.direction_consistency = direction_consistency;
+      evidence.maximum_step_speed = maximum_step_speed;
+      evidence.history_reset = previous_missed_frames > 0;
+      evidence.was_motion_qualified = was_motion_qualified;
+      evidence.motion_qualified = tracked.motion_qualified;
+      evidence.ever_motion_qualified = tracked.ever_motion_qualified;
+      evidence.motion_evaluated = true;
+      evidence.inside_stationary_background = inside_stationary_background;
+      evidence.matching_background_distance = matching_background_distance;
+      evidence.surface_details = surface_details;
+      if (surface_evaluated)
+        evidence.surface = supported_surface_motion ?
+            MotionSurfaceResult::PASSED : MotionSurfaceResult::REJECTED;
+      if (was_motion_qualified)
+        evidence.rejection_mask = exit_rejections;
+      else
+      {
+        if (track.hit_count < parameters_.min_confirmed_hits)
+          evidence.rejection_mask |= MOTION_HITS;
+        if (valid_step_count < parameters_.minimum_dynamic_hits)
+          evidence.rejection_mask |= MOTION_STEPS;
+        if (parameters_.minimum_motion_cluster_points > 0 &&
+            detection.point_count < static_cast<std::size_t>(parameters_.minimum_motion_cluster_points))
+          evidence.rejection_mask |= MOTION_POINTS;
+        if (history_duration < parameters_.minimum_motion_duration)
+          evidence.rejection_mask |= MOTION_HISTORY;
+        if (net_displacement < parameters_.minimum_dynamic_displacement)
+          evidence.rejection_mask |= MOTION_DISPLACEMENT;
+        if (robust_speed < parameters_.dynamic_enter_speed)
+          evidence.rejection_mask |= MOTION_SPEED;
+        if (motion_efficiency < parameters_.minimum_motion_efficiency)
+          evidence.rejection_mask |= MOTION_EFFICIENCY;
+        if (direction_consistency < parameters_.minimum_direction_consistency_fraction)
+          evidence.rejection_mask |= MOTION_DIRECTION;
+        if (!step_speed_plausible)
+          evidence.rejection_mask |= MOTION_STEP_SPEED;
+        if (inside_stationary_background)
+          evidence.rejection_mask |= MOTION_BACKGROUND;
+        if (surface_evaluated && !supported_surface_motion)
+          evidence.rejection_mask |= MOTION_SURFACE;
+      }
+      diagnostics->push_back(evidence);
+    }
   }
 
   for (std::size_t track_index = 0;
@@ -700,13 +950,14 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
        detection_index < detections.size(); ++detection_index)
   {
     if (detection_to_track[detection_index] >= 0 ||
-        !detections[detection_index].centroid.allFinite())
+        !detections[detection_index].centroid.allFinite() ||
+        next_track_id_ == 0)
       continue;
 
     Track track;
     track.id = next_track_id_++;
-    if (next_track_id_ == 0)
-      next_track_id_ = 1;
+    // Zero means the uint32 namespace is exhausted. Never recycle an ID in
+    // this process: consumers can still retain the previous object's state.
     track.position = detections[detection_index].centroid;
     track.motion_reference_position = track.position;
     track.extent = detections[detection_index].extent;
@@ -718,7 +969,8 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
     track.hit_count = 1;
     track.motion_history.push_back(
         MotionSample{detections[detection_index].centroid,
-                     stamp_seconds});
+                     stamp_seconds,
+                     observedSurface(detections[detection_index])});
     tracks_.push_back(track);
 
     TrackedDetection tracked;
@@ -732,6 +984,20 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
     tracked.confirmed = parameters_.min_confirmed_hits <= 1;
     tracked.motion_qualified = false;
     result.push_back(tracked);
+    if (diagnostics)
+    {
+      MotionQualificationDiagnostic evidence;
+      evidence.stamp_seconds = stamp_seconds;
+      evidence.detection_index = detection_index;
+      evidence.track_id = track.id;
+      evidence.observed_position = detections[detection_index].centroid;
+      evidence.point_count = detections[detection_index].point_count;
+      evidence.hit_count = 1;
+      evidence.rejection_mask = MOTION_NEW_TRACK;
+      if (!tracked.confirmed)
+        evidence.rejection_mask |= MOTION_HITS;
+      diagnostics->push_back(evidence);
+    }
   }
 
   std::sort(result.begin(), result.end(),
@@ -740,6 +1006,11 @@ std::vector<TrackedDetection> DynamicObstacleTrackerCore::update(
             {
               return lhs.detection_index < rhs.detection_index;
             });
+  if (diagnostics)
+    std::sort(diagnostics->begin(), diagnostics->end(),
+              [](const MotionQualificationDiagnostic &lhs,
+                 const MotionQualificationDiagnostic &rhs)
+              { return lhs.detection_index < rhs.detection_index; });
   return result;
 }
 
@@ -748,7 +1019,8 @@ void DynamicObstacleTrackerCore::reset(bool clear_stationary_background)
   tracks_.clear();
   if (clear_stationary_background)
     stationary_background_anchors_.clear();
-  next_track_id_ = 1;
+  // Map replacement and transient health resets must not alias an identity
+  // already published to downstream consumers.
   last_stamp_seconds_ = -1.0;
 }
 

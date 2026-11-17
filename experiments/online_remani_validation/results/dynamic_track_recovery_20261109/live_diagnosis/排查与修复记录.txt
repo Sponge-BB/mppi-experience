@@ -1,0 +1,39 @@
+2026-11-09 运行中 lost_observation 排查及时间基准修正
+
+确认的现场事实
+实时采集时：perception_healthy=true，motion_qualified_track_count=0；dynamic_points 持续发有源时间的新空帧，输入年龄约 0.10–0.11 秒。输入没有断流。
+当前为原生控制模式，remani_planner_node/mppi/enable=false；本问题位于两模式共用的动态观测层。
+本次启动的跟踪器 11:37:13 加载静态参考，11:37:27 通过健康预热。11:38:25–11:39:43 的部分日志曾出现 motion_qualified=1。采集时历史观测年龄约 971–988 秒。
+未找到本次启动后目标退休 Retired 或历史容量超限日志。地图持续融合，约 22 次/5 秒；这只是吞吐率，不等于具体源时间滞后。
+当前 RViz 的预测点和标签在 snapshot invalid 时会清空，原话题也没有导出保留历史 ID/坐标。因此现有数据不能确定具体哪个旧目标区域被遮挡或命中，不能把物体来源断言为误检。
+
+发现并修正的代码缺陷
+原 recoverObservedTracks 用待融合 LiDAR 帧 stamp 作为 checkSnapshotAge 的“当前时间”。两个独立队列处理不同帧时，更新的正常跟踪帧会被误判为 future_stamp，恢复函数静默提前返回。
+可复现例：真实当前时间 100.25，LiDAR 源 100.00，跟踪源 100.15。两输入各自新鲜，但旧判断计算 age=-0.15，超过未来容差 0.05。改为用真实 ros::Time::now() 检查跟踪帧新鲜度；逐 ID 的 ray_stamp > 最后真实观测源时间约束仍保留，真正未来/过期输入仍拒绝。
+这证明了一个代码缺陷；原运行版本没有记录该分支三种时间，尚不能证明它就是这次现场所有未清除事件的唯一原因。
+
+补充的最少诊断
+没有新增节点、话题、参数或类状态。仅在现有函数增加 3 秒限频日志：
+1. 输入拒绝时输出 ray_stamp、tracker_stamp、now 与原因。
+2. 几何覆盖不足时输出旧 track ID、年龄、世界坐标 bounds、free/total、occupied、ray_age、tracker_age。
+重启加载后，搜索 [DynamicPointFlow][recovery] 即可区分时间门拒绝、真实命中和未覆盖。
+现有几何要求仍是：旧表面及配置位置余量的全部样本，须有最近 0.35 秒的有效自由射线证据。实车余量 0.08 m，地图分辨率 0.05 m，每个旧点为 125 个覆盖样本。固定表面、遮挡或稀疏扫描不足仍可能保留停车；本次没有盲目放宽这项判定。
+
+修改与验证
+只改 dynamic_point_buffer.cpp 和 test_dynamic_point_buffer.cpp，未改头文件或类布局；共享库接口保持一致。
+新增两个回归：新鲜跟踪帧早于处理完成但晚于地图源时间仍可恢复；真正未来时间输入仍拒绝。
+29 项 DynamicPointBuffer 与 51 项 GridMap 回归全部通过，总计 80 项。测试在独立 localhost master 下进行，未连接实车发送控制指令。
+单线程编译，虚拟内存上限 1536 MiB；两次小范围编译峰值 RSS 分别为 470068 KiB 和 455636 KiB。没有重新编译全部 C++ 工程。
+共享库采用新文件原子替换，运行中规划器保留其旧库映射，没有重启程序或发布目标、速度、使能指令。
+
+后续生效边界
+新代码已编译到原工程 devel/lib/libplan_env.so，正在运行的旧进程需要退出重启才能加载修正与原因日志。
+目前已排除当前跟踪输入断流，已修复可复现的时间比较缺陷；具体旧区域是否仍因命中/盲区/覆盖不足而不能恢复，需要加载新日志后核对，不能据离线测试宣称实车已经能导航。
+
+证据文件
+readonly_state.json：实时参数、话题与日志。
+startup_tracker_events.json：本次启动前后跟踪与目标事件。
+loaded_version_after_fix.json：运行中进程与磁盘库版本核对。
+before_time_basis_fix.tar.gz：本轮两份源文件备份。
+build_clock_fix*.log / *resources.json：本轮编译日志与资源。
+test_results.json、test_dynamic_point_buffer.log、test_grid_map_parallel.log：80 项验证结果。

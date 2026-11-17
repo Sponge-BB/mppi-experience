@@ -1,0 +1,14 @@
+{
+  "question": "Around 16:20, was arm power/CAN/USB disconnected or emergency stop pressed?",
+  "answer_verbatim": "曾按急停或记不清",
+  "interpretation": "Possible emergency-stop operation, exact action and time not confirmed. This is not evidence that emergency stop caused the TX queue stall.",
+  "verified_sequence": [
+    "16:08:53 standby reached",
+    "16:20:56 first send failure in same old process",
+    "16:31:16 old process stopped",
+    "16:34:06 baseline before latest fix",
+    "16:53:31 new controller deployed",
+    "17:04 new startup send failure"
+  ],
+  "next_isolation": "With robot workflow stopped, verify physical stop state and reinitialize CAN interface; inspect queue before user-initiated restart. No interface or motor action was performed during this audit."
+}

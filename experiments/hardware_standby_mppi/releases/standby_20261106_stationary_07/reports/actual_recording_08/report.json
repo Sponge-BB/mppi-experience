@@ -1,0 +1,504 @@
+{
+  "scope": "actual stationary shadow only; no actuator nodes or commands",
+  "reason": "observation_complete",
+  "duration_s": 31.93633678599872,
+  "counts": {
+    "raw": 319,
+    "joints": 5886,
+    "odom": 284,
+    "status": 403,
+    "unhealthy": 16,
+    "filtered": 251,
+    "background": 1,
+    "healthy": 166
+  },
+  "status_counts": {
+    "waiting_real_state": 1,
+    "waiting_stationary_anchor": 10,
+    "state_time_misalignment": 55,
+    "static_not_received": 146,
+    "dynamic_not_received": 26,
+    "shadow_candidate_only_not_validated_for_execution": 162,
+    "waiting_valid_cloud_inputs": 3
+  },
+  "last_status": {
+    "ros_stamp": 1793940173.4232688,
+    "planning_snapshot_stamp": 1793940173.366648,
+    "monotonic_elapsed": 25.499514561999604,
+    "mode": "integration_recording",
+    "status": "shadow_candidate_only_not_validated_for_execution",
+    "ready_for_actuation": false,
+    "hardware_execution_eligible": false,
+    "commands_executed": false,
+    "original_filter_shadow_only": true,
+    "collision_query_sources": [
+      "filtered_cloud",
+      "static_cloud",
+      "dynamic_cloud"
+    ],
+    "raw_cloud_role": "required_fresh_input_and_coverage_diagnostic_only",
+    "namespace": "/standby_trial_20261106_stationary_07",
+    "sources": {
+      "odom": "/standby_trial_20261105_feedback_02/sensors/odom",
+      "joints": "/standby_trial_20261105_feedback_02/sensors/joint_states",
+      "raw_cloud": "/standby_trial_20261105_feedback_02/sensors/lidar_pcl2",
+      "filtered_cloud": "/standby_trial_20261106_stationary_07/perception/filtered_points",
+      "dynamic_cloud": "/standby_trial_20261106_stationary_07/perception/dynamic_points",
+      "static_cloud": "/standby_trial_20261106_stationary_07/perception/background",
+      "perception_health": "/standby_trial_20261106_stationary_07/perception/dynamic_obstacle_tracker/perception_healthy"
+    },
+    "errors": {},
+    "input_transport_latency_s": {
+      "joints": 0.002406597137451172,
+      "odom": 0.01949787139892578,
+      "raw_cloud": 0.12184333801269531,
+      "perception_health": 3.123283386230469e-05,
+      "filtered_cloud": 0.11144518852233887,
+      "static_cloud": 0.2153618335723877,
+      "dynamic_cloud": 0.11652374267578125
+    },
+    "clouds": {
+      "raw_cloud": {
+        "stamp": 1793940173.2441752,
+        "frame": "standby_feedback_02_odom",
+        "points": 4000
+      },
+      "filtered_cloud": {
+        "stamp": 1793940173.2441752,
+        "frame": "standby_feedback_02_odom",
+        "points": 4000
+      },
+      "static_cloud": {
+        "stamp": 1793940155.3442056,
+        "frame": "standby_feedback_02_odom",
+        "points": 15000
+      },
+      "dynamic_cloud": {
+        "stamp": 1793940173.2441752,
+        "frame": "standby_feedback_02_odom",
+        "points": 0
+      }
+    },
+    "near_arm_raw_diagnostic": {
+      "raw_nearest_arm_surface_gap_m": 0.27568705440385965,
+      "meaning": "unfiltered_raw_may_include_arm_self_returns_not_clearance_certificate"
+    },
+    "cloud_callback_profiles": {
+      "raw_cloud": {
+        "callback_ros_stamp": 1793940173.3483949,
+        "source": "raw_cloud",
+        "width": 19478,
+        "height": 1,
+        "wire_bytes": 311648,
+        "decode_ms": 5.933080999966478,
+        "tf_lookup_ms": 0.28903400016133673,
+        "transform_ms": 6.398312998499023,
+        "surface_ms": 4.73582100130443,
+        "lock_wait_ms": 0.004767998689203523,
+        "message_stamp": 1793940173.2441752,
+        "age_at_callback_entry_s": 0.10421967506408691,
+        "invalid_zero_returns_removed": 3444,
+        "accepted": true,
+        "callback_total_ms": 17.692260998956044,
+        "age_at_callback_exit_s": 0.12189960479736328
+      },
+      "filtered_cloud": {
+        "callback_ros_stamp": 1793940173.3497787,
+        "source": "filtered_cloud",
+        "width": 6070,
+        "height": 1,
+        "wire_bytes": 97120,
+        "decode_ms": 0.48075300037453417,
+        "tf_lookup_ms": 0.41729599979589693,
+        "transform_ms": 0.7698199988226406,
+        "surface_ms": 3.908877999492688,
+        "lock_wait_ms": 0.005152000085217878,
+        "message_stamp": 1793940173.2441752,
+        "age_at_callback_entry_s": 0.10560345649719238,
+        "accepted": true,
+        "callback_total_ms": 6.036028000380611,
+        "age_at_callback_exit_s": 0.11163091659545898
+      },
+      "static_cloud": {
+        "callback_ros_stamp": 1793940155.5347464,
+        "source": "static_cloud",
+        "width": 15000,
+        "height": 1,
+        "wire_bytes": 180000,
+        "decode_ms": 3.3767630011425354,
+        "tf_lookup_ms": 0.0,
+        "transform_ms": 0.0,
+        "surface_ms": 21.38477900007274,
+        "lock_wait_ms": 0.0019520011846907437,
+        "message_stamp": 1793940155.3442056,
+        "age_at_callback_entry_s": 0.19054079055786133,
+        "accepted": true,
+        "callback_total_ms": 24.879274000340956,
+        "age_at_callback_exit_s": 0.21541523933410645
+      },
+      "dynamic_cloud": {
+        "callback_ros_stamp": 1793940173.3602102,
+        "source": "dynamic_cloud",
+        "width": 0,
+        "height": 1,
+        "wire_bytes": 0,
+        "decode_ms": 0.2362650011491496,
+        "tf_lookup_ms": 0.0,
+        "transform_ms": 0.0,
+        "surface_ms": 0.035552999179344624,
+        "lock_wait_ms": 0.004191999323666096,
+        "message_stamp": 1793940173.2441752,
+        "age_at_callback_entry_s": 0.11603498458862305,
+        "accepted": true,
+        "callback_total_ms": 0.5682440005330136,
+        "age_at_callback_exit_s": 0.11659407615661621
+      }
+    },
+    "input_age_s": {
+      "raw_cloud": 0.179093599319458,
+      "filtered_cloud": 0.179093599319458,
+      "static_cloud": 18.079063177108765,
+      "dynamic_cloud": 0.179093599319458
+    },
+    "odom_stamp": 1793940173.3444545,
+    "joint_stamp": 1793940173.360562,
+    "joint_velocity_source": "bounded_named_position_difference_rad_per_s",
+    "odometry_validation": {
+      "accepted_samples": 254,
+      "requires_restart": false,
+      "fault": null,
+      "validation": "direct_pose_and_measurement_receipt_continuity"
+    },
+    "base_height_convention": "ground_z_zero_odom_z_not_added",
+    "odom_z_ignored": 0.115,
+    "state": [
+      -0.2739756190280972,
+      -0.02428233614546989,
+      0.0015678678099521125,
+      0.004144021672281557,
+      -0.003926586431830478,
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "anchor": [
+      -0.28474134299971293,
+      -0.01811385810158706,
+      0.0009857312929574201
+    ],
+    "arm_reference": [
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977
+    ],
+    "proposed_controls": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "decision_ms": 62.049172000115504,
+    "solve_ms": 62.97694900058559,
+    "kernel_diagnostics": {
+      "mode": "standby_extension",
+      "intervention": false,
+      "nominal_external_min_gap": 0.13,
+      "structured_candidates": 15,
+      "structured_labels": [
+        [
+          "reference",
+          "hold"
+        ],
+        [
+          "reference",
+          "forward"
+        ],
+        [
+          "reference",
+          "reverse"
+        ],
+        [
+          "reference",
+          "turn_left"
+        ],
+        [
+          "reference",
+          "turn_right"
+        ],
+        [
+          "reference",
+          "curve_left"
+        ],
+        [
+          "reference",
+          "curve_right"
+        ],
+        [
+          "posture_0",
+          "hold"
+        ],
+        [
+          "posture_0",
+          "forward"
+        ],
+        [
+          "posture_0",
+          "reverse"
+        ],
+        [
+          "posture_0",
+          "turn_left"
+        ],
+        [
+          "posture_0",
+          "turn_right"
+        ],
+        [
+          "posture_0",
+          "curve_left"
+        ],
+        [
+          "posture_0",
+          "curve_right"
+        ],
+        [
+          "previous",
+          "previous"
+        ]
+      ],
+      "structured_valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "structured_costs": [
+        0.004596482155677288,
+        0.04260262040947901,
+        0.012936557123368282,
+        0.026497476061851245,
+        0.02815805620864449,
+        0.05431543276427567,
+        0.05805042317287812,
+        0.006297967336928245,
+        0.04430410559072996,
+        0.014638042304619238,
+        0.028198961243102203,
+        0.02985954138989545,
+        0.05601691794552662,
+        0.059751908354129066,
+        0.003716388647233084
+      ],
+      "structured_first_base_commands": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.08,
+          0.0
+        ],
+        [
+          -0.08,
+          0.0
+        ],
+        [
+          0.0,
+          0.24
+        ],
+        [
+          0.0,
+          -0.24
+        ],
+        [
+          0.06,
+          0.18
+        ],
+        [
+          0.06,
+          -0.18
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.08,
+          0.0
+        ],
+        [
+          -0.08,
+          0.0
+        ],
+        [
+          0.0,
+          0.24
+        ],
+        [
+          0.0,
+          -0.24
+        ],
+        [
+          0.06,
+          0.18
+        ],
+        [
+          0.06,
+          -0.18
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "random_samples": 4,
+      "sample_dimensions": 8,
+      "noise_sigma": [
+        0.012,
+        0.08,
+        0.035,
+        0.035,
+        0.035,
+        0.035,
+        0.035,
+        0.035
+      ],
+      "noise_rho": 0.75,
+      "lambda_temperature": 0.15,
+      "noise_rms_per_coordinate": [
+        0.01511469806110367,
+        0.1459326089180653,
+        0.04725833432519387,
+        0.07143614210420336,
+        0.042168068340580296,
+        0.053099051020780906,
+        0.04698460204887177,
+        0.034579765619088605
+      ],
+      "base_noise_rms": [
+        0.01511469806110367,
+        0.1459326089180653
+      ],
+      "random_valid": [
+        true,
+        true,
+        false,
+        false
+      ],
+      "feasible": 17,
+      "candidates": 20,
+      "standby_anchor": [
+        -0.28474134299971293,
+        -0.01811385810158706,
+        0.0009857312929574201
+      ],
+      "selection": "structured",
+      "selected_family": [
+        "previous",
+        "previous"
+      ],
+      "weights": [
+        0.35221512141885747,
+        0.34104708386971433,
+        0.30673779471142826
+      ],
+      "weighted_pool_costs": [
+        0.003716388647233084,
+        0.00854962650315578,
+        0.024453713981941228
+      ],
+      "weighted_mean_valid": true,
+      "cost": 0.003716388647233084,
+      "min_gap": 0.0005227712326907324,
+      "external_min_gap": 0.13,
+      "arm_motion": 0.0,
+      "selected_first_base_command": [
+        0.0,
+        0.0
+      ],
+      "selected_base_displacement_m": 0.0027611226554040635,
+      "selected_base_yaw_change_rad": 0.0015732182024614794
+    },
+    "limitations": [
+      "model_geometry_not_hardware_validated",
+      "surface_cloud_not_known_free_space",
+      "original_passthrough_cropbox_not_motion_certified",
+      "cloud_downsampling_not_collision_certificate",
+      "hardware_commissioning_separate_from_offline_validation"
+    ],
+    "command_gateway": {
+      "enabled": false,
+      "reason": "command_expired",
+      "sent": 19,
+      "last_sequence": 19,
+      "validation_ms": 6.911387999934959,
+      "hardware_motion_validated": false
+    }
+  },
+  "clouds": {
+    "raw": {
+      "count": 19524,
+      "stamp": 1793940175.044139,
+      "frame": "standby_feedback_02_livox_frame"
+    },
+    "filtered": {
+      "count": 5851,
+      "stamp": 1793940173.3445742,
+      "frame": "standby_feedback_02_livox_frame"
+    },
+    "background": {
+      "count": 15000,
+      "stamp": 1793940155.3442056,
+      "frame": "standby_feedback_02_odom"
+    }
+  },
+  "joints": {
+    "stamp": 1793940173.4302485,
+    "q": [
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977
+    ]
+  },
+  "maximum_tree_rss_mib": 585.4609375,
+  "minimum_available_mib": 2998.625,
+  "per_process_address_space_limit_mib": 768,
+  "memory_floor_mib": 2816,
+  "owned_tree_limit_mib": 650,
+  "can_tx_before": 0,
+  "can_tx_after": 0,
+  "actuator_publishers": [],
+  "owned_processes_remaining": [],
+  "hardware_commands_sent": false,
+  "recording_only": true
+}

@@ -1,0 +1,224 @@
+--- a/src/mm_controller/include/mm_controller/mm_controller_fsm.hpp
++++ b/src/mm_controller/include/mm_controller/mm_controller_fsm.hpp
+@@ -18,6 +18,37 @@
+ class MMControllerFSM
+ {
+ public:
++
++	struct BaseExecutionLimits {
++		bool enabled = false;
++		double linear = 0.0, angular = 0.0, wheel = 0.0, track = 0.0;
++	};
++	// Same signed differential-drive speed envelope as the MPPI executor.
++	// The caller supplies the native, unscaled polynomial derivatives.
++	static double baseExecutionTimeScale(const Eigen::Vector2d &velocity,
++	                                    const Eigen::Vector2d &acceleration,
++	                                    double yaw_hold_speed,
++	                                    const BaseExecutionLimits &limits) {
++		if(!limits.enabled) return 1.0;
++		if(!velocity.allFinite() || !acceleration.allFinite() ||
++		   !std::isfinite(yaw_hold_speed) || yaw_hold_speed < 0.0 ||
++		   !std::isfinite(limits.linear) || limits.linear <= 0.0 ||
++		   !std::isfinite(limits.angular) || limits.angular <= 0.0 ||
++		   !std::isfinite(limits.wheel) || limits.wheel <= 0.0 ||
++		   !std::isfinite(limits.track) || limits.track <= 0.0) return 0.0;
++		const double speed = velocity.norm();
++		double omega = 0.0;
++		// Match cal_traj_ctrl_input and the unified native guide: below this
++		// raw speed, reference yaw holds the measured orientation.
++		if(speed > yaw_hold_speed && speed > 1e-8)
++			omega = (velocity.x()*acceleration.y()-velocity.y()*acceleration.x()) /
++			        velocity.squaredNorm();
++		if(!std::isfinite(speed) || !std::isfinite(omega)) return 0.0;
++		const double peak_wheel = speed + .5*limits.track*std::fabs(omega);
++		const double demand = std::max(1.0, std::max(speed/limits.linear,
++			std::max(std::fabs(omega)/limits.angular, peak_wheel/limits.wheel)));
++		return 1.0/demand;
++	}
+ 
+ 	State_Data_t state_data;
+ 	Command_Data_t cmd_data;
+@@ -65,6 +96,7 @@
+ 	double curvature_ff_start_speed_;
+ 	double curvature_ff_full_speed_;
+ 	double max_feedforward_omega_;
++	BaseExecutionLimits base_execution_limits_;
+ 	double odom_timeout_;
+ 	double virtual_time_min_reference_speed_;
+ 	double virtual_time_scale_rise_rate_;
+--- a/src/mm_controller/src/mm_controller_fsm.cpp
++++ b/src/mm_controller/src/mm_controller_fsm.cpp
+@@ -1,4 +1,5 @@
+ #include "mm_controller/mm_controller_fsm.hpp"
++#include <stdexcept>
+ using namespace std;
+ 
+ namespace MMController{
+@@ -10,6 +11,19 @@
+ 	nh_.param("controller/curvature_ff_start_speed", curvature_ff_start_speed_, 0.04);
+ 	nh_.param("controller/curvature_ff_full_speed", curvature_ff_full_speed_, 0.10);
+ 	nh_.param("controller/max_feedforward_omega", max_feedforward_omega_, 0.60);
++	nh_.param("controller/use_mppi_execution_limits", base_execution_limits_.enabled, false);
++	if(base_execution_limits_.enabled) {
++		const bool have_limits =
++			nh_.getParam("/whole_body_mppi/base_limits/vmax", base_execution_limits_.linear) &&
++			nh_.getParam("/whole_body_mppi/base_limits/wmax", base_execution_limits_.angular) &&
++			nh_.getParam("/whole_body_mppi/base_limits/wheel_v", base_execution_limits_.wheel) &&
++			nh_.getParam("/whole_body_mppi/base_limits/track", base_execution_limits_.track);
++		if(!have_limits || baseExecutionTimeScale(Eigen::Vector2d::Zero(),
++		    Eigen::Vector2d::Zero(), 0.0, base_execution_limits_) != 1.0) {
++			ROS_FATAL("[MMctrl] MPPI execution limits are missing or invalid.");
++			throw std::invalid_argument("invalid MPPI execution limits");
++		}
++	}
+ 	nh_.param("controller/odom_timeout", odom_timeout_, 0.25);
+ 	nh_.param("controller/virtual_time_min_reference_speed", virtual_time_min_reference_speed_, 0.05);
+ 	nh_.param("controller/virtual_time_scale_rise_rate", virtual_time_scale_rise_rate_, 0.8);
+@@ -354,7 +368,16 @@
+ 	if(now < trajectory_activation_stamp_)
+ 		return;
+ 
+-	double target_scale = 1.0;
++	const auto capacity_at = [this](double phase) {
++		if(!base_execution_limits_.enabled) return 1.0;
++		const double sample = std::min(phase, trajectory_data.singul_traj_data.duration);
++		return baseExecutionTimeScale(
++			trajectory_data.singul_traj_data.getVel(sample).head<2>(),
++			trajectory_data.singul_traj_data.getAcc(sample).head<2>(),
++			yaw_hold_speed_, base_execution_limits_);
++	};
++	const double execution_scale = capacity_at(virtual_traj_time_);
++	double target_scale = execution_scale;
+ 	bool force_freeze = false;
+ 	const bool odom_fresh =
+ 		state_data.have_car_ && State_Data_t::sourceFresh(state_data.odom_source_stamp, now, odom_timeout_);
+@@ -518,9 +541,15 @@
+ 			std::min(virtual_time_scale_ + max_change, target_scale));
+ 	}
+ 
++	// Rate smoothing cannot temporarily exceed the current executable envelope.
++	// This bounds the shared reference clock, not the physical actuator commands.
++	virtual_time_scale_ = std::min(virtual_time_scale_, execution_scale);
+ 	virtual_traj_time_ = std::min(
+ 		trajectory_data.singul_traj_data.duration,
+ 		virtual_traj_time_ + dt * virtual_time_scale_);
++	// Publish the advanced phase and its own limit as one consistent pair.
++	// Do not integrate a second time when curvature increases over this tick.
++	virtual_time_scale_ = std::min(virtual_time_scale_, capacity_at(virtual_traj_time_));
+ }
+ 
+ void MMControllerFSM::publishTrajectoryProgress(const ros::Time &stamp){
+--- a/src/mm_remani/launch/exp0_real.launch
++++ b/src/mm_remani/launch/exp0_real.launch
+@@ -199,6 +199,9 @@
+        Explicit zero also clears the setting when switching to native mode. -->
+   <param name="/filter_joint_states/velocity_window_s"
+          value="$(eval 0.05 if arg('use_mppi') and arg('use_real_arm') else 0.0)" type="double"/>
++  <!-- Explicit false also clears a previous MPPI setting on a reused master. -->
++  <param name="/mm_controller_node/controller/use_mppi_execution_limits"
++         value="$(arg use_mppi)" type="bool"/>
+   <group if="$(arg use_mppi)">
+     <!-- Preserve the original standby target. Piper performs native startup;
+          MPPI takes over only after measured arrival and driver acknowledgement. -->
+--- /dev/null
++++ b/src/mm_controller/test/test_execution_capacity.cpp
+@@ -0,0 +1,86 @@
++#include <gtest/gtest.h>
++#include <limits>
++#include "mm_controller/mm_controller_fsm.hpp"
++
++namespace {
++using FSM = MMController::MMControllerFSM;
++FSM::BaseExecutionLimits limits() {
++  FSM::BaseExecutionLimits result;
++  result.enabled = true;
++  result.linear = .25;
++  result.angular = .35;
++  result.wheel = .25;
++  result.track = .37;
++  return result;
++}
++double cap(double vx, double vy, double ax, double ay,
++           const FSM::BaseExecutionLimits &bound=limits(), double yaw_hold=.04) {
++  return FSM::baseExecutionTimeScale(Eigen::Vector2d(vx, vy),
++    Eigen::Vector2d(ax, ay), yaw_hold, bound);
++}
++TEST(ExecutionCapacity, StationaryDoesNotInventCurvature) {
++  EXPECT_DOUBLE_EQ(cap(0., 0., 0., 0.), 1.);
++  EXPECT_DOUBLE_EQ(cap(0., 0., .5, -.5), 1.);
++  EXPECT_DOUBLE_EQ(cap(.04, 0., 0., .5), 1.);
++  EXPECT_LT(cap(.040001, 0., 0., .5), 1.);
++}
++TEST(ExecutionCapacity, ForwardAndReverseLinearLimitsAgree) {
++  EXPECT_DOUBLE_EQ(cap(.5, 0., 0., 0.), .5);
++  EXPECT_DOUBLE_EQ(cap(-.5, 0., 0., 0.), .5);
++  EXPECT_DOUBLE_EQ(cap(0., .5, 0., 0.), .5);
++}
++TEST(ExecutionCapacity, AngularDemandUsesUnscaledPolynomial) {
++  // |omega|=.8 rad/s before the shared clock scale: .35/.8=.4375.
++  EXPECT_NEAR(cap(.1, 0., 0., .08), .4375, 1e-12);
++  EXPECT_NEAR(cap(-.1, 0., 0., -.08), .4375, 1e-12);
++  EXPECT_NEAR(cap(.1, 0., 0., -.08), .4375, 1e-12);
++}
++TEST(ExecutionCapacity, SimultaneousLinearAndAngularDemandRespectsBothWheels) {
++  // Both independent caps pass, but .24+.185*.3 > .25 m/s.
++  const double actual = cap(.24, 0., 0., .072);
++  EXPECT_NEAR(actual, .25/(.24+.185*.3), 1e-12);
++  EXPECT_LE(actual*(.24+.185*.3), .25+1e-12);
++  EXPECT_DOUBLE_EQ(cap(-.24, 0., 0., -.072), actual);
++}
++TEST(ExecutionCapacity, ExactAngularLimitDoesNotSlowReference) {
++  EXPECT_NEAR(cap(.1, 0., 0., .035), 1., 1e-12);
++}
++TEST(ExecutionCapacity, IncreasingCurvatureRequiresNewPhaseLimit) {
++  // Analytic path x=.1*t, y=t^3/6: omega rises across the integration tick.
++  const auto at = [](double t) { return cap(.1, .5*t*t, 0., t); };
++  const double old_phase=.04, dt=.01, old_limit=at(old_phase);
++  const double new_phase=old_phase+dt*old_limit;
++  const double new_limit=at(new_phase);
++  ASSERT_LT(new_limit, old_limit);
++  const double published=std::min(old_limit, new_limit);
++  const double raw_omega=.1*new_phase/(.01+.25*std::pow(new_phase, 4));
++  EXPECT_GT(old_limit*raw_omega, .35);
++  EXPECT_LE(published*raw_omega, .35+1e-12);
++}
++TEST(ExecutionCapacity, RotationOfWorldFrameDoesNotChangeCapacity) {
++  EXPECT_NEAR(cap(0., .1, -.08, 0.), cap(.1, 0., 0., .08), 1e-12);
++}
++TEST(ExecutionCapacity, ExplicitDisabledModePreservesNativeClock) {
++  auto bound = limits(); bound.enabled = false;
++  const double nan = std::numeric_limits<double>::quiet_NaN();
++  EXPECT_DOUBLE_EQ(cap(.5, 0., 0., 1., bound), 1.);
++  EXPECT_DOUBLE_EQ(cap(nan, 0., nan, 0., bound), 1.);
++}
++TEST(ExecutionCapacity, NonfiniteReferenceOrInvalidLimitsCannotAdvanceClock) {
++  const double nan = std::numeric_limits<double>::quiet_NaN();
++  const double inf = std::numeric_limits<double>::infinity();
++  EXPECT_DOUBLE_EQ(cap(nan, 0., 0., 0.), 0.);
++  EXPECT_DOUBLE_EQ(cap(.1, 0., 0., inf), 0.);
++  EXPECT_DOUBLE_EQ(cap(.1, 0., 0., 0., limits(), nan), 0.);
++  auto bound = limits(); bound.angular = 0.;
++  EXPECT_DOUBLE_EQ(cap(.1, 0., 0., .05, bound), 0.);
++  bound = limits(); bound.track = nan;
++  EXPECT_DOUBLE_EQ(cap(.1, 0., 0., .05, bound), 0.);
++  bound = limits(); bound.wheel = -1.;
++  EXPECT_DOUBLE_EQ(cap(.1, 0., 0., .05, bound), 0.);
++}
++}  // namespace
++int main(int argc, char **argv) {
++  testing::InitGoogleTest(&argc, argv);
++  return RUN_ALL_TESTS();
++}
+--- a/src/mm_controller/CMakeLists.txt
++++ b/src/mm_controller/CMakeLists.txt
+@@ -60,6 +60,10 @@
+ )
+ 
+ if(CATKIN_ENABLE_TESTING)
++  catkin_add_gtest(test_execution_capacity test/test_execution_capacity.cpp)
++  if(TARGET test_execution_capacity)
++    target_link_libraries(test_execution_capacity ${catkin_LIBRARIES})
++  endif()
+   catkin_add_gtest(test_feedback_source test/test_feedback_source.cpp)
+   if(TARGET test_feedback_source)
+     target_link_libraries(test_feedback_source ${catkin_LIBRARIES})

@@ -1,0 +1,140 @@
+{
+  "group": "mppi",
+  "created": "2026-11-15T16:20:02.747427",
+  "new_box_experiment": true,
+  "frozen_simulation_configuration": {
+    "/home/l/remani_ws/experiments/online_remani_validation/results/active_arm_20261104_01/v2_B_active_seed11/effective_real_params.json": "52dc01c26e133e9388cd4741c08df26737edce2997528c1d0ef2c5d435f5ee82",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/active_arm_20261104_01/v2_B_active_seed11/limits.json": "1270d92d9a77adee78c89ec8e0ca33a82cac6c4e52b2a4c4848a8fc01bbe79aa",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/active_arm_20261104_01/v2_B_active_seed11/geometry.csv": "8152ca58bc94eba4c401aec31d691df978b776f1604a2db8f17d1df0e7d0a8bf",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/active_arm_20261104_01/v2_B_active_seed11/geometry.json": "c47879d573d56ad44c4e710025d60743edcccfa5029f0c8513e8b106ca3bff32",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/active_arm_20261104_01/v2_B_active_seed11/parameters.yaml": "6a737b144a03aaa6ff63ba7c3a721b765a4cf70b504c49cad3d078ffbfce57b8",
+    "/home/l/remani_ws/experiments/online_remani_validation/results/active_arm_20261104_01/v2_B_active_seed11/experiment.launch": "d399253d08466b16cf0e9717f6df2556afff9d8aa81414d7711d58a55a7863cd"
+  },
+  "nodes": [
+    {
+      "pkg": "mm_remani",
+      "type": "filter_joint_states.py",
+      "name": "filter_joint_states",
+      "ns": "/",
+      "output": "log",
+      "required": "true"
+    },
+    {
+      "pkg": "online_remani_experiment",
+      "type": "remani_planner_node",
+      "name": "remani_planner_node",
+      "ns": "/",
+      "output": "log",
+      "required": "true"
+    },
+    {
+      "pkg": "online_remani_experiment",
+      "type": "mm_controller_node",
+      "name": "mm_controller_node",
+      "ns": "/",
+      "output": "log",
+      "required": "true"
+    },
+    {
+      "pkg": "nodelet",
+      "type": "nodelet",
+      "name": "pcl_manager_filter",
+      "ns": "/",
+      "output": "log",
+      "required": "true",
+      "args": "manager"
+    },
+    {
+      "pkg": "nodelet",
+      "type": "nodelet",
+      "name": "passthrough_z",
+      "ns": "/",
+      "output": "log",
+      "required": "true",
+      "args": "load pcl/PassThrough pcl_manager_filter"
+    },
+    {
+      "pkg": "nodelet",
+      "type": "nodelet",
+      "name": "crop_box_filter",
+      "ns": "/",
+      "output": "log",
+      "required": "true",
+      "args": "load pcl/CropBox pcl_manager_filter"
+    },
+    {
+      "pkg": "online_remani_experiment",
+      "type": "dynamic_obstacle_tracker_node",
+      "name": "dynamic_obstacle_tracker",
+      "ns": "/",
+      "output": "log",
+      "required": "true"
+    },
+    {
+      "pkg": "tf2_ros",
+      "type": "static_transform_publisher",
+      "name": "sim_world_to_map",
+      "args": "0 0 0 0 0 0 world map"
+    },
+    {
+      "pkg": "tf2_ros",
+      "type": "static_transform_publisher",
+      "name": "sim_map_to_odom",
+      "args": "0 0 0 0 0 0 map odom"
+    },
+    {
+      "pkg": "tf2_ros",
+      "type": "static_transform_publisher",
+      "name": "sim_lidar_tf",
+      "args": "0.28 0.0 0.002 0 0 0 base_link livox_frame"
+    },
+    {
+      "pkg": "online_remani_experiment",
+      "type": "arm_box_simulator.py",
+      "name": "algorithm_simulator",
+      "output": "log",
+      "required": "true"
+    },
+    {
+      "pkg": "online_remani_experiment",
+      "type": "active_arm_node.py",
+      "name": "active_arm_mppi",
+      "output": "log",
+      "required": "true"
+    }
+  ],
+  "slow_planner_frozen_after_initial_reference": false,
+  "comparison_scope": "Original completed active-arm numerical ROS framework; full-DOF native versus MPPI; not hardware/Gazebo",
+  "source_sha256": {
+    "runtime/active_arm_scene.py": "eb8742750a1e34563303f478e126bb8a0c2a077ed7a6e576b4d5a850f51858f3",
+    "runtime/active_arm_simulator.py": "ecf50606e3b53295096e022bf3a7401451ae284abb87c565aaac7fe352497fd4",
+    "runtime/arm_box_simulator.py": "a1b1d9961a46205b62e2a98bcba2e5c3d05ae46a592ea7493d7a226662861e35",
+    "runtime/dynamic_scenarios.py": "e091a72d0ca8d70243c14da400d80086fbd6d1d41fa499dc52812659cab4bdd0",
+    "runtime/active_arm_node.py": "cfe87d91778ff8ec5361f8b5887a141b462e36985a8a42fb1bd957cd3f9a7de9",
+    "runtime/arm_box_scene.py": "17d82fc9c95afbb1c05e8dcdb4bcc59867dc207c014f631602f0ba1c9f5f7f43",
+    "runtime/simulator.py": "8901dee1b46fdfdc17d3a23045b219075304fc6ee110331537f2af5005f48c04",
+    "runtime/active_arm_model.py": "dd4eaca2a753da5c56a0f1615c4ed7e31693b29a7e02be8a6765fca312621bb2",
+    "runtime/active_arm_mppi.py": "fa0bbbdbc3f0d35fabaef2624b8841705887eb45680f3a534290734a3a62e8f2",
+    "runtime/active_arm_reference.py": "28c46464d88f23bf767614f02ab3dd95d970874fd934c3152c603c4e1e66ba59",
+    "runtime/collab_seed_export.py": "84f72ea9d9cda70fe69a937e31d3c87aa33b6c660cf6bb86e21de00fcc85b882"
+  },
+  "runtime_sha256": {
+    "parameters.yaml": "6a737b144a03aaa6ff63ba7c3a721b765a4cf70b504c49cad3d078ffbfce57b8",
+    "experiment.launch": "bf94246db31f6008e94053e29afd9d8d4dfc1096a115d9d3407dbb9f6d394a8c",
+    "active_arm_config.json": "aac1c9b351913d220e25fb3e37fa5cbb6a2b0572ae672f7de9209cc9b5b94777",
+    "scenario.json": "75281cca065706b841338247607cd07273273fa4aa9e76693e2af6b29633fa60",
+    "model/mm.urdf": "a60563d176db315181fd2aa11d5e61a9aa3f4722ff5d96d75bdfdf3325941069"
+  },
+  "actual_planner_sha256": "d1399b4000cf03458dbb88a9004bec01f3d4c75f6e1e6307c9580a6deb442bab",
+  "native_binaries_sha256": {
+    "remani_planner_node": "d1399b4000cf03458dbb88a9004bec01f3d4c75f6e1e6307c9580a6deb442bab",
+    "mm_controller_node": "b50611a3f0017d57402d2fbbce47e8fc82dd6c5e27d64f2abc3f7a600c701d20",
+    "dynamic_obstacle_tracker_node": "df8c7c02daa9fdb9b3aaeda13d426ce5446dcf3df19e8f39ef5c1ff37db6d3f7"
+  },
+  "baseline_not_fixed_arm": true,
+  "production_modified": false,
+  "refresh_variant": "fixed",
+  "paired_seed": 11,
+  "refresh_child_manifest_sha256": "a5f75e147fe66cfd2f8c9d6641c63993c475fa202f3877e7dae9759994f6d8a7",
+  "refresh_child_build": "/home/l/remani_ws/experiments/online_remani_validation/builds/arm_box_refresh_20261115_01"
+}

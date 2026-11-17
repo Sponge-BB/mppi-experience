@@ -1,0 +1,261 @@
+--- before/src/mm_remani/config/mppi.yaml
++++ now/src/mm_remani/config/mppi.yaml
+@@ -1,10 +1,11 @@
+ # One 10 Hz whole-body sampling controller; original drivers remain the sinks.
+ rate_hz: 10.0
+ deadline_s: 0.095
+-horizon: 8
++# At 0.20 m/s: .70s rollout + .95s bounded braking + .35s source age <= 2s.
++horizon: 7
+ random_samples: 4
+ base_limits:
+-  vmax: 0.12
++  vmax: 0.20
+   wmax: 0.35
+   accel: 0.25
+   angular_accel: 0.80
+--- before/src/mm_remani/scripts/whole_body_mppi.py
++++ now/src/mm_remani/scripts/whole_body_mppi.py
+@@ -94,7 +94,7 @@
+     return v/scale, w/scale
+ 
+ 
+-def checked_first_step(kernel, state, control, snapshot, now):
++def checked_first_step(kernel, state, control, snapshot, now, diagnostics=None):
+     """Check the delivered action, its driver hold and braking on the new map.
+ 
+     Base receives velocity; Piper receives the first joint position target.
+@@ -132,8 +132,35 @@
+     # Self/ground geometry depends only on q; repeated held poses need one
+     # check. External obstacles above still use every base/time sample.
+     unique_q = np.unique(states[:, 5:11], axis=0)
+-    if (np.any(gaps < 0) or np.any(kernel.model.configuration_gaps_batch(unique_q) < 0)
++    external_rejected = bool(np.any(gaps < 0))
++    configuration_gaps = None if external_rejected else kernel.model.configuration_gaps_batch(unique_q)
++    if (external_rejected or np.any(configuration_gaps < 0)
+             or np.any(states[:, 5:11] < kernel.qmin) or np.any(states[:, 5:11] > kernel.qmax)):
++        if diagnostics is not None:
++            # Failure-only detail: do not add geometry work to accepted cycles
++            # or replace the original rejection reason/acceptance conditions.
++            if configuration_gaps is None:
++                configuration_gaps = kernel.model.configuration_gaps_batch(unique_q)
++            record = dict(check_time=float(now), min_external_gap_m=float(np.min(gaps)),
++                min_configuration_gap_m=float(np.min(configuration_gaps)),
++                external_rejected=external_rejected,
++                configuration_rejected=bool(np.any(configuration_gaps < 0)),
++                bounds_valid=bool(np.all((states[:, 5:11] >= kernel.qmin) &
++                                        (states[:, 5:11] <= kernel.qmax))),
++                checked_duration_s=float(np.max(times)-now),
++                measured_state=np.asarray(state).tolist(), selected_control=np.asarray(control).tolist(),
++                joint_target=target.tolist())
++            header = getattr(snapshot, 'header', None)
++            if isinstance(header, np.ndarray) and header.shape == (32,):
++                record['map_header'] = header.tolist()
++                record['dynamic_points_present'] = bool(getattr(snapshot, 'groups', ()))
++                if record['dynamic_points_present']:
++                    age = times-header[18]
++                    record.update(dynamic_prediction_max_age_s=float(np.max(age)),
++                        dynamic_prediction_horizon_s=float(header[16]),
++                        dynamic_prediction_in_range=bool(np.all((age >= -.05) &
++                                                               (age <= header[16]+1e-9))))
++            diagnostics['command_check'] = record
+         raise ValueError('command_hold_or_braking_rejected_by_latest_state_or_map')
+     return end
+ 
+@@ -549,8 +576,15 @@
+                         result = controls, kernel.lease_brake_states(state, controls, lease=.30)
+                         info.update(mode='terminal_yaw_alignment', terminal_yaw_alignment=True)
+             elapsed = time.monotonic()-began
+-            if self.simulation:
++            if self.simulation or result is None:
++                if not self.simulation:
++                    diagnostics.update(plan_time=now, measured_state=state.tolist(),
++                                       arm_reference=arm_anchor.tolist())
++                    header = getattr(snapshot, 'header', None)
++                    if isinstance(header, np.ndarray) and header.shape == (32,):
++                        diagnostics['snapshot_header'] = header.tolist()
+                 diagnostics.update({key:info[key] for key in (
++                    'feasible', 'candidates', 'structured_candidates', 'structured_first_base_commands',
+                     'structured_labels', 'structured_valid', 'structured_costs',
+                     'structured_external_gaps', 'structured_configuration_gaps',
+                     'structured_bounds_valid',
+@@ -561,12 +595,14 @@
+                     'mode', 'reference_source', 'native_phase', 'native_time_scale',
+                     'native_arm_reference', 'source_stamp', 'reference_hash') if key in info})
+                 diagnostics['solve_ms'] = round(elapsed*1000, 2)
++            # An obsolete solve is a local retry even when it found no candidate;
++            # it must not cancel an otherwise usable native reference.
++            if elapsed > self.deadline: raise ValueError('planning_deadline_exceeded')
+             if result is None:
+                 if startup:
+                     diagnostics.update(info)
+                 reason = 'no_feasible_candidate' if info.get('feasible') == 0 else info.get('reference_status', 'no_feasible_candidate')
+                 raise ValueError(reason)
+-            if elapsed > self.deadline: raise ValueError('planning_deadline_exceeded')
+             controls, prediction = result
+             command = np.asarray(controls[0], dtype=float).copy()
+             # Hold the reference lock through delivery: cancel/replace cannot
+@@ -601,7 +637,7 @@
+                 # Recheck the command that will actually be sent, including
+                 # the planner's limit; arm avoidance remains available at v=w=0.
+                 current = np.r_[self.base, self.joints]
+-                first_step = checked_first_step(kernel, current, command, self.snapshot, end)
++                first_step = checked_first_step(kernel, current, command, self.snapshot, end, diagnostics=diagnostics)
+                 target = first_step[5:11]
+                 if np.max(np.abs(target-self.joints[:6])) > .03:
+                     raise ValueError('arm_target_exceeds_current_feedback_lead')
+--- before/src/mm_remani/scripts/mppi/active_arm_mppi.py
++++ now/src/mm_remani/scripts/mppi/active_arm_mppi.py
+@@ -310,7 +310,9 @@
+         dt = self.dt if dt is None else dt
+         return self._advance_position(state, None, None, dt)
+ 
+-    def guide(self, state, reference, speed_scale=1., angle_offset=0.):
++    def guide(self, state, reference, speed_scale=1., angle_offset=0., reference_gear=None):
++        if reference_gear not in (None, -1, 1):
++            raise ValueError('invalid reference gear')
+         pos = state[:2]
+         d = np.linalg.norm(reference[:,:2]-pos, axis=1)
+         arc = np.r_[0., np.cumsum(np.linalg.norm(np.diff(reference[:,:2], axis=0), axis=1))]
+@@ -325,14 +327,16 @@
+         if goal_dist < .025:
+             err = wrap(reference[-1,2]-state[2])
+             return np.array([0., np.clip(1.8*err,-self.limits['wmax'],self.limits['wmax'])])
+-        gear = -1 if reference[k,3] < -.01 else 1
++        gear = reference_gear if reference_gear is not None else (-1 if reference[k,3] < -.01 else 1)
+         yaw = math.atan2(delta[1],delta[0]) + (np.pi if gear < 0 else 0.) + angle_offset
+         error = wrap(yaw-state[2])
+         speed = min(self.limits['vmax'], .22, max(.08, abs(reference[k,3])), .9*goal_dist)
+         return np.array([gear*speed*speed_scale*max(0.,math.cos(error)),
+                          np.clip(2.*error,-self.limits['wmax'],self.limits['wmax'])])
+ 
+-    def proposals(self, state, reference, arm_reference, base_modes=None):
++    def proposals(self, state, reference, arm_reference, base_modes=None, reference_gear=None):
++        if reference_gear not in (None, -1, 1):
++            raise ValueError('invalid reference gear')
+         targets = [np.asarray(arm_reference), state[5:11]]
+         if self.enabled:
+             targets.extend(self.postures)
+@@ -364,7 +368,11 @@
+             near=np.argmin(distances,axis=1)
+             look=np.minimum(len(reference)-1,np.searchsorted(arc,arc[near]+.30))
+             delta=reference[look,:2]-z[:,:2]
+-            gear=np.where(reference[near,3]<-.01,-1.,1.)
++            # Native direction is discrete and survives a paused/slowed phase.
++            # Inferring it from scaled speed would turn a slow reverse into a
++            # forward command aimed pi radians away from the robot's heading.
++            gear=(reference_gear if reference_gear is not None else
++                  np.where(reference[near,3]<-.01,-1.,1.))
+             goal_dist=np.linalg.norm(reference[-1,:2]-z[:,:2],axis=1)
+             desired=np.arctan2(delta[:,1],delta[:,0])+np.where(gear<0,np.pi,0.)+angles
+             error=wrap(desired-z[:,2])
+@@ -511,10 +519,10 @@
+         bounds=np.all((a[:,5:11]>=self.qmin-1e-9)&(a[:,5:11]<=self.qmax+1e-9))
+         return bool(np.all(gaps>=0) and bounds),float(np.min(gaps))
+ 
+-    def plan(self,state,reference,arm_reference,snapshot,now):
++    def plan(self,state,reference,arm_reference,snapshot,now,reference_gear=None):
+         # First test continuing nominal base progress while changing only the
+         # arm. Broader base maneuvers are generated if this set is infeasible.
+-        us,labels=self.proposals(state,reference,arm_reference,[(1.,0.)])
++        us,labels=self.proposals(state,reference,arm_reference,[(1.,0.)],reference_gear)
+         cost,valid,gaps,states = self.evaluate(state,us,reference,arm_reference,snapshot,now)
+         external_gaps=self.last_external_gaps.copy()
+         intervention=not valid[0] or external_gaps[0]<.12
+@@ -527,7 +535,7 @@
+         arm_only = bool(np.any(valid))
+         mode = 'arm_only' if arm_only else 'whole_body_fallback'
+         if not arm_only:
+-            us,labels=self.proposals(state,reference,arm_reference)
++            us,labels=self.proposals(state,reference,arm_reference,reference_gear=reference_gear)
+             cost,valid,gaps,states=self.evaluate(state,us,reference,arm_reference,snapshot,now)
+         diagnostics={
+             'structured_labels':[list(x) for x in labels],
+--- before/src/mm_remani/scripts/mppi/native_reference_adapter.py
++++ now/src/mm_remani/scripts/mppi/native_reference_adapter.py
+@@ -385,7 +385,12 @@
+                 kernel = self.navigation if self.active else self.standby
+                 if self.active:
+                     reference, arm_reference = path, np.asarray(diagnostics['native_arm_reference'])
+-            result, info = kernel.plan(state, reference, arm_reference, snapshot, plan_now)
++                plan_args = (state, reference, arm_reference, snapshot, plan_now)
++                if self.active:
++                    # Keep native direction separate from time-scaled speed,
++                    # including zero speed at pauses and polynomial endpoints.
++                    plan_args += (diagnostics['native_gear'],)
++            result, info = kernel.plan(*plan_args)
+             with self.lock:
+                 if revision != self.revision:
+                     kernel.previous = None
+--- before/src/mm_remani_planner/plan_env/src/esdf_worker.cpp
++++ now/src/mm_remani_planner/plan_env/src/esdf_worker.cpp
+@@ -715,35 +715,40 @@
+     for (std::size_t index = 0; index < regions.size(); ++index)
+     {
+       const PatchRegion &region = regions[index];
+-      int axis = 0;
+-      const int span = (region.changed_max - region.changed_min).maxCoeff(&axis);
+-      if (span <= 0 || region.members.size() < 2U) continue;
+-      const int midpoint = region.changed_min(axis) + span / 2;
+-      PatchRegion left, right;
+-      left.changed_min = right.changed_min = job.max_index;
+-      left.changed_max = right.changed_max = job.min_index;
+-      std::size_t left_count = 0, right_count = 0;
+-      for (std::size_t member_index = 0; member_index < region.members.size(); ++member_index)
+-      {
+-        if ((member_index & 4095U) == 0U && computationCancelled()) return false;
+-        const Eigen::Vector3i &cell = job.changed_cells[region.members[member_index]];
+-        PatchRegion &child = cell(axis) <= midpoint ? left : right;
+-        child.changed_min = child.changed_min.cwiseMin(cell);
+-        child.changed_max = child.changed_max.cwiseMax(cell);
+-        if (cell(axis) <= midpoint) ++left_count; else ++right_count;
+-      }
+-      if (left_count == 0 || right_count == 0) continue;
+-      setRegionGeometry(&left, job, radius);
+-      setRegionGeometry(&right, job, radius);
+-      const double child_work = static_cast<double>(left.voxel_count) +
+-                                static_cast<double>(right.voxel_count);
+-      if (child_work > .85 * static_cast<double>(region.voxel_count)) continue;
+-      const std::size_t gain = region.voxel_count - left.voxel_count - right.voxel_count;
+-      if (gain > best_gain)
+-      {
+-        best_region = index; best_gain = gain;
+-        best_axis = axis; best_midpoint = midpoint;
+-        best_left = std::move(left); best_right = std::move(right);
++      if (region.members.size() < 2U) continue;
++      // The longest-axis cut may preserve a wide orthogonal gap in BOTH
++      // children. Try all three midpoints before declaring halos uneconomic.
++      for (int axis = 0; axis < 3; ++axis)
++      {
++        const int span = region.changed_max(axis) - region.changed_min(axis);
++        if (span <= 0) continue;
++        const int midpoint = region.changed_min(axis) + span / 2;
++        PatchRegion left, right;
++        left.changed_min = right.changed_min = job.max_index;
++        left.changed_max = right.changed_max = job.min_index;
++        std::size_t left_count = 0, right_count = 0;
++        for (std::size_t member_index = 0; member_index < region.members.size(); ++member_index)
++        {
++          if ((member_index & 4095U) == 0U && computationCancelled()) return false;
++          const Eigen::Vector3i &cell = job.changed_cells[region.members[member_index]];
++          PatchRegion &child = cell(axis) <= midpoint ? left : right;
++          child.changed_min = child.changed_min.cwiseMin(cell);
++          child.changed_max = child.changed_max.cwiseMax(cell);
++          if (cell(axis) <= midpoint) ++left_count; else ++right_count;
++        }
++        if (left_count == 0 || right_count == 0) continue;
++        setRegionGeometry(&left, job, radius);
++        setRegionGeometry(&right, job, radius);
++        const double child_work = static_cast<double>(left.voxel_count) +
++                                  static_cast<double>(right.voxel_count);
++        if (child_work > .85 * static_cast<double>(region.voxel_count)) continue;
++        const std::size_t gain = region.voxel_count - left.voxel_count - right.voxel_count;
++        if (gain > best_gain)
++        {
++          best_region = index; best_gain = gain;
++          best_axis = axis; best_midpoint = midpoint;
++          best_left = std::move(left); best_right = std::move(right);
++        }
+       }
+     }
+     if (best_region == regions.size()) break;

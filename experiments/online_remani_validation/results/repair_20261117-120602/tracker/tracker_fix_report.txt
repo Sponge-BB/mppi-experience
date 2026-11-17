@@ -1,0 +1,43 @@
+动态表面门控修复：可交付候选，离线验证通过，尚未实车验证
+
+结论与最小行为变更
+仅把 surfaceSupportsTranslation 内两处最近表面距离从 XYZ 投影到 XY，匹配已有二维 history_net 与平移 shift。最终候选 core.cpp:108/110；5cm 容差、4倍改善、双向条件与全部前置门控不变。完整三维 motion_surface 和发布的原始 cluster XYZ 点均保留；没有平面化碰撞点云。垂直变化本身不构成平面运动。
+
+根因证据
+使用本轮原 geometry.bag 全4836帧、core中原TF、latest_parameters、原PCD（SHA256 0b624438bb865a9296bcc92120b21e74b065a1ac6395e4687ace1e73f747e78a）。原PCD加载28138点，tracker体素后28137，与原日志一致。原行为回放对残差点数、簇数、confirmed数、motion-qualified数、background anchors、maximum_confirmed_speed 六项每帧逐值完全一致，原4822动态输出全部为空，故不是另造场景。
+原日志三个 only_surface 拒绝均准确导出原首尾表面，仅7891B。
+source 1794883331.099619 / id1044：原3D平移后正/反距离0.06202/0.08801m；XY为0.02622/0.02676m。
+source 1794883388.098637 / id1214：原3D为0.10035/0.11122m；XY为0.04021/0.04021m。
+source 1794883389.1997874 / id1214：原3D为0.06395/0.08508m；XY为0.02623/0.02623m。
+三者原静止差异与改善倍率均通过，只有0.05m贴近项失败。原点集高度采样变化会使3D逐点对应失败；只按XY证据比较可保持全部现有阈值。把阈值直接放到0.10m仍无法通过第二个案例，未采用这种调参。
+
+验证
+45/45 gtests：原有与诊断38项 + 三个真实点集 + 四个垂直/静态/平移边界。垂直-only、同XY静态面改变可见高度、静态面滑动可见窗口均拒绝；真实平面平移同时改变高度通过且输入XYZ逐点不变。实验TU用相对路径include core实现与原38tests，不新增正式CMake框架。
+正式共享core/node配套完整回放4836帧；残差/簇/background anchors完全一致。动态输出4822帧中51帧非空，最多一个motion-qualified track，均在目标2，目标1及目标2以外无非空输出。五段（source秒）：
+1794883330.599496–1794883332.398616：18帧，id1044；
+1794883351.198725–1794883351.299528：2帧，id1100；
+1794883352.899678–1794883353.399763：5帧，id1107；
+1794883388.009766–1794883389.698931：17帧，id1214；
+1794883390.098644–1794883390.899613：9帧，id1222。
+输出点保留真实Z，观测范围0.15045–1.60955m。
+confirmed仅3帧比原来少1，发生在1794883389.799084/3389.898908/3389.999748；随后id1222重新取得资格。最大confirmed速度54帧变化。代码依据：通过资格后 core:783/792 调用既有 stabilizeVelocityFromHistory；core:703–756 更新速度；下一帧 core:373–385 用 position + dt*velocity 关联。所以门控通过会进入原有速度/关联分支，并非只改变一个输出位。本轮没有修改这些分支。约0.4s重新关联空档仍存在，不能称完整连续人轨已解决。
+用户确认目标2确有进入/离开路径，但没有逐帧身份真值；本结果证明原记录的运动候选能够进入预测输入，不声称每段已被语义确认为人或实车避障成功。
+
+诊断
+私有参数 /dynamic_obstacle_tracker/surface_diagnostics 默认false，主代理可在exp0_real.launch对应node设true。开启后每次surface实评输出 [SurfaceEvidence]，不是1Hz。只复用原已算值，保留 forward && reverse 短路；未算方向 evaluated=false、距离=-1，无额外NN搜索。原1Hz qualification日志保留。
+原模型全段仅52次实评，总日志payload33897B，峰值10条/源秒；原短路只需6次反向搜索。实验fixture_core为取证额外计算反向并仅导出三事件，明确不得部署。
+
+正式交付（基路径为本目录）
+源码：behavior_candidate/include/mm_remani/dynamic_obstacle_tracker_core.h；behavior_candidate/src/dynamic_obstacle_tracker_core.cpp；behavior_candidate/src/dynamic_obstacle_tracker_node.cpp；behavior_candidate/test/test_dynamic_obstacle_tracker_core.cpp。
+部署：behavior_candidate/build/libdynamic_obstacle_tracker_core.so -> /home/l/remani_ws/devel/lib/libdynamic_obstacle_tracker_core.so；behavior_candidate/build/dynamic_obstacle_tracker_node -> /home/l/remani_ws/devel/lib/mm_remani/dynamic_obstacle_tracker_node。
+两者必须成对替换，header中诊断配置与结构有新增字段。库以-fPIC生成，node复用与该header/node源码一致的node.o重新链接。DT_NEEDED为libdynamic_obstacle_tracker_core.so，RUNPATH原值/home/l/remani_ws/devel/lib:/opt/ros/noetic/lib，无实验库绝对路径。通过LD_LIBRARY_PATH明确指向stage库的共享pair完成全段回放。不能用早期静态链接的build/dynamic_obstacle_tracker_node交付。
+完整命令：build_xy_shared.py 与 behavior_candidate/build/steps.json；源码/产物SHA与路径：deployment_manifest.json、behavior_candidate/build/shared_manifest.json。当前包内发现的core直接消费者为node和该core测试；共享库对外catkin导出，因此不得保留旧库配新header/node。
+源补丁：deployment_source.patch；仅行为两处差异：behavior_only.patch。
+小型可复现回归包：recorded_surface_regression.tar.gz（30000B，含相对结构源码/header、38+7测试、三个原点集、run.sh、SHA256SUMS、通过的gtest.xml）。已校验包内全部9项哈希。
+下游原schema样本：replay_xy_shared_full/nonempty_dynamic_samples.bag（5帧payload4256B）；同名json记录源时间、track IDs、字段/步长，不改变消息定义。
+
+边界与资源
+本代理未修改运行src/devel；主代理统一基线、应用、部署和版本归档。
+所有回放仅连接127.0.0.1:17641独立master，只有TF/clock/静态地图/geometry发布，无控制命令。clock按原bag接收时间单调推进，云header保留原值；TF批量预填0.5s，离线tf_timeout=0避免冻结sim-time等待。本次检验几何/分类而非原实时期限，且候选回放与地图编译可并行，不把processing_ms作为性能验收。
+最终XY core/test单进程nice15，1GiB虚拟上限，峰值RSS295376KiB。先前PCL node解析曾需要1.2GiB虚拟上限，峰值RSS1066324KiB（超1GiB约17.3MiB，已如实保留日志）；没有继续扩大编译。回放自身1GiB虚拟上限。结果总量远小于300MiB。
+回放结束脚本依次SIGINT并wait其独立node/master进程组；capture订阅节点也已退出，只处理本代理创建的进程。

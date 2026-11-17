@@ -1,0 +1,63 @@
+test_actual_future_feedback_still_rejected (__main__.CaptureClockTests) ... ok
+test_expired_authority_after_lock_wait_does_not_start_solver (__main__.CaptureClockTests) ... MPPI command rejected: feedback_expired_during_plan (cycle=1.11 ms; snapshot={})
+FAIL
+test_feedback_that_expired_while_waiting_is_rejected_before_solve (__main__.CaptureClockTests) ... FAIL
+test_map_that_expired_while_waiting_is_rejected_before_solve (__main__.CaptureClockTests) ... FAIL
+test_new_feedback_received_after_cycle_start_is_not_future (__main__.CaptureClockTests) ... ERROR
+test_new_health_and_feedback_after_lock_wait_deliver_with_original_stamp (__main__.CaptureClockTests) ... MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=0.91 ms; snapshot={})
+FAIL
+
+======================================================================
+ERROR: test_new_feedback_received_after_cycle_start_is_not_future (__main__.CaptureClockTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_mppi_capture_clock.py", line 40, in test_new_feedback_received_after_cycle_start_is_not_future
+    state, _, _, _ = self.capture(100.01, 100.02)
+  File "src/mm_remani/test/test_mppi_capture_clock.py", line 37, in capture
+    return self.node.capture(cycle_time)
+  File "/home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py", line 525, in capture
+    raise ValueError('state_feedback_stale')
+ValueError: state_feedback_stale
+
+======================================================================
+FAIL: test_expired_authority_after_lock_wait_does_not_start_solver (__main__.CaptureClockTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_mppi_capture_clock.py", line 76, in test_expired_authority_after_lock_wait_does_not_start_solver
+    self.node.reference.plan.assert_not_called()
+  File "/usr/lib/python3.8/unittest/mock.py", line 874, in assert_not_called
+    raise AssertionError(msg)
+AssertionError: Expected 'mock' to not have been called. Called 1 times.
+Calls: [call(array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), array([[0., 0., 0., 0.],
+       [0., 0., 0., 0.]]), array([0., 0., 0., 0., 0., 0.]), namespace(fresh=<function ExecutionDeliveryTests.setUp.<locals>.<lambda> at 0xffff921deee0>), 100.0)].
+
+======================================================================
+FAIL: test_feedback_that_expired_while_waiting_is_rejected_before_solve (__main__.CaptureClockTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_mppi_capture_clock.py", line 45, in test_feedback_that_expired_while_waiting_is_rejected_before_solve
+    self.capture(99.86, 100.02)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_map_that_expired_while_waiting_is_rejected_before_solve (__main__.CaptureClockTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_mppi_capture_clock.py", line 54, in test_map_that_expired_while_waiting_is_rejected_before_solve
+    self.capture(99.99, 100.02)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_new_health_and_feedback_after_lock_wait_deliver_with_original_stamp (__main__.CaptureClockTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_mppi_capture_clock.py", line 65, in test_new_health_and_feedback_after_lock_wait_deliver_with_original_stamp
+    self.node.reference.plan.assert_called_once()
+  File "/usr/lib/python3.8/unittest/mock.py", line 892, in assert_called_once
+    raise AssertionError(msg)
+AssertionError: Expected 'mock' to have been called once. Called 0 times.
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.050s
+
+FAILED (failures=4, errors=1)

@@ -1,0 +1,135 @@
+{
+  "release": "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02",
+  "namespace": "/standby_trial_20261105_feedback_02",
+  "mode": "shadow",
+  "hardware_publishers": false,
+  "master_uri": "http://127.0.0.1:11461",
+  "run_dir": "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/logs/20261106_014642",
+  "status": "running",
+  "processes": [
+    {
+      "pid": 7613,
+      "start_ticks": "138131",
+      "command": [
+        "/opt/ros/noetic/bin/roscore",
+        "-p",
+        "11461"
+      ],
+      "log": "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/logs/20261106_014642/roscore.log",
+      "component": "master"
+    },
+    {
+      "pid": 7635,
+      "start_ticks": "138284",
+      "command": [
+        "/usr/bin/python3",
+        "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/runtime/hardware_shadow_node.py",
+        "--release-dir",
+        "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02",
+        "--namespace",
+        "/standby_trial_20261105_feedback_02"
+      ],
+      "log": "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/logs/20261106_014642/shadow.log",
+      "component": "shadow"
+    },
+    {
+      "pid": 7678,
+      "start_ticks": "139697",
+      "command": [
+        "/bin/bash",
+        "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/bin/start_raw_sensors.sh",
+        "--master-uri",
+        "http://127.0.0.1:11461"
+      ],
+      "log": "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/logs/20261106_014642/sensors_1793929618430429261.log",
+      "component": "sensors",
+      "hardware_actuator_publishers": false
+    },
+    {
+      "pid": 7938,
+      "start_ticks": "150588",
+      "command": [
+        "/usr/bin/python3",
+        "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/runtime/piper_can_receive_only.py",
+        "--interface",
+        "can0",
+        "--duration",
+        "300.0",
+        "--output-jsonl",
+        "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/logs/20261106_014642/feedback_1793929727330959971.jsonl"
+      ],
+      "log": "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/logs/20261106_014642/feedback_1793929727330959971.log",
+      "component": "feedback",
+      "hardware_actuator_publishers": false,
+      "can_interface_verification": {
+        "interface": {
+          "ifindex": 5,
+          "ifname": "can0",
+          "flags": [
+            "NOARP",
+            "UP",
+            "LOWER_UP",
+            "ECHO"
+          ],
+          "mtu": 16,
+          "qdisc": "pfifo_fast",
+          "operstate": "UP",
+          "linkmode": "DEFAULT",
+          "group": "default",
+          "txqlen": 10,
+          "link_type": "can",
+          "promiscuity": 0,
+          "min_mtu": 0,
+          "max_mtu": 0,
+          "linkinfo": {
+            "info_kind": "can",
+            "info_data": {
+              "state": "ERROR-ACTIVE",
+              "restart_ms": 0,
+              "bittiming": {
+                "bitrate": 1000000,
+                "sample_point": 0.75,
+                "tq": 62,
+                "prop_seg": 5,
+                "phase_seg1": 6,
+                "phase_seg2": 4,
+                "sjw": 1
+              },
+              "bittiming_const": {
+                "name": "gs_usb",
+                "tseg1": {
+                  "min": 1,
+                  "max": 16
+                },
+                "tseg2": {
+                  "min": 1,
+                  "max": 8
+                },
+                "sjw": {
+                  "min": 1,
+                  "max": 4
+                },
+                "brp": {
+                  "min": 1,
+                  "max": 1024
+                },
+                "brp_inc": 1
+              },
+              "clock": 48000000
+            }
+          },
+          "num_tx_queues": 1,
+          "num_rx_queues": 1,
+          "gso_max_size": 65536,
+          "gso_max_segs": 65535
+        },
+        "detail": "5: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UP mode DEFAULT group default qlen 10\n    link/can  promiscuity 0 minmtu 0 maxmtu 0 \n    can state ERROR-ACTIVE restart-ms 0 \n\t  bitrate 1000000 sample-point 0.750 \n\t  tq 62 prop-seg 5 phase-seg1 6 phase-seg2 4 sjw 1\n\t  gs_usb: tseg1 1..16 tseg2 1..8 sjw 1..4 brp 1..1024 brp-inc 1\n\t  clock 48000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 \n",
+        "listen_only": false,
+        "hardware_ack_allowed": true,
+        "application_can_tx_enabled": false,
+        "controller_mode": "normal_ack_application_receive_only"
+      }
+    }
+  ],
+  "started_wall": 1793929604.9021142
+}

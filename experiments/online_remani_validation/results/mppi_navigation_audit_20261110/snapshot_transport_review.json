@@ -1,0 +1,41 @@
+{
+  "scope": "Offline callback and source audit; no ROS master, hardware, driver or map threshold changes.",
+  "historical_occurrence": "No matching delta-without-cache or malformed-snapshot error found in recent Nov10 navigation stutter/rear, 19:25 recorder or latest ROS logs. This is a reproduced design defect, not proven cause of those recorded stops.",
+  "before": {
+    "malformed_same_generation": "on_snapshot discarded both executable snapshot and field cache; every later valid delta also failed until a full packet arrived.",
+    "dropped_new_full": "A queued full packet followed by delta can lose the full under latest-only queues; subsequent deltas must remain rejected until a full of their generation arrives.",
+    "recovery_bound": "Next changed-generation full or existing 1-second resend, whichever arrives first. Recorded changed field frequency around5-6Hz; do not claim1second outage on every loss.",
+    "amplification": "Raw decode error propagated from capture was not a local retry, so an active delivered navigation goal received tracking_fault despite no new geometric failure."
+  },
+  "after": {
+    "retained_cache": "One last-successful decoded field retained separately; invalid current packet still clears executable self.snapshot. Only matching version/grid deltas may reuse cache.",
+    "fault_classification": "Missing/decode-failed snapshot uses collision_snapshot_unavailable local retry; still stops base and publishes raw input_error diagnostics without cancelling the valid reference.",
+    "unchanged_limits": "All source TTL, enabled perception health, map-version/grid equality, collision and stopping checks unchanged.",
+    "remaining_limitation": "Missing a new-generation full still waits for a full packet; no ACK/resend subsystem was added."
+  },
+  "source_files": [
+    "src/mm_remani/scripts/whole_body_mppi.py",
+    "src/mm_remani/test/test_mppi_startup.py",
+    "src/mm_remani/test/test_mppi_snapshot_recovery.py"
+  ],
+  "validation": {
+    "command": [
+      "/usr/bin/python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "src/mm_remani/test",
+      "-p",
+      "test_mppi_snapshot_recovery.py",
+      "-v"
+    ],
+    "returncode": 0,
+    "tests": 5
+  },
+  "related_audit": {
+    "lost_track_id": "DynamicPointBuffer now accepts latest valid real empty frame; old-ID recovery is not current runtime logic.",
+    "map_latency": "Recorded before-first-arm-stop map ages median228.987ms p95344.917ms vs350ms gate; 143/3139 packets exceeded gate at recorder. Pipeline stage attribution cannot prove raw sensor latency or immutable copies dominant.",
+    "slow_layer_speed_guard": "Native-reference collision can impose monotone speed guard on MPPI; preserve emergency priority until alternative-path safety arbitration is validated. Not changed in this patch."
+  }
+}

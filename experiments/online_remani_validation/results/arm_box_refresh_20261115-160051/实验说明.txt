@@ -1,0 +1,11 @@
+本轮结论：前缀统一接入得到验证，但未证明减少底盘扰动。三对试验中新版横偏与偏航都更大，不能部署为性能改进。
+场景：机器人正常行驶，机械臂前方1m处突然出现0.30×0.40×0.25m长方体；底盘自由，全部关节参与。三对采用相同配置与出现规则，初始参考与实际障碍坐标并非完全一致。
+8组C++边界检查通过；6组ROS数值闭环均到达、无采样碰撞或关节越界，并确认全部机械臂球体穿过障碍远端。新版一次可选耦合交付成功，另两次可选求解失败后由必要重规划成功交付。
+核心剩余问题：短前缀进入合并初值和单个未来姿态软成本，并不足以保证整段摆臂被保留。部分求解在0.6s内未找到可交付候选，记录中有轮速/轮加速度拒绝和内部原因未标明的原生拒绝。不能把所有失败统称感知超时。
+数据：refresh_analysis/refresh_analysis.json 与 PNG；第一对三维回放和GIF在 report。原始记录按legacy_seed11..13、fixed_seed11..13存放。
+复现（用新的输出目录，已有结果不覆盖）：
+source /opt/ros/noetic/setup.bash
+source /home/l/remani_ws/devel/setup.bash
+PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /usr/bin/python3 experiments/online_remani_validation/run_arm_box_refresh.py legacy --seed 11 --case /home/l/remani_ws/experiments/online_remani_validation/results/arm_box_refresh_repeat_NEW
+将legacy改为fixed运行同seed；按11、12、13逐轮运行。程序只运行独立localhost master 11441，不能与同端口程序并用。
+本轮源码和新程序均在experiments；近期38项src/devel条目SHA/权限核对未变。未启动实车，不能称实车验证通过。

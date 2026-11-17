@@ -1,0 +1,981 @@
+{
+  "goal_receive_ros": 1794447871.8574836,
+  "derivative_boundary": {
+    "first_poly_start_velocity": [
+      0.049971174093989046,
+      -0.00169757464290616,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      -0.2383195784469517,
+      0.0
+    ],
+    "first_poly_start_acceleration": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "start_arm_delta_from_goal_norm": 0.003041934148015031,
+    "hold_enable_tolerance": 0.001,
+    "hold_enabled_by_code": false
+  },
+  "reference_freezes": [
+    {
+      "start_relative": 5.930186748504639,
+      "end_relative": 7.880211591720581,
+      "duration": 1.9500248432159424,
+      "start_msg": "[MMctrl] Base tracking lag (position 0.160 m, yaw 0.020 rad); freeze reference progress until feedback catches up.",
+      "end_msg": "[MMctrl] Base tracking recovered (position 0.048 m, yaw 0.018 rad)."
+    },
+    {
+      "start_relative": 15.96018385887146,
+      "end_relative": 19.390199422836304,
+      "duration": 3.4300155639648438,
+      "start_msg": "[MMctrl] Base tracking lag (position 0.160 m, yaw 0.021 rad); freeze reference progress until feedback catches up.",
+      "end_msg": "[MMctrl] Base tracking recovered (position 0.048 m, yaw 0.042 rad)."
+    },
+    {
+      "start_relative": 22.700158834457397,
+      "end_relative": 25.580233335494995,
+      "duration": 2.8800745010375977,
+      "start_msg": "[MMctrl] Base tracking lag (position 0.160 m, yaw 0.005 rad); freeze reference progress until feedback catches up.",
+      "end_msg": "[MMctrl] Base tracking recovered (position 0.041 m, yaw 0.018 rad)."
+    },
+    {
+      "start_relative": 27.88019871711731,
+      "end_relative": 31.480220317840576,
+      "duration": 3.6000216007232666,
+      "start_msg": "[MMctrl] Base tracking lag (position 0.161 m, yaw 0.005 rad); freeze reference progress until feedback catches up.",
+      "end_msg": "[MMctrl] Base tracking recovered (position 0.046 m, yaw 0.046 rad)."
+    },
+    {
+      "start_relative": 33.89017987251282,
+      "end_relative": 37.590190410614014,
+      "duration": 3.7000105381011963,
+      "start_msg": "[MMctrl] Base tracking lag (position 0.161 m, yaw 0.036 rad); freeze reference progress until feedback catches up.",
+      "end_msg": "[MMctrl] Base tracking recovered (position 0.050 m, yaw 0.034 rad)."
+    }
+  ],
+  "first_goal_rosout_counts": {
+    "Tracker reported excessive trajectory error": 1,
+    "Base tracking lag (": 5,
+    "Base tracking recovered": 5,
+    "no_feasible_candidate": 1,
+    "Reset virtual trajectory clock": 3,
+    "Receive the trajectory": 2,
+    "Reference trajectory ended before": 0,
+    "Position and arm reached": 1
+  },
+  "limits": [
+    "第一goal+12s之后只有rosout，不能声称完整指令/轨迹消息录制覆盖到最终到达；只有第一次fault链和原native包完整。",
+    "Base clock freeze不等于整机急停：MPPI会以当前冻结参考姿态生成追赶速度；日志显示它造成慢进度与速度周期，底盘真正零指令来自拒绝分支。",
+    "地图过期/交付拒绝与一次no_feasible原因必须分开；候选原周期拒绝明细未记录。",
+    "真实dq由单次相邻位置差分得到，能证明边界脉冲进入规划，不能把它直接定义为硬件故障或纯噪声。"
+  ],
+  "joint_boundary_messages": [
+    {
+      "relative": -0.1133112907409668,
+      "source": 1794447871.740422,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.09991836547851562,
+      "source": 1794447871.7504,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.09839701652526855,
+      "source": 1794447871.7554252,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.09384632110595703,
+      "source": 1794447871.760627,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.08411431312561035,
+      "source": 1794447871.7704077,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.07114911079406738,
+      "source": 1794447871.7804155,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.06848573684692383,
+      "source": 1794447871.7854252,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.06362342834472656,
+      "source": 1794447871.7903936,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.05874776840209961,
+      "source": 1794447871.79555,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.05252218246459961,
+      "source": 1794447871.8003995,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.04383063316345215,
+      "source": 1794447871.8104367,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.0361483097076416,
+      "source": 1794447871.8154373,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.01800370216369629,
+      "source": 1794447871.8254266,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.011555910110473633,
+      "source": 1794447871.8354127,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": -0.006994485855102539,
+      "source": 1794447871.8454251,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.008387565612792969,
+      "source": 1794447871.860391,
+      "positions": [
+        0.002844886680750757,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.050926923751831055,
+      "source": 1794447871.895455,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.989235166737866,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.06357526779174805,
+      "source": 1794447871.9104106,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.03842934813999618,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.06882381439208984,
+      "source": 1794447871.9204133,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.07988572120666504,
+      "source": 1794447871.9254298,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.08754944801330566,
+      "source": 1794447871.935439,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.09229755401611328,
+      "source": 1794447871.945406,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.09671950340270996,
+      "source": 1794447871.950402,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.10121917724609375,
+      "source": 1794447871.9554193,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.1098489761352539,
+      "source": 1794447871.9604084,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.11658906936645508,
+      "source": 1794447871.9654298,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.12177920341491699,
+      "source": 1794447871.975418,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.1293015480041504,
+      "source": 1794447871.9804132,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.14077019691467285,
+      "source": 1794447871.985441,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.1476278305053711,
+      "source": 1794447871.9954517,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "relative": 0.1535193920135498,
+      "source": 1794447872.0054204,
+      "positions": [
+        0.0009424777960769379,
+        0.5184326010123956,
+        -1.05573221123885,
+        0.0,
+        0.9870535051728732,
+        0.0
+      ],
+      "velocities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "first_goal_selected_rosout": [
+    {
+      "t": 1794447871.8595452,
+      "node": "/remani_planner_node",
+      "level": "INFO",
+      "msg": "[FSM] Manual target keeps current arm pose. Restore stand-by after goal: true"
+    },
+    {
+      "t": 1794447871.8597171,
+      "node": "/remani_planner_node",
+      "level": "INFO",
+      "msg": "[FSM] Frozen planning-boundary ESDF requirement at seq=880 in GEN_NEW_TRAJ."
+    },
+    {
+      "t": 1794447871.8597956,
+      "node": "/remani_planner_node",
+      "level": "INFO",
+      "msg": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=880, esdf_seq=879, wait=0.00 s)."
+    },
+    {
+      "t": 1794447872.3780837,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Reset virtual trajectory clock for update 1."
+    },
+    {
+      "t": 1794447872.3782248,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Receive the trajectory. STAY --> POLY_TRAJ"
+    },
+    {
+      "t": 1794447872.8387187,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Arm tracking error 0.101 rad; scale whole-body progress to 0.99."
+    },
+    {
+      "t": 1794447873.8476985,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Arm tracking error 0.185 rad; scale whole-body progress to 0.49."
+    },
+    {
+      "t": 1794447874.8576617,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Arm tracking error 0.164 rad; scale whole-body progress to 0.62."
+    },
+    {
+      "t": 1794447875.4276617,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.081 m yaw=0.093 rad; scale whole-body progress to 0.99."
+    },
+    {
+      "t": 1794447876.4376254,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.119 m yaw=0.015 rad; scale whole-body progress to 0.56."
+    },
+    {
+      "t": 1794447877.4376838,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.143 m yaw=0.017 rad; scale whole-body progress to 0.29."
+    },
+    {
+      "t": 1794447877.7876704,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag (position 0.160 m, yaw 0.020 rad); freeze reference progress until feedback catches up."
+    },
+    {
+      "t": 1794447879.7376952,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Base tracking recovered (position 0.048 m, yaw 0.018 rad)."
+    },
+    {
+      "t": 1794447880.9465675,
+      "node": "/remani_planner_node",
+      "level": "ERROR",
+      "msg": "[FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry."
+    },
+    {
+      "t": 1794447880.958022,
+      "node": "/whole_body_mppi",
+      "level": "WARN",
+      "msg": "MPPI command rejected: no_feasible_candidate (cycle=124.48 ms; snapshot={})"
+    },
+    {
+      "t": 1794447880.9577174,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Reset virtual trajectory clock for update 2."
+    },
+    {
+      "t": 1794447880.9577537,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Stop execute the trajectory. POLY_TRAJ --> STAY"
+    },
+    {
+      "t": 1794447881.6200979,
+      "node": "/remani_planner_node",
+      "level": "WARN",
+      "msg": "[FSM] Recovery trajectory is ready, but the tracker is not aligned yet; keep zero speed."
+    },
+    {
+      "t": 1794447881.6291301,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Reset virtual trajectory clock for update 3."
+    },
+    {
+      "t": 1794447881.629456,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.003 m yaw=0.261 rad; scale whole-body progress to 0.97."
+    },
+    {
+      "t": 1794447881.6295164,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Receive the trajectory. STAY --> POLY_TRAJ"
+    },
+    {
+      "t": 1794447881.7789252,
+      "node": "/remani_planner_node",
+      "level": "INFO",
+      "msg": "[FSM] Tracker aligned to the validated recovery trajectory; release the tracking-owned stop."
+    },
+    {
+      "t": 1794447885.4279592,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.081 m yaw=0.021 rad; scale whole-body progress to 0.99."
+    },
+    {
+      "t": 1794447886.4277437,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.143 m yaw=0.024 rad; scale whole-body progress to 0.30."
+    },
+    {
+      "t": 1794447887.4380372,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.147 m yaw=0.022 rad; scale whole-body progress to 0.24."
+    },
+    {
+      "t": 1794447887.8176675,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag (position 0.160 m, yaw 0.021 rad); freeze reference progress until feedback catches up."
+    },
+    {
+      "t": 1794447891.247683,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Base tracking recovered (position 0.048 m, yaw 0.042 rad)."
+    },
+    {
+      "t": 1794447891.9780138,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.080 m yaw=0.030 rad; scale whole-body progress to 1.00."
+    },
+    {
+      "t": 1794447892.9877043,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.145 m yaw=0.021 rad; scale whole-body progress to 0.27."
+    },
+    {
+      "t": 1794447893.9980493,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.154 m yaw=0.002 rad; scale whole-body progress to 0.17."
+    },
+    {
+      "t": 1794447894.5576425,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag (position 0.160 m, yaw 0.005 rad); freeze reference progress until feedback catches up."
+    },
+    {
+      "t": 1794447897.437717,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Base tracking recovered (position 0.041 m, yaw 0.018 rad)."
+    },
+    {
+      "t": 1794447898.237695,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.081 m yaw=0.012 rad; scale whole-body progress to 0.99."
+    },
+    {
+      "t": 1794447899.24769,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.153 m yaw=0.010 rad; scale whole-body progress to 0.18."
+    },
+    {
+      "t": 1794447899.7376823,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag (position 0.161 m, yaw 0.005 rad); freeze reference progress until feedback catches up."
+    },
+    {
+      "t": 1794447903.337704,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Base tracking recovered (position 0.046 m, yaw 0.046 rad)."
+    },
+    {
+      "t": 1794447904.0177755,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.080 m yaw=0.038 rad; scale whole-body progress to 1.00."
+    },
+    {
+      "t": 1794447905.0277042,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.152 m yaw=0.027 rad; scale whole-body progress to 0.19."
+    },
+    {
+      "t": 1794447905.7476635,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag (position 0.161 m, yaw 0.036 rad); freeze reference progress until feedback catches up."
+    },
+    {
+      "t": 1794447909.447674,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Base tracking recovered (position 0.050 m, yaw 0.034 rad)."
+    },
+    {
+      "t": 1794447910.5085194,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.080 m yaw=0.034 rad; scale whole-body progress to 1.00."
+    },
+    {
+      "t": 1794447911.5176814,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.092 m yaw=0.026 rad; scale whole-body progress to 0.87."
+    },
+    {
+      "t": 1794447912.518074,
+      "node": "/mm_controller_node",
+      "level": "WARN",
+      "msg": "[MMctrl] Base tracking lag position=0.100 m yaw=0.142 rad; scale whole-body progress to 0.78."
+    },
+    {
+      "t": 1794447913.333605,
+      "node": "/remani_planner_node",
+      "level": "INFO",
+      "msg": "[FSM] Position and arm reached; wait for bounded final yaw alignment (error=0.189 rad, 0.0/8.0 s)."
+    },
+    {
+      "t": 1794447913.3478708,
+      "node": "/mm_controller_node",
+      "level": "INFO",
+      "msg": "[MMctrl] Stop execute the trajectory. POLY_TRAJ --> STAY"
+    }
+  ],
+  "initial_motion_zero_command_duration_s": 2.723784923553467,
+  "initial_motion_interval_s": [
+    0.72,
+    9.0883
+  ],
+  "initial_motion_zero_command_duty_fraction": 0.3254884413266096
+}

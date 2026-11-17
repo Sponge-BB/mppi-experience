@@ -5,14 +5,16 @@ import rospy
 import math
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+from sensor_msgs.msg import JointState
 from std_msgs.msg import Bool, Float64, Float64MultiArray
 
 class RealBaseTracker:
     def __init__(self):
         rospy.init_node('real_base_tracker', anonymous=True)
+        self.execute = bool(rospy.get_param('~execute', True))
 
         # 1. 发布给实车底盘的速度控制指令
-        self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+        self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1) if self.execute else None
         self.err_pub = rospy.Publisher('/tracking_error', Float64MultiArray, queue_size=10)
         self.fault_pub = rospy.Publisher('/tracking_fault', Bool, queue_size=1, latch=True)
         self.safety_speed_limit = None
@@ -24,12 +26,8 @@ class RealBaseTracker:
         #    angular.x = 目标线速度X
         #    angular.y = 目标线速度Y
         #    angular.z = 期望角速度 (omega feedforward)
-        self.cmd_sub = rospy.Subscriber('/mm_controller_node/car_cmd', Twist, self.car_cmd_cb)
 
         # 3. 接收刚才写的实车的实时定位Odometry
-        self.odom_sub = rospy.Subscriber('/odom', Odometry, self.odom_cb)
-        self.safety_speed_sub = rospy.Subscriber(
-            '/planning/safety_speed_limit', Float64, self.safety_speed_limit_cb)
 
         self.current_x = 0.0
         self.current_y = 0.0
@@ -37,6 +35,8 @@ class RealBaseTracker:
         self.has_odom = False
         self.odom_receive_stamp = rospy.Time(0)
         self.odom_header_stamp = rospy.Time(0)
+        self.joint_stamp = rospy.Time(0)
+        self.have_joints = False
 
         self.target_x = 0.0
         self.target_y = 0.0
@@ -63,6 +63,7 @@ class RealBaseTracker:
         self.odom_timeout = max(0.05, rospy.get_param('~odom_timeout', 0.25))
         self.odom_header_timeout = max(
             self.odom_timeout, rospy.get_param('~odom_header_timeout', 0.25))
+        self.joint_timeout = max(0.05, rospy.get_param('~joint_timeout', 0.25))
         self.tracking_stop_distance = max(
             0.05, rospy.get_param('~tracking_stop_distance', 0.18))
         self.tracking_stop_yaw = max(
@@ -122,6 +123,12 @@ class RealBaseTracker:
         self.tracking_fault = False
         self.tracking_unsafe_count = 0
         self.tracking_recover_count = 0
+        self.tracking_recover_source = (0.0, 0.0)
+        self.cmd_sub = rospy.Subscriber('/mm_controller_node/car_cmd', Twist, self.car_cmd_cb, queue_size=1)
+        self.odom_sub = rospy.Subscriber('/odom', Odometry, self.odom_cb, queue_size=1)
+        self.joint_sub = rospy.Subscriber('/mm/joint_states', JointState, self.joint_cb, queue_size=1)
+        self.safety_speed_sub = rospy.Subscriber(
+            '/planning/safety_speed_limit', Float64, self.safety_speed_limit_cb, queue_size=1)
         self.fault_pub.publish(Bool(data=False))
         rospy.on_shutdown(self.publish_stop)
 
@@ -132,6 +139,20 @@ class RealBaseTracker:
         rospy.spin()
 
     def odom_cb(self, msg):
+        if not msg.header.stamp.is_zero() and msg.header.stamp <= self.odom_header_stamp:
+            return
+        q = msg.pose.pose.orientation
+        p, v, w = msg.pose.pose.position, msg.twist.twist.linear, msg.twist.twist.angular
+        values = (p.x, p.y, p.z, q.x, q.y, q.z, q.w, v.x, v.y, v.z, w.x, w.y, w.z)
+        if (not all(math.isfinite(value) for value in values) or
+                abs(sum(value*value for value in (q.x, q.y, q.z, q.w))-1.) > .02 or
+                not self.source_fresh(msg.header.stamp, rospy.Time.now(), self.odom_header_timeout)):
+            self.has_odom = False
+            # A newer invalid sample cannot be undone by an older queued one.
+            if (msg.header.stamp > self.odom_header_stamp and
+                    (msg.header.stamp-rospy.Time.now()).to_sec() <= .05):
+                self.odom_header_stamp = msg.header.stamp
+            return
         self.current_x = msg.pose.pose.position.x
         self.current_y = msg.pose.pose.position.y
         q = msg.pose.pose.orientation
@@ -142,7 +163,29 @@ class RealBaseTracker:
         self.odom_receive_stamp = rospy.Time.now()
         self.odom_header_stamp = msg.header.stamp
 
+    @staticmethod
+    def source_fresh(stamp, now, timeout):
+        return not stamp.is_zero() and -.05 <= (now-stamp).to_sec() < timeout
+
+    def joint_cb(self, msg):
+        if not msg.header.stamp.is_zero() and msg.header.stamp <= self.joint_stamp:
+            return
+        names = tuple('joint%d' % i for i in range(1, 7))
+        valid = (len(msg.name) == len(msg.position) == len(msg.velocity) and
+                 len(set(msg.name)) == len(msg.name) and set(names).issubset(msg.name) and
+                 all(math.isfinite(value) for value in list(msg.position)+list(msg.velocity)) and
+                 self.source_fresh(msg.header.stamp, rospy.Time.now(), self.joint_timeout))
+        self.have_joints = valid
+        if (msg.header.stamp > self.joint_stamp and
+                (msg.header.stamp-rospy.Time.now()).to_sec() <= .05):
+            self.joint_stamp = msg.header.stamp
+
     def car_cmd_cb(self, msg):
+        if not all(math.isfinite(value) for value in
+                   (msg.linear.x, msg.linear.y, msg.linear.z,
+                    msg.angular.x, msg.angular.y, msg.angular.z)):
+            self.has_target = False
+            return
         self.target_x = msg.linear.x
         self.target_y = msg.linear.y
         self.target_yaw = msg.linear.z
@@ -161,7 +204,8 @@ class RealBaseTracker:
     def publish_stop(self):
         self.last_cmd = Twist()
         self.last_control_stamp = rospy.Time.now()
-        self.cmd_pub.publish(self.last_cmd)
+        if self.execute:
+            self.cmd_pub.publish(self.last_cmd)
 
     def set_tracking_fault(self, active, reason=""):
         if active == self.tracking_fault:
@@ -169,6 +213,7 @@ class RealBaseTracker:
         self.tracking_fault = active
         self.tracking_unsafe_count = 0
         self.tracking_recover_count = 0
+        self.tracking_recover_source = (0.0, 0.0)
         self.fault_pub.publish(Bool(data=active))
         if active:
             rospy.logerr("Tracking safety stop: %s", reason)
@@ -242,7 +287,18 @@ class RealBaseTracker:
         return max(-max_speed, min(max_speed, command))
 
     def control_loop(self, event):
-        if not self.has_odom or not self.has_target:
+        now = rospy.Time.now()
+        feedback_valid = (self.has_odom and self.have_joints and
+                          self.source_fresh(self.odom_header_stamp, now, self.odom_header_timeout) and
+                          self.source_fresh(self.joint_stamp, now, self.joint_timeout))
+        if not feedback_valid:
+            if self.has_target:
+                self.set_tracking_fault(True, 'execution odom/joint feedback unavailable or stale')
+                self.tracking_recover_count = 0
+                self.tracking_recover_source = (0.0, 0.0)
+            self.publish_stop()
+            return
+        if not self.has_target:
             self.publish_stop()
             return
 
@@ -316,7 +372,10 @@ class RealBaseTracker:
         if self.tracking_fault:
             if (dist <= self.tracking_recover_distance and
                     abs(eyaw) <= self.tracking_recover_yaw):
-                self.tracking_recover_count += 1
+                source = (self.odom_header_stamp.to_sec(), self.joint_stamp.to_sec())
+                if all(new > old for new, old in zip(source, self.tracking_recover_source)):
+                    self.tracking_recover_count += 1
+                    self.tracking_recover_source = source
                 if self.tracking_recover_count >= self.tracking_recover_frames:
                     self.set_tracking_fault(False)
             else:
@@ -407,7 +466,8 @@ class RealBaseTracker:
         self.last_cmd = cmd
 
         # 下发给底盘驱动节点
-        self.cmd_pub.publish(cmd)
+        if self.execute:
+            self.cmd_pub.publish(cmd)
 
 if __name__ == '__main__':
     try:

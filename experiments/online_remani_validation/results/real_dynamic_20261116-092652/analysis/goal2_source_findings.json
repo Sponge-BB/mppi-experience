@@ -1,0 +1,32 @@
+{
+  "method": "Read-only source audit and closed-bag correlation",
+  "source_sha256": {
+    "src/mm_remani_planner/plan_manage/src/planner_manager.cpp": "cdc4d1be2200dd35ac729f5a459da10e067b456e1939953b7ea7e617f05a8156",
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "f3c1ab3fa35db990dc88c06dd13daa20d2f8188989108094261e4552ba3b3757",
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "e5ac13e9387138c0464607996ae362297925a6b2abca34bcf0a51f65d38b303d"
+  },
+  "facts": [
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/planner_manager.cpp",
+      "line": 551,
+      "fact": "Successful existing-trajectory planning sleeps until the requested trajectory_start_time before constructing and returning the candidate."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 3392,
+      "fact": "Moving dynamic repair rejects candidates whose activation lead after return is below20ms. The guarded stopped-repair rebase branch is separate."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1123,
+      "fact": "Missing/mismatched/stale controller progress falls back to unscaled wall elapsed time; freshness limit is500ms in captured parameters."
+    },
+    {
+      "file": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+      "line": 609,
+      "fact": "Nominal valid rollout with external_gap>=.12 returns without broader base maneuvers. All27 deliveries in the measured approach window were nominal."
+    }
+  ],
+  "deployment_boundary": "Captured main executable/source hashes and runtime logs retained. This file does not claim full binary-to-source provenance for all linked libraries. Detailed agent audit may provide additional matching evidence.",
+  "runtime_modified": false
+}

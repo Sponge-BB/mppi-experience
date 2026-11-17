@@ -1,0 +1,11 @@
+Capacity-aware native phase coupling, final offline verification
+
+The unchanged production Python adapter and MPPI plan are coupled to a faithful base-only transcription of the updated native clock. The exact recorded two-gear degree-7 trajectory and recorded delivery cadence are reused. All six cases finish the native phase; no actual plan fails and no scale-transition angular reversal occurs.
+
+Recorded cadence: stage1 19.42 s -> capacity stage 15.69 s; no freeze in either fixed version. Published reference peaks across six runs: v=0.226816781 m/s, |w|=0.350000000 rad/s, peak wheel=0.229682154 m/s. Actual first-command limits also remain enforced.
+
+Residual limits are explicit: the lateral-negative 8cm case freezes once for 7.84s and resumes, taking 24.33s total (stage1 22.61s). Its six significant angular sign changes include one capture-to-heading transition, gear/low-speed transitions, path curvature changes, and a small terminal correction. They are not caused by switching frozen/resumed objectives, but are not claimed absent or harmless on real hardware.
+
+No hardware validation. Clear minimal geometry, ideal fixed arm, no map/perception rerun, no replanning or terminal alignment FSM. The plant has not been fitted to the real vehicle. See JSON and trace files for exact bounds, scope and all reversals.
+
+Final source binding: all six cases rerun in final_exact_source_runs after the C++ source/include/log freeze. Every report SHA matches current production source exactly. Initial reports remain in final_runs; their prior summary is capacity_validation_summary_previous.json.

@@ -1,0 +1,114 @@
+历史修复与当前停车门控只读审计（2026-11-17）
+
+审计范围
+- 只读源码、rollback记录及本次latest_parameters.json；未改运行文件、未启ROS、未发机器人指令、未做计算实验。
+- 本文不把全局状态计数等同于导航时段故障频率；具体本次卡顿根因由主代理按导航区间、实际拒绝门控和cmd_vel时序核对。
+- 路径均相对/home/l/remani_ws；行号对应当前源码。
+
+1. 版本与实际修改范围
+rollback/VERSIONS.tsv:64-67显示：
+  当前核心修复 20261116-232420-snapshot-resync
+  可回退父版本 20261116-231305-before-snapshot-resync
+  后续 20261116-233512-before-mppi-nominal 只是下一轮修改前基线。
+  20261116-234949-github-publish 发布src commit f9e0827c72a4，记录明确“运行逻辑未改”。
+三个当前源文件SHA256与snapshot-resync/files逐一一致：
+  whole_body_mppi.py: b1091b2952d7d5a40de57a09b00ddb0f37cbdec0dd22bcc8ca9ba6266f099f24
+  active_arm_mppi.py: 814bd45685bb6a8ebb9ba1a1d1ee41c0d56600064312b98f47a020a5d3c181bc
+  mppi_collision_export.hpp: a73f7bc09d61f317e871d6b11894a5b131851df08aa27592447d9a7aba4b1486
+部署planner二进制是否与本次进程一致由主代理的部署记录核对；本子任务未再次读完整部署二进制。
+
+snapshot-resync改动（changes.diff及当前源码）：
+- whole_body_mppi.py:355-356 订阅queue_size从1改为None，保留同次TCP读取中的完整帧/增量帧顺序。
+- :438-460 独立snapshot_cache保留上个字段；decode失败仅清执行snapshot，统一错误collision_snapshot_decode_failed。
+- :462-472 每0.25秒最多请求一次/mppi/collision_snapshot_resync。
+- active_arm_mppi.py:95 缓存匹配键加入h17原始ESDF复制时间，防生产者重启后代号重用。
+- mppi_collision_export.hpp:71-74、272-285、335-338 接收重同步请求，下一次输出完整字段。
+- whole_body_mppi.py:57-64 把decode失败归入LOCAL_RETRY；:604-609因此不产生tracking_fault。
+- 没有降低碰撞要求或放宽时效；manifest.json:122-135明确保留地图350ms、反馈150ms、95ms交付门限，并写明“约100ms地图计算与95ms预算仍是独立停车来源”。
+- 该版本归档验证状态为OFFLINE_VERIFIED_HARDWARE_PENDING，不能当作“整车走停已经实车验证解决”。
+
+2. 实际参数，不混淆150ms与300ms
+本次latest_parameters.json：
+- :2319-2323 whole_body_mppi rate_hz=10、deadline_s=.095、horizon=5、random_samples=4。
+- :817-833 remani_planner_node/dynamic_point_flow enable=true、max_age=.35、max_prediction_time=2。
+- :1397-1407 Piper command_timeout=.3、max_command_age=.3、auto_enable=false、auto_reenable_on_drop=false。
+- :1496-1501 real_base_controller command_timeout=.3。
+- :229-231 planner/mppi只有enable=true，没有state_max_age覆盖；exporter源码:321默认state_max_age=.25。
+配置来源：exp0_real.launch:290-294清MPPI私有参数后加载config/mppi.yaml；mppi.yaml:2-6给出10Hz、95ms、H5、随机4；exp0_real.launch:105-106给地图/动态有效期350ms。
+
+反馈门限属于不同层：
+- whole_body_mppi.py:76-77 fresh()硬编码150ms；用于odom、关节和驱动执行授权，非300ms。
+- piper_ctrl_single_node.py:30-33 FEEDBACK_VALID_AGE=.15、FEEDBACK_STOP_AGE=.30。
+- 驱动:484-492以原始CAN source stamp与最老接收时间取150ms到期；:516-530执行权限还取关节/电机/状态三组最早到期。
+- 驱动:679-704短暂超过150ms暂停新目标并保持原有限位置目标/使能，持续到300ms才锁停。
+- 驱动:726-748已收过有效命令后，命令流300ms过期仅保持有限目标，待新命令；未收过第一条命令等分支仍可锁停。
+- MPPI:503-538执行权限无效时即时stop_base；:550-552只有fresh且valid_until未过才能执行。
+因此“feedback-grace300修复”并没有让MPPI接受300ms旧反馈，也没有保证不会停底盘。
+
+3. 所有本地拒绝仍直接归零，而不是保持上一速度
+whole_body_mppi.py:586-592 stop_base发布空Twist，reject第一步无条件调用stop_base。
+LOCAL_RETRY仅决定是否升级tracking_fault，不决定是否停车；包括planning_deadline、delivery_deadline、地图不可用/中途过期/decode失败、state_feedback_stale、feedback_expired、inputs_expired、执行权限暂失。
+未升级的失败会保留现有参考；后续10Hz cycle必须重新通过完整验证才交付非零速度（run:937-940、delivery:854-866）。
+成功的reference_wait_hold可以交付零速度并保留执行权限，但不会清tracking_fault（:862-865）。
+
+4. 两道95ms截止的准确语义
+whole_body_mppi.py:674记录cycle起点。:731-751的planning_elapsed_ms包括计划返回前的锁等待、输入捕获、参考准备与求解，并非纯solver时间。
+正常返回但总耗时>95ms首先报planning_deadline_exceeded，即使已有可行候选，也不允许交付。
+:765-837还要拿交付锁、检查最新反馈和地图、限速、用最新状态做完整first-step/hold/brake碰撞检查、再验参考/输入；从同一cycle起点超过95ms则delivery_deadline_exceeded。
+因此“planning未超95ms”不保证delivery成功；delivery门限不是额外95ms。
+measured_delivery_lock(:110-120)记录锁等待/持有；first_step_check_ms在:796-800记录，适合对本次数据区分计算与调度。
+
+5. snapshot_unavailable / expired_during_plan不是单一地图年龄超时
+active_arm_mppi.py:108-112 fresh要求：h4=1；启用动态层时h19=1；当前时间-h3原始fusion在[-50ms,h15]；动态时间-h18亦在该窗口。
+mppi_collision_export.hpp:156-164保留原始地图fusion时间，不用重发/重采样刷新地图寿命。
+exporter:242-243的h4还包含：缓存odom/joint足够新、mapReadyForPlanning、ESDF序列不落后、字段有限、地面/自碰撞有效。
+exporter:268-269输出时再次包含动态流valid、fusion年龄和缓存关节/odom250ms有效。
+exporter:142-149无法拿Complete snapshot时可把h4清零。
+所以地图年龄小于350ms仍可snapshot_unavailable；应核对checked_inputs.map_age_ok、dynamic_age_ok、snapshot_valid、dynamic_valid及h22/h23/h24。
+whole_body_mppi.py:667在捕获入口拒绝；:773-774的expired_during_plan检查交付时最新self.snapshot，不单指计划开始时旧snapshot变老。
+:807-810的inputs_expired_before_delivery同时覆盖base/joint/地图，不能仅从状态名称判定是哪项。
+checked_inputs(:80-106)为实际门控时数据；failure_recording_context里的snapshot_header(:123-130)是原计划捕获数据，分析时不可混作同一帧。
+
+6. 仍存在的其他零速/长暂停门控
+- 显式安全限速：on_speed_limit(:579-584)锁存值；:787-790当limit<=1e-3同时把v和w置零，即使最终state=command_delivered仍可能零速。
+- 最新状态/地图不接受命令保持和制动包络：checked_first_step(:160-200)，错误command_hold_or_braking_rejected_by_latest_state_or_map。
+- 计划确无可行候选：:756-760；active_arm_mppi.py:525-526必须预测完全停稳且所有样本碰撞/关节界通过。
+- 参考切换/换档/取消/过期：:40-50、768、811-827；部分等待转成经完整检查的zero hold，取消不属于可hold白名单。
+- 驱动stop_latched一旦被观察，MPPI:521使用OR锁存，:686-687每轮拒绝；不因后续健康包自动释放。
+- 下游底盘若300ms没收到/cmd_vel，base_control.py:104-115自行持续发送零速；本次latest_parameters.json:1501证实300ms配置。MPPI主动reject归零通常早于此watchdog。
+
+7. 需要重规划的失败有多重恢复门，成功求出候选不等于速度立刻恢复
+whole_body_mppi.py:603-609对不在本地/过渡名单的错误，在已成功交付同一导航目标后可发布tracking_fault=true。
+remani_replan_fsm.cpp:1138-1145锁存tracking stop，发布安全限速0，进入EMERGENCY_STOP并从反馈重规划。
+:550-594恢复参考发布后还需tracker报告恢复；故障未清时:573明确keep zero speed。
+:1110-1131收到false只有在已发布验证恢复候选且处于EXEC_TRAJ时才解除tracking stop；若动态安全或待ESDF仍持有停机条件，仍保留速度限制。
+:1238当perception_recovery_pending时，任何请求的速度值都会归一化为0。
+:450-493感知/瞬态障碍恢复需目标存在、map不超时、feedback/map就绪、实测线速度<.1、新所需ESDF到位；瞬态障碍仅在新map代次再试，失败后延迟.5秒再试。
+:501-547候选还需下一轮新反馈对齐、地图刷新和重新验收后才能实际发布。
+:1436-1464动态限速解除还须所需ESDF提交，且非force清除受emergency/hazard和clear_hold限制。
+这些恢复修复保证目标不轻易丢失和安全恢复，不能等同于消除每个短暂归零或保证恢复耗时很短。
+
+8. 历史修复为何不能整体证明“走停已解决”
+- deadline-priority（VERSIONS.tsv:19）改错误分类顺序；其manifest known_issues明确超时仍发零速度，地图/输入过期仍独立存在。
+- feedback-grace300（:27）降低短暂反馈失效升级成持久锁停的概率；保留150ms执行门控。
+- perception-recovery / obstacle-recovery / map-stop-recovery（:29、39、61）修复目标保留与恢复入口，不取消碰撞/时效停车。
+- map-latency（:31）优化地图计算；manifest:259-262注明40万格裁剪离线回放不能等同约200万格实车总延迟。
+- dense-edt（:49）优化EDT；manifest:613-616记录真实裁剪中位7.76->7.56ms、收益小，不声称已解决整车走停。
+- frozen-guidance / unified-reference / phase-capacity（:43、45、47）针对摆头、参考切换及慢快层速度一致性，与地图/交付时效门控是不同问题。
+- moving-handoff / feedback-phase（:57、59）修复未来生效时刻和执行相位；地图/反馈/截止时效仍在。
+- snapshot-resync（:65）解决传输缓存失配的恢复及错误升级，不解决全部有效性、CPU/调度和碰撞门控。
+- 所列版本均以离线验证/实车待验证记录；不能把离线测试数量或有完整回退记录当作完整实车行为保证。
+
+9. 当前MPPI仍有可单独验证的开销机制，不作未经数据证明的本次归因
+运行入口whole_body_mppi.py:14从scripts/mppi导入；:274构造StandbyWholeBodyMPPI；native_reference_adapter.py:27构造导航WholeBodyMPPI；:459-469导航时调用active_arm_mppi.py中的plan。
+active_arm_mppi.py:616-617先对同一nominal底盘轨迹下的一组不同机械臂候选全部evaluate，之后:621才判断nominal是否安全并提前返回；不是先只验证一个nominal候选。
+proposals:430-451把原生臂参考、当前臂姿态和配置postures去重后组成候选；evaluate:494-526包含H5前缀和最多40个半步制动尾，再做整机FK/外部距离/配置间隙。
+因此无障碍nominal周期也有非零候选与制动检查成本；before-mppi-nominal只是基线，当前代码未部署该后续优化。
+要证明本次卡顿主要由此造成，需要主代理按导航区间核对planning_elapsed_ms、delivery_elapsed_ms、first_step_check_ms、锁等待、snapshot callback decode耗时及候选数，不根据代码结构估算其实际毫秒占比。
+
+建议主代理最终归因的证据边界
+1) 先剔除启动、目标取消、到达后待机；导航区间内将cmd_vel=0与对应MPPI拒绝/安全limit对应。
+2) 地图相关状态拆成源时龄、动态时龄/valid、h4其他无效、decode失败；不要仅按状态名合并为地图计算慢。
+3) 区分本地失败直接零速、成功交付但安全limit=0、真实collision/tracking_fault触发慢层恢复三类。
+4) 区分95ms正常返回截止与最终交付截止；同时检查执行反馈150ms及下游300ms持久门控。
+5) 只读代码证明机制存在；当前日志/时间线才能证明本次频率和主要原因。

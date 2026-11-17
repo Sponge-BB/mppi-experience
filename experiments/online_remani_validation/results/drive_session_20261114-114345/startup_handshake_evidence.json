@@ -1,0 +1,70 @@
+{
+  "session": "drive_session_20261114-114345",
+  "scope": "read-only; no code/parameter/node changes",
+  "finding": "MPPI early startup was blocked on /mm/joint_states TCPROS subscription establishment, not missing raw CAN feedback. A publisher-side handshake recv timed out at 11:44:48.684; queued MPPI/planner subscribers connected immediately afterward; startup_ready at 11:44:50.011.",
+  "mechanism_local_source": {
+    "src/mm_remani/launch/exp0_real.launch:288": "remaps MPPI /joint_states_single to /mm/joint_states",
+    "/opt/ros/noetic/lib/python3/dist-packages/rospy/impl/tcpros_base.py:151": "accept loop invokes handshake handler synchronously before next accept",
+    "/opt/ros/noetic/lib/python3/dist-packages/rospy/impl/tcpros_base.py:334": "reads full ROS handshake header before registering subscriber connection",
+    "/opt/ros/noetic/lib/python3/dist-packages/rosgraph/network.py:357": "blocking sock.recv while waiting for header",
+    "/opt/ros/noetic/lib/python3/dist-packages/rospy/impl/masterslave.py:440": "socket.setdefaulttimeout(60.)"
+  },
+  "unknown": "Failed handshake peer is not logged; cannot identify initiating client or prove network cause from current logs alone.",
+  "evidence": {
+    "filter_joint_states-1.log": [
+      "[rosout][INFO] 2026-11-14 11:43:47,162: Filtering /gazebo/joint_states -> /mm/joint_states; velocity window 0.050s",
+      "[rospy.internal][INFO] 2026-11-14 11:43:47,386: topic[/rosout] adding connection to [/rosout], count 0",
+      "[rospy.internal][INFO] 2026-11-14 11:43:47,418: topic[/mm/joint_states] adding connection to [/drive_evidence_recorder_11523_1794627825075], count 0",
+      "[rospy.internal][INFO] 2026-11-14 11:43:47,472: topic[/rosout] adding connection to [/drive_roslog_readonly_20261114_114344], count 1",
+      "[rospy.internal][INFO] 2026-11-14 11:43:47,663: topic[/gazebo/joint_states] adding connection to [http://slave:46289/], count 0",
+      "[rospy.internal][INFO] 2026-11-14 11:43:47,958: topic[/mm/joint_states] adding connection to [/mm_controller_node], count 1",
+      "[rospy.internal][INFO] 2026-11-14 11:43:48,621: topic[/mm/joint_states] adding connection to [/robot_self_filter], count 2",
+      "[rosout][WARNING] 2026-11-14 11:44:48,684: Inbound TCP/IP connection failed: timed out",
+      "[rospy.internal][ERROR] 2026-11-14 11:44:48,692: Inbound TCP/IP connection failed:",
+      "Traceback (most recent call last):",
+      "  File \"/opt/ros/noetic/lib/python3/dist-packages/rospy/impl/tcpros_base.py\", line 334, in _tcp_server_callback",
+      "    header = read_ros_handshake_header(sock, BytesIO(), buff_size)",
+      "  File \"/opt/ros/noetic/lib/python3/dist-packages/rosgraph/network.py\", line 357, in read_ros_handshake_header",
+      "    d = sock.recv(buff_size)",
+      "socket.timeout: timed out",
+      "[rospy.internal][INFO] 2026-11-14 11:44:48,695: topic[/mm/joint_states] adding connection to [/whole_body_mppi], count 3",
+      "[rospy.internal][INFO] 2026-11-14 11:44:48,698: topic[/mm/joint_states] adding connection to [/remani_planner_node], count 4",
+      "[rospy.internal][INFO] 2026-11-14 11:44:48,699: topic[/mm/joint_states] adding connection to [/startup_readiness_readonly_13476_1794627878845], count 5",
+      "[rospy.internal][INFO] 2026-11-14 11:44:48,718: topic[/mm/joint_states] removing connection to /startup_readiness_readonly_13476_1794627878845"
+    ],
+    "whole_body_mppi-7.log": [
+      "[rospy.internal][INFO] 2026-11-14 11:43:49,043: topic[/mm/joint_states] adding connection to [http://slave:34009/], count 0",
+      "[rosout][WARNING] 2026-11-14 11:43:49,108: MPPI command rejected: waiting_native_arm_startup (cycle=0.48 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:43:52,308: MPPI command rejected: native_startup_joint_feedback_unavailable (cycle=0.26 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:43:56,008: MPPI command rejected: waiting_native_arm_startup (cycle=0.26 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:43:56,408: MPPI command rejected: native_startup_joint_feedback_unavailable (cycle=0.28 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:43:57,608: MPPI command rejected: waiting_native_arm_startup (cycle=0.27 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:43:57,908: MPPI command rejected: native_startup_joint_feedback_unavailable (cycle=0.27 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:44:10,108: MPPI command rejected: waiting_native_arm_startup (cycle=0.31 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:44:10,508: MPPI command rejected: native_startup_joint_feedback_unavailable (cycle=0.29 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:44:12,110: MPPI command rejected: waiting_native_arm_startup (cycle=0.27 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:44:12,408: MPPI command rejected: native_startup_joint_feedback_unavailable (cycle=0.26 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:44:29,508: MPPI command rejected: waiting_native_arm_startup (cycle=0.28 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:44:29,808: MPPI command rejected: native_startup_joint_feedback_unavailable (cycle=0.23 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:44:38,209: MPPI command rejected: waiting_native_arm_startup (cycle=0.47 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:44:38,609: MPPI command rejected: native_startup_joint_feedback_unavailable (cycle=0.50 ms; snapshot={})",
+      "[rosout][WARNING] 2026-11-14 11:44:38,910: MPPI command rejected: waiting_native_arm_startup (cycle=2.30 ms; snapshot={})",
+      "[rospy.internal][INFO] 2026-11-14 11:44:39,174: topic[/mppi/status] adding connection to [/startup_readiness_readonly_13476_1794627878845], count 1",
+      "[rosout][WARNING] 2026-11-14 11:44:39,209: MPPI command rejected: native_startup_joint_feedback_unavailable (cycle=0.44 ms; snapshot={})",
+      "[rospy.internal][INFO] 2026-11-14 11:44:39,386: topic[/cmd_vel] adding connection to [/startup_readiness_readonly_13476_1794627878845], count 2",
+      "[rospy.internal][INFO] 2026-11-14 11:44:47,509: topic[/mppi/status] removing connection to /startup_readiness_readonly_13476_1794627878845",
+      "[rospy.internal][INFO] 2026-11-14 11:44:47,529: topic[/cmd_vel] removing connection to /startup_readiness_readonly_13476_1794627878845",
+      "[rosout][WARNING] 2026-11-14 11:44:48,709: MPPI command rejected: waiting_collision_snapshot (cycle=0.39 ms; snapshot={})",
+      "[rosout][INFO] 2026-11-14 11:44:50,011: startup_ready: original standby reached; Piper confirmed MPPI takeover."
+    ],
+    "piper_ctrl_single_node-21.log": [
+      "[rosout][WARNING] 2026-11-14 11:43:49,079: Piper native startup waiting for fresh normal joint/status/motor feedback; no enable sent. A prior stop is never reset automatically.",
+      "[rosout][INFO] 2026-11-14 11:43:49,113: Piper native startup enable sent; motor timeout 10s, standby timeout 60s.",
+      "[rospy.internal][INFO] 2026-11-14 11:44:39,294: topic[/joint_states_single] adding connection to [/startup_readiness_readonly_13476_1794627878845], count 2",
+      "[rospy.internal][INFO] 2026-11-14 11:44:39,399: topic[/piper_execution_state] adding connection to [/startup_readiness_readonly_13476_1794627878845], count 2",
+      "[rospy.internal][INFO] 2026-11-14 11:44:47,427: topic[/joint_states_single] removing connection to /startup_readiness_readonly_13476_1794627878845",
+      "[rospy.internal][INFO] 2026-11-14 11:44:47,458: topic[/piper_execution_state] removing connection to /startup_readiness_readonly_13476_1794627878845",
+      "[rosout][INFO] 2026-11-14 11:44:49,874: Piper native startup handed off to leased MPPI commands."
+    ]
+  }
+}

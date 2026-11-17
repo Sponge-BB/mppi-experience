@@ -4,7 +4,9 @@ project(remani_planner)
 set(CMAKE_BUILD_TYPE "Release")
 
 ADD_COMPILE_OPTIONS(-std=c++14 )
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g")
+# Full debug information pushes this target over the vehicle's build RAM
+# budget. Keep optimized deployment code without full symbol information.
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall")
 
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.7 REQUIRED)

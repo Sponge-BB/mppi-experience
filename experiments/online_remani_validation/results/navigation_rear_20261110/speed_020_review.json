@@ -1,0 +1,293 @@
+{
+  "applied_to_production": false,
+  "current": {
+    "limits": {
+      "vmax": 0.12,
+      "wmax": 0.35,
+      "accel": 0.25,
+      "angular_accel": 0.8,
+      "track": 0.37,
+      "wheel_v": 0.2296,
+      "wheel_a": 0.2975
+    },
+    "grid_samples": 22801,
+    "max_model_base_brake_s": 0.8,
+    "worst_grid_initial_v_w": [
+      -0.12,
+      -0.35
+    ],
+    "max_integrated_base_brake_distance_m": 0.0380768604102829,
+    "analytic_base_brake_upper_bound_s": 0.8,
+    "analytic_zero_command_time_norm_bound_s": 0.6210084033613446,
+    "final_component_bound_at_analytic_tail": 0.0027031135201142868,
+    "native_library_loaded": true,
+    "native_vs_numpy_max_abs_error": 4.440892098500626e-16,
+    "forecast_queries_at_max_source_age": [
+      {
+        "horizon_s": 0.8,
+        "source_age_plus_horizon_and_tail_s": 1.95,
+        "minimum_gap_m": 9.49,
+        "all_queries_accepted": true
+      },
+      {
+        "horizon_s": 0.7,
+        "source_age_plus_horizon_and_tail_s": 1.8499999999999999,
+        "minimum_gap_m": 9.49,
+        "all_queries_accepted": true
+      }
+    ],
+    "first_command_hold_plus_brake_plus_source_age_s": 1.4500000000000002
+  },
+  "proposed": {
+    "limits": {
+      "vmax": 0.2,
+      "wmax": 0.35,
+      "accel": 0.25,
+      "angular_accel": 0.8,
+      "track": 0.37,
+      "wheel_v": 0.2296,
+      "wheel_a": 0.2975
+    },
+    "grid_samples": 21617,
+    "max_model_base_brake_s": 0.9500000000000001,
+    "worst_grid_initial_v_w": [
+      -0.16266666666666668,
+      -0.35
+    ],
+    "max_integrated_base_brake_distance_m": 0.08112499805239785,
+    "analytic_base_brake_upper_bound_s": 0.9500000000000001,
+    "analytic_zero_command_time_norm_bound_s": 0.8,
+    "final_component_bound_at_analytic_tail": 0.002955030904385284,
+    "native_library_loaded": true,
+    "native_vs_numpy_max_abs_error": 4.440892098500626e-16,
+    "forecast_queries_at_max_source_age": [
+      {
+        "horizon_s": 0.8,
+        "source_age_plus_horizon_and_tail_s": 2.1,
+        "minimum_gap_m": -1000.51,
+        "all_queries_accepted": false
+      },
+      {
+        "horizon_s": 0.7,
+        "source_age_plus_horizon_and_tail_s": 2.0,
+        "minimum_gap_m": 9.49,
+        "all_queries_accepted": true
+      }
+    ],
+    "first_command_hold_plus_brake_plus_source_age_s": 1.6
+  },
+  "recommendation": {
+    "minimum_full_coverage_config_changes": {
+      "base_limits/vmax": 0.2,
+      "horizon": 7
+    },
+    "unchanged": [
+      "dt=.1/rate=10Hz",
+      "wmax=.35",
+      "accel=.25",
+      "angular_accel=.8",
+      "wheel_v=.2296",
+      "wheel_a=.2975",
+      "source/map age .35s",
+      "dynamic forecast 2s",
+      "command hold .30s",
+      "deadline .095s",
+      "full braking tail and collision/feedback/authority checks"
+    ],
+    "tradeoff": "Nominal control horizon changes from .8s to .7s; the full stopping tail is still checked. The full-age temporal budget is exactly 2s, without slack beyond the existing numeric comparison tolerance.",
+    "vmax_only_alternative": "Changing only vmax to .2 is fail-closed, but worst-speed candidates with dynamic source age above .25s exceed the 2s forecast and are rejected; do not claim full-profile usability at every still-fresh observation.",
+    "no_extra_acceleration_claim": "Do not increase deceleration parameters to make the arithmetic pass; no new hardware response capability was measured."
+  },
+  "normal_arm_tail_s": 0.45,
+  "ros_epoch_boundary": {
+    "cases": [
+      {
+        "now": 1794310000.0,
+        "source_step_ulp": -1,
+        "source_age_s": 0.35000014305114746,
+        "fresh": false,
+        "maximum_prediction_age_s": 2.000000238418579,
+        "query_accepted": false
+      },
+      {
+        "now": 1794310000.0,
+        "source_step_ulp": 0,
+        "source_age_s": 0.34999990463256836,
+        "fresh": true,
+        "maximum_prediction_age_s": 2.0,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.0,
+        "source_step_ulp": 1,
+        "source_age_s": 0.34999966621398926,
+        "fresh": true,
+        "maximum_prediction_age_s": 1.999999761581421,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.0,
+        "source_step_ulp": -1,
+        "source_age_s": 0.35000014305114746,
+        "fresh": false,
+        "maximum_prediction_age_s": 2.000000238418579,
+        "query_accepted": false
+      },
+      {
+        "now": 1794310000.0,
+        "source_step_ulp": 0,
+        "source_age_s": 0.34999990463256836,
+        "fresh": true,
+        "maximum_prediction_age_s": 2.0,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.0,
+        "source_step_ulp": 1,
+        "source_age_s": 0.34999966621398926,
+        "fresh": true,
+        "maximum_prediction_age_s": 1.999999761581421,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.0000005,
+        "source_step_ulp": -1,
+        "source_age_s": 0.35000014305114746,
+        "fresh": false,
+        "maximum_prediction_age_s": 2.000000238418579,
+        "query_accepted": false
+      },
+      {
+        "now": 1794310000.0000005,
+        "source_step_ulp": 0,
+        "source_age_s": 0.34999990463256836,
+        "fresh": true,
+        "maximum_prediction_age_s": 2.0,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.0000005,
+        "source_step_ulp": 1,
+        "source_age_s": 0.34999966621398926,
+        "fresh": true,
+        "maximum_prediction_age_s": 1.999999761581421,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.001,
+        "source_step_ulp": -1,
+        "source_age_s": 0.35000014305114746,
+        "fresh": false,
+        "maximum_prediction_age_s": 2.000000238418579,
+        "query_accepted": false
+      },
+      {
+        "now": 1794310000.001,
+        "source_step_ulp": 0,
+        "source_age_s": 0.34999990463256836,
+        "fresh": true,
+        "maximum_prediction_age_s": 2.0,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.001,
+        "source_step_ulp": 1,
+        "source_age_s": 0.34999966621398926,
+        "fresh": true,
+        "maximum_prediction_age_s": 1.999999761581421,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.123456,
+        "source_step_ulp": -1,
+        "source_age_s": 0.35000014305114746,
+        "fresh": false,
+        "maximum_prediction_age_s": 2.000000238418579,
+        "query_accepted": false
+      },
+      {
+        "now": 1794310000.123456,
+        "source_step_ulp": 0,
+        "source_age_s": 0.34999990463256836,
+        "fresh": true,
+        "maximum_prediction_age_s": 2.0,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.123456,
+        "source_step_ulp": 1,
+        "source_age_s": 0.34999966621398926,
+        "fresh": true,
+        "maximum_prediction_age_s": 1.999999761581421,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.35,
+        "source_step_ulp": -1,
+        "source_age_s": 0.35000014305114746,
+        "fresh": false,
+        "maximum_prediction_age_s": 2.000000238418579,
+        "query_accepted": false
+      },
+      {
+        "now": 1794310000.35,
+        "source_step_ulp": 0,
+        "source_age_s": 0.34999990463256836,
+        "fresh": true,
+        "maximum_prediction_age_s": 2.0,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310000.35,
+        "source_step_ulp": 1,
+        "source_age_s": 0.34999966621398926,
+        "fresh": true,
+        "maximum_prediction_age_s": 1.999999761581421,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310001.0,
+        "source_step_ulp": -1,
+        "source_age_s": 0.35000014305114746,
+        "fresh": false,
+        "maximum_prediction_age_s": 2.000000238418579,
+        "query_accepted": false
+      },
+      {
+        "now": 1794310001.0,
+        "source_step_ulp": 0,
+        "source_age_s": 0.34999990463256836,
+        "fresh": true,
+        "maximum_prediction_age_s": 2.0,
+        "query_accepted": true
+      },
+      {
+        "now": 1794310001.0,
+        "source_step_ulp": 1,
+        "source_age_s": 0.34999966621398926,
+        "fresh": true,
+        "maximum_prediction_age_s": 1.999999761581421,
+        "query_accepted": true
+      }
+    ],
+    "fresh_count": 14,
+    "fresh_false_rejections": [],
+    "production_tolerances_changed": false
+  },
+  "crop_review": {
+    "half_extent_m": 2.0,
+    "proposed_nominal_translation_plus_brake_upper_bound_m": 0.22112499805239783,
+    "condition": "Add actual whole-body sphere extent and map-boundary margin. All queried spheres still require map inclusion; no crop/ESDF margin change is recommended."
+  },
+  "limitations": [
+    "Bound assumes horizon-end base velocities obey the profile; measured overspeed is never clipped away and can still fail.",
+    "Normal arm speeds <=.15rad/s brake in .45s at the unchanged .35rad/s^2 model. Higher measured dq remains independently checked and can exceed the available forecast or joint limits.",
+    "The distant dynamic point tests real Snapshot.query time coverage, not obstacle-avoidance success or perception quality.",
+    "Pure offline model arithmetic; actual deceleration and fixed_vel=1 arm response remain uncalibrated."
+  ],
+  "sources": {
+    "kernel": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+    "kernel_sha256": "8145b355961f48de3e2c9a12a5d4d80dd0b5323bdebd250ae46c864f21290157",
+    "script_sha256": "40cca23a4e8bc9fd6aec5625f3170c1fa9ff0db8c1bda86ef7e9d12c9cc0bf02"
+  }
+}

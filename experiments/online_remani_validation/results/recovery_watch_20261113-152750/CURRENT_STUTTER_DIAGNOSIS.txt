@@ -1,0 +1,39 @@
+本轮实车走走停停诊断（2026-11-13）
+
+结论
+最新15:43:07.631至15:43:39.907的约32.28秒导航，主因是地图交付节奏与MPPI的350ms有效期不匹配，叠加关节反馈缺口造成自滤波缺帧。该窗口没有750ms LiDAR超时，也没有机械臂失能/锁停。不能把这些短促停车继续笼统称作“雷达超时”。
+本轮只读记录和源码审计；未改代码、参数、驱动或电机状态，未发布目标或运动指令。
+
+最新导航的直接证据
+1. 291条MPPI状态中，129条为snapshot/input失效拒绝，125条日志地图年龄大于350ms。按h3和日志age重建判定时刻后，1条实际判定在新目标前，124条在导航内；124/124均与零cmd保持区间对应（接收对齐容差20ms），其中58条在零段起点30ms内。reject()会调用stop_base()发Twist零值，源码已确认。不是仅看警告猜测。
+2. cmd零保持20.356秒，非零11.759秒，127次零/非零切换。cmd_vel无header，这些是记录器接收时序，不是底盘执行ACK；MPPI状态也没有源header。odom、goal、关节、rosout保留源戳。
+3. 323帧原始注册云与323帧去地云：源间隔中位99.965ms，最大107.009ms，没有大于150ms的源断流。规划mapping云仅293帧，13个大于150ms源间隔，最长700.826ms。缺口出现在去地之后的自滤波链路，不能归因雷达扫描中断。
+4. 新地图第一次可见年龄中位200.25ms，P95 271.29ms；新地图到达间隔中位198.25ms，P95 271.27ms。新代融合到export采样中位约178.53ms，export采样到记录器中位19.31ms。h3从占据融合提交算，已经不是从原始扫描算。MPPI还需等待调度、求解、最终验收，容易跨过350ms门限。
+5. /joint_states_single六处源间隔超过150ms，最大265.11ms；/mm/joint_states相应最大319.98ms。自滤波10条节流警告：插值间隔超过50ms共5条，等扫描对齐关节反馈超时4条，反馈陈旧1条。节流日志数量不是实际丢帧总数。真实CAN是否同样断流，本次未直接采CAN，不能推断。
+6. 机械臂1362条执行状态全部有效、使能、未锁停。750ms LiDAR超时/DepthLost为0。规划求解和交付超95ms各1次，不能解释大部分卡顿。
+
+源码定位
+A. grid_map.cpp:2178 prepareIncrementalESDF 已启用增量，但变化约1800格分散在大范围，再加0.6m截断距离的两层扩展区，实测仍约200万格、一个区域计算。esdf_worker.cpp:700附近只尝试最长轴的中点分割且要求至少15%收益，当前常保持regions=1。约40万格的MPPI导出裁剪不代表地图计算只有40万格。
+B. 距离场worker约100ms；本轮前两段导航29个5秒性能窗口：worker均值的中位98.41ms，占据均值中位23.74ms，commit均值中位6.75ms，job占据复制均值中位2.47ms。这是稳定的较长周期，不是突然几百毫秒的worker尖峰。job复制指标不包含publishReadSnapshot的原生不可变全图层复制。
+C. grid_map.cpp:624/625的占据与ESDF定时器均50ms；mppi_collision_export.hpp:315还按50ms采样，且:133必须等Complete占据/ESDF一致版本。这些等待与worker/复制共同消耗h3起算的有效期。现有证据能给出融合→export总耗时，尚不能把全部额外等待精确拆成每个timer与复制的独立份额。
+D. velodyne_transformer.py:169自滤波从/mm/joint_states取位置和源时间，但filter_joint_states.py:69速度窗口未就绪就不发整条消息。启动或大于150ms缺口后，重新攒50ms速度窗口会额外抑制已有的位置。这是不必要的依赖；窗口正常就绪时不会固定延后位置。真实原始关节已有缺口，所以不能说仅改订阅就能补齐所有反馈。
+
+独立停车事件，不能并入超时
+15:43:23.590原生实时占据碰撞分支报告前方0.01m/0.05s的碰撞，23.604控制器ABORT；23.689搜索起点检测car-obstacle dist0.15<safe0.16。24.398交付新ADD，速度限制0持续约0.8565秒。这不是point-flow预测或tracking_fault（导航142条tracking_fault全部false）。本次没有记录该瞬间完整同代占据场，不能断言是真障碍还是残留/自身回波。
+
+上轮恢复修复覆盖情况
+前两段导航6次750ms输入中断均出现恢复后交付新轨迹和解除感知速度限制，总停到交付约7.12秒。说明上轮修复已经生效，但并未消除上游短期输入/地图可用窗口缺口，不能宣称整体导航已修复。
+
+后续核心修正范围
+优先降低ESDF实际计算范围与提交/导出等待，让新地图覆盖MPPI完整求解和发送；不先把350ms放大来掩盖延迟。自滤波应局部直接使用原始有效关节位置，解除速度窗口依赖，同时保留真实源时间、关节限位、扫描对齐和发布前时效检查。这两项应分别版本化与验证。0.35m截断距离只是待离线等价验证的候选，未更改；不能直接承诺收益。
+
+运行版本
+20261113-152321-perception-recovery；父版本20261113-150819-before-perception-recovery。
+实际/proc/324317/exe与部署二进制SHA256一致：dec203511eed1ebbc6079dd624ee89dcd9e2c1b52eea974a5637b99eb1879cbc。
+
+证据文件
+capture.bag、capture_live.bag、latency_probe.jsonl
+recovery_live_stutter_analysis.json、latency_probe_navigation_split.json
+live_map_reject_zero_correspondence.json、live_native_collision_stop_event.json
+recovery_pipeline_metrics.json、region_filter_selected.json、running_binary_verification.json
+本轮第一段报告RECOVERY_STOP_FINDINGS.txt包含较早两段导航；不得把后续standby混入导航统计。

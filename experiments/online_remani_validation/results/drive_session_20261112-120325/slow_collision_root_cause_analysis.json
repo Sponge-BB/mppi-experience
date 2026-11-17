@@ -1,0 +1,1396 @@
+{
+  "scope": "Offline first slow-layer stop audit. No runtime edits, ROS nodes, compilation or hardware commands. Small neighboring clouds; event ESDF was NOT saved.",
+  "first_latch_source": 1794456473.207416,
+  "hard_collision_source": 1794456473.320249,
+  "hard_collision_logged": {
+    "type": 0,
+    "check_distance_m": 0.004,
+    "base_surface_gap_m": 0.004,
+    "hard_stop_margin_m": 0.01
+  },
+  "code_sha256": {
+    "src/mm_remani_planner/plan_env/src/grid_map.cpp": "f005c7c8b9f7eae51e87f01722e0a04baaca50975c51b3c91f8aad0ccc2ffd3b",
+    "src/mm_remani_planner/plan_env/include/plan_env/grid_map.h": "9b15dd0259de6ce5c5f5e9c64b76f4d05a347ff13c3db6a74710143c16df6af9",
+    "src/mm_remani_planner/mm_config/src/mm_config.cpp": "a4476cf29b0e05981646045941cf3374b1448b2b9775dabdd1b63c0add93f717",
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "84972ecd254daa28026d3bdb78219ce6f988d6bc6919a69d7b554d310a219450",
+    "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp": "809ba6bf324b8b8221dc7dd4c5ef7953a7b64c2a76abbecf9687a0f9516780cb",
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "0f6766c8a5d96f563b14db97cb1725aaede55df4526a1ad0b27a53dccff72125",
+    "src/mm_remani/scripts/mppi/active_arm_model.py": "b57c6fe63a6155055949d60554d6ea01644f727d8370c511fdd30c7a4e759fa5",
+    "src/mm_remani/scripts/velodyne_transformer.py": "48a9ed895610ab68aa2ec961400903d3e74f4a320afb088cb92616b2aca638bb",
+    "devel/lib/libmm_config.so": "0d85aa6246cc4c433a787fda7e75988f82afea60e80615b4f398e86b6435417b",
+    "devel/lib/libplan_env.so": "70d8f68810af26124567357d9aaccfbf2cfe6fdab6a64fc2d1422882c835d5e9",
+    "devel/lib/remani_planner/remani_planner_node": "786374dcb0613e1566724348727d2590d8c02c01cca0e71196ab0ce12a1330de"
+  },
+  "captured_planner_binary_matches": true,
+  "deployed_library_provenance": "Current libplan_env SHA70d8f688 matches complete restore-pre020 and inherited versions; libmm_config SHA0d85aa62 matches all complete baselines. Libraries were not separately hashed by this recorder at capture start; cannot claim loaded memory attestation.",
+  "frame_identity_checks": [
+    {
+      "parent": "world",
+      "child": "map",
+      "rotation_error": 0.0,
+      "translation": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "parent": "map",
+      "child": "camera_init",
+      "rotation_error": 0.0,
+      "translation": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "parent": "camera_init",
+      "child": "odom",
+      "rotation_error": 0.0,
+      "translation": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "geometry": {
+    "fixed_sphere_count": 47,
+    "native_vs_python": "Both use runtime mm/fixed_collision_spheres and planar world x/y/yaw. Z already includes ground offset, not base_link Z again.",
+    "runtime_publisher_rows": [
+      {
+        "file": "map_events/event01_seq8143_version2710_full.msg",
+        "version": 2710,
+        "center_max_error": 0.0,
+        "physical_radius_max_error": 1.3877787807814457e-17
+      },
+      {
+        "file": "map_events/event02_seq8762_version2901_full.msg",
+        "version": 2901,
+        "center_max_error": 0.0,
+        "physical_radius_max_error": 1.3877787807814457e-17
+      },
+      {
+        "file": "map_events/event03_seq8868_version2935_full.msg",
+        "version": 2935,
+        "center_max_error": 0.0,
+        "physical_radius_max_error": 1.3877787807814457e-17
+      },
+      {
+        "file": "map_events/event04_seq10468_version3464_full.msg",
+        "version": 3464,
+        "center_max_error": 0.0,
+        "physical_radius_max_error": 1.3877787807814457e-17
+      },
+      {
+        "file": "map_events/event05_seq10516_version3477_full.msg",
+        "version": 3477,
+        "center_max_error": 0.0,
+        "physical_radius_max_error": 1.3877787807814457e-17
+      },
+      {
+        "file": "map_events/event06_seq10597_version3502_full.msg",
+        "version": 3502,
+        "center_max_error": 0.0,
+        "physical_radius_max_error": 1.3877787807814457e-17
+      },
+      {
+        "file": "map_events/event07_seq10674_version3522_full.msg",
+        "version": 3522,
+        "center_max_error": 0.0,
+        "physical_radius_max_error": 1.3877787807814457e-17
+      }
+    ],
+    "slow_formula": "min_i trilinear(native ESDF, sphere_center_i) - physical_radius_i; emergency if <.01m",
+    "mppi_formula": "min_i trilinear(exported Complete ESDF crop, sphere_center_i) - physical_radius_i -.05m for fixed spheres, plus dynamic points when present",
+    "same_field_implication": "If same base pose and ESDF give slow gap .004m, MPPI fixed-sphere gap must be at most -.046m. Geometry/radius policy cannot explain positive .43166m for the same inputs.",
+    "mppi_cap_gap_m": 0.43166006647936755
+  },
+  "retained_near_body_return": {
+    "source": 1794456473.0192356,
+    "point_world": [
+      0.3274765644947174,
+      -0.5199843072195866,
+      0.19448658346423123
+    ],
+    "point_in_planar_base_ground_coordinates": [
+      0.19030794856344935,
+      -0.010846749016174861,
+      0.19448658346423123
+    ],
+    "raw_cloud_index": 1692,
+    "raw_correspondence_error_m": 6.316217659490661e-09,
+    "filtered_cloud_index": 361,
+    "filtered_correspondence_error_m": 0.0,
+    "physical_sphere_gap_m": 0.010806599066091327,
+    "self_filter_padding_m": 0.01,
+    "evidence_boundary": "This is a recorded near-body return, not proof that its physical source was the robot. Missing full-rate clouds and event ESDF prevent exact occupancy attribution."
+  },
+  "neighbor_clouds": [
+    {
+      "topic": "/cloud_registered",
+      "source": 1794456471.0192945,
+      "receipt": 1794456471.036203,
+      "frame": "camera_init",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.10820339206728358,
+        -0.29760233698234895,
+        -0.7304435375680708
+      ],
+      "after_world_z_015_points": 4449,
+      "nearest_at_scan_pose": {
+        "gap_m": -0.10178528420657029,
+        "sphere_index_zero_based": 33,
+        "sphere_center_world": [
+          0.2044185987278635,
+          -0.29585082003112856,
+          0.3366253296565265
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.19601358473300934,
+          -0.28796204924583435,
+          0.34850722551345825
+        ],
+        "point_index": 1138
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": -0.09819753646470718,
+        "sphere_index_zero_based": 25,
+        "sphere_center_world": [
+          0.20710011590725602,
+          -0.2998627020231416,
+          0.3366253296565265
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.19601358473300934,
+          -0.28796204924583435,
+          0.34850722551345825
+        ],
+        "point_index": 1138
+      }
+    },
+    {
+      "topic": "/velodyne_points",
+      "source": 1794456471.0192945,
+      "receipt": 1794456471.058537,
+      "frame": "livox_frame",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.10820339206728358,
+        -0.29760233698234895,
+        -0.7304435375680708
+      ],
+      "after_world_z_015_points": 1880,
+      "nearest_at_scan_pose": {
+        "gap_m": 0.6472620832669813,
+        "sphere_index_zero_based": 0,
+        "sphere_center_world": [
+          -0.19171007434625043,
+          -0.30082229620725554,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          -0.9143408385252589,
+          -0.38457102582829455,
+          0.29065131913810116
+        ],
+        "point_index": 557
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": 0.7430930956017338,
+        "sphere_index_zero_based": 0,
+        "sphere_center_world": [
+          -0.08812940762080076,
+          -0.38582449919768497,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          -0.9143408385252589,
+          -0.38457102582829455,
+          0.29065131913810116
+        ],
+        "point_index": 557
+      }
+    },
+    {
+      "topic": "/velodyne_points_mapping",
+      "source": 1794456471.0192945,
+      "receipt": 1794456471.0651653,
+      "frame": "livox_frame",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.10820339206728358,
+        -0.29760233698234895,
+        -0.7304435375680708
+      ],
+      "after_world_z_015_points": 1668,
+      "nearest_at_scan_pose": {
+        "gap_m": 0.6472620832669813,
+        "sphere_index_zero_based": 0,
+        "sphere_center_world": [
+          -0.19171007434625043,
+          -0.30082229620725554,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          -0.9143408385252589,
+          -0.38457102582829455,
+          0.29065131913810116
+        ],
+        "point_index": 528
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": 0.7430930956017338,
+        "sphere_index_zero_based": 0,
+        "sphere_center_world": [
+          -0.08812940762080076,
+          -0.38582449919768497,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          -0.9143408385252589,
+          -0.38457102582829455,
+          0.29065131913810116
+        ],
+        "point_index": 528
+      }
+    },
+    {
+      "topic": "/cloud_registered",
+      "source": 1794456472.0195532,
+      "receipt": 1794456472.040017,
+      "frame": "camera_init",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.15870504600664212,
+        -0.3413894978388773,
+        -0.7041861563899013
+      ],
+      "after_world_z_015_points": 4460,
+      "nearest_at_scan_pose": {
+        "gap_m": -0.08131055724433443,
+        "sphere_index_zero_based": 33,
+        "sphere_center_world": [
+          0.25484110181875175,
+          -0.33711251557804706,
+          0.3366253296565265
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.2308734953403473,
+          -0.30914953351020813,
+          0.34047242999076843
+        ],
+        "point_index": 1759
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": -0.10167908415091213,
+        "sphere_index_zero_based": 25,
+        "sphere_center_world": [
+          0.20710011590725602,
+          -0.2998627020231416,
+          0.3366253296565265
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.22338411211967468,
+          -0.29664909839630127,
+          0.3380703628063202
+        ],
+        "point_index": 407
+      }
+    },
+    {
+      "topic": "/velodyne_points",
+      "source": 1794456472.0195532,
+      "receipt": 1794456472.059908,
+      "frame": "livox_frame",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.15870504600664212,
+        -0.3413894978388773,
+        -0.7041861563899013
+      ],
+      "after_world_z_015_points": 1911,
+      "nearest_at_scan_pose": {
+        "gap_m": 0.7054991177112648,
+        "sphere_index_zero_based": 0,
+        "sphere_center_world": [
+          -0.14102050068530644,
+          -0.35248238446971447,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          -0.9331850510241022,
+          -0.3444256345282828,
+          0.2705616129232197
+        ],
+        "point_index": 1201
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": 0.7582046956306587,
+        "sphere_index_zero_based": 0,
+        "sphere_center_world": [
+          -0.08812940762080076,
+          -0.38582449919768497,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          -0.9331850510241022,
+          -0.3444256345282828,
+          0.2705616129232197
+        ],
+        "point_index": 1201
+      }
+    },
+    {
+      "topic": "/velodyne_points_mapping",
+      "source": 1794456472.0195532,
+      "receipt": 1794456472.0637093,
+      "frame": "livox_frame",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.15870504600664212,
+        -0.3413894978388773,
+        -0.7041861563899013
+      ],
+      "after_world_z_015_points": 1649,
+      "nearest_at_scan_pose": {
+        "gap_m": 0.7054991177112648,
+        "sphere_index_zero_based": 0,
+        "sphere_center_world": [
+          -0.14102050068530644,
+          -0.35248238446971447,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          -0.9331850510241022,
+          -0.3444256345282828,
+          0.2705616129232197
+        ],
+        "point_index": 1079
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": 0.7582046956306587,
+        "sphere_index_zero_based": 0,
+        "sphere_center_world": [
+          -0.08812940762080076,
+          -0.38582449919768497,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          -0.9331850510241022,
+          -0.3444256345282828,
+          0.2705616129232197
+        ],
+        "point_index": 1079
+      }
+    },
+    {
+      "topic": "/cloud_registered",
+      "source": 1794456473.0192356,
+      "receipt": 1794456473.057363,
+      "frame": "camera_init",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.19589397648231363,
+        -0.3820684278488397,
+        -0.7519599480833696
+      ],
+      "after_world_z_015_points": 4443,
+      "nearest_at_scan_pose": {
+        "gap_m": -0.09911153351908061,
+        "sphere_index_zero_based": 33,
+        "sphere_center_world": [
+          0.2921245957522463,
+          -0.38238736247189203,
+          0.3366253296565265
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.28524160385131836,
+          -0.3793748915195465,
+          0.3189255893230438
+        ],
+        "point_index": 1662
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": -0.08423286512080971,
+        "sphere_index_zero_based": 25,
+        "sphere_center_world": [
+          0.20710011590725602,
+          -0.2998627020231416,
+          0.3366253296565265
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.23927277326583862,
+          -0.3094235062599182,
+          0.34269189834594727
+        ],
+        "point_index": 2328
+      }
+    },
+    {
+      "topic": "/velodyne_points",
+      "source": 1794456473.0192356,
+      "receipt": 1794456473.0617766,
+      "frame": "livox_frame",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.19589397648231363,
+        -0.3820684278488397,
+        -0.7519599480833696
+      ],
+      "after_world_z_015_points": 1829,
+      "nearest_at_scan_pose": {
+        "gap_m": 0.010806599066091327,
+        "sphere_index_zero_based": 13,
+        "sphere_center_world": [
+          0.31137732911766314,
+          -0.5824973833627773,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          0.3274765644947174,
+          -0.5199843072195866,
+          0.19448658346423123
+        ],
+        "point_index": 361
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": -0.003500104919816366,
+        "sphere_index_zero_based": 28,
+        "sphere_center_world": [
+          0.21615662053028367,
+          -0.4921132615812245,
+          0.19887533315457406
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.3274765644947174,
+          -0.5199843072195866,
+          0.19448658346423123
+        ],
+        "point_index": 361
+      }
+    },
+    {
+      "topic": "/velodyne_points_mapping",
+      "source": 1794456473.0192356,
+      "receipt": 1794456473.063297,
+      "frame": "livox_frame",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.19589397648231363,
+        -0.3820684278488397,
+        -0.7519599480833696
+      ],
+      "after_world_z_015_points": 1582,
+      "nearest_at_scan_pose": {
+        "gap_m": 0.010806599066091327,
+        "sphere_index_zero_based": 13,
+        "sphere_center_world": [
+          0.31137732911766314,
+          -0.5824973833627773,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          0.3274765644947174,
+          -0.5199843072195866,
+          0.19448658346423123
+        ],
+        "point_index": 346
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": -0.003500104919816366,
+        "sphere_index_zero_based": 28,
+        "sphere_center_world": [
+          0.21615662053028367,
+          -0.4921132615812245,
+          0.19887533315457406
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.3274765644947174,
+          -0.5199843072195866,
+          0.19448658346423123
+        ],
+        "point_index": 346
+      }
+    },
+    {
+      "topic": "/cloud_registered",
+      "source": 1794456474.0191295,
+      "receipt": 1794456474.0581012,
+      "frame": "camera_init",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.21400735033923443,
+        -0.38801744941273564,
+        -0.7777833597504
+      ],
+      "after_world_z_015_points": 4505,
+      "nearest_at_scan_pose": {
+        "gap_m": -0.08656819951448777,
+        "sphere_index_zero_based": 32,
+        "sphere_center_world": [
+          0.31019765070101735,
+          -0.39082100441995504,
+          0.19887533315457406
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.29302075505256653,
+          -0.3648001253604889,
+          0.20498362183570862
+        ],
+        "point_index": 3529
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": -0.08100079658552259,
+        "sphere_index_zero_based": 32,
+        "sphere_center_world": [
+          0.3078266744006818,
+          -0.39852970746142685,
+          0.19887533315457406
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.29302075505256653,
+          -0.3648001253604889,
+          0.20498362183570862
+        ],
+        "point_index": 3529
+      }
+    },
+    {
+      "topic": "/velodyne_points",
+      "source": 1794456474.0191295,
+      "receipt": 1794456474.0681539,
+      "frame": "livox_frame",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.21400735033923443,
+        -0.38801744941273564,
+        -0.7777833597504
+      ],
+      "after_world_z_015_points": 1897,
+      "nearest_at_scan_pose": {
+        "gap_m": 0.7805238715747108,
+        "sphere_index_zero_based": 15,
+        "sphere_center_world": [
+          0.5137373185006986,
+          -0.398993517901486,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          1.3935719653468548,
+          -0.39985389935837645,
+          0.20068132373547465
+        ],
+        "point_index": 178
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": 0.7828795181065635,
+        "sphere_index_zero_based": 15,
+        "sphere_center_world": [
+          0.5113877721037438,
+          -0.40614980237782133,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          1.3935719653468548,
+          -0.39985389935837645,
+          0.20068132373547465
+        ],
+        "point_index": 178
+      }
+    },
+    {
+      "topic": "/velodyne_points_mapping",
+      "source": 1794456474.0191295,
+      "receipt": 1794456474.0760796,
+      "frame": "livox_frame",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.21400735033923443,
+        -0.38801744941273564,
+        -0.7777833597504
+      ],
+      "after_world_z_015_points": 1660,
+      "nearest_at_scan_pose": {
+        "gap_m": 0.7805238715747108,
+        "sphere_index_zero_based": 15,
+        "sphere_center_world": [
+          0.5137373185006986,
+          -0.398993517901486,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          1.3935719653468548,
+          -0.39985389935837645,
+          0.20068132373547465
+        ],
+        "point_index": 170
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": 0.7828795181065635,
+        "sphere_index_zero_based": 15,
+        "sphere_center_world": [
+          0.5113877721037438,
+          -0.40614980237782133,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          1.3935719653468548,
+          -0.39985389935837645,
+          0.20068132373547465
+        ],
+        "point_index": 170
+      }
+    },
+    {
+      "topic": "/velodyne_points",
+      "source": 1794456475.0169833,
+      "receipt": 1794456475.0757914,
+      "frame": "livox_frame",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.23550423185250743,
+        -0.4247917841110158,
+        -0.9650739269185622
+      ],
+      "after_world_z_015_points": 1881,
+      "nearest_at_scan_pose": {
+        "gap_m": 0.7714629684031094,
+        "sphere_index_zero_based": 15,
+        "sphere_center_world": [
+          0.5279489045516037,
+          -0.4913848866326773,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          1.397121899598622,
+          -0.4225742053222339,
+          0.19012100144212057
+        ],
+        "point_index": 249
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": 0.7853805748163514,
+        "sphere_index_zero_based": 15,
+        "sphere_center_world": [
+          0.5113877721037438,
+          -0.40614980237782133,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          1.397121899598622,
+          -0.4225742053222339,
+          0.19012100144212057
+        ],
+        "point_index": 249
+      }
+    },
+    {
+      "topic": "/cloud_registered",
+      "source": 1794456475.0169833,
+      "receipt": 1794456475.0777915,
+      "frame": "camera_init",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.23550423185250743,
+        -0.4247917841110158,
+        -0.9650739269185622
+      ],
+      "after_world_z_015_points": 4423,
+      "nearest_at_scan_pose": {
+        "gap_m": -0.09601246107736072,
+        "sphere_index_zero_based": 33,
+        "sphere_center_world": [
+          0.3294903730158374,
+          -0.44545670786105973,
+          0.3366253296565265
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.32577386498451233,
+          -0.4475482404232025,
+          0.3147089183330536
+        ],
+        "point_index": 1567
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": -0.10377181395795321,
+        "sphere_index_zero_based": 33,
+        "sphere_center_world": [
+          0.3078266744006818,
+          -0.39852970746142685,
+          0.3366253296565265
+        ],
+        "sphere_radius": 0.11833993352063243,
+        "point_world": [
+          0.3157535195350647,
+          -0.4052641987800598,
+          0.34682542085647583
+        ],
+        "point_index": 2570
+      }
+    },
+    {
+      "topic": "/velodyne_points_mapping",
+      "source": 1794456475.0169833,
+      "receipt": 1794456475.0822213,
+      "frame": "livox_frame",
+      "tf_exact_stamp": true,
+      "pose": [
+        0.23550423185250743,
+        -0.4247917841110158,
+        -0.9650739269185622
+      ],
+      "after_world_z_015_points": 1636,
+      "nearest_at_scan_pose": {
+        "gap_m": 0.7714629684031094,
+        "sphere_index_zero_based": 15,
+        "sphere_center_world": [
+          0.5279489045516037,
+          -0.4913848866326773,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          1.397121899598622,
+          -0.4225742053222339,
+          0.19012100144212057
+        ],
+        "point_index": 243
+      },
+      "nearest_at_neighbor_event_pose": {
+        "gap_m": 0.7853805748163514,
+        "sphere_index_zero_based": 15,
+        "sphere_center_world": [
+          0.5113877721037438,
+          -0.40614980237782133,
+          0.09800009779632092
+        ],
+        "sphere_radius": 0.10528264240422765,
+        "point_world": [
+          1.397121899598622,
+          -0.4225742053222339,
+          0.19012100144212057
+        ],
+        "point_index": 243
+      }
+    }
+  ],
+  "counterfactual_single_voxel": {
+    "same_scan_pose": {
+      "pose": [
+        0.19589397648231363,
+        -0.3820684278488397,
+        -0.7519599480833696
+      ],
+      "voxel_center_world": [
+        0.3250000000000002,
+        -0.5249999999999995,
+        0.17500000000000002
+      ],
+      "voxel_index": [
+        156,
+        89,
+        3
+      ],
+      "minimum_gap_m": -0.003731930935304467,
+      "ranked_spheres": [
+        {
+          "index": 13,
+          "gap_m": -0.003731930935304467
+        },
+        {
+          "index": 14,
+          "gap_m": 0.016659252562258975
+        },
+        {
+          "index": 28,
+          "gap_m": 0.018038202602451425
+        },
+        {
+          "index": 32,
+          "gap_m": 0.03394216903695707
+        },
+        {
+          "index": 46,
+          "gap_m": 0.034116178463384814
+        }
+      ]
+    },
+    "recorded_odom_73_219128": {
+      "pose": [
+        0.2105293933854869,
+        -0.3959635869965471,
+        -0.7803388826242288
+      ],
+      "voxel_center_world": [
+        0.3250000000000002,
+        -0.5249999999999995,
+        0.17500000000000002
+      ],
+      "voxel_index": [
+        156,
+        89,
+        3
+      ],
+      "minimum_gap_m": 0.0043270030156999095,
+      "ranked_spheres": [
+        {
+          "index": 28,
+          "gap_m": 0.0043270030156999095
+        },
+        {
+          "index": 13,
+          "gap_m": 0.0058494784195042004
+        },
+        {
+          "index": 32,
+          "gap_m": 0.01585247613730939
+        },
+        {
+          "index": 14,
+          "gap_m": 0.020081450547025023
+        },
+        {
+          "index": 9,
+          "gap_m": 0.035897702205231405
+        }
+      ]
+    },
+    "nearest_event_odom_73_318959": {
+      "pose": [
+        0.2116291196775437,
+        -0.39598721465762643,
+        -0.7750694457866558
+      ],
+      "voxel_center_world": [
+        0.3250000000000002,
+        -0.5249999999999995,
+        0.17500000000000002
+      ],
+      "voxel_index": [
+        156,
+        89,
+        3
+      ],
+      "minimum_gap_m": 0.0028475894226410448,
+      "ranked_spheres": [
+        {
+          "index": 28,
+          "gap_m": 0.0028475894226410448
+        },
+        {
+          "index": 13,
+          "gap_m": 0.0049701310635386214
+        },
+        {
+          "index": 32,
+          "gap_m": 0.016095244071961168
+        },
+        {
+          "index": 14,
+          "gap_m": 0.021406515051293554
+        },
+        {
+          "index": 9,
+          "gap_m": 0.034567363257389364
+        }
+      ]
+    }
+  },
+  "counterfactual_boundary": "One occupied voxel hypothesis uses the C++ trilinear formula; .004327m at recorded prior odom rounds to .004 log. It is not replay of the missing generation3356 ESDF, and exact FSM callback odom was not recorded.",
+  "static_pcd_check": {
+    "gap_m": 0.6363604919219119,
+    "sphere_index_zero_based": 12,
+    "sphere_center_world": [
+      0.22798146881565393,
+      -0.6954718656019735,
+      0.09800009779632092
+    ],
+    "sphere_radius": 0.10528264240422765,
+    "point_world": [
+      -0.2354845255613327,
+      -1.2703804969787598,
+      0.16665777266025544
+    ],
+    "point_index": 7747,
+    "caveat": "Reconstructed launch PCD transform, not the event occupancy/ESDF; no PCD correction topic was recorded. Runtime auto_icp_adjust=false."
+  },
+  "snapshot_headers": [
+    {
+      "receipt": 1794456472.6976445,
+      "sequence": 10187,
+      "fusion": 1794456472.5240657,
+      "valid": 1.0,
+      "field_version": 3363,
+      "acquisition": 1794456472.6665914,
+      "complete_observation": 3352,
+      "full": true
+    },
+    {
+      "receipt": 1794456472.7176058,
+      "sequence": 10188,
+      "fusion": 1794456472.5240657,
+      "valid": 1.0,
+      "field_version": 3363,
+      "acquisition": 1794456472.6665914,
+      "complete_observation": 3352,
+      "full": false
+    },
+    {
+      "receipt": 1794456472.7693083,
+      "sequence": 10189,
+      "fusion": 1794456472.5240657,
+      "valid": 1.0,
+      "field_version": 3363,
+      "acquisition": 1794456472.6665914,
+      "complete_observation": 3352,
+      "full": false
+    },
+    {
+      "receipt": 1794456472.8336318,
+      "sequence": 10190,
+      "fusion": 1794456472.6711543,
+      "valid": 1.0,
+      "field_version": 3364,
+      "acquisition": 1794456472.816705,
+      "complete_observation": 3353,
+      "full": true
+    },
+    {
+      "receipt": 1794456472.867305,
+      "sequence": 10191,
+      "fusion": 1794456472.6711543,
+      "valid": 1.0,
+      "field_version": 3364,
+      "acquisition": 1794456472.816705,
+      "complete_observation": 3353,
+      "full": false
+    },
+    {
+      "receipt": 1794456472.9179978,
+      "sequence": 10192,
+      "fusion": 1794456472.6711543,
+      "valid": 1.0,
+      "field_version": 3364,
+      "acquisition": 1794456472.816705,
+      "complete_observation": 3353,
+      "full": false
+    },
+    {
+      "receipt": 1794456472.9827936,
+      "sequence": 10193,
+      "fusion": 1794456472.8172877,
+      "valid": 1.0,
+      "field_version": 3365,
+      "acquisition": 1794456472.9665833,
+      "complete_observation": 3354,
+      "full": true
+    },
+    {
+      "receipt": 1794456473.0195844,
+      "sequence": 10194,
+      "fusion": 1794456472.8172877,
+      "valid": 1.0,
+      "field_version": 3365,
+      "acquisition": 1794456472.9665833,
+      "complete_observation": 3354,
+      "full": false
+    },
+    {
+      "receipt": 1794456473.069338,
+      "sequence": 10195,
+      "fusion": 1794456472.8172877,
+      "valid": 1.0,
+      "field_version": 3365,
+      "acquisition": 1794456472.9665833,
+      "complete_observation": 3354,
+      "full": false
+    },
+    {
+      "receipt": 1794456473.1217825,
+      "sequence": 10196,
+      "fusion": 1794456472.8172877,
+      "valid": 1.0,
+      "field_version": 3365,
+      "acquisition": 1794456472.9665833,
+      "complete_observation": 3354,
+      "full": false
+    },
+    {
+      "receipt": 1794456473.1845684,
+      "sequence": 10197,
+      "fusion": 1794456472.9848566,
+      "valid": 1.0,
+      "field_version": 3366,
+      "acquisition": 1794456473.1665738,
+      "complete_observation": 3355,
+      "full": true
+    },
+    {
+      "receipt": 1794456473.2175615,
+      "sequence": 10198,
+      "fusion": 1794456472.9848566,
+      "valid": 1.0,
+      "field_version": 3366,
+      "acquisition": 1794456473.1665738,
+      "complete_observation": 3355,
+      "full": false
+    },
+    {
+      "receipt": 1794456473.2674615,
+      "sequence": 10199,
+      "fusion": 1794456472.9848566,
+      "valid": 1.0,
+      "field_version": 3366,
+      "acquisition": 1794456473.1665738,
+      "complete_observation": 3355,
+      "full": false
+    },
+    {
+      "receipt": 1794456473.3563771,
+      "sequence": 10200,
+      "fusion": 1794456473.1722639,
+      "valid": 1.0,
+      "field_version": 3367,
+      "acquisition": 1794456473.3168852,
+      "complete_observation": 3356,
+      "full": true
+    },
+    {
+      "receipt": 1794456473.367674,
+      "sequence": 10201,
+      "fusion": 1794456473.1722639,
+      "valid": 1.0,
+      "field_version": 3367,
+      "acquisition": 1794456473.3168852,
+      "complete_observation": 3356,
+      "full": false
+    },
+    {
+      "receipt": 1794456473.4174926,
+      "sequence": 10202,
+      "fusion": 1794456473.1722639,
+      "valid": 1.0,
+      "field_version": 3367,
+      "acquisition": 1794456473.3168852,
+      "complete_observation": 3356,
+      "full": false
+    },
+    {
+      "receipt": 1794456473.4904294,
+      "sequence": 10203,
+      "fusion": 1794456473.3201647,
+      "valid": 1.0,
+      "field_version": 3368,
+      "acquisition": 1794456473.466615,
+      "complete_observation": 3357,
+      "full": true
+    },
+    {
+      "receipt": 1794456473.5177453,
+      "sequence": 10204,
+      "fusion": 1794456473.3201647,
+      "valid": 1.0,
+      "field_version": 3368,
+      "acquisition": 1794456473.466615,
+      "complete_observation": 3357,
+      "full": false
+    },
+    {
+      "receipt": 1794456473.5760517,
+      "sequence": 10205,
+      "fusion": 1794456473.4653232,
+      "valid": 1.0,
+      "field_version": 3369,
+      "acquisition": 1794456473.5665512,
+      "complete_observation": 3358,
+      "full": true
+    },
+    {
+      "receipt": 1794456473.6173205,
+      "sequence": 10206,
+      "fusion": 1794456473.4653232,
+      "valid": 1.0,
+      "field_version": 3369,
+      "acquisition": 1794456473.5665512,
+      "complete_observation": 3358,
+      "full": false
+    },
+    {
+      "receipt": 1794456473.667244,
+      "sequence": 10207,
+      "fusion": 1794456473.4653232,
+      "valid": 1.0,
+      "field_version": 3369,
+      "acquisition": 1794456473.5665512,
+      "complete_observation": 3358,
+      "full": false
+    },
+    {
+      "receipt": 1794456473.7173684,
+      "sequence": 10208,
+      "fusion": 1794456473.4653232,
+      "valid": 0.0,
+      "field_version": 3369,
+      "acquisition": 1794456473.5665512,
+      "complete_observation": 3358,
+      "full": false
+    }
+  ],
+  "event_logs": [
+    {
+      "receipt": 1794456472.4339051,
+      "source": 1794456472.4226565,
+      "node": "/whole_body_mppi",
+      "message": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.36 ms; snapshot={'valid': True, 'map_age_ms': 368.56, 'dynamic_age_ms': 170.14, 'cached_joint_age_ms': 78.46, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3360})"
+    },
+    {
+      "receipt": 1794456473.3164506,
+      "source": 1794456473.2074163,
+      "node": "/remani_planner_node",
+      "message": "[FSM] Latched collision-event ESDF requirement at seq=3356."
+    },
+    {
+      "receipt": 1794456473.361752,
+      "source": 1794456473.232225,
+      "node": "/remani_planner_node",
+      "message": "[FSM] Frozen planning-boundary ESDF requirement at seq=3356 in GEN_NEW_TRAJ."
+    },
+    {
+      "receipt": 1794456473.508252,
+      "source": 1794456473.232321,
+      "node": "/remani_planner_node",
+      "message": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3356, esdf_seq=3355, wait=0.00 s)."
+    },
+    {
+      "receipt": 1794456473.5087206,
+      "source": 1794456473.3258498,
+      "node": "/whole_body_mppi",
+      "message": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.28 ms; snapshot={'valid': True, 'map_age_ms': 370.3, 'dynamic_age_ms': 168.36, 'cached_joint_age_ms': 82.04, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3365})"
+    },
+    {
+      "receipt": 1794456473.7967126,
+      "source": 1794456473.320249,
+      "node": "/remani_planner_node",
+      "message": "[FSM] Real whole-body state is in hard collision (type=0, check_distance=0.004 m, base_surface_gap=0.004 m); stop before using nominal trajectory."
+    },
+    {
+      "receipt": 1794456473.81067,
+      "source": 1794456473.3375869,
+      "node": "/remani_planner_node",
+      "message": "KinoAstar: start (0:car-obstacle) is not free!"
+    },
+    {
+      "receipt": 1794456473.8562593,
+      "source": 1794456473.594643,
+      "node": "/piper_ctrl_single_node",
+      "message": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled."
+    },
+    {
+      "receipt": 1794456473.947208,
+      "source": 1794456473.811339,
+      "node": "/robot_self_filter",
+      "message": "Robot self-filter suppressed cloud: self-filter timed out waiting for scan-aligned joint feedback"
+    },
+    {
+      "receipt": 1794456474.205673,
+      "source": 1794456473.9757779,
+      "node": "/whole_body_mppi",
+      "message": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.95 ms; snapshot={'valid': False, 'map_age_ms': 374.09, 'dynamic_age_ms': 520.45, 'cached_joint_age_ms': 78.83, 'dynamic_valid': False, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3369})"
+    },
+    {
+      "receipt": 1794456474.9234755,
+      "source": 1794456474.7896101,
+      "node": "/whole_body_mppi",
+      "message": "MPPI command rejected: inputs_expired_before_delivery (cycle=48.51 ms; snapshot={'valid': True, 'map_age_ms': 366.02, 'dynamic_age_ms': 167.77, 'cached_joint_age_ms': 76.55, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3374})"
+    },
+    {
+      "receipt": 1794456475.244103,
+      "source": 1794456475.0631976,
+      "node": "/whole_body_mppi",
+      "message": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.35 ms; snapshot={'valid': True, 'map_age_ms': 354.13, 'dynamic_age_ms': 224.0, 'cached_joint_age_ms': 82.34, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3376})"
+    },
+    {
+      "receipt": 1794456475.365403,
+      "source": 1794456475.2932081,
+      "node": "/whole_body_mppi",
+      "message": "MPPI command rejected: collision_snapshot_unavailable (cycle=0.52 ms; snapshot={'valid': True, 'map_age_ms': 382.99, 'dynamic_age_ms': 222.74, 'cached_joint_age_ms': 84.15, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3377})"
+    },
+    {
+      "receipt": 1794456475.4457693,
+      "source": 1794456475.4110224,
+      "node": "/whole_body_mppi",
+      "message": "MPPI command rejected: inputs_expired_before_delivery (cycle=59.73 ms; snapshot={'valid': True, 'map_age_ms': 366.32, 'dynamic_age_ms': 179.34, 'cached_joint_age_ms': 88.04, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3378})"
+    }
+  ],
+  "mppi_status_window": [
+    {
+      "receipt": 1794456472.6052933,
+      "state": "command_delivered",
+      "external_min_gap": 0.43166006647936733,
+      "base_v": 0.04822811565983203,
+      "base_w": -0.0031873297935209877
+    },
+    {
+      "receipt": 1794456472.721029,
+      "state": "command_delivered",
+      "external_min_gap": 0.43166006647936733,
+      "base_v": 0.04919132832200886,
+      "base_w": -0.08689919918144717
+    },
+    {
+      "receipt": 1794456472.8081436,
+      "state": "command_delivered",
+      "external_min_gap": 0.43166006647936733,
+      "base_v": 0.07962240375079253,
+      "base_w": -0.19439487212312478
+    },
+    {
+      "receipt": 1794456472.9141426,
+      "state": "command_delivered",
+      "external_min_gap": 0.43166006647936733,
+      "base_v": 0.07960778005782701,
+      "base_w": -0.19812643804387076
+    },
+    {
+      "receipt": 1794456473.0213661,
+      "state": "command_delivered",
+      "external_min_gap": 0.43166006647936744,
+      "base_v": 0.07979157612945603,
+      "base_w": -0.14440028896579538
+    },
+    {
+      "receipt": 1794456473.1110463,
+      "state": "command_delivered",
+      "external_min_gap": 0.43166006647936733,
+      "base_v": 0.07988659847701284,
+      "base_w": -0.10650273451358583
+    },
+    {
+      "receipt": 1794456473.360492,
+      "state": "collision_snapshot_unavailable",
+      "snapshot": {
+        "valid": true,
+        "map_age_ms": 370.3,
+        "dynamic_age_ms": 168.36,
+        "cached_joint_age_ms": 82.04,
+        "dynamic_valid": true,
+        "ground_valid": true,
+        "self_collision_valid": true,
+        "field_version": 3365
+      },
+      "candidate_diagnostics": {
+        "plan_time": 1794456473.1872814
+      }
+    },
+    {
+      "receipt": 1794456473.509602,
+      "state": "native_reference_cancelled",
+      "candidate_diagnostics": {
+        "plan_time": 1794456473.327738,
+        "measured_state": [
+          0.2105293933854869,
+          -0.3959635869965471,
+          -0.7803388826242288,
+          0.09092873088224837,
+          -0.1353620497315553,
+          0.09288642279113822,
+          0.684518132632176,
+          -1.1099595910983138,
+          0.0651880475619882,
+          0.9330181115311286,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "snapshot_header": [
+          3.0,
+          1.0,
+          10199.0,
+          1794456472.9848566,
+          1.0,
+          82.0,
+          82.0,
+          60.0,
+          -1.7999999999999996,
+          -2.4,
+          0.0,
+          0.05,
+          67.0,
+          0.0,
+          3366.0,
+          0.35,
+          2.0,
+          1794456473.1665738,
+          1794456473.2191284,
+          1.0,
+          0.0,
+          0.03,
+          1.0,
+          1.0,
+          1794456473.2605798,
+          0.08,
+          0.25,
+          0.75,
+          1.0,
+          3355.0,
+          5044.0,
+          5042.0
+        ],
+        "reference_source": "native_polynomial",
+        "native_prefix_atomic": false,
+        "native_prefix_segments": 0,
+        "native_arm_reference": null,
+        "native_phase": null,
+        "native_time_scale": null,
+        "native_gear_block": null,
+        "reference_revision": 4
+      }
+    }
+  ],
+  "causal_assessment": [
+    "A near-body return is present in the full filtered branch AND mapping sparse branch at the identical stamp; sparse mapping did not create this point.",
+    "Its raw distance exceeds1cm self-mask by0.8066mm, but5cm voxel rounding moves the obstacle center and can put the distance field inside the robot at the same pose.",
+    "Native live raycast marks a voxel occupied from any endpoint in that frame; p_hit=.65 does not imply multi-frame confirmation because occupied buffer is set directly to clamp_max.",
+    "At the last delivered commands, MPPI uses older Complete generations. Raw occupancy3356 triggered slow stop before its complete field was exported. Header3356 first received73.356; prior .431660 gap belongs earlier fields. Thus the two values do not prove simultaneous inconsistent geometry.",
+    "Evidence strongly supports a short-lived near-body occupancy event amplified by voxelization/map latency. Physical origin (robot echo, multipath/noise, or a genuine nearby object) remains unproven; do not erase it or lower the hard-stop threshold based on this inference alone."
+  ],
+  "minimal_followup": [
+    "At the slow hard-stop, retain actual base pose, minimizing sphere index/center, occupancy and ESDF sequence, and a small exact local crop from the same ReadScope. This closes the present missing-generation ambiguity.",
+    "Use the saved scan and verified physical body geometry to repair specifically the self-filter/voxel boundary if the return is confirmed self echo; test both that point and real external points just outside the body. Do not globally enlarge blind filtering or remove collision protection.",
+    "Keep fast/slow geometry definitions aligned and measure Complete-generation age. Optimize delivery latency separately; changing collision radii or treating historical MPPI gap as current clearance is not justified."
+  ]
+}

@@ -131,12 +131,7 @@ grid_map:
   use_load_map: false     # Whether to use simulation map
   use_global_map: true # Whether to use global map
   dynamic_static_match_radius: 0.075
-  # A Livox scan may not send a later free ray through the exact voxel where a
-  # moving person was observed. Expire only non-static endpoint voxels after
-  # this many successfully fused scans without re-observation. Sensor loss
-  # does not advance the counter, and persistent PCD occupancy is untouched.
-  live_obstacle_expiry_enable: true
-  live_obstacle_max_missed_fusions: 4
+  # Missing returns are unknown. Only actual free rays clear live occupancy.
   visualization_interval: 0.10
   esdf_visualization_stride: 1
   # Bound map-internal data parallelism so the planner shortens each blocking

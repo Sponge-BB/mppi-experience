@@ -1,0 +1,67 @@
+2026-11-06 待机避障下一步：候选验收、位置接口与故障锁存修正
+
+结论
+完成3项工程修正及7组串行ROS数值实验。位置指令响应得到改善，错误的待机底盘锁存已消除；完整移动障碍避障仍未成功。
+修正后的默认不确定性场景在8.075s发生模型碰撞。底盘最大位移2.321mm、最大关节变化0.512°，不能作为“机械臂成功避障且底盘影响小”的证据。
+移除预测不确定性仅作诊断，修正后同样在8.105s碰撞，未向实车配置推广。未启动真实底盘、CAN或Piper驱动。
+
+本轮改变
+1. 每个候选按自身预测段及完整刹停尾段验收；不再被同批其他候选的较长尾段影响。仅跳过批处理填充样本，实际检查样本和评分不删减。
+2. 待机仿真将速度意图映射为位置目标，并以独立数值plant的名义位置/速度环模型预测：
+   q_cmd=clip_joint(q+clip((0.12+0.5*T)*clip(u_arm,±vmax),±0.03))，T=0.1s。
+   同一控制周期的两个半步共用这个目标。交付前检查该目标保持0.30s再按watchdog减速的全过程。
+   模型只允许simulation=True且无导航目标时启用；真实驱动默认路径、全局速度/加速度、95ms交付时限不变。
+   实车Piper仅消费position，名义0.12s响应尚未由实车标定，不能直接用于实车性能结论。
+3. 待机拒绝不再向原导航发布tracking_fault=True；它没有待恢复的导航轨迹。
+   拒绝时仍立即发底盘零速，机械臂指令按0.30s watchdog失效；下一条指令仍必须通过全部验收。
+   导航状态仍发送跟踪故障；规划器独立安全限速继续执行，未主动发送解除限速命令。
+
+实现耗时
+新位置模型的Python循环造成空场37/41周期超时。保留10ms积分，用约50行无ROS依赖C++循环替代这一热点，数值逐步差异最大4.16e-16；共享库8.3KB。
+仍保留NumPy回退和对照，legacy模式不依赖库。未调整采样数量、H=8、积分精度、碰撞阈值或95ms期限。
+加速后的空场39/40周期交付，P95=91.29ms；动态零不确定性诊断仍有51/81周期超时，实时性能还未达标。
+
+修正后在线结果（seed=11，每组一次，不能据此推断统计成功率）
+servo_fast_empty: completed，结束4.000s；交付39/40；周期P95 91.29ms；超时1；收臂交付0。
+corrected_legacy_zero: collision，结束8.085s；交付45/81；周期P95 100.73ms；超时31；收臂交付0。
+corrected_servo_current: collision，结束8.075s；交付29/81；周期P95 94.03ms；超时1；收臂交付0。
+corrected_servo_zero: collision，结束8.105s；交付27/81；周期P95 108.78ms；超时51；收臂交付0。
+底盘在物理模型中始终自由，修正后所有成功帧均未再出现错误限速0。
+故障修正前audit_current、audit_zero_uncertainty和servo_empty受到错误锁存影响，因此旧毫米级位移不能证明臂优先避障效果。
+原生对照复用上一轮相同plant/感知配置的native_s11：关闭MPPI，8.080s模型碰撞；指当前Piper适配工程的原生控制，并非未经修改的官方上游。
+
+位置接口单独验证
+相同0.15rad/s的关节2速度意图持续2s：原接口实际2.398°，修正后14.281°；带20ms真实反馈延迟时分别2.048°和13.527°。
+这项试验没有障碍，不是避障成功率。修正后10ms预测、5ms独立plant在2s独立递推上相差1.565mrad；按每周期实测反馈重置后的最大单步误差0.0256mrad。
+2mrad是这一数值算例的明示回归预算，不是通用误差界或安全保证。5ms同积分对照另保留，不用其完全一致替代独立精度证据。
+
+当前最关键的阻断证据
+首个有效动态快照的实际间隙约460.4mm；默认不确定性为epsilon(t)=0.08+0.25*t+0.5*0.75*t²。
+约0.70s预测处，固定结构球#44的动态表面间隙387.7mm被419.6mm膨胀量覆盖，硬间隙变为-32.0mm，而对应场景真值仍约404.9mm。
+到0.8s，固定球的硬间隙为-117.3mm；即忽略加速度、允许底盘一直满速，其球心最多移动58.3mm，硬间隙上界仍-59.0mm。改变机械臂姿态不能移动此固定球。
+因此在这一快照、速度限制和硬不确定性模型下，可行性根本被阻断；增加收臂候选、调评分权重或单纯加长预测不能解决。
+零膨胀旧审计中收臂候选曾被选7次，但都因超时或保持/刹停验收未交付。修正后的零膨胀位置模式选中2次，仍交付0次。
+短预测窗内偏好初始姿态、持续收臂价值不可见、动态场计算超时，仍需后续处理；不能把随机微动解释为有效收臂。
+
+下一步的核心范围
+先用仿真观测残差核对预测不确定性各项及其膨胀方向/时间，确认模型的可行条件；不能把直接置零当作解决办法。
+在可行条件成立后，再检验“持续收臂目标/终端进度”及动态场95ms连续交付，不新增候选框架、不更改实车驱动。
+当前不进入实车运动验证。
+
+图表
+arm_response.png：独立位置接口响应前后对比，明确不是避障成功。
+current_profile/comparison.png、joint_changes.png、comparison.gif：原生、修正前、修正后的默认不确定性场景。
+diagnostic_zero_uncertainty/下同名图：故障/批次修正后，legacy接口与position接口的零膨胀诊断。
+GIF只回放state.csv中的实际数值plant状态；碰撞即终止，不补画成功姿态。画面为当前碰撞球/DH链，不是硬件影像或mesh精确验证。
+
+验证、资源与复现
+34项相关回归通过：候选批次2项、碰撞/故障8项、原生相位12项、位置/原生积分12项。
+7组串行ROS，无RViz/Gazebo，无并行编译。单图进程峰值RSS不超过433MiB；系统可用内存低于1200MiB或图超过1600MiB时运行器会退出。
+本轮仅编译小库，未整体重编译工程：
+  g++ -O2 -std=c++11 -shared -fPIC src/mm_remani/src/mppi_position_servo.cpp -o devel/lib/libmppi_position_servo.so
+已加入mm_remani/CMakeLists.txt，后续正常catkin构建会包含此库；本轮验证了直接编译路径，未重跑整仓CMake配置。
+运行前在/home/l/remani_ws执行 source devel/setup.bash，然后：
+  PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /usr/bin/python3 src/mm_remani/scripts/run_standby_sim.py --group mppi_arm --arm-execution-model position_servo --uncertainty-scale 1 --out /tmp/standby_new_run
+输出目录必须尚不存在。--uncertainty-scale 0仅诊断；--arm-execution-model velocity_legacy可做旧接口消融。
+完整各组参数、源快照、状态、拒绝原因均在各run目录；comparison_summary.json/csv只截取场景开始至result.elapsed_s。
+final_relevant_sources.tar.gz与final_source_sha256.json保存本轮相关源文件和小库指纹，原工程压缩备份保留不动。

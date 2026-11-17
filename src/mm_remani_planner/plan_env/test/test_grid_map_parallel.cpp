@@ -2,6 +2,12 @@
 
 #include <cmath>
 #include <chrono>
+#include <cstdlib>
+#include <cstring>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <random>
 #include <thread>
 #include <vector>
 
@@ -9,9 +15,156 @@
 
 #include <plan_env/grid_map.h>
 
+#ifndef MAP_BENCHMARK_OLD_ABI
+namespace plan_env
+{
+// Alter only a completed private result, while holding the worker's own lock.
+// This makes whole-batch rejection deterministic without a product test hook.
+class ESDFWorkerTestAccessor
+{
+public:
+  static std::pair<std::size_t, std::size_t> readyPatchStats(ESDFWorker &worker)
+  {
+    std::lock_guard<std::mutex> lock(worker.queue_mutex_);
+    if (!worker.ready_result_) return {0, 0};
+    return {worker.ready_result_->patches.size(),
+            worker.ready_result_->computed_voxels};
+  }
+
+  static bool damageLastReadyPatch(ESDFWorker &worker, bool remove_patch)
+  {
+    std::lock_guard<std::mutex> lock(worker.queue_mutex_);
+    if (!worker.ready_result_ || worker.ready_result_->patches.size() < 2)
+      return false;
+    auto &patches = worker.ready_result_->patches;
+    if (remove_patch)
+      patches.pop_back();
+    else
+    {
+      if (patches.back().distance_all.empty()) return false;
+      patches.back().distance_all.back() = std::numeric_limits<double>::quiet_NaN();
+    }
+    return true;
+  }
+};
+}  // namespace plan_env
+#endif
+
 class GridMapParallelTestAccessor
 {
 public:
+  static void configureImmutableReads(GridMap &map)
+  {
+    configureOccupancyUpdate(map);
+    map.isolated_mapping_ = true;
+    map.md_.esdf_observation_seq_ = 0;
+    map.md_.static_map_esdf_ready_ = true;
+    map.md_.has_first_depth_ = false;
+    map.esdf_map_epoch_ = 1;
+    publishGeneration(map, 1, 1, -2.0, 0.75);
+  }
+
+  // The test owns one writer, exactly as the private mapping queue does.
+  static void publishGeneration(GridMap &map, std::uint64_t occupancy_seq,
+                                std::uint64_t esdf_seq, double occupancy,
+                                double distance)
+  {
+    std::fill(map.md_.occupancy_buffer_.begin(),
+              map.md_.occupancy_buffer_.end(), occupancy);
+    std::fill(map.md_.occupancy_buffer_inflate_.begin(),
+              map.md_.occupancy_buffer_inflate_.end(), occupancy > 0.0);
+    std::fill(map.md_.distance_buffer_all_.begin(),
+              map.md_.distance_buffer_all_.end(), distance);
+    map.md_.dynamic_observation_seq_ = occupancy_seq;
+    map.md_.esdf_observation_seq_ = esdf_seq;
+    map.md_.lidar_accepted_seq_ = occupancy_seq;
+    map.md_.lidar_fused_seq_ = occupancy_seq;
+    map.md_.last_occ_update_time_ = ros::Time(100 + occupancy_seq, 0);
+    ++map.read_distance_revision_;
+    map.publishReadSnapshot();
+  }
+
+  static ros::Time pinnedObservationStamp(const GridMap &map)
+  {
+    return map.readSnapshot()->last_occupancy;
+  }
+
+  static bool republishReusesLayers(GridMap &map)
+  {
+    const auto before = std::atomic_load(&map.latest_read_snapshot_);
+    map.publishReadSnapshot();
+    const auto after = std::atomic_load(&map.latest_read_snapshot_);
+    return before->occupancy == after->occupancy &&
+           before->distance == after->distance &&
+           before->last_occupancy == after->last_occupancy;
+  }
+
+  static void publishNewEpoch(GridMap &map)
+  {
+    ++map.esdf_map_epoch_;
+    publishGeneration(map, 3, 2, 2.0, 0.25);
+  }
+
+  static bool fallbackOnlyRequested(const GridMap &map)
+  {
+    return map.synchronous_fallback_requested_.load() &&
+           !map.async_esdf_fallback_to_sync_;
+  }
+
+  template <typename Function>
+  static void asMappingWriter(GridMap &map, Function function)
+  {
+    const auto previous = GridMap::writer_context_;
+    GridMap::writer_context_ = &map;
+    function();
+    GridMap::writer_context_ = previous;
+  }
+
+  static void useLegacyQueue(GridMap &map) { map.isolated_mapping_ = false; }
+
+  static void configureDistanceRegion(GridMap &map,
+                                      const Eigen::Vector3i &dimensions)
+  {
+    configureImmutableReads(map);
+    map.mp_.map_voxel_num_ = dimensions;
+    map.mp_.map_size_ = dimensions.cast<double>() * map.mp_.resolution_;
+    map.mp_.map_max_boundary_ = map.mp_.map_origin_ + map.mp_.map_size_;
+    const std::size_t count = static_cast<std::size_t>(dimensions.x()) *
+        static_cast<std::size_t>(dimensions.y()) * dimensions.z();
+    map.md_.occupancy_buffer_.assign(count, -2.0);
+    map.md_.occupancy_buffer_inflate_.assign(count, 0);
+    map.md_.static_occupancy_.assign(count, 0);
+    map.md_.distance_buffer_all_.resize(count);
+    publishDistancePattern(map, 2, 0.0);
+  }
+
+  static void publishDistancePattern(GridMap &map, std::uint64_t sequence,
+                                     double offset)
+  {
+    for (std::size_t i = 0; i < map.md_.distance_buffer_all_.size(); ++i)
+      map.md_.distance_buffer_all_[i] = offset + double(i) * 0.125;
+    map.md_.dynamic_observation_seq_ = sequence;
+    map.md_.esdf_observation_seq_ = sequence;
+    map.md_.lidar_accepted_seq_ = sequence;
+    map.md_.lidar_fused_seq_ = sequence;
+    map.md_.last_occ_update_time_ = ros::Time(100 + sequence, 0);
+    ++map.read_distance_revision_;
+    map.publishReadSnapshot();
+  }
+
+  static void setDistanceDimensions(GridMap &map,
+                                     const Eigen::Vector3i &dimensions)
+  {
+    map.mp_.map_voxel_num_ = dimensions;
+  }
+
+  static void truncateDistanceStorage(GridMap &map)
+  {
+    map.md_.distance_buffer_all_.pop_back();
+    ++map.read_distance_revision_;
+    map.publishReadSnapshot();
+  }
+
   static void configureDynamicPlanningOverlay(
       GridMap &map,
       const std::vector<Eigen::Vector3d> &centers,
@@ -139,6 +292,83 @@ public:
     return map.submitAsyncESDFUpdate();
   }
 
+  static bool waitForAsyncReady(GridMap &map, std::uint64_t completed,
+                               const std::chrono::milliseconds &timeout)
+  {
+    const auto deadline = std::chrono::steady_clock::now() + timeout;
+    while (std::chrono::steady_clock::now() < deadline)
+    {
+      // Observe completion without consuming or committing the ready result.
+      if (map.esdf_worker_->stats().completed >= completed) return true;
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    return false;
+  }
+
+#ifndef MAP_BENCHMARK_OLD_ABI
+  static void startMappingLoop(GridMap &map)
+  {
+    ASSERT_FALSE(map.mapping_thread_.joinable());
+    map.isolated_mapping_ = true;
+    map.mapping_stop_.store(false);
+    map.mapping_queue_.enable();
+    map.mapping_thread_ = std::thread(&GridMap::mappingLoop, &map);
+  }
+
+  static bool waitForLoopComplete(GridMap &map, std::uint64_t sequence,
+                                 const std::chrono::milliseconds &timeout)
+  {
+    const auto deadline = std::chrono::steady_clock::now() + timeout;
+    while (std::chrono::steady_clock::now() < deadline)
+    {
+      const auto snapshot = std::atomic_load(&map.latest_complete_snapshot_);
+      if (snapshot && snapshot->observation == sequence && snapshot->esdf == sequence)
+        return true;
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    return false;
+  }
+
+  static void advanceEpochWithReadyResult(GridMap &map)
+  {
+    // Keep the ready old-epoch result to exercise the commit-side guard.
+    // Normal invalidation also drops that private result in the worker.
+    ++map.esdf_map_epoch_;
+  }
+
+  static bool waitForLoopEpoch(GridMap &map, std::uint64_t epoch,
+                              const std::chrono::milliseconds &timeout)
+  {
+    const auto deadline = std::chrono::steady_clock::now() + timeout;
+    while (std::chrono::steady_clock::now() < deadline)
+    {
+      const auto snapshot = std::atomic_load(&map.latest_read_snapshot_);
+      if (snapshot && snapshot->epoch == epoch)
+        return true;
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    return false;
+  }
+#endif
+
+  static void markAsyncOutstandingWithoutResult(GridMap &map)
+  {
+    // Deterministically exercise the coordinator's busy fence. A real 125-cell
+    // job can finish before the test calls occupancy, so it is not a barrier.
+    map.esdf_latest_submitted_request_id_ = ++map.esdf_next_request_id_;
+    map.md_.esdf_need_update_ = false;
+  }
+
+  static void configureAsyncOccupancySnapshots(GridMap &map)
+  {
+    configureImmutableReads(map);  // Complete generation 1 remains available.
+    enableAsync(map, 7);
+    map.md_.esdf_observation_seq_ = 1;
+    map.md_.last_occ_update_time_ = ros::Time(107, 0);
+    seedDynamicAndStaticOccupancy(map);
+    map.publishReadSnapshot();  // Live occupancy 7, old distance generation 1.
+  }
+
   static bool waitForAsyncCompletionAndCommit(
       GridMap &map, const std::chrono::milliseconds &timeout)
   {
@@ -264,6 +494,10 @@ public:
 
   static void configureOccupancyUpdate(GridMap &map)
   {
+    // Real occupancy now invokes the ESDF callback in async mode. Initialize
+    // its mode/static flags as well, instead of depending on stack contents.
+    map.mp_ = MappingParameters{};
+    map.md_ = MappingData{};
     map.mp_.resolution_ = 0.5;
     map.mp_.resolution_inv_ = 2.0;
     map.mp_.map_origin_ = Eigen::Vector3d::Zero();
@@ -287,8 +521,6 @@ public:
     map.mp_.global_map_lidar_clear_ = false;
     map.mp_.global_map_lidar_clear_radius_ = 0.0;
     map.mp_.global_map_lidar_clear_min_misses_ = 1;
-    map.mp_.live_obstacle_expiry_enable_ = true;
-    map.mp_.live_obstacle_max_missed_fusions_ = 2;
     map.mp_.parallel_threads_ = 2;
     map.mp_.parallel_voxel_threshold_ = 1;
     map.mp_.use_global_map_ = false;
@@ -308,11 +540,6 @@ public:
     map.md_.occupancy_buffer_inflate_.assign(voxel_count, 0);
     map.md_.static_occupancy_.assign(voxel_count, 0);
     map.md_.static_miss_count_.assign(voxel_count, 0);
-    map.md_.live_occupancy_last_hit_cycle_.assign(voxel_count, 0);
-    map.md_.live_occupancy_active_.assign(voxel_count, 0);
-    map.md_.active_live_occupancy_indices_.clear();
-    map.md_.live_fusion_cycle_ = 0;
-    map.md_.expired_live_occupancy_count_ = 0;
     map.md_.count_hit_and_miss_.assign(voxel_count, 0);
     map.md_.count_hit_.assign(voxel_count, 0);
     map.md_.flag_rayend_.assign(voxel_count, -1);
@@ -432,7 +659,8 @@ public:
   }
 
   static void receiveSynchronizedCloud(
-      GridMap &map, const pcl::PointCloud<pcl::PointXYZ> &cloud)
+      GridMap &map, const pcl::PointCloud<pcl::PointXYZ> &cloud,
+      bool exact_tf = true)
   {
     sensor_msgs::PointCloud2Ptr message(new sensor_msgs::PointCloud2());
     pcl::toROSMsg(cloud, *message);
@@ -441,14 +669,14 @@ public:
 
     map.tf_buffer_.reset(new tf2_ros::Buffer());
     geometry_msgs::TransformStamped transform;
-    transform.header.stamp = message->header.stamp;
+    transform.header.stamp = message->header.stamp - ros::Duration(exact_tf ? 0. : .5);
     transform.header.frame_id = "world";
     transform.child_frame_id = message->header.frame_id;
     transform.transform.translation.x = 0.75;
     transform.transform.translation.y = 0.75;
     transform.transform.translation.z = 0.50;
     transform.transform.rotation.w = 1.0;
-    ASSERT_TRUE(map.tf_buffer_->setTransform(transform, "grid_map_test", true));
+    ASSERT_TRUE(map.tf_buffer_->setTransform(transform, "grid_map_test", exact_tf));
 
     nav_msgs::OdometryPtr odometry(new nav_msgs::Odometry());
     odometry->header.stamp = message->header.stamp;
@@ -462,6 +690,14 @@ public:
   static void processOccupancy(GridMap &map)
   {
     map.updateOccupancyCallback(ros::TimerEvent());
+  }
+
+  static void processOccupancyAndPublish(GridMap &map)
+  {
+    asMappingWriter(map, [&]() {
+      map.updateOccupancyCallback(ros::TimerEvent());
+      map.publishReadSnapshot();  // The private mapping queue's callback epilogue.
+    });
   }
 
   static void invalidateLocalBounds(GridMap &map)
@@ -643,12 +879,6 @@ public:
     return map.md_.occupancy_buffer_inflate_[address(map, index)];
   }
 
-  static std::size_t advanceLiveExpiryCycle(GridMap &map)
-  {
-    ++map.md_.live_fusion_cycle_;
-    return map.expireStaleLiveOccupancy(map.md_.live_fusion_cycle_);
-  }
-
   static void raycastProjectedLivePoint(GridMap &map,
                                         const Eigen::Vector3d &point)
   {
@@ -658,9 +888,247 @@ public:
     map.raycastProcess(true);
   }
 
-  static std::uint32_t liveFusionCycle(const GridMap &map)
+  static void observeMotionThenNoMotion(GridMap &map,
+                                   const Eigen::Vector3d &position,
+                                   const ros::Time &now)
   {
-    return map.md_.live_fusion_cycle_;
+    auto &buffer = map.dynamic_point_buffer_;
+    buffer.enabled_ = true;
+    buffer.position_uncertainty_ = 0.03;
+    buffer.max_age_ = 0.35;
+    plan_env::DynamicPointSnapshot previous;
+    previous.stamp = now - ros::Duration(0.20);
+    previous.receive_time = previous.stamp;
+    previous.frame_id = "world";
+    previous.has_track_ids = previous.valid = true;
+    plan_env::DynamicPoint point;
+    point.track_id = 7;
+    point.position = position;
+    previous.points.push_back(point);
+    buffer.recordObservation(previous);
+    plan_env::DynamicPointSnapshot current;
+    current.stamp = now - ros::Duration(0.01);
+    current.receive_time = current.stamp;
+    current.frame_id = "world";
+    current.valid = current.has_track_ids = true;
+    buffer.recordObservation(current);
+  }
+
+  static void raycastLiveReturns(
+      GridMap &map, const std::vector<Eigen::Vector3d> &endpoints,
+      const ros::Time &stamp, bool live_lidar = true)
+  {
+    map.md_.lidar_origin_ = Eigen::Vector3d(0.25, 0.75, 0.75);
+    map.md_.lidar_origin_valid_ = true;
+    map.md_.pending_lidar_stamp_ = stamp;
+    std::copy(endpoints.begin(), endpoints.end(), map.md_.proj_points_.begin());
+    map.md_.proj_points_cnt = static_cast<int>(endpoints.size());
+    map.raycastProcess(live_lidar);
+  }
+
+  static void fuseProjectedFrame(GridMap &map, const Eigen::Vector3d &endpoint,
+                                 bool live_lidar)
+  {
+    // Exercise the real occupancy callback, including raycasting, perimeter
+    // handling, inflation and consumption of the pending LiDAR generation.
+    map.md_.camera_pos_ = map.md_.lidar_origin_ = Eigen::Vector3d(.25, .75, .75);
+    map.md_.lidar_origin_valid_ = live_lidar;
+    map.md_.proj_points_[0] = endpoint;
+    map.md_.proj_points_cnt = 1;
+    map.md_.occ_need_update_ = true;
+    map.md_.flag_use_depth_fusion = true;
+    if (live_lidar)
+    {
+      map.md_.lidar_pending_seq_ = ++map.md_.lidar_accepted_seq_;
+      map.md_.pending_lidar_stamp_ = ros::Time::now();
+      map.md_.pending_lidar_received_steady_ = ros::SteadyTime::now();
+    }
+    map.updateOccupancyCallback(ros::TimerEvent());
+  }
+
+  static void configureIncrementalTest(
+      GridMap &map, bool incremental,
+      const Eigen::Vector3i &dimensions = Eigen::Vector3i(61, 51, 31),
+      double resolution = 0.1, int threads = 1)
+  {
+    // These tests invoke the real timer callback without initMap(). Explicit
+    // value initialization prevents unrelated uninitialized runtime flags.
+    map.mp_ = MappingParameters{};
+    map.md_ = MappingData{};
+    map.mp_.resolution_ = resolution;
+    map.mp_.resolution_inv_ = 1.0 / resolution;
+    map.mp_.map_voxel_num_ = dimensions;
+    map.mp_.map_origin_ = Eigen::Vector3d::Zero();
+    map.mp_.map_size_ = dimensions.cast<double>() * resolution;
+    map.mp_.map_min_boundary_ = map.mp_.map_origin_;
+    map.mp_.map_max_boundary_ = map.mp_.map_size_;
+    map.mp_.parallel_threads_ = threads;
+    map.mp_.parallel_voxel_threshold_ = 1;
+    map.mp_.incremental_esdf_ = incremental;
+    map.mp_.esdf_distance_cap_ = 0.6;
+    map.mp_.async_esdf_enable_ = false;
+    map.mp_.async_esdf_max_result_age_ = 5.0;
+    map.mp_.show_esdf_time_ = false;
+    map.mp_.enable_performance_diagnostics_ = false;
+    map.mp_.use_global_map_ = true;
+    map.mp_.fuse_global_map_ = true;
+    map.mp_.global_map_full_esdf_ = true;
+    map.mp_.local_esdf_follow_odom_ = false;
+    map.mp_.live_lidar_health_monitor_enable_ = false;
+    map.mp_.clamp_min_log_ = -2.0;
+    map.mp_.min_occupancy_log_ = 0.0;
+    map.mp_.unknown_flag_ = 0.01;
+    map.mp_.local_map_margin_ = 0;
+    map.mp_.obstacles_inflation_ = 0.0;
+    map.mp_.virtual_ceil_height_ = -1.0;
+    map.mp_.global_map_lidar_clear_min_misses_ = 1;
+    map.md_.local_bound_min_ = Eigen::Vector3i::Zero();
+    map.md_.local_bound_max_ = map.mp_.map_voxel_num_ - Eigen::Vector3i::Ones();
+    map.md_.occupancy_bound_min_ = map.md_.local_bound_min_;
+    map.md_.occupancy_bound_max_ = map.md_.local_bound_max_;
+    map.md_.has_odom_ = true;
+    map.md_.has_cloud_ = true;
+    map.md_.static_map_esdf_ready_ = true;
+    map.md_.static_map_esdf_pending_ = false;
+    map.md_.global_esdf_pending_ = false;
+    const std::size_t count = static_cast<std::size_t>(dimensions.x()) *
+        dimensions.y() * dimensions.z();
+    map.md_.occupancy_buffer_.assign(count, -2.0);
+    map.md_.occupancy_buffer_inflate_.assign(count, 0);
+    map.md_.occupancy_buffer_neg_.assign(count, 0);
+    map.md_.static_occupancy_.assign(count, 0);
+    map.md_.static_miss_count_.assign(count, 0);
+    map.md_.tmp_buffer1_.assign(count, 0.0);
+    map.md_.tmp_buffer2_.assign(count, 0.0);
+    map.md_.distance_buffer_.assign(count, 10000.0);
+    map.md_.distance_buffer_neg_.assign(count, 10000.0);
+    map.md_.distance_buffer_all_.assign(count, 10000.0);
+    map.isolated_mapping_ = false;
+    map.esdf_map_epoch_ = 1;
+    map.esdf_occupancy_epoch_ = 0;
+    map.esdf_committed_occupancy_.clear();
+    map.incremental_patch_ready_ = false;
+  }
+
+  static void stageIncrementalOccupancy(GridMap &map,
+                                        const std::vector<char> &occupancy,
+                                        std::uint64_t sequence)
+  {
+    map.md_.occupancy_buffer_inflate_ = occupancy;
+    for (std::size_t i = 0; i < occupancy.size(); ++i)
+      map.md_.occupancy_buffer_[i] = occupancy[i] ? 2.0 : -2.0;
+    map.md_.dynamic_observation_seq_ = sequence;
+    map.md_.lidar_accepted_seq_ = sequence;
+    map.md_.lidar_fused_seq_ = sequence;
+    map.md_.last_occ_update_time_ = ros::Time(100 + sequence, 0);
+    map.md_.esdf_need_update_ = true;
+  }
+
+  static Eigen::Vector3i writeMinimum(const GridMap &map) { return map.esdf_write_min_; }
+  static Eigen::Vector3i writeMaximum(const GridMap &map) { return map.esdf_write_max_; }
+  static std::uint64_t distanceRevision(const GridMap &map) { return map.read_distance_revision_; }
+  static std::uint64_t computedCount(const GridMap &map) { return map.md_.esdf_update_count_; }
+  static void invalidateIncrementalEpoch(GridMap &map) { map.invalidateAsyncESDFJobs(); }
+  static const std::vector<char> &committedOccupancy(const GridMap &map)
+  {
+    return map.esdf_committed_occupancy_;
+  }
+  static std::uint64_t occupancyEpoch(const GridMap &map)
+  {
+    return map.esdf_occupancy_epoch_;
+  }
+  static void changeObservationOnly(GridMap &map, std::uint64_t sequence)
+  {
+    map.md_.dynamic_observation_seq_ = sequence;
+  }
+  static void commitReadyAndPublish(GridMap &map)
+  {
+    asMappingWriter(map, [&]() {
+      map.commitAsyncESDFResult();
+      map.publishReadSnapshot();
+    });
+  }
+  static std::vector<double> timingTotals(const GridMap &map)
+  {
+    return {map.md_.esdf_wall_sum_ms_, map.md_.esdf_commit_wall_sum_ms_,
+            map.md_.async_esdf_snapshot_wall_sum_ms_};
+  }
+#ifndef MAP_BENCHMARK_OLD_ABI
+  static std::pair<std::size_t, std::size_t> readyPatchStats(GridMap &map)
+  {
+    return plan_env::ESDFWorkerTestAccessor::readyPatchStats(*map.esdf_worker_);
+  }
+  static bool damageLastReadyPatch(GridMap &map, bool remove_patch)
+  {
+    return plan_env::ESDFWorkerTestAccessor::damageLastReadyPatch(
+        *map.esdf_worker_, remove_patch);
+  }
+#endif
+
+  static int clearStaticCellForIncrementalTest(GridMap &map, const Eigen::Vector3i &cell)
+  {
+    const auto index = address(map, cell);
+    map.md_.static_occupancy_[index] = 1;
+    map.md_.static_miss_count_[index] = 1;
+    return map.clearStaticOccupancyAround(cell, 0);
+  }
+
+  static void clearLocalPerimeterForIncrementalTest(GridMap &map)
+  {
+    map.md_.occupancy_bound_min_ = Eigen::Vector3i(28, 23, 13);
+    map.md_.occupancy_bound_max_ = Eigen::Vector3i(32, 27, 17);
+    map.clearAndInflateLocalMap();
+  }
+
+  static const std::vector<char> &inflatedLayer(const GridMap &map)
+  {
+    return map.md_.occupancy_buffer_inflate_;
+  }
+
+  static void requestESDFAfterLocalClearing(GridMap &map, std::uint64_t sequence)
+  {
+    // The occupancy callback advances this revision after both real clearing
+    // operations. Do not replace their actual raw or inflated output here.
+    map.md_.dynamic_observation_seq_ = sequence;
+    map.md_.esdf_need_update_ = true;
+  }
+
+  static void publishIncrementalSnapshot(GridMap &map)
+  {
+    map.isolated_mapping_ = true;
+    map.publishReadSnapshot();
+  }
+
+  static std::shared_ptr<const std::vector<double>> latestDistanceLayer(const GridMap &map)
+  {
+    return std::atomic_load(&map.latest_read_snapshot_)->distance;
+  }
+
+  static void enableIncrementalAsync(GridMap &map)
+  {
+    const auto sequence = map.md_.esdf_observation_seq_;
+    enableAsync(map, sequence);
+    map.md_.esdf_observation_seq_ = sequence;
+  }
+
+  static void incrementalCallbackAndPublish(GridMap &map)
+  {
+    asMappingWriter(map, [&]() {
+      map.updateESDFCallback(ros::TimerEvent());
+      map.publishReadSnapshot();
+    });
+  }
+
+  static bool waitForIncrementalCallbackCommit(GridMap &map, std::uint64_t sequence)
+  {
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    do {
+      incrementalCallbackAndPublish(map);
+      if (map.md_.esdf_observation_seq_ == sequence && !map.md_.esdf_need_update_)
+        return true;
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    } while (std::chrono::steady_clock::now() < deadline);
+    return false;
   }
 
 private:
@@ -712,7 +1180,378 @@ void ensureRosInitialized()
                 ros::init_options::NoRosout);
 }
 
+std::vector<double> scalarDistanceRegion(GridMap &map,
+                                         const Eigen::Vector3i &lo,
+                                         const Eigen::Vector3i &hi)
+{
+  std::vector<double> result;
+  for (int x = lo.x(); x <= hi.x(); ++x)
+    for (int y = lo.y(); y <= hi.y(); ++y)
+      for (int z = lo.z(); z <= hi.z(); ++z)
+        result.push_back(map.getDistance(Eigen::Vector3i(x, y, z)));
+  return result;
+}
+
 }  // namespace
+
+#ifndef MAP_BENCHMARK_OLD_ABI
+TEST(GridMapOccupancy, LiveHitEvidenceMatchesDistanceAndResetsWhenNoHit)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureOccupancyUpdate(map);
+  GridMap::DynamicObstacleHit hit;
+  const Eigen::Vector3d query(.875, .75, .75);
+  const double radius = .4;
+  EXPECT_DOUBLE_EQ(radius, map.getDynamicObstacleDistance(query, radius, &hit));
+  EXPECT_FALSE(hit.valid);
+  EXPECT_DOUBLE_EQ(map.getDynamicObstacleDistance(query, radius),
+                   map.getDynamicObstacleDistance(query, radius, &hit));
+
+  GridMapParallelTestAccessor::seedDynamicAndStaticOccupancy(map);
+  const double distance = map.getDynamicObstacleDistance(query, radius, &hit);
+  ASSERT_TRUE(hit.valid);
+  EXPECT_DOUBLE_EQ(.125, distance);
+  EXPECT_DOUBLE_EQ(map.getDynamicObstacleDistance(query, radius), distance);
+  EXPECT_TRUE(hit.voxel == Eigen::Vector3i(1, 1, 1));
+  EXPECT_TRUE(hit.center == Eigen::Vector3d(.75, .75, .75));
+  EXPECT_DOUBLE_EQ(distance, hit.distance);
+  EXPECT_DOUBLE_EQ(distance, (query - hit.center).norm());
+  EXPECT_DOUBLE_EQ(2., hit.occupancy);
+  EXPECT_DOUBLE_EQ(0., hit.occupancy_threshold);
+
+  // A static-map voxel is excluded, and must not retain the previous live hit.
+  const Eigen::Vector3d static_query(1.75, 1.75, 1.75);
+  EXPECT_DOUBLE_EQ(radius, map.getDynamicObstacleDistance(static_query, radius, &hit));
+  EXPECT_FALSE(hit.valid);
+  EXPECT_DOUBLE_EQ(map.getDynamicObstacleDistance(static_query, radius),
+                   map.getDynamicObstacleDistance(static_query, radius, &hit));
+
+  // Equality to the search limit remains a non-hit, just like the old API.
+  const Eigen::Vector3d boundary_query(1., .75, .75);
+  EXPECT_DOUBLE_EQ(.25, map.getDynamicObstacleDistance(boundary_query, .25, &hit));
+  EXPECT_FALSE(hit.valid);
+  EXPECT_DOUBLE_EQ(map.getDynamicObstacleDistance(boundary_query, .25),
+                   map.getDynamicObstacleDistance(boundary_query, .25, &hit));
+}
+
+#endif
+
+TEST(GridMapDistanceCopy, InclusiveBoundariesAndRandomCropsMatchScalarQueries)
+{
+  ensureRosInitialized();
+  const Eigen::Vector3i dimensions(17, 13, 9);
+  for (bool legacy : {false, true})
+  {
+    GridMap map;
+    GridMapParallelTestAccessor::configureDistanceRegion(map, dimensions);
+    if (legacy) GridMapParallelTestAccessor::useLegacyQueue(map);
+    GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+    ASSERT_TRUE(complete.valid());
+    std::vector<double> output;
+    for (const Eigen::Vector3i &cell :
+         {Eigen::Vector3i::Zero().eval(),
+          (dimensions - Eigen::Vector3i::Ones()).eval()})
+    {
+      ASSERT_TRUE(map.copyDistanceRegion(cell, cell, output));
+      ASSERT_EQ(1U, output.size());
+      EXPECT_DOUBLE_EQ(map.getDistance(cell), output.front());
+    }
+    ASSERT_TRUE(map.copyDistanceRegion(Eigen::Vector3i::Zero(),
+        dimensions - Eigen::Vector3i::Ones(), output));
+    EXPECT_EQ(scalarDistanceRegion(map, Eigen::Vector3i::Zero(),
+        dimensions - Eigen::Vector3i::Ones()), output);
+
+    std::mt19937 random(913);
+    for (int sample = 0; sample < 100; ++sample)
+    {
+      Eigen::Vector3i lo, hi;
+      for (int axis = 0; axis < 3; ++axis)
+      {
+        std::uniform_int_distribution<int> index(0, dimensions[axis] - 1);
+        const int first = index(random), second = index(random);
+        lo[axis] = std::min(first, second);
+        hi[axis] = std::max(first, second);
+      }
+      ASSERT_TRUE(map.copyDistanceRegion(lo, hi, output));
+      const auto scalar = scalarDistanceRegion(map, lo, hi);
+      ASSERT_EQ(scalar.size(), output.size());
+      EXPECT_EQ(0, std::memcmp(scalar.data(), output.data(),
+                              scalar.size() * sizeof(double)));
+    }
+  }
+}
+
+TEST(GridMapDistanceCopy, InvalidBoundsAndStorageDoNotModifyOutput)
+{
+  ensureRosInitialized();
+  GridMap map;
+  const Eigen::Vector3i dimensions(5, 4, 3);
+  GridMapParallelTestAccessor::configureDistanceRegion(map, dimensions);
+  const std::vector<double> original{91.0, 92.0};
+  std::vector<double> output = original;
+  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i(-1, 0, 0),
+                                      Eigen::Vector3i::Zero(), output));
+  EXPECT_EQ(original, output);
+  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i::Zero(),
+                                      dimensions, output));
+  EXPECT_EQ(original, output);
+  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i(2, 0, 0),
+                                      Eigen::Vector3i(1, 0, 0), output));
+  EXPECT_EQ(original, output);
+  GridMapParallelTestAccessor::setDistanceDimensions(map,
+      Eigen::Vector3i(5, 0, 3));
+  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i::Zero(),
+                                      Eigen::Vector3i::Zero(), output));
+  EXPECT_EQ(original, output);
+  GridMapParallelTestAccessor::setDistanceDimensions(map,
+      Eigen::Vector3i::Constant(std::numeric_limits<int>::max()));
+  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i::Zero(),
+                                      Eigen::Vector3i::Zero(), output));
+  EXPECT_EQ(original, output);
+  GridMapParallelTestAccessor::setDistanceDimensions(map, dimensions);
+  GridMapParallelTestAccessor::truncateDistanceStorage(map);
+  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i::Zero(),
+                                      dimensions - Eigen::Vector3i::Ones(),
+                                      output));
+  EXPECT_EQ(original, output);
+}
+
+TEST(GridMapDistanceCopy, CompleteScopeKeepsValuesVersionAndFusionStampPinned)
+{
+  ensureRosInitialized();
+  GridMap map;
+  const Eigen::Vector3i lo(1, 2, 0), hi(8, 5, 4);
+  GridMapParallelTestAccessor::configureDistanceRegion(map,
+      Eigen::Vector3i(11, 8, 6));
+  GridMapParallelTestAccessor::asMappingWriter(map, [&]() {
+    GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+    ASSERT_TRUE(complete.valid());
+    const auto version = map.getReadESDFVersion();
+    const auto fusion_stamp = map.getReadFusionTime();
+    const auto expected = scalarDistanceRegion(map, lo, hi);
+    std::thread writer([&]() {
+      GridMapParallelTestAccessor::publishDistancePattern(map, 3, 1000000.0);
+    });
+    writer.join();
+    std::vector<double> output;
+    ASSERT_TRUE(map.copyDistanceRegion(lo, hi, output));
+    EXPECT_EQ(expected, output);
+    EXPECT_EQ(version, map.getReadESDFVersion());
+    EXPECT_EQ(fusion_stamp, map.getReadFusionTime());
+    EXPECT_EQ(2U, map.getDynamicObservationSeq());
+    {
+      GridMap::ReadScope next(map, GridMap::ReadScope::Complete);
+      ASSERT_TRUE(next.valid());
+      ASSERT_TRUE(map.copyDistanceRegion(lo, hi, output));
+      EXPECT_EQ(scalarDistanceRegion(map, lo, hi), output);
+      EXPECT_NE(expected, output);
+      EXPECT_NE(version, map.getReadESDFVersion());
+      EXPECT_EQ(ros::Time(103, 0), map.getReadFusionTime());
+    }
+    ASSERT_TRUE(map.copyDistanceRegion(lo, hi, output));
+    EXPECT_EQ(expected, output);
+    EXPECT_EQ(version, map.getReadESDFVersion());
+    EXPECT_EQ(fusion_stamp, map.getReadFusionTime());
+  });
+}
+
+TEST(GridMapDistanceCopy, ReportsScalarAndRowCopyTimesWithoutSpeedThreshold)
+{
+  ensureRosInitialized();
+  GridMap map;
+  const Eigen::Vector3i dimensions(82, 82, 60);
+  const Eigen::Vector3i lo = Eigen::Vector3i::Zero();
+  const Eigen::Vector3i hi = dimensions - Eigen::Vector3i::Ones();
+  const std::size_t count = static_cast<std::size_t>(dimensions.x()) *
+      dimensions.y() * dimensions.z();
+  GridMapParallelTestAccessor::configureDistanceRegion(map, dimensions);
+  GridMapParallelTestAccessor::asMappingWriter(map, [&]() {
+    GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+    ASSERT_TRUE(complete.valid());
+    std::vector<double> scalar, copied;
+    scalar.reserve(count);
+    copied.reserve(count);
+    for (int round = 0; round < 3; ++round)
+    {
+      scalar.clear();
+      const auto scalar_start = std::chrono::steady_clock::now();
+      for (int x = lo.x(); x <= hi.x(); ++x)
+        for (int y = lo.y(); y <= hi.y(); ++y)
+          for (int z = lo.z(); z <= hi.z(); ++z)
+            scalar.push_back(map.getDistance(Eigen::Vector3i(x, y, z)));
+      const auto scalar_end = std::chrono::steady_clock::now();
+      const auto copy_start = std::chrono::steady_clock::now();
+      ASSERT_TRUE(map.copyDistanceRegion(lo, hi, copied));
+      const auto copy_end = std::chrono::steady_clock::now();
+      ASSERT_EQ(scalar.size(), copied.size());
+      EXPECT_EQ(0, std::memcmp(scalar.data(), copied.data(),
+                              scalar.size() * sizeof(double)));
+      const double scalar_ms = std::chrono::duration<double, std::milli>(
+          scalar_end - scalar_start).count();
+      const double copy_ms = std::chrono::duration<double, std::milli>(
+          copy_end - copy_start).count();
+      std::cout << "[distance-region benchmark] shape=82x82x60 cells="
+                << count << " round=" << round << " scalar_ms=" << scalar_ms
+                << " row_copy_ms=" << copy_ms << std::endl;
+    }
+  });
+}
+
+TEST(GridMapImmutable, WriterContinuesWhileReaderPinsOneGeneration)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureImmutableReads(map);
+  const Eigen::Vector3i cell(1, 1, 1);
+  {
+    GridMap::ReadScope scope(map);
+    std::thread writer([&]() {
+      GridMapParallelTestAccessor::publishGeneration(map, 2, 2, 2.0, 0.25);
+    });
+    writer.join();
+    EXPECT_EQ(1U, map.getDynamicObservationSeq());
+    EXPECT_EQ(0, map.getOccupancy(cell));
+    EXPECT_DOUBLE_EQ(0.75, map.getDistance(cell));
+    EXPECT_EQ(ros::Time(101, 0),
+              GridMapParallelTestAccessor::pinnedObservationStamp(map));
+    map.refreshReadSnapshot();
+    EXPECT_EQ(2U, map.getDynamicObservationSeq());
+    EXPECT_EQ(1, map.getOccupancy(cell));
+    EXPECT_DOUBLE_EQ(0.25, map.getDistance(cell));
+    EXPECT_EQ(ros::Time(102, 0),
+              GridMapParallelTestAccessor::pinnedObservationStamp(map));
+  }
+  EXPECT_EQ(2U, map.getDynamicObservationSeq());
+  EXPECT_TRUE(GridMapParallelTestAccessor::republishReusesLayers(map));
+}
+
+TEST(GridMapImmutable, PlanningUsesCompletePairAndDeliverySeesLiveOccupancy)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureImmutableReads(map);
+  GridMapParallelTestAccessor::publishGeneration(map, 2, 1, 2.0, 0.75);
+  GridMap::ReadScope scope(map);
+  ASSERT_TRUE(map.beginPlanningReadSnapshot());
+  EXPECT_EQ(1U, map.getDynamicObservationSeq());
+  EXPECT_EQ(1U, map.getESDFObservationSeq());
+  EXPECT_EQ(0, map.getOccupancy(Eigen::Vector3i(1, 1, 1)));
+  map.refreshReadSnapshot();
+  EXPECT_EQ(2U, map.getDynamicObservationSeq());
+  EXPECT_EQ(1U, map.getESDFObservationSeq());
+  EXPECT_EQ(1, map.getOccupancy(Eigen::Vector3i(1, 1, 1)));
+  GridMapParallelTestAccessor::publishGeneration(map, 2, 2, 2.0, 0.25);
+  ASSERT_TRUE(map.beginPlanningReadSnapshot());
+  EXPECT_EQ(2U, map.getDynamicObservationSeq());
+  EXPECT_DOUBLE_EQ(0.25, map.getDistance(Eigen::Vector3i(1, 1, 1)));
+}
+
+TEST(GridMapImmutable, DistanceRefreshDoesNotNeedNewLidarSequence)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureImmutableReads(map);
+  GridMap::ReadScope scope(map);
+  GridMapParallelTestAccessor::publishGeneration(map, 1, 1, -2.0, 0.5);
+  EXPECT_DOUBLE_EQ(0.75, map.getDistance(Eigen::Vector3i(1, 1, 1)));
+  map.refreshReadSnapshot();
+  EXPECT_EQ(1U, map.getESDFObservationSeq());
+  EXPECT_DOUBLE_EQ(0.5, map.getDistance(Eigen::Vector3i(1, 1, 1)));
+  EXPECT_TRUE(GridMapParallelTestAccessor::republishReusesLayers(map));
+}
+
+TEST(GridMapImmutable, OldEpochCannotAuthorizePlanAndFallbackIsOnlyRequested)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureImmutableReads(map);
+  GridMapParallelTestAccessor::publishNewEpoch(map);
+  GridMap::ReadScope scope(map);
+  EXPECT_FALSE(map.beginPlanningReadSnapshot());
+  map.requestSynchronousESDFFallback();
+  EXPECT_TRUE(GridMapParallelTestAccessor::fallbackOnlyRequested(map));
+}
+
+TEST(GridMapImmutable, ExplicitCompleteExportScopeOverridesOnlyItsWriterReads)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureImmutableReads(map);
+  GridMapParallelTestAccessor::publishGeneration(map, 2, 1, 2.0, 0.75);
+  GridMapParallelTestAccessor::asMappingWriter(map, [&]() {
+    EXPECT_EQ(2U, map.getDynamicObservationSeq());
+    {
+      GridMap::ReadScope ordinary(map);
+      EXPECT_EQ(2U, map.getDynamicObservationSeq());
+      GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+      EXPECT_TRUE(complete.valid());
+      EXPECT_EQ(1U, map.getDynamicObservationSeq());
+      EXPECT_EQ(1U, map.getESDFObservationSeq());
+      EXPECT_EQ(0, map.getOccupancy(Eigen::Vector3i(1, 1, 1)));
+      EXPECT_EQ(ros::Time(101, 0), map.getReadFusionTime());
+    }
+    EXPECT_EQ(2U, map.getDynamicObservationSeq());
+    EXPECT_EQ(1, map.getOccupancy(Eigen::Vector3i(1, 1, 1)));
+  });
+}
+
+TEST(GridMapImmutable, CompleteExportRetainsFusionStampUntilNewGeneration)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureImmutableReads(map);
+  GridMapParallelTestAccessor::publishGeneration(map, 2, 1, 2.0, 0.75);
+  for (int sample = 0; sample < 3; ++sample)
+  {
+    EXPECT_TRUE(GridMapParallelTestAccessor::republishReusesLayers(map));
+    GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+    EXPECT_TRUE(complete.valid());
+    EXPECT_EQ(ros::Time(101, 0), map.getReadFusionTime());
+    EXPECT_EQ(1U, map.getLidarAcceptedSeq());
+    EXPECT_EQ(1U, map.getLidarFusedSeq());
+  }
+  GridMapParallelTestAccessor::publishGeneration(map, 2, 2, 2.0, 0.25);
+  GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+  EXPECT_TRUE(complete.valid());
+  EXPECT_EQ(ros::Time(102, 0), map.getReadFusionTime());
+  EXPECT_EQ(2U, map.getLidarAcceptedSeq());
+  EXPECT_EQ(2U, map.getLidarFusedSeq());
+}
+
+TEST(GridMapImmutable, CompleteExportRejectsResetEpochAndVersionsSameSeqRecompute)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureImmutableReads(map);
+  const auto original = map.getReadESDFVersion();
+  GridMapParallelTestAccessor::publishGeneration(map, 1, 1, -2.0, 0.5);
+  EXPECT_NE(original, map.getReadESDFVersion());
+  EXPECT_EQ(original.first, map.getReadESDFVersion().first);
+  EXPECT_EQ(1U, map.getESDFObservationSeq());
+  GridMapParallelTestAccessor::publishNewEpoch(map);
+  {
+    GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+    EXPECT_FALSE(complete.valid());
+  }
+  GridMapParallelTestAccessor::publishGeneration(map, 3, 3, 2.0, 0.25);
+  GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+  EXPECT_TRUE(complete.valid());
+  EXPECT_NE(original.first, map.getReadESDFVersion().first);
+  EXPECT_EQ(3U, map.getESDFObservationSeq());
+}
+
+TEST(GridMapImmutable, LegacyExportCannotUseIncompleteRawGeneration)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureImmutableReads(map);
+  GridMapParallelTestAccessor::useLegacyQueue(map);
+  GridMapParallelTestAccessor::publishGeneration(map, 2, 1, 2.0, 0.75);
+  GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+  EXPECT_FALSE(complete.valid());
+  EXPECT_EQ(2U, map.getDynamicObservationSeq());
+}
 
 TEST(GridMapParallel, MatchesSingleThreadDistanceField)
 {
@@ -1030,6 +1869,33 @@ TEST(GridMapOccupancy, FilteredEmptyLidarDoesNotReplacePendingValidScan)
   EXPECT_EQ(1U, GridMapParallelTestAccessor::dynamicObservationSeq(map));
 }
 
+TEST(GridMapOccupancy, SensorCloudRequiresExactEpochInsteadOfLatestTfFallback)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureOccupancyUpdate(map);
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.push_back(pcl::PointXYZ(.5f, .2f, .2f));
+  GridMapParallelTestAccessor::receiveSynchronizedCloud(map, cloud, false);
+  EXPECT_EQ(0U, GridMapParallelTestAccessor::lidarAcceptedSeq(map));
+  EXPECT_FALSE(GridMapParallelTestAccessor::occupancyPending(map));
+  GridMapParallelTestAccessor::receiveSynchronizedCloud(map, cloud, true);
+  EXPECT_EQ(1U, GridMapParallelTestAccessor::lidarAcceptedSeq(map));
+}
+
+TEST(GridMapOccupancy, GeometryFilteredRearReturnsRemainAvailableForMapping)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureOccupancyUpdate(map);
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.push_back(pcl::PointXYZ(-.5f, .2f, .2f));
+  GridMapParallelTestAccessor::receiveSynchronizedCloud(map, cloud);
+  EXPECT_EQ(1U, GridMapParallelTestAccessor::lidarAcceptedSeq(map));
+  GridMapParallelTestAccessor::processOccupancy(map);
+  EXPECT_EQ(1U, GridMapParallelTestAccessor::lidarFusedSeq(map));
+}
+
 TEST(GridMapOccupancy, CoalescedScanPublishesNewestAcceptedGeneration)
 {
   ensureRosInitialized();
@@ -1056,114 +1922,240 @@ TEST(GridMapOccupancy, CoalescedScanPublishesNewestAcceptedGeneration)
   EXPECT_EQ(1U, GridMapParallelTestAccessor::dynamicObservationSeq(map));
 }
 
-TEST(GridMapOccupancy, StaleLiveEndpointExpiresAfterConfiguredMisses)
+TEST(GridMapOccupancy, OccludedLiveObstacleSurvivesUnrelatedFreshScans)
 {
   ensureRosInitialized();
   GridMap map;
   GridMapParallelTestAccessor::configureOccupancyUpdate(map);
-
-  pcl::PointCloud<pcl::PointXYZ> obstacle_cloud;
-  obstacle_cloud.push_back(pcl::PointXYZ(1.50f, 1.50f, 0.50f));
-  GridMapParallelTestAccessor::receiveIndependentCloud(map, obstacle_cloud);
-  GridMapParallelTestAccessor::processOccupancy(map);
-
-  const Eigen::Vector3i obstacle_voxel(3, 3, 1);
-  ASSERT_DOUBLE_EQ(
-      2.0,
-      GridMapParallelTestAccessor::rawOccupancy(map, obstacle_voxel));
-
-  // Emulate successive valid fusion boundaries whose endpoints do not touch
-  // the old voxel. One miss remains inside the configured two-fusion hold.
-  EXPECT_EQ(0U,
-            GridMapParallelTestAccessor::advanceLiveExpiryCycle(map));
-  EXPECT_DOUBLE_EQ(
-      2.0,
-      GridMapParallelTestAccessor::rawOccupancy(map, obstacle_voxel));
-
-  EXPECT_EQ(1U,
-            GridMapParallelTestAccessor::advanceLiveExpiryCycle(map));
-  EXPECT_LT(GridMapParallelTestAccessor::rawOccupancy(map, obstacle_voxel),
-            0.0);
+  const ros::Time now = ros::Time::now();
+  const Eigen::Vector3d obstacle(1.25, .75, .75);
+  GridMapParallelTestAccessor::raycastLiveReturns(map, {obstacle}, now);
+  for (int frame = 0; frame < 20; ++frame)
+    GridMapParallelTestAccessor::raycastLiveReturns(
+        map, {Eigen::Vector3d(.75, .75, .75)}, now);
+  EXPECT_DOUBLE_EQ(2., GridMapParallelTestAccessor::rawOccupancy(
+      map, Eigen::Vector3i(2, 1, 1)));
 }
 
-TEST(GridMapOccupancy, ReobservedLiveEndpointDoesNotExpire)
+TEST(GridMapOccupancy, ActualFreeRayClearsDepartedLiveObstacle)
 {
   ensureRosInitialized();
   GridMap map;
   GridMapParallelTestAccessor::configureOccupancyUpdate(map);
+  const ros::Time now = ros::Time::now();
+  GridMapParallelTestAccessor::raycastLiveReturns(
+      map, {Eigen::Vector3d(1.25, .75, .75)}, now);
+  GridMapParallelTestAccessor::raycastLiveReturns(
+      map, {Eigen::Vector3d(2.25, .75, .75)}, now);
+  EXPECT_LT(GridMapParallelTestAccessor::rawOccupancy(
+      map, Eigen::Vector3i(2, 1, 1)), 0.);
+}
 
-  pcl::PointCloud<pcl::PointXYZ> obstacle_cloud;
-  obstacle_cloud.push_back(pcl::PointXYZ(1.50f, 1.50f, 0.50f));
-  for (int scan = 0; scan < 4; ++scan)
+TEST(GridMapOccupancy, LiveBoundsShrinkAndExpandWithoutClearingUnobservedObstacle)
+{
+  ensureRosInitialized();
+  using Access = GridMapParallelTestAccessor;
+  const Eigen::Vector3i obstacle(2, 1, 1);
+  for (const bool live_lidar : {true, false})
   {
-    GridMapParallelTestAccessor::receiveIndependentCloud(map,
-                                                         obstacle_cloud);
-    GridMapParallelTestAccessor::processOccupancy(map);
+    SCOPED_TRACE(live_lidar ? "live LiDAR" : "legacy depth");
+    GridMap map;
+    Access::configureOccupancyUpdate(map);
+    Access::fuseProjectedFrame(map, Eigen::Vector3d(1.25, .75, .75), live_lidar);
+    ASSERT_DOUBLE_EQ(2., Access::rawOccupancy(map, obstacle));
+    ASSERT_EQ(1, Access::inflatedOccupancy(map, obstacle));
+
+    // The nearer return shrinks x bounds; the old obstacle is now in the
+    // five-cell perimeter. Neither this ray nor the next one crosses it.
+    Access::fuseProjectedFrame(map, Eigen::Vector3d(.75, .75, .75), live_lidar);
+    if (live_lidar)
+      EXPECT_DOUBLE_EQ(2., Access::rawOccupancy(map, obstacle));
+    else
+      EXPECT_LT(Access::rawOccupancy(map, obstacle), -2.);  // Legacy reset retained.
+
+    // A diagonal return expands bounds and rebuilds the old cell's inflation.
+    // A test that checks only the shrink frame would miss delayed erasure.
+    Access::fuseProjectedFrame(map, Eigen::Vector3d(2.25, 2.25, .75), live_lidar);
+    EXPECT_EQ(live_lidar ? 1 : 0, Access::inflatedOccupancy(map, obstacle));
+    if (live_lidar)
+    {
+      EXPECT_DOUBLE_EQ(2., Access::rawOccupancy(map, obstacle));
+      // Real free-space evidence must still remove a departed live obstacle.
+      Access::fuseProjectedFrame(map, Eigen::Vector3d(2.25, .75, .75), true);
+      EXPECT_LT(Access::rawOccupancy(map, obstacle), 0.);
+      EXPECT_EQ(0, Access::inflatedOccupancy(map, obstacle));
+      EXPECT_EQ(4u, Access::lidarFusedSeq(map));
+    }
   }
-
-  EXPECT_DOUBLE_EQ(
-      2.0,
-      GridMapParallelTestAccessor::rawOccupancy(
-          map, Eigen::Vector3i(3, 3, 1)));
 }
 
-TEST(GridMapOccupancy, RaycastFilteredScanDoesNotAgeLiveOccupancy)
+TEST(GridMapOccupancy, CurrentEndpointWinsOverOtherFreeRaysInSameVoxel)
 {
   ensureRosInitialized();
   GridMap map;
   GridMapParallelTestAccessor::configureOccupancyUpdate(map);
-
-  // This bypasses the callback-level filter to exercise raycastProcess's
-  // fail-closed second line of defense. A frame with no point above the
-  // raycast ground threshold is not a successfully fused observation.
-  GridMapParallelTestAccessor::raycastProjectedLivePoint(
-      map, Eigen::Vector3d(1.25, 0.75, 0.10));
-  EXPECT_EQ(0U, GridMapParallelTestAccessor::liveFusionCycle(map));
-
-  GridMapParallelTestAccessor::raycastProjectedLivePoint(
-      map, Eigen::Vector3d(1.50, 1.50, 0.50));
-  EXPECT_EQ(1U, GridMapParallelTestAccessor::liveFusionCycle(map));
-
-  GridMapParallelTestAccessor::raycastProjectedLivePoint(
-      map, Eigen::Vector3d(1.25, 0.75, 0.10));
-  EXPECT_EQ(1U, GridMapParallelTestAccessor::liveFusionCycle(map));
+  GridMapParallelTestAccessor::raycastLiveReturns(
+      map, {Eigen::Vector3d(2.25, .55, .75),
+            Eigen::Vector3d(2.25, .95, .75),
+            Eigen::Vector3d(1.25, .75, .75)}, ros::Time::now());
+  EXPECT_DOUBLE_EQ(2., GridMapParallelTestAccessor::rawOccupancy(
+      map, Eigen::Vector3i(2, 1, 1)));
 }
 
-TEST(GridMapOccupancy, InFlightESDFDefersOccupancyUntilResultCommits)
+TEST(GridMapOccupancy, MissingPredictionIdDoesNotEraseOccupancyOrBlockOtherSpace)
 {
   ensureRosInitialized();
   GridMap map;
   GridMapParallelTestAccessor::configureOccupancyUpdate(map);
-  GridMapParallelTestAccessor::enableAsync(map, 7);
-  ASSERT_TRUE(GridMapParallelTestAccessor::submitAsync(map));
+  const ros::Time now = ros::Time::now();
+  const Eigen::Vector3d obstacle(1.25, .75, .75);
+  GridMapParallelTestAccessor::raycastLiveReturns(map, {obstacle}, now);
+  GridMapParallelTestAccessor::observeMotionThenNoMotion(map, obstacle, now);
+  const auto current = map.getDynamicPointSnapshot(now);
+  EXPECT_TRUE(current.valid);
+  EXPECT_TRUE(current.points.empty());
+  EXPECT_EQ("no_dynamic_detected", current.invalid_reason);
+  EXPECT_DOUBLE_EQ(2., GridMapParallelTestAccessor::rawOccupancy(
+      map, Eigen::Vector3i(2, 1, 1)));
+  GridMapParallelTestAccessor::raycastLiveReturns(
+      map, {Eigen::Vector3d(2.25, .75, .75)}, now);
+  EXPECT_LT(GridMapParallelTestAccessor::rawOccupancy(
+      map, Eigen::Vector3i(2, 1, 1)), 0.);
+}
+
+TEST(GridMapOccupancy, FilteredScanCannotClearExistingObstacle)
+{
+  ensureRosInitialized();
+  GridMap map;
+  GridMapParallelTestAccessor::configureOccupancyUpdate(map);
+  const ros::Time now = ros::Time::now();
+  GridMapParallelTestAccessor::raycastLiveReturns(
+      map, {Eigen::Vector3d(1.25, .75, .75)}, now);
+  for (int frame = 0; frame < 20; ++frame)
+    GridMapParallelTestAccessor::raycastProjectedLivePoint(
+        map, Eigen::Vector3d(1.25, .75, .10));
+  EXPECT_DOUBLE_EQ(2., GridMapParallelTestAccessor::rawOccupancy(
+      map, Eigen::Vector3i(2, 1, 1)));
+}
+
+TEST(GridMapOccupancy, OutstandingESDFWithoutReadyResultDefersAllOccupancyMutation)
+{
+  ensureRosInitialized();
+  using Access = GridMapParallelTestAccessor;
+  GridMap map;
+  Access::configureAsyncOccupancySnapshots(map);
+  Access::markAsyncOutstandingWithoutResult(map);
 
   pcl::PointCloud<pcl::PointXYZ> valid_cloud;
   valid_cloud.push_back(pcl::PointXYZ(1.50f, 1.50f, 0.50f));
-  GridMapParallelTestAccessor::receiveIndependentCloud(map, valid_cloud);
-  ASSERT_EQ(8U, GridMapParallelTestAccessor::lidarPendingSeq(map));
-
-  GridMapParallelTestAccessor::processOccupancy(map);
+  Access::receiveIndependentCloud(map, valid_cloud);
+  ASSERT_EQ(8U, Access::lidarPendingSeq(map));
+  std::vector<double> raw;
+  std::vector<int> inflated;
+  for (int x = 0; x < 5; ++x)
+    for (int y = 0; y < 5; ++y)
+      for (int z = 0; z < 5; ++z)
+      {
+        raw.push_back(Access::rawOccupancy(map, Eigen::Vector3i(x, y, z)));
+        inflated.push_back(Access::inflatedOccupancy(map, Eigen::Vector3i(x, y, z)));
+      }
+  const auto distance = Access::distances(map);
+  Access::processOccupancyAndPublish(map);
 
   // No fused-map mutation may invalidate the immutable request. The newest
   // sensor frame remains pending and replaces older frames in the same slot.
-  EXPECT_EQ(7U, GridMapParallelTestAccessor::dynamicObservationSeq(map));
-  EXPECT_EQ(7U, GridMapParallelTestAccessor::lidarFusedSeq(map));
-  EXPECT_TRUE(GridMapParallelTestAccessor::occupancyPending(map));
-  EXPECT_TRUE(GridMapParallelTestAccessor::lidarObservationPending(map));
-  EXPECT_EQ(1U, GridMapParallelTestAccessor::deferredOccupancyCount(map));
+  EXPECT_EQ(7U, Access::dynamicObservationSeq(map));
+  EXPECT_EQ(7U, Access::lidarFusedSeq(map));
+  EXPECT_EQ(8U, Access::lidarPendingSeq(map));
+  EXPECT_EQ(1U, Access::esdfObservationSeq(map));
+  EXPECT_TRUE(Access::occupancyPending(map));
+  EXPECT_TRUE(Access::lidarObservationPending(map));
+  EXPECT_EQ(1U, Access::deferredOccupancyCount(map));
+  EXPECT_EQ(0U, Access::asyncCommittedCount(map));
+  EXPECT_EQ(0U, Access::asyncRejectedCount(map));
+  EXPECT_EQ(distance, Access::distances(map));
+  std::size_t index = 0;
+  for (int x = 0; x < 5; ++x)
+    for (int y = 0; y < 5; ++y)
+      for (int z = 0; z < 5; ++z, ++index)
+      {
+        EXPECT_DOUBLE_EQ(raw[index], Access::rawOccupancy(map, Eigen::Vector3i(x, y, z)));
+        EXPECT_EQ(inflated[index], Access::inflatedOccupancy(map, Eigen::Vector3i(x, y, z)));
+      }
+  GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+  ASSERT_TRUE(complete.valid());
+  EXPECT_EQ(1U, map.getDynamicObservationSeq());
+  EXPECT_EQ(ros::Time(101, 0), map.getReadFusionTime());
+}
 
-  ASSERT_TRUE(GridMapParallelTestAccessor::waitForAsyncCompletionAndCommit(
-      map, std::chrono::milliseconds(5000)));
-  EXPECT_EQ(7U, GridMapParallelTestAccessor::esdfObservationSeq(map));
-  EXPECT_EQ(1U, GridMapParallelTestAccessor::asyncCommittedCount(map));
-  EXPECT_EQ(0U, GridMapParallelTestAccessor::asyncRejectedCount(map));
+TEST(GridMapOccupancy, ReadyESDFCommitsBeforeNextFusionAndSubmitsInSameCallback)
+{
+  ensureRosInitialized();
+  using Access = GridMapParallelTestAccessor;
+  GridMap map;
+  Access::configureAsyncOccupancySnapshots(map);
+  ASSERT_TRUE(Access::submitAsync(map));
+  ASSERT_TRUE(Access::waitForAsyncReady(map, 1, std::chrono::milliseconds(5000)));
+  ASSERT_EQ(0U, Access::asyncCommittedCount(map));
 
-  GridMapParallelTestAccessor::processOccupancy(map);
-  EXPECT_EQ(8U, GridMapParallelTestAccessor::dynamicObservationSeq(map));
-  EXPECT_EQ(8U, GridMapParallelTestAccessor::lidarFusedSeq(map));
-  EXPECT_FALSE(GridMapParallelTestAccessor::occupancyPending(map));
-  EXPECT_FALSE(GridMapParallelTestAccessor::lidarObservationPending(map));
-  EXPECT_TRUE(GridMapParallelTestAccessor::esdfNeedsUpdate(map));
+  pcl::PointCloud<pcl::PointXYZ> valid_cloud;
+  valid_cloud.push_back(pcl::PointXYZ(1.50f, 1.50f, 0.50f));
+  Access::receiveIndependentCloud(map, valid_cloud);
+  ASSERT_EQ(8U, Access::lidarPendingSeq(map));
+  Access::processOccupancyAndPublish(map);
+
+  EXPECT_EQ(1U, Access::asyncCommittedCount(map));
+  EXPECT_EQ(0U, Access::asyncRejectedCount(map));
+  EXPECT_EQ(0U, Access::deferredOccupancyCount(map));
+  EXPECT_EQ(7U, Access::esdfObservationSeq(map));
+  EXPECT_EQ(8U, Access::dynamicObservationSeq(map));
+  EXPECT_EQ(8U, Access::lidarFusedSeq(map));
+  EXPECT_FALSE(Access::occupancyPending(map));
+  EXPECT_FALSE(Access::lidarObservationPending(map));
+  EXPECT_FALSE(Access::esdfNeedsUpdate(map));  // Already submitted, not waiting for a timer.
+  EXPECT_EQ(2U, Access::latestSubmittedRequestId(map));
+  EXPECT_FALSE(Access::asyncFallbackSelected(map));
+
+  const Eigen::Vector3i new_obstacle(3, 3, 1);
+  EXPECT_EQ(8U, map.getDynamicObservationSeq());
+  EXPECT_EQ(7U, map.getESDFObservationSeq());
+  EXPECT_EQ(1, map.getOccupancy(new_obstacle));
+  const ros::Time next_fusion = map.getReadFusionTime();
+  {
+    GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
+    ASSERT_TRUE(complete.valid());
+    EXPECT_EQ(7U, map.getDynamicObservationSeq());
+    EXPECT_EQ(7U, map.getESDFObservationSeq());
+    EXPECT_EQ(7U, map.getLidarFusedSeq());
+    EXPECT_EQ(ros::Time(107, 0), map.getReadFusionTime());
+    EXPECT_EQ(0, map.getOccupancy(new_obstacle));
+    EXPECT_DOUBLE_EQ(1.0, map.getDistance(new_obstacle));
+    const auto version = map.getReadESDFVersion();
+
+    // Complete generation 7 stays pinned while the sole writer commits 8.
+    bool committed = false;
+    std::thread writer([&]() {
+      committed = Access::waitForAsyncCompletionAndCommit(map, std::chrono::milliseconds(5000));
+      if (committed) Access::publishIncrementalSnapshot(map);
+    });
+    writer.join();
+    ASSERT_TRUE(committed);
+    EXPECT_EQ(7U, map.getDynamicObservationSeq());
+    EXPECT_EQ(version, map.getReadESDFVersion());
+    EXPECT_EQ(ros::Time(107, 0), map.getReadFusionTime());
+    EXPECT_EQ(0, map.getOccupancy(new_obstacle));
+    {
+      GridMap::ReadScope latest_complete(map, GridMap::ReadScope::Complete);
+      ASSERT_TRUE(latest_complete.valid());
+      EXPECT_EQ(8U, map.getDynamicObservationSeq());
+      EXPECT_EQ(8U, map.getESDFObservationSeq());
+      EXPECT_EQ(next_fusion, map.getReadFusionTime());
+      EXPECT_NE(version, map.getReadESDFVersion());
+      EXPECT_EQ(1, map.getOccupancy(new_obstacle));
+      EXPECT_DOUBLE_EQ(0.0, map.getDistance(new_obstacle));
+    }
+    EXPECT_EQ(version, map.getReadESDFVersion());
+  }
 }
 
 TEST(GridMapOccupancy, StalePendingLidarIsDiscardedBeforeFusion)
@@ -1490,6 +2482,622 @@ TEST(GridMapOccupancy, InvalidBoundsFailClosedWithoutAdvancingGeneration)
   EXPECT_EQ(0U, GridMapParallelTestAccessor::dynamicObservationSeq(map));
   EXPECT_FALSE(GridMapParallelTestAccessor::occupancyPending(map));
   EXPECT_FALSE(GridMapParallelTestAccessor::lidarObservationPending(map));
+}
+
+class GridMapIncremental : public testing::Test
+{
+protected:
+  using Access = GridMapParallelTestAccessor;
+  GridMap incremental_, reference_;
+  std::vector<char> occupancy_;
+  std::uint64_t sequence_ = 0;
+
+  void SetUp() override
+  {
+    ensureRosInitialized();
+    Access::configureIncrementalTest(incremental_, true);
+    Access::configureIncrementalTest(reference_, false);
+    occupancy_.assign(61 * 51 * 31, 0);
+  }
+
+  static std::size_t cell(int x, int y, int z)
+  {
+    return (static_cast<std::size_t>(x) * 51 + y) * 31 + z;
+  }
+
+  void stage()
+  {
+    ++sequence_;
+    Access::stageIncrementalOccupancy(incremental_, occupancy_, sequence_);
+    Access::stageIncrementalOccupancy(reference_, occupancy_, sequence_);
+  }
+
+  void expectGlobalReference(const std::vector<double> *before = nullptr)
+  {
+    const auto &actual = Access::distances(incremental_);
+    const auto &full = Access::distances(reference_);
+    ASSERT_EQ(full.size(), actual.size());
+    const auto lo = Access::writeMinimum(incremental_);
+    const auto hi = Access::writeMaximum(incremental_);
+    for (int x = 0; x < 61; ++x)
+      for (int y = 0; y < 51; ++y)
+        for (int z = 0; z < 31; ++z)
+        {
+          const auto i = cell(x, y, z);
+          const double expected = std::max(-0.6, std::min(0.6, full[i]));
+          ASSERT_TRUE(std::isfinite(actual[i])) << i;
+          ASSERT_NEAR(expected, actual[i], 1e-10)
+              << "frame " << sequence_ << " voxel " << x << ',' << y << ',' << z;
+          if (before && (x < lo.x() || x > hi.x() || y < lo.y() ||
+                         y > hi.y() || z < lo.z() || z > hi.z()))
+            ASSERT_DOUBLE_EQ((*before)[i], actual[i])
+                << "write outside committed interior at " << x << ',' << y << ',' << z;
+        }
+  }
+
+  void syncFrame()
+  {
+    const auto before = Access::distances(incremental_);
+    stage();
+    Access::processESDF(reference_);
+    Access::processESDF(incremental_);
+    ASSERT_EQ(sequence_, Access::esdfObservationSeq(incremental_));
+    ASSERT_FALSE(Access::esdfNeedsUpdate(incremental_));
+    ASSERT_NO_FATAL_FAILURE(expectGlobalReference(&before));
+  }
+};
+
+TEST_F(GridMapIncremental, EmptyAndFullyOccupiedInitializationMatchCappedGlobalEDT)
+{
+  syncFrame();
+  EXPECT_DOUBLE_EQ(0.6, Access::distances(incremental_)[cell(30, 25, 15)]);
+  std::fill(occupancy_.begin(), occupancy_.end(), 1);
+  syncFrame();
+  EXPECT_DOUBLE_EQ(-0.6, Access::distances(incremental_)[cell(30, 25, 15)]);
+  std::fill(occupancy_.begin(), occupancy_.end(), 0);
+  syncFrame();
+}
+
+TEST_F(GridMapIncremental, InsertionRemovalAndOutsideNeighborPreserveBoundaryDistances)
+{
+  // This unchanged neighbor is outside the next write interior, but is the
+  // nearest source for its outermost voxel. An EDT without its halo is wrong.
+  occupancy_[cell(38, 25, 15)] = 1;
+  syncFrame();
+  occupancy_[cell(30, 25, 15)] = 1;
+  syncFrame();
+  EXPECT_EQ(Eigen::Vector3i(23, 18, 8), Access::writeMinimum(incremental_));
+  EXPECT_EQ(Eigen::Vector3i(37, 32, 22), Access::writeMaximum(incremental_));
+  EXPECT_NEAR(0.1, Access::distances(incremental_)[cell(37, 25, 15)], 1e-10);
+  occupancy_[cell(30, 25, 15)] = 0;
+  syncFrame();
+  EXPECT_NEAR(0.5, Access::distances(incremental_)[cell(33, 25, 15)], 1e-10);
+
+  // Map-clipped faces, edges and corners must retain correct linear indexing.
+  for (const Eigen::Vector3i &p : {Eigen::Vector3i(0, 0, 0),
+                                 Eigen::Vector3i(60, 50, 30)})
+  {
+    occupancy_[cell(p.x(), p.y(), p.z())] = 1;
+    syncFrame();
+    occupancy_[cell(p.x(), p.y(), p.z())] = 0;
+    syncFrame();
+  }
+}
+
+TEST_F(GridMapIncremental, ExcavatingAndRefillingSolidObstacleMatchesSignedGlobalEDT)
+{
+  for (int x = 2; x <= 58; ++x)
+    for (int y = 2; y <= 48; ++y)
+      for (int z = 2; z <= 28; ++z)
+        occupancy_[cell(x, y, z)] = 1;
+  syncFrame();
+  EXPECT_DOUBLE_EQ(-0.6, Access::distances(incremental_)[cell(30, 25, 15)]);
+  occupancy_[cell(30, 25, 15)] = 0;
+  syncFrame();
+  EXPECT_NEAR(0.1, Access::distances(incremental_)[cell(30, 25, 15)], 1e-10);
+  EXPECT_NEAR(-0.1, Access::distances(incremental_)[cell(32, 25, 15)], 1e-10);
+  occupancy_[cell(30, 25, 15)] = 1;
+  syncFrame();
+  EXPECT_DOUBLE_EQ(-0.6, Access::distances(incremental_)[cell(30, 25, 15)]);
+}
+
+TEST_F(GridMapIncremental, ActualStaticAndPerimeterClearingPreserveDistancesUntilCommit)
+{
+  const Eigen::Vector3i center(30, 25, 15);
+  const std::vector<Eigen::Vector3i> perimeter = {
+      {26, 25, 15}, {34, 25, 15}, {30, 21, 15},
+      {30, 29, 15}, {30, 25, 11}, {30, 25, 19}};
+  occupancy_[cell(center.x(), center.y(), center.z())] = 1;
+  for (const auto &p : perimeter)
+    occupancy_[cell(p.x(), p.y(), p.z())] = 1;
+  syncFrame();
+  const auto before = Access::distances(incremental_);
+
+  ASSERT_EQ(1, Access::clearStaticCellForIncrementalTest(incremental_, center));
+  ASSERT_EQ(1, Access::clearStaticCellForIncrementalTest(reference_, center));
+  EXPECT_EQ(0, Access::inflatedOccupancy(incremental_, center));
+  EXPECT_EQ(before, Access::distances(incremental_));
+  EXPECT_DOUBLE_EQ(10000.0, Access::distances(reference_)[cell(30, 25, 15)]);
+
+  Access::clearLocalPerimeterForIncrementalTest(incremental_);
+  Access::clearLocalPerimeterForIncrementalTest(reference_);
+  for (const auto &p : perimeter)
+  {
+    // All six perimeter loops must execute. The legacy reference resetting
+    // its distance is a positive control for the formerly corrupting write.
+    EXPECT_LT(Access::rawOccupancy(incremental_, p), -2.0);
+    EXPECT_DOUBLE_EQ(10000.0, Access::distances(reference_)[cell(p.x(), p.y(), p.z())]);
+  }
+  ASSERT_EQ(before, Access::distances(incremental_));
+  ASSERT_EQ(Access::inflatedLayer(reference_), Access::inflatedLayer(incremental_));
+
+  ++sequence_;
+  Access::requestESDFAfterLocalClearing(reference_, sequence_);
+  Access::requestESDFAfterLocalClearing(incremental_, sequence_);
+  Access::processESDF(reference_);
+  Access::processESDF(incremental_);
+  EXPECT_EQ(sequence_, Access::esdfObservationSeq(incremental_));
+  EXPECT_FALSE(Access::esdfNeedsUpdate(incremental_));
+  ASSERT_NO_FATAL_FAILURE(expectGlobalReference(&before));
+  EXPECT_NEAR(0.4, Access::distances(incremental_)[cell(30, 25, 15)], 1e-10);
+}
+
+TEST_F(GridMapIncremental, SeededMultiFrameChangesAcrossMapMatchEveryGlobalVoxel)
+{
+  occupancy_[cell(7, 8, 9)] = 1;
+  occupancy_[cell(52, 41, 22)] = 1;
+  syncFrame();
+  std::mt19937 random(23);
+  const std::vector<Eigen::Vector3i> centers = {
+      {14, 13, 12}, {14, 13, 12}, {46, 38, 19}, {46, 38, 19},
+      {4, 43, 4}, {4, 43, 4}, {55, 5, 26}, {55, 5, 26}};
+  std::size_t local_updates = 0;
+  for (const auto &center : centers)
+  {
+    for (int i = 0; i < 17; ++i)
+    {
+      const Eigen::Vector3i p = center + Eigen::Vector3i(
+          int(random() % 5) - 2, int(random() % 5) - 2, int(random() % 5) - 2);
+      auto &occupied = occupancy_[cell(p.x(), p.y(), p.z())];
+      occupied = !occupied;
+    }
+    syncFrame();
+    const Eigen::Vector3i size = Access::writeMaximum(incremental_) -
+                                Access::writeMinimum(incremental_) + Eigen::Vector3i::Ones();
+    if (size.prod() < 61 * 51 * 31) ++local_updates;
+  }
+  EXPECT_EQ(centers.size(), local_updates);
+}
+
+TEST_F(GridMapIncremental, UnchangedBinaryAdvancesSequenceButEpochInvalidationRecomputes)
+{
+  occupancy_[cell(30, 25, 15)] = 1;
+  syncFrame();
+  const auto previous = Access::distances(incremental_);
+  const auto revision = Access::distanceRevision(incremental_);
+  const auto computations = Access::computedCount(incremental_);
+  syncFrame();
+  EXPECT_EQ(previous, Access::distances(incremental_));
+  EXPECT_EQ(revision, Access::distanceRevision(incremental_));
+  EXPECT_EQ(computations, Access::computedCount(incremental_));
+
+  // Equal bytes cannot authorize reuse across a reset/static-map epoch.
+  Access::invalidateIncrementalEpoch(incremental_);
+  syncFrame();
+  EXPECT_EQ(Eigen::Vector3i::Zero(), Access::writeMinimum(incremental_));
+  EXPECT_EQ(Eigen::Vector3i(60, 50, 30), Access::writeMaximum(incremental_));
+  EXPECT_EQ(computations + 1, Access::computedCount(incremental_));
+  EXPECT_GT(Access::distanceRevision(incremental_), revision);
+}
+
+TEST_F(GridMapIncremental, AsyncCallbackAndUnchangedReusePreservePinnedSnapshot)
+{
+  occupancy_[cell(38, 25, 15)] = 1;
+  syncFrame();
+  Access::publishIncrementalSnapshot(incremental_);
+  Access::enableIncrementalAsync(incremental_);
+  const Eigen::Vector3i query(30, 25, 15);
+  GridMap::ReadScope pinned(incremental_);
+  const auto old_sequence = incremental_.getESDFObservationSeq();
+  const auto old_stamp = Access::pinnedObservationStamp(incremental_);
+  const double old_distance = incremental_.getDistance(query);
+  const auto before = Access::distances(incremental_);
+
+  occupancy_[cell(30, 25, 15)] = 1;
+  stage();
+  Access::processESDF(reference_);
+  ASSERT_TRUE(Access::waitForIncrementalCallbackCommit(incremental_, sequence_));
+  ASSERT_EQ(1U, Access::asyncCommittedCount(incremental_));
+  ASSERT_NO_FATAL_FAILURE(expectGlobalReference(&before));
+  EXPECT_EQ(old_sequence, incremental_.getESDFObservationSeq());
+  EXPECT_EQ(old_stamp, Access::pinnedObservationStamp(incremental_));
+  EXPECT_DOUBLE_EQ(old_distance, incremental_.getDistance(query));
+
+  const auto committed_layer = Access::latestDistanceLayer(incremental_);
+  const auto submitted = Access::latestSubmittedRequestId(incremental_);
+  const auto revision = Access::distanceRevision(incremental_);
+  stage();  // Fresh occupancy observation, identical inflated binary geometry.
+  Access::processESDF(reference_);
+  Access::incrementalCallbackAndPublish(incremental_);
+  ASSERT_EQ(sequence_, Access::esdfObservationSeq(incremental_));
+  EXPECT_FALSE(Access::esdfNeedsUpdate(incremental_));
+  EXPECT_EQ(submitted, Access::latestSubmittedRequestId(incremental_));
+  EXPECT_EQ(1U, Access::asyncCommittedCount(incremental_));
+  EXPECT_EQ(revision, Access::distanceRevision(incremental_));
+  EXPECT_EQ(committed_layer, Access::latestDistanceLayer(incremental_));
+  EXPECT_EQ(old_sequence, incremental_.getESDFObservationSeq());
+  EXPECT_EQ(old_stamp, Access::pinnedObservationStamp(incremental_));
+  EXPECT_DOUBLE_EQ(old_distance, incremental_.getDistance(query));
+  ASSERT_NO_FATAL_FAILURE(expectGlobalReference());
+  incremental_.refreshReadSnapshot();
+  EXPECT_EQ(sequence_, incremental_.getESDFObservationSeq());
+  EXPECT_EQ(ros::Time(100 + sequence_, 0), Access::pinnedObservationStamp(incremental_));
+  EXPECT_NEAR(0.0, incremental_.getDistance(query), 1e-10);
+}
+
+#ifndef MAP_BENCHMARK_OLD_ABI
+TEST_F(GridMapIncremental, MappingLoopCommitsWorkerWithoutTimersOrNewCloud)
+{
+  occupancy_[cell(38, 25, 15)] = 1;
+  syncFrame();
+  Access::publishIncrementalSnapshot(incremental_);
+  Access::enableIncrementalAsync(incremental_);
+  occupancy_[cell(30, 25, 15)] = 1;
+  stage();
+  Access::processESDF(reference_);
+  // Submit one ordinary callback before starting the real writer. No ROS
+  // timers or subsequent clouds can consume the result in this test.
+  Access::incrementalCallbackAndPublish(incremental_);
+  const auto fusion = ros::Time(100 + sequence_, 0);
+  Access::startMappingLoop(incremental_);
+  const bool completed = Access::waitForLoopComplete(
+      incremental_, sequence_, std::chrono::milliseconds(1000));
+  incremental_.stopMapping();
+
+  ASSERT_TRUE(completed);
+  EXPECT_EQ(1U, Access::asyncCommittedCount(incremental_));
+  EXPECT_EQ(0U, Access::asyncRejectedCount(incremental_));
+  EXPECT_EQ(sequence_, Access::esdfObservationSeq(incremental_));
+  ASSERT_NO_FATAL_FAILURE(expectGlobalReference());
+  GridMap::ReadScope complete(incremental_, GridMap::ReadScope::Complete);
+  ASSERT_TRUE(complete.valid());
+  EXPECT_EQ(sequence_, incremental_.getDynamicObservationSeq());
+  EXPECT_EQ(sequence_, incremental_.getESDFObservationSeq());
+  EXPECT_EQ(fusion, incremental_.getReadFusionTime());
+  EXPECT_NEAR(0.0, incremental_.getDistance(Eigen::Vector3i(30, 25, 15)), 1e-10);
+}
+
+TEST_F(GridMapIncremental, MappingLoopRejectsReadyOldEpochBeforePublishingComplete)
+{
+  occupancy_[cell(38, 25, 15)] = 1;
+  syncFrame();
+  Access::publishIncrementalSnapshot(incremental_);
+  Access::enableIncrementalAsync(incremental_);
+  const auto previous = Access::distances(incremental_);
+  const auto revision = Access::distanceRevision(incremental_);
+  occupancy_[cell(30, 25, 15)] = 1;
+  stage();
+  Access::incrementalCallbackAndPublish(incremental_);
+  ASSERT_TRUE(Access::waitForAsyncReady(
+      incremental_, 1, std::chrono::milliseconds(5000)));
+  Access::advanceEpochWithReadyResult(incremental_);
+  Access::startMappingLoop(incremental_);
+  const bool published = Access::waitForLoopEpoch(
+      incremental_, 2, std::chrono::milliseconds(1000));
+  incremental_.stopMapping();
+
+  ASSERT_TRUE(published);
+  EXPECT_EQ(0U, Access::asyncCommittedCount(incremental_));
+  EXPECT_EQ(1U, Access::asyncRejectedCount(incremental_));
+  EXPECT_EQ(previous, Access::distances(incremental_));
+  EXPECT_EQ(revision, Access::distanceRevision(incremental_));
+  EXPECT_EQ(ros::Time(100 + sequence_, 0), incremental_.getReadFusionTime());
+  GridMap::ReadScope complete(incremental_, GridMap::ReadScope::Complete);
+  EXPECT_FALSE(complete.valid());
+}
+#endif
+
+class GridMapSparseIncremental : public testing::Test
+{
+protected:
+  using Access = GridMapParallelTestAccessor;
+  const Eigen::Vector3i dimensions_{161, 121, 41};
+  const Eigen::Vector3i left_{20, 20, 20}, right_{140, 100, 20};
+  GridMap map_, reference_;
+  std::vector<char> occupancy_;
+  std::uint64_t sequence_ = 1;
+
+  std::size_t cell(const Eigen::Vector3i &p) const
+  {
+    return (static_cast<std::size_t>(p.x()) * dimensions_.y() + p.y()) *
+        dimensions_.z() + p.z();
+  }
+
+  void SetUp() override
+  {
+    ensureRosInitialized();
+    Access::configureIncrementalTest(map_, true, dimensions_, 0.1, 3);
+    Access::configureIncrementalTest(reference_, false, dimensions_);
+    occupancy_.assign(static_cast<std::size_t>(dimensions_.prod()), 0);
+    // Unchanged neighbours must remain in each patch's EDT input halo.
+    occupancy_[cell(left_ + Eigen::Vector3i(8, 0, 0))] = 1;
+    occupancy_[cell(right_ - Eigen::Vector3i(8, 0, 0))] = 1;
+    Access::stageIncrementalOccupancy(map_, occupancy_, sequence_);
+    Access::stageIncrementalOccupancy(reference_, occupancy_, sequence_);
+    Access::processESDF(map_);
+    Access::processESDF(reference_);
+    Access::publishIncrementalSnapshot(map_);
+    Access::enableIncrementalAsync(map_);
+  }
+
+  void stage()
+  {
+    ++sequence_;
+    Access::stageIncrementalOccupancy(map_, occupancy_, sequence_);
+    Access::stageIncrementalOccupancy(reference_, occupancy_, sequence_);
+  }
+
+  void expectReference()
+  {
+    const auto &actual = Access::distances(map_);
+    const auto &full = Access::distances(reference_);
+    ASSERT_EQ(actual.size(), full.size());
+    for (std::size_t i = 0; i < actual.size(); ++i)
+      ASSERT_NEAR(std::max(-0.6, std::min(0.6, full[i])), actual[i], 1e-10)
+          << "sequence " << sequence_ << " address " << i;
+    EXPECT_EQ(occupancy_, Access::committedOccupancy(map_));
+  }
+
+  void completeFrame()
+  {
+    stage();
+    Access::processESDF(reference_);
+    ASSERT_TRUE(Access::waitForIncrementalCallbackCommit(map_, sequence_));
+    ASSERT_NO_FATAL_FAILURE(expectReference());
+  }
+
+  void submitAndWait(std::uint64_t completed)
+  {
+    stage();
+    Access::incrementalCallbackAndPublish(map_);
+    ASSERT_TRUE(Access::waitForAsyncReady(map_, completed,
+                                         std::chrono::seconds(5)));
+  }
+};
+
+TEST_F(GridMapSparseIncremental, FarInsertionsRemovalsAndReinsertionsMatchEveryVoxel)
+{
+  GridMap::ReadScope old(map_, GridMap::ReadScope::Complete);
+  ASSERT_TRUE(old.valid());
+  const auto old_version = map_.getReadESDFVersion();
+  const auto old_stamp = map_.getReadFusionTime();
+  const double old_distance = map_.getDistance(left_);
+  for (int frame = 0; frame < 3; ++frame)
+  {
+    occupancy_[cell(left_)] = occupancy_[cell(right_)] = frame != 1;
+    ASSERT_NO_FATAL_FAILURE(completeFrame());
+    EXPECT_EQ(old_version, map_.getReadESDFVersion());
+    EXPECT_EQ(old_stamp, map_.getReadFusionTime());
+    EXPECT_DOUBLE_EQ(old_distance, map_.getDistance(left_));
+    GridMap::ReadScope current(map_, GridMap::ReadScope::Complete);
+    ASSERT_TRUE(current.valid());
+    EXPECT_EQ(sequence_, map_.getESDFObservationSeq());
+    EXPECT_EQ(ros::Time(100 + sequence_, 0), map_.getReadFusionTime());
+    EXPECT_DOUBLE_EQ(Access::distances(map_)[cell(left_)], map_.getDistance(left_));
+    EXPECT_DOUBLE_EQ(Access::distances(map_)[cell(right_)], map_.getDistance(right_));
+  }
+  const auto layer = Access::latestDistanceLayer(map_);
+  const auto submitted = Access::latestSubmittedRequestId(map_);
+  ASSERT_NO_FATAL_FAILURE(completeFrame());  // Identical geometry, new source.
+  EXPECT_EQ(submitted, Access::latestSubmittedRequestId(map_));
+  EXPECT_EQ(layer, Access::latestDistanceLayer(map_));
+  EXPECT_EQ(3U, Access::asyncCommittedCount(map_));
+}
+
+TEST_F(GridMapSparseIncremental, RejectedGenerationAndEpochNeverAdvanceBaselineOrComplete)
+{
+  const auto initial_layer = Access::latestDistanceLayer(map_);
+  const auto initial_baseline = Access::committedOccupancy(map_);
+  const auto initial_revision = Access::distanceRevision(map_);
+  GridMap::ReadScope old(map_, GridMap::ReadScope::Complete);
+  const auto old_version = map_.getReadESDFVersion();
+  occupancy_[cell(left_)] = occupancy_[cell(right_)] = 1;
+  ASSERT_NO_FATAL_FAILURE(submitAndWait(1));
+  Access::changeObservationOnly(map_, ++sequence_);
+  Access::commitReadyAndPublish(map_);
+  EXPECT_EQ(1U, Access::asyncRejectedCount(map_));
+  EXPECT_EQ(0U, Access::asyncCommittedCount(map_));
+  EXPECT_EQ(*initial_layer, Access::distances(map_));
+  EXPECT_EQ(initial_baseline, Access::committedOccupancy(map_));
+  EXPECT_EQ(initial_revision, Access::distanceRevision(map_));
+  {
+    GridMap::ReadScope complete(map_, GridMap::ReadScope::Complete);
+    ASSERT_TRUE(complete.valid());
+    EXPECT_EQ(old_version, map_.getReadESDFVersion());
+    EXPECT_EQ(1U, map_.getESDFObservationSeq());
+  }
+  ASSERT_NO_FATAL_FAILURE(completeFrame());  // Rejected changes remain dirty.
+  const auto committed_layer = Access::latestDistanceLayer(map_);
+  const auto committed_baseline = Access::committedOccupancy(map_);
+  const auto committed_epoch = Access::occupancyEpoch(map_);
+  const auto committed_revision = Access::distanceRevision(map_);
+  occupancy_[cell(left_)] = occupancy_[cell(right_)] = 0;
+  ASSERT_NO_FATAL_FAILURE(submitAndWait(3));
+  Access::invalidateIncrementalEpoch(map_);
+  Access::commitReadyAndPublish(map_);
+  EXPECT_EQ(1U, Access::asyncCommittedCount(map_));
+  EXPECT_EQ(*committed_layer, Access::distances(map_));
+  EXPECT_EQ(committed_baseline, Access::committedOccupancy(map_));
+  EXPECT_EQ(committed_epoch, Access::occupancyEpoch(map_));
+  EXPECT_EQ(committed_revision, Access::distanceRevision(map_));
+  {
+    GridMap::ReadScope complete(map_, GridMap::ReadScope::Complete);
+    EXPECT_FALSE(complete.valid());  // Old epoch cannot authorize a new reader.
+  }
+  EXPECT_EQ(old_version, map_.getReadESDFVersion());
+  ASSERT_NO_FATAL_FAILURE(completeFrame());
+  EXPECT_GT(Access::occupancyEpoch(map_), committed_epoch);
+}
+
+#ifndef MAP_BENCHMARK_OLD_ABI
+TEST_F(GridMapSparseIncremental, MissingOrNonfiniteLastPatchRejectsWholeBatch)
+{
+  const auto initial_layer = Access::latestDistanceLayer(map_);
+  const auto baseline = Access::committedOccupancy(map_);
+  const auto revision = Access::distanceRevision(map_);
+  GridMap::ReadScope old(map_, GridMap::ReadScope::Complete);
+  const auto version = map_.getReadESDFVersion();
+  const auto stamp = map_.getReadFusionTime();
+  occupancy_[cell(left_)] = occupancy_[cell(right_)] = 1;
+  for (int attempt = 0; attempt < 2; ++attempt)
+  {
+    ASSERT_NO_FATAL_FAILURE(submitAndWait(attempt + 1));
+    const auto stats = Access::readyPatchStats(map_);
+    ASSERT_GE(stats.first, 2U);  // Exercise actual bounded sparse worker output.
+    ASSERT_LE(stats.first, 8U);
+    EXPECT_LT(stats.second, static_cast<std::size_t>(dimensions_.prod()));
+    ASSERT_TRUE(Access::damageLastReadyPatch(map_, attempt == 0));
+    Access::commitReadyAndPublish(map_);
+    EXPECT_EQ(std::uint64_t(attempt + 1), Access::asyncRejectedCount(map_));
+    EXPECT_EQ(0U, Access::asyncCommittedCount(map_));
+    EXPECT_TRUE(Access::esdfNeedsUpdate(map_));
+    // The first patch was valid. It must not have been written before the
+    // missing/NaN last patch was detected, nor may the dirty baseline advance.
+    EXPECT_EQ(*initial_layer, Access::distances(map_));
+    EXPECT_EQ(baseline, Access::committedOccupancy(map_));
+    EXPECT_EQ(revision, Access::distanceRevision(map_));
+    GridMap::ReadScope complete(map_, GridMap::ReadScope::Complete);
+    ASSERT_TRUE(complete.valid());
+    EXPECT_EQ(version, map_.getReadESDFVersion());
+    EXPECT_EQ(stamp, map_.getReadFusionTime());
+    EXPECT_EQ(1U, map_.getESDFObservationSeq());
+  }
+  ASSERT_NO_FATAL_FAILURE(completeFrame());
+  EXPECT_EQ(1U, Access::asyncCommittedCount(map_));
+  EXPECT_EQ(2U, Access::asyncRejectedCount(map_));
+}
+#endif
+
+TEST_F(GridMapIncremental, ByteBlockBoundariesAndFinalPartialBlockRemainObservable)
+{
+  syncFrame();
+  const std::vector<std::size_t> addresses = {
+      0, 4095, 4096, 8191, 8192, occupancy_.size() - 1};
+  for (const auto i : addresses)
+  {
+    occupancy_[i] = 1;
+    syncFrame();
+    occupancy_[i] = 0;
+    syncFrame();
+    EXPECT_EQ(occupancy_, Access::committedOccupancy(incremental_));
+  }
+}
+
+// Explicit opt-in synthetic benchmark. Run this single test in separate
+// processes against the preserved old library and the new library. It never
+// constructs ESDFJob/ESDFResult, whose ABI changes in the sparse worker.
+TEST(GridMapBenchmark, Synthetic300x200x60AsyncThreeThreads)
+{
+  const char *enabled = std::getenv("REMANI_MAP_BENCHMARK");
+  if (!enabled || std::strcmp(enabled, "1") != 0)
+  {
+    std::cout << "Synthetic map benchmark disabled; set REMANI_MAP_BENCHMARK=1."
+              << std::endl;
+    return;
+  }
+  ensureRosInitialized();
+  using Access = GridMapParallelTestAccessor;
+  using Clock = std::chrono::steady_clock;
+  const auto milliseconds = [](Clock::time_point from, Clock::time_point to) {
+    return std::chrono::duration<double, std::milli>(to - from).count();
+  };
+  GridMap map;
+  const Eigen::Vector3i dimensions(300, 200, 60);
+  Access::configureIncrementalTest(map, true, dimensions, 0.05, 3);
+  std::vector<char> occupancy(static_cast<std::size_t>(dimensions.prod()), 0);
+  std::uint64_t sequence = 0;
+  const auto fill = [&](const Eigen::Vector3i &center, char value) {
+    for (int x = center.x() - 2; x <= center.x() + 2; ++x)
+      for (int y = center.y() - 2; y <= center.y() + 2; ++y)
+        for (int z = center.z() - 2; z <= center.z() + 2; ++z)
+          occupancy[(static_cast<std::size_t>(x) * dimensions.y() + y) *
+                    dimensions.z() + z] = value;
+  };
+  std::cout << "[map-benchmark] synthetic=1 dimensions=300x200x60 resolution=.05"
+               " cap=.6 threads=3; stage_ms is fixture setup, not LiDAR fusion;"
+               " callback_ms includes prepare/submit/commit; total includes polling"
+            << std::endl;
+  std::cout << "[map-benchmark-csv] scenario,round,stage_ms,first_callback_ms,"
+               "callback_ms,total_ms,worker_or_sync_ms,commit_ms,input_copy_ms,"
+               "publish_ms,distance_sum,submitted,committed" << std::endl;
+  const auto run = [&](const char *scenario, int round) {
+    const auto stage_start = Clock::now();
+    Access::stageIncrementalOccupancy(map, occupancy, ++sequence);
+    const auto start = Clock::now();
+    const auto timing_before = Access::timingTotals(map);
+    double callbacks_ms = 0.0, first_callback_ms = 0.0;
+    bool first = true;
+    do
+    {
+      const auto callback_start = Clock::now();
+      Access::processESDF(map);
+      const double callback_ms = milliseconds(callback_start, Clock::now());
+      callbacks_ms += callback_ms;
+      if (first) first_callback_ms = callback_ms;
+      first = false;
+      if (Access::esdfObservationSeq(map) == sequence && !Access::esdfNeedsUpdate(map))
+        break;
+      ASSERT_LT(milliseconds(start, Clock::now()), 30000.0);
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    } while (true);
+    const auto finished = Clock::now();
+    const auto timing_after = Access::timingTotals(map);
+    Access::publishIncrementalSnapshot(map);
+    const auto published = Clock::now();
+    long double sum = 0.0;
+    for (const double value : Access::distances(map))
+    {
+      ASSERT_TRUE(std::isfinite(value));
+      ASSERT_GE(value, -0.6);
+      ASSERT_LE(value, 0.6);
+      sum += value;
+    }
+    EXPECT_EQ(occupancy, Access::committedOccupancy(map));
+    std::cout << std::fixed << std::setprecision(6) << "[map-benchmark-csv] "
+              << scenario << ',' << round << ',' << milliseconds(stage_start, start)
+              << ',' << first_callback_ms << ',' << callbacks_ms << ','
+              << milliseconds(start, published) << ','
+              << timing_after[0] - timing_before[0] << ','
+              << timing_after[1] - timing_before[1] << ','
+              << timing_after[2] - timing_before[2] << ','
+              << milliseconds(finished, published) << ',' << double(sum) << ','
+              << Access::latestSubmittedRequestId(map) << ','
+              << Access::asyncCommittedCount(map) << std::endl;
+  };
+  ASSERT_NO_FATAL_FAILURE(run("initial_sync", 0));
+  Access::enableIncrementalAsync(map);
+  for (int round = 0; round < 3; ++round)
+  {
+    fill(Eigen::Vector3i(150, 100, 30), 1);
+    ASSERT_NO_FATAL_FAILURE(run("concentrated_insert", round));
+    fill(Eigen::Vector3i(50, 40, 30), 1);
+    fill(Eigen::Vector3i(250, 160, 30), 1);
+    ASSERT_NO_FATAL_FAILURE(run("dispersed_insert", round));
+    std::fill(occupancy.begin(), occupancy.end(), 0);
+    ASSERT_NO_FATAL_FAILURE(run("dispersed_remove", round));
+    ASSERT_NO_FATAL_FAILURE(run("unchanged", round));
+    // 37 * 25 * 15 = 13,875 separate changed cells exceed the 8,192-cell
+    // sparse bookkeeping limit. Both libraries receive exactly this pattern.
+    for (int x = 4; x < dimensions.x(); x += 8)
+      for (int y = 4; y < dimensions.y(); y += 8)
+        for (int z = 2; z < dimensions.z(); z += 4)
+          occupancy[(static_cast<std::size_t>(x) * dimensions.y() + y) *
+                    dimensions.z() + z] = 1;
+    ASSERT_NO_FATAL_FAILURE(run("widespread_insert", round));
+    ASSERT_NO_FATAL_FAILURE(run("widespread_unchanged", round));
+    std::fill(occupancy.begin(), occupancy.end(), 0);
+    ASSERT_NO_FATAL_FAILURE(run("widespread_remove", round));
+  }
 }
 
 int main(int argc, char **argv)

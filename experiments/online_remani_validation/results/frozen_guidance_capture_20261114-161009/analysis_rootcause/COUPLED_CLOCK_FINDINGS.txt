@@ -1,0 +1,29 @@
+Coupled native-clock numerical experiment, 2026-11-14
+No production code edits, no ROS node/publishers, no parameter tuning or plant fitting.
+
+Original recorded 2-gear, 5-piece degree-7 polynomials; measured initial state before native start. Actual production proposals/base_command, base-only transcription of the native 100Hz virtual-clock logic, existing independent 5ms bounded/lagged simulator Plant. Arm tracking treated as ideal; no collision field or replanning/terminal alignment FSM. All parameters unchanged from runtime source/YAML.
+
+1) Ideal delivery (coupled_clock_report.json):
+17.51 s reaches native phase end 13.481693 s. No freeze, no significant adjacent angular reversal. Maximum clock yaw error .534727 < .55 stop threshold. This ideal case does not reproduce the real oscillation.
+
+2) Recorded delivery cadence (coupled_recorded_delivery_report.json):
+Uses 370 recorded navigation status checked_at timestamps; accepts newly computed controls only when the recorded command succeeded and was not an explicit zero. Rejections/zeros force zero control. Actual nonzero command magnitudes are NOT replayed. Timestamps rounded up to a 5ms simulation tick; no added feedback delay/noise or fabricated success after the recorded window.
+26.45 s reaches native phase end. 1 freeze at 4.76 s (yaw error .550445), 1 resume at 6.44 s (.148756); frozen 1.68 s.
+The key structural behavior is reproduced:
+- Before resume, last meaningful delivered w=+.347409 at 6.290 s, scale=0, phase=3.796779.
+- After resume, w=-.35 at 6.495 s, scale=.048, phase=3.798459. A recorded zero rejection lies between these commands.
+- Within positive scale and the same forward block, 7.195 s w=-.35/end distance .028110 m changes to 7.400 s w=+.35/end distance .024946 m.
+Thus the stopped-progress target change and the ordinary 2.5cm endpoint rule still reverse the nominal steering, even without altering gains or fitting the physical robot.
+
+Metric caution:
+Strict adjacent-row flips are zero because rejection zero commands can separate opposite delivered commands. Filtering |w|>=.05 yields 4 sign changes; only the two described above are attributed to the identified guide discontinuities. The other changes include ordinary smooth path turns and must not be called oscillation. Report includes all rows to inspect.
+Final position error .06308 m, yaw error .38564 rad; terminal-yaw FSM is excluded, so these are native-phase completion errors, not full navigation acceptance.
+
+Limits:
+- This is a numerical compatibility experiment, not a recreation of all real vehicle dynamics.
+- The rejection schedule follows recorded wall time rather than a recomputed perception pipeline.
+- checked_at precedes actual command publication by an unmeasured small interval; Twist lacks a source header.
+- Real-record input replay remains the primary evidence. This coupled experiment supplies an additional reproducible trigger, not a guarantee of hardware outcome.
+
+Reusable environment: coupled_native_clock.simulate(guide=callback, delivery_events=events)
+The callback receives (state, adapter, exact_polynomial, phase, scale, elapsed, kernel) and returns v,w. The existing production guide is the default.

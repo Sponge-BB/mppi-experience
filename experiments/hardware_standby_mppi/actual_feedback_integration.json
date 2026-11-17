@@ -1,0 +1,490 @@
+{
+  "source": "actual_robot_inputs_no_fixtures",
+  "duration_s": 6.024853756000084,
+  "inputs": {
+    "status": {
+      "count": 13,
+      "latest": {
+        "ros_stamp": 1793880796.392371,
+        "planning_snapshot_stamp": 1793880796.3921077,
+        "monotonic_elapsed": 242.51398629300093,
+        "mode": "shadow_only",
+        "status": "raw_stale",
+        "ready_for_actuation": false,
+        "hardware_execution_eligible": false,
+        "commands_executed": false,
+        "namespace": "/standby_trial_20261105_feedback_02",
+        "sources": {
+          "odom": "/standby_trial_20261105_feedback_02/sensors/odom",
+          "joints": "/standby_trial_20261105_feedback_02/sensors/joint_states",
+          "raw_cloud": "/standby_trial_20261105_feedback_02/sensors/lidar_pcl2",
+          "filtered_cloud": "/standby_trial_20261105_feedback_02/sensors/filtered_cloud_unavailable",
+          "dynamic_cloud": "/standby_trial_20261105_feedback_02/perception/dynamic_points",
+          "static_cloud": "/standby_trial_20261105_feedback_02/sensors/static_cloud_unregistered",
+          "perception_health": "/standby_trial_20261105_feedback_02/perception/dynamic_obstacle_tracker/perception_healthy"
+        },
+        "errors": {},
+        "input_transport_latency_s": {
+          "odom": 0.026316404342651367,
+          "raw_cloud": 0.28906774520874023,
+          "joints": 0.0017616748809814453
+        },
+        "clouds": {
+          "raw_cloud": {
+            "stamp": 1793880796.0848455,
+            "frame": "standby_feedback_02_odom",
+            "points": 4000
+          }
+        },
+        "near_arm_raw_diagnostic": null,
+        "input_age_s": {
+          "raw_cloud": 0.3075253963470459
+        },
+        "odom_stamp": 1793880796.2842238,
+        "joint_stamp": 1793880796.3728113,
+        "joint_velocity_source": "bounded_named_position_difference_rad_per_s",
+        "base_height_convention": "ground_z_zero_odom_z_not_added",
+        "odom_z_ignored": 0.115,
+        "state": [
+          -0.26640781992086787,
+          -0.02758214538095304,
+          0.0005397820324501624,
+          0.001015958120859996,
+          0.0016337406440430334,
+          -0.2321113372227259,
+          -0.03328342883553187,
+          0.006771877497737999,
+          0.027384215963791033,
+          0.49338712624627706,
+          -0.020577431881013148,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "anchor": [
+          -0.26979228606525246,
+          -0.025543942498653244,
+          -5.200483896576076e-05
+        ],
+        "arm_reference": [
+          -0.2321113372227259,
+          -0.03328342883553187,
+          0.006771877497737999,
+          0.027384215963791033,
+          0.49338712624627706,
+          -0.020577431881013148
+        ],
+        "proposed_controls": null,
+        "solve_ms": 4.844527000386734,
+        "kernel_diagnostics": {},
+        "limitations": [
+          "model_geometry_not_hardware_validated",
+          "surface_cloud_not_known_free_space",
+          "raw_self_returns_may_reject_candidates",
+          "cloud_downsampling_not_collision_certificate",
+          "no_actuator_publishers_or_execution_mode"
+        ]
+      },
+      "hz_from_stamps": null
+    },
+    "joints": {
+      "count": 1201,
+      "frame": "standby_feedback_02_base_link",
+      "latest_age_s": 0.0010790824890136719,
+      "names": [
+        "joint1",
+        "joint2",
+        "joint3",
+        "joint4",
+        "joint5",
+        "joint6"
+      ],
+      "q": [
+        -0.2321113372227259,
+        -0.03328342883553187,
+        0.006771877497737999,
+        0.027384215963791033,
+        0.49338712624627706,
+        -0.020577431881013148
+      ],
+      "dq": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "hz_from_stamps": 199.9979416741175
+    },
+    "cloud": {
+      "count": 60,
+      "frame": "standby_feedback_02_livox_frame",
+      "latest_age_s": 0.10503292083740234,
+      "points": 18983,
+      "hz_from_stamps": 10.001778191361618
+    },
+    "odom": {
+      "count": 60,
+      "frame": "standby_feedback_02_odom",
+      "latest_age_s": 0.024613380432128906,
+      "child": "standby_feedback_02_base_link",
+      "xyz": [
+        -0.27000652787755663,
+        -0.027484453565980112,
+        0.115
+      ],
+      "twist": [
+        -0.007098819391353657,
+        0.0027798017219113156,
+        0.0004749106975964816
+      ],
+      "hz_from_stamps": 9.998776779464862
+    }
+  },
+  "graph": [
+    1,
+    "current system state",
+    [
+      [
+        [
+          "/rosout_agg",
+          [
+            "/rosout"
+          ]
+        ],
+        [
+          "/rosout",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow",
+            "/standby_trial_20261105_feedback_02/sensors/custom_to_pcl",
+            "/standby_trial_20261105_feedback_02/sensors/livox_driver",
+            "/standby_trial_20261105_feedback_02/sensors/camera_to_odom",
+            "/standby_trial_20261105_feedback_02/sensors/base_to_lidar",
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping",
+            "/standby_trial_20261105_feedback_02/sensors/base_odometry_bridge",
+            "/standby_trial_20261105_feedback_02/piper_can_receive_only",
+            "/standby_trial_20261105_feedback_02/actual_feedback_probe_48290_1793880790430"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/status",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/markers",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/proposed_controls_never_executed",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/lidar_pcl2",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/custom_to_pcl"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/imu",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/livox_driver"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/lidar_custom",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/livox_driver"
+          ]
+        ],
+        [
+          "/tf_static",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/camera_to_odom",
+            "/standby_trial_20261105_feedback_02/sensors/base_to_lidar"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/cloud_registered",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/cloud_registered_body",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/cloud_effected",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/local_laser_map",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/odometry_raw",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/path",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/odom",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/base_odometry_bridge"
+          ]
+        ],
+        [
+          "/tf",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/base_odometry_bridge",
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/joint_states",
+          [
+            "/standby_trial_20261105_feedback_02/piper_can_receive_only"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/feedback_status",
+          [
+            "/standby_trial_20261105_feedback_02/piper_can_receive_only"
+          ]
+        ]
+      ],
+      [
+        [
+          "/rosout",
+          [
+            "/rosout"
+          ]
+        ],
+        [
+          "/tf",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/tf_static",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/odom",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/joint_states",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/perception/dynamic_obstacle_tracker/perception_healthy",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/lidar_pcl2",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/filtered_cloud_unavailable",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/static_cloud_unregistered",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/perception/dynamic_points",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/lidar_custom",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/custom_to_pcl",
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/imu",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/odometry_raw",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/base_odometry_bridge"
+          ]
+        ]
+      ],
+      [
+        [
+          "/rosout/get_loggers",
+          [
+            "/rosout"
+          ]
+        ],
+        [
+          "/rosout/set_logger_level",
+          [
+            "/rosout"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/hardware_standby_shadow/get_loggers",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/hardware_standby_shadow/set_logger_level",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/hardware_standby_shadow/tf2_frames",
+          [
+            "/standby_trial_20261105_feedback_02/hardware_standby_shadow"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/custom_to_pcl/get_loggers",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/custom_to_pcl"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/custom_to_pcl/set_logger_level",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/custom_to_pcl"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/livox_driver/get_loggers",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/livox_driver"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/livox_driver/set_logger_level",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/livox_driver"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/camera_to_odom/get_loggers",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/camera_to_odom"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/camera_to_odom/set_logger_level",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/camera_to_odom"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/base_to_lidar/get_loggers",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/base_to_lidar"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/base_to_lidar/set_logger_level",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/base_to_lidar"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping/get_loggers",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping/set_logger_level",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/fastlio_mapping"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/base_odometry_bridge/get_loggers",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/base_odometry_bridge"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/sensors/base_odometry_bridge/set_logger_level",
+          [
+            "/standby_trial_20261105_feedback_02/sensors/base_odometry_bridge"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/piper_can_receive_only/get_loggers",
+          [
+            "/standby_trial_20261105_feedback_02/piper_can_receive_only"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/piper_can_receive_only/set_logger_level",
+          [
+            "/standby_trial_20261105_feedback_02/piper_can_receive_only"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/actual_feedback_probe_48290_1793880790430/get_loggers",
+          [
+            "/standby_trial_20261105_feedback_02/actual_feedback_probe_48290_1793880790430"
+          ]
+        ],
+        [
+          "/standby_trial_20261105_feedback_02/actual_feedback_probe_48290_1793880790430/set_logger_level",
+          [
+            "/standby_trial_20261105_feedback_02/actual_feedback_probe_48290_1793880790430"
+          ]
+        ]
+      ]
+    ]
+  ],
+  "commands_sent": false
+}

@@ -1,0 +1,51 @@
+{
+  "changes": [
+    "Legacy MOVEJ target is measured q plus bounded arm velocity intent times dt, bounded by .03 rad lead and joint limits.",
+    "Every base/time sample checks measured q, target midpoint and exact delivered target; original measured-dq velocity/braking envelope is retained.",
+    "Existing outer lead check, execution gates, driver, SDK, thresholds and position-servo branch unchanged."
+  ],
+  "tests": {
+    "collision": {
+      "passed": 19,
+      "seconds": 0.724
+    },
+    "startup": {
+      "passed": 30,
+      "seconds": 0.821
+    },
+    "gate_and_servo_log": "delivery_target_gate_servo_tests.txt",
+    "gate_and_servo": {
+      "passed": 18,
+      "seconds": 0.177
+    },
+    "total_passed": 67
+  },
+  "position_servo_branch_ast_identical": true,
+  "artifacts_only_backup": "before_delivery_target",
+  "hardware_actions": false,
+  "target_step_change": {
+    "maximum_current_profile_target_lead_rad": 0.015,
+    "previous_zero_velocity_max_first_step_displacement_rad": 0.00175,
+    "ratio": 8.571428571428571
+  },
+  "limits": [
+    "Three pose slices and 50 ms time samples remain a discrete geometric check, not a full continuous sweep certificate.",
+    "fixed_vel=1 actual response is uncalibrated; this does not enable the simulation position-servo model on hardware.",
+    "High measured dq may still correctly cause collision, joint-limit or forecast-bound rejection.",
+    "No live control or real-world performance validation in this change."
+  ],
+  "sources": [
+    {
+      "path": "src/mm_remani/scripts/whole_body_mppi.py",
+      "sha256": "a379451145b8a663145bf18f0898922006ee3f0b4815423027274d01428cb767",
+      "added_lines": 15,
+      "removed_lines": 7
+    },
+    {
+      "path": "src/mm_remani/test/test_mppi_collision.py",
+      "sha256": "ed4b45a67d1e5945711b89b76ba8f005a722570af55499e5cfab879dd4ed1d62",
+      "added_lines": 114,
+      "removed_lines": 2
+    }
+  ]
+}

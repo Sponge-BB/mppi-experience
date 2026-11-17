@@ -1,0 +1,19 @@
+<launch>
+  <!-- Default: inputs + diagnostic recording. No actuator transport is opened. -->
+  <arg name="execute" default="false"/>
+  <arg name="can_port" default="can0"/>
+  <group ns="/standby_trial_20261106_mesh_06">
+    <node pkg="standby_piper_control_trial" type="standby_integration" name="standby_integration" output="screen" required="true">
+      <param name="execute" value="$(arg execute)"/>
+    </node>
+    <node pkg="standby_piper_control_trial" type="leased_base_driver" ns="base" name="leased_base_driver" output="screen">
+      <param name="connect_transport" value="$(arg execute)"/>
+      <param name="allow_motion" value="$(arg execute)"/>
+    </node>
+  </group>
+  <include file="$(find standby_piper_control_trial)/config/reused_piper.launch">
+    <arg name="can_port" value="$(arg can_port)"/>
+    <arg name="connect_transport" value="$(arg execute)"/>
+    <arg name="allow_motion" value="$(arg execute)"/>
+  </include>
+</launch>

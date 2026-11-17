@@ -1,0 +1,43 @@
+本轮实车记录与证据索引（2026-11-12）
+
+主记录：drive_session_20261112-120325，约8分6秒。
+目标接收：12:07:39.930；目标后记录至12:11:30.610。
+用户现场描述：仍在走走停停。
+本轮仅订阅记录、离线分析，未发布导航或执行指令，未改运行代码，未停止整机程序。
+记录器已关闭，capture.bag 已完成索引。控制代码及输入11项SHA与采集时完全一致，见 recorded_code_integrity.json。
+对应代码版本：20261112-115745-drive-failure-recording；父版本：20261112-115244-before-drive-recording。本轮没有产生新的代码版本，也没有将动态避障标记为实车验证通过。
+
+已保存的数据：
+1. capture.bag：目标、规划轨迹及取消、MPPI状态、速度指令、实际里程计、关节位置/差分速度与控制目标、执行反馈、跟踪误差、动态预测输入、TF、三维预测rollout等。
+2. 三路点云各记录377帧；按源秒限至1Hz，达到bag 192MiB后停止保存点云，继续记录小话题。三路相同源秒不保证纳秒时间戳相同。未保存原始Livox全速数据。
+3. snapshot_headers.jsonl：9619个碰撞快照header；完整ESDF不全流保存。
+4. map_events：7次MPPI几何拒绝事件的精确packet与匹配full场，共12份.msg，已核对SHA、序号、地图版本和32项header一致。
+5. /mppi/prediction_rollouts：438条三维预测数据，保留实际预测序列。
+6. runtime_parameters.json、code_and_inputs.json及inputs目录：运行参数、关键源码/配置和部署程序哈希。DATA_SHA256SUMS覆盖bag、关键日志和12份地图数据。
+
+已确定的现象：
+- 记录到5个ADD和5个ABORT轨迹消息；多档位轨迹可能分块发布，不能直接把包数等同完整规划批次。
+- 零速/非零速指令反复切换；12:08:20.063慢层明确记录放弃当前目标并进入WAIT_TARGET，之后持续native_reference_cancelled，未录到planning/finish。
+- 首个中止涉及慢层自身hard-collision判断（日志base_surface_gap约0.004m），其真假及具体障碍来源仍需核查。
+- 目标后的3次no_feasible：结构化候选外障、自碰和地面检查均通过，外部间隙均大于0.3476m；实际被关节位置界限或制动尾检查否决。
+- 其中一次原周期q5=0.943508rad、差分dq5=0.501878rad/s；按0.35rad/s²最强制动停点为1.303338rad，超过上限1.25rad。另有仅制动尾时间不足的周期，不宜一概称限位碰撞。
+- 全部4772条已录动态预测输入为空；7次故障地图亦无动态组。本次不能证明动态障碍避障效果。
+- 已录机械臂电机使能位均为全六轴1，执行反馈stop_latched均为false。
+
+证据边界：
+- 原周期候选失败分项与地图已经匹配，完整随机数状态/previous控制未记录，不能宣称随机优化过程完全可重放。
+- 两次交付hold/braking拒绝的上下文保留规划开始状态，不能用它替代交付时最新状态判定具体关节原因。
+- 首个慢层碰撞触发没有独立保存其指定代的全场；相邻点云与日志不能直接当成同代几何证据。
+- 关节velocity来自既有驱动对完整位置样本做时间差分。其峰值显著高于50/100ms位置差分；现有记录尚不能判定真实瞬时电机转速。记录器接收间隔也不能单独证明CAN总线延迟。
+- TCPROS传输丢包不可全量量化。bag时间为接收时间；消息源时间独立保留；cmd_vel和mppi/status没有消息头源时间。
+- 导航的world目标不能与未经TF变换的odom坐标直接比较距离。
+
+详细分析：
+原周期候选失败分析.txt / original_geometry_failure_audit.json
+navigation_timeline_analysis.txt / navigation_timeline_analysis.json
+input_and_status_audit.json / snapshot_header_audit.json
+summary.json / 现场现象.json / recorder_launch_notes.json
+
+早期不完整采集：drive_session_20261112-115801。
+该记录器受我设置的虚拟地址空间上限影响，启动发现新发布者时线程创建失败，未接通MPPI/关节/碰撞快照。已关闭保存，仅作为启动rosout/odom等补充；不应将其视为完整主记录。
+主记录已移除此虚拟内存上限，保留RSS/系统可用内存监控，peak RSS约213MiB；主记录采集错误计数为0。

@@ -1,0 +1,55 @@
+{
+  "group": "native",
+  "seed": 11,
+  "scene": "arm_crossing",
+  "source": "current main project; native control means MPPI disabled, not untouched upstream",
+  "physical_base_locked": false,
+  "controller_profile": {
+    "rate_hz": 10.0,
+    "deadline_s": 0.095,
+    "horizon": 8,
+    "random_samples": 4,
+    "base_limits": {
+      "vmax": 0.05,
+      "wmax": 0.15,
+      "accel": 0.1,
+      "angular_accel": 0.3,
+      "track": 0.37,
+      "wheel_v": 0.2296,
+      "wheel_a": 0.2975
+    },
+    "arm_velocity": [
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "arm_acceleration": [
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35
+    ],
+    "postures": [
+      [
+        0.0,
+        2.4434609528,
+        -1.0471975512,
+        0.0,
+        0.2617993878,
+        0.0
+      ]
+    ],
+    "standby": {}
+  },
+  "duration_s": 24.0,
+  "command_topics": [
+    "/sim/cmd_vel",
+    "/sim/joint_ctrl_single"
+  ],
+  "master": "http://127.0.0.1:11466"
+}

@@ -1,0 +1,81 @@
+{
+  "purpose": "将地图碰撞紧急停车接入既有保留目标恢复流程，避免瞬间五次普通规划失败丢弃导航目标",
+  "offline_passed": true,
+  "hardware_validation": false,
+  "tests": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "src/mm_remani/test/test_perception_recovery.py",
+        "-v"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "src/mm_remani/test/test_transient_obstacle_recovery.py",
+        "-v"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "behaviour_cases": {
+    "perception": 15,
+    "transient": 8
+  },
+  "build": {
+    "command": [
+      "nice",
+      "-n",
+      "15",
+      "cmake",
+      "--build",
+      "/tmp/remani_moving_handoff_build_20261116_gc",
+      "--parallel",
+      "1",
+      "--target",
+      "remani_planner_node"
+    ],
+    "exit_code": 0,
+    "elapsed_s": 71.43282361199999,
+    "peak_build_group_rss_mib": 1288.0234375,
+    "lowest_available_mib": 1662.9453125,
+    "stop_reason": null,
+    "jobs": 1,
+    "clean_build": false,
+    "incremental_from_verified_version": "20261116-125002-feedback-phase",
+    "build_dir": "/tmp/remani_moving_handoff_build_20261116_gc",
+    "runtime_destination_untouched": true
+  },
+  "deployment": {
+    "hardware_started": false,
+    "host_process_check": {
+      "pid1": "systemd",
+      "active": []
+    },
+    "source_sha256": {
+      "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "0193ccfb67d43eb62ed8e69e9fee3317cc73b26f0a2c690fa0240112791994e0"
+    },
+    "deployed": {
+      "devel/lib/remani_planner/remani_planner_node": {
+        "stage": "/tmp/remani_moving_handoff_devel_20261116_gc/lib/remani_planner/remani_planner_node",
+        "sha256": "52c085b1135ed041af471015a2395047a6771997c49db2eca7ec1b0accd30a1c",
+        "stage_sha256": "52c085b1135ed041af471015a2395047a6771997c49db2eca7ec1b0accd30a1c",
+        "before_sha256": "b52804dc694dfa962a18f3be18b962a532f0a32a03b99f520980004185ec83aa",
+        "mode": 509
+      }
+    },
+    "link_check_passed": true,
+    "rpath": [
+      " 0x000000000000001d (RUNPATH)            Library runpath: [/home/l/remani_ws/devel/lib:/opt/ros/noetic/lib]"
+    ],
+    "atomic_replace": true,
+    "only_planner_binary_replaced": true
+  },
+  "known_issues": [
+    "本轮不消除传感器反馈间隙或保证每种场景均存在可行绕行",
+    "既有恢复要求fail_safe开启，当前实车配置已开启；仍需新鲜状态和完整地图通过验收"
+  ],
+  "hardware_commands_sent": false
+}

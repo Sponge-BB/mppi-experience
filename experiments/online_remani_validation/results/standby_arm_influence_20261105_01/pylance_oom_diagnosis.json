@@ -1,0 +1,30 @@
+{
+  "read_at": "2026-11-05T17:52:31.450714+08:00",
+  "kernel_evidence_file": "pylance_kernel_oom_evidence.txt",
+  "kernel_evidence_returncode": 0,
+  "confirmed_extension_host_pid": 29523,
+  "kernel_kill_at": "2026-11-05 17:34:31 +08:00",
+  "extension_host_log_at": "2026-11-05 17:34:33.162 +08:00",
+  "pylance_epipe_at": "2026-11-05 17:33:52.933 +08:00",
+  "pylance_pid_30709_mapping": "verified: language server startup lines 3 and 4 identify PID 30709",
+  "conclusion": "Confirmed: the kernel OOM killer terminated Pylance language-server PID 30709 at 17:33:46; Pylance client logged EPIPE at 17:33:52.933. The kernel then terminated VS Code extension-host PID 29523 at 17:34:31, and the remote agent logged the same PID exiting with SIGKILL at 17:34:33.162. Pylance failure and editor extension-host restart were consequences of system memory exhaustion.",
+  "memory_now": {
+    "MemTotal": "7630048 kB",
+    "MemFree": "492292 kB",
+    "MemAvailable": "1168136 kB",
+    "SwapTotal": "3815016 kB",
+    "SwapFree": "2834148 kB"
+  },
+  "actions": "read-only diagnosis, no process restart or kill",
+  "pylance_language_server_evidence_file": "pylance_language_server_evidence.txt",
+  "pylance_kernel_kill_at": "2026-11-05 17:33:46 +08:00",
+  "workspace_mitigation": {
+    "settings_file": ".vscode/settings.json",
+    "backup": "vscode_settings_before_oom_fix.json",
+    "change": "Exclude generated experiment results, builds and backups from Python static analysis; no editor reload or process kill",
+    "observed_source_files_before": 97428,
+    "observed_source_files_after": 1303,
+    "observed_after_at": "2026-11-05 17:54:16.894 +08:00",
+    "scope": "Reduced analysis load confirmed; does not establish that Pylance alone caused global memory exhaustion or guarantee all interruptions resolved"
+  }
+}

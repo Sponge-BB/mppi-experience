@@ -1,0 +1,26 @@
+角速度执行能力与相位契约核对（只读）
+
+实际配置与实际源码：
+1) exp0_real.launch:196 加载 real_speed.yaml；:282 原 real_base_tracker 仅 use_mppi=false 时启动；:287-289 MPPI 读取自己的 mppi.yaml。
+2) real_speed.yaml:12/15 原生 wheel_omega=3.28rad/s、wheel_alpha=4.25rad/s²；piper_param.yaml:6-7 track=.37m、radius=.07m。实际 planner 位于 src/mm_remani_planner，不是 remani_planner_backup。
+3) mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp:374-414 的验收约束是左右轮转速 (v±.37*omega/2)/.07，上限3.28且验收5%容差，没有独立 omega<=.35 的约束。故在v接近0时原生允许约1.241rad/s旋转；本次多项式峰值.913并不违背它自己的轮速约束。
+4) mppi.yaml:8-12 当前 vmax=.25、wmax=.35、wheel_v=.25、angular_accel=.8。基于实录295条首控制的精确匹配，这些当前源参数也与实际导航输出一致。
+5) real_speed.yaml 中 max_feedforward_omega=.55 仅供 mm_controller_fsm.cpp:603-619 对 car_cmd 的曲率前馈做速度混合和裁剪。其不参与 advanceTrajectoryClock；MPPI模式也没有由 real_base_tracker 执行这份 car_cmd，因此不能将.55当成当前MPPI角速度能力或相位限幅。
+6) advanceTrajectoryClock:345-523 只按位置/朝向跟踪误差、机械臂误差、新鲜度和线速度 safety_speed_limit 缩放。:440-453 的现有安全速度项只有 safety_speed_limit/reference_speed，没有 angular/wheel 能力项。:509-518 是先目标scale后升降速率平滑，输出scale还可能暂高于下降中的目标。
+
+本轮直接证明容量缺口：
+- 实录295条交付中19条 phase-scaled nominal yaw_rate>.35，最高.81236rad/s。
+- +13.187s native需求+.81236，MPPI实际饱和+.35，此时yaw误差+.2759且scale已降为.949；说明现有反馈降相位只是事后追赶，未先保证执行能力。
+- 但它不是已证左右反号的主因：+9.189s恢复时nominal角速需求仅+.0200，实际guide却-.35；+11.787/11.987s nominal仅+.0302/+.0346，实际guide同为-.35。即使提高wmax，目标定义冲突仍在。
+
+最小可执行设计（建议，与统一跟踪目标同时明确，未改代码）：
+A. 先统一MPPI nominal跟踪用的当前相位位姿、切向及未来相位样本，避免scale==0与scale>0改变角误差目标；2.5cm档块末端规则也不能另选一套相反目标。否则容量限幅只能减慢振荡。
+B. 在已有 mm_controller 的 advanceTrajectoryClock 中增加“执行速度能力上限”，直接读取同一份已启用 MPPI base_limits（仅MPPI模式生效，不另创控制节点/话题/状态机）。在当前原多项式相位计算 v_ref、omega_ref，再取：
+  lambda_cap=min(1, vmax/abs(v_ref), wmax/abs(omega_ref), wheel_v/max(abs(v_ref-track*omega_ref/2),abs(v_ref+track*omega_ref/2)))。
+  零分母项视为不限制；对非有限量按既有非法参考策略处理，不用epsilon制造巨大角速度；近静止段遵循同一个可定义切向的约定。
+  将target_scale=min(existing_target_scale,lambda_cap)。若声称硬性保证容量，则最终平滑后的scale也不能高于lambda_cap；只改target_scale而保留过慢下降将继续产生上限违反。物理指令仍经过现有速度/加速度/碰撞交付检查。
+  此限幅只对当前名义速度保证，不等于完整加速度可行性证明；参考加速度和相位变化交叉项需由真实执行限幅与闭环测试检查，不能假称一条比例公式解决全部动力学。
+C. 既有安全线速度限制和关节跟踪降相位继续取最小，机械臂与底盘共享相位。不得让MPPI私下再用自己的phase，以免底盘和机械臂时基分裂。
+D. 最小验证：同一段实录重放保留295控制基准；跨freeze/resume和两档交接做闭环，要求反号不能由mode边界制造。另验证angular-cap收紧/恢复、正倒档、低速、并发安全限速/关节停相位，及物理速度/加速度检查。不能把减小参考phase后单次离线数值通过当实车通过。
+
+可以将B作为同一慢快层执行契约中的单独提交，便于归因与回退。当前最直接的摆头修复是A；不能只提高wmax或放宽跟踪停止阈值。

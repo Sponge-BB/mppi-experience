@@ -1,0 +1,63 @@
+2026-11-12 现场导航走停：离线时序复核
+目标接收 2026-11-12T12:07:39.930+08:00；录制末尾 2026-11-12T12:11:30.610+08:00；共 230.680s。
+时间定义：receipt 是录制接收时刻；source_stamp 是消息头源时间；/cmd_vel、/mppi/status 没有源时间头。
+走停集中在目标后前 37.271s：记录指令非零→零55次（包括最终停车），非零命令18.223s、期间零命令19.029s。随后连续零命令193.410s；全段零命令212.439s包含这个长尾，不能描述为230s持续走停。
+实测定位净位移 1.4847m；速度积分路程 2.8740m；原始定位折线 7.3720m（包含定位噪声）。
+目标frame=world，里程计frame=odom；未做对应时刻TF变换，不给出跨坐标系目标距离，也不用里程计位移证明到达。
+实际非零命令窗口加1秒内的里程计速度积分 1.5902m（不是地面真值）；最终连续零命令 193.410s。
+MPPI 状态计数：{"command_delivered": 205, "collision_snapshot_unavailable": 70, "inputs_expired_before_delivery": 9, "collision_snapshot_expired_during_plan": 17, "waiting_explicit_arm_enable_or_normal_status": 11, "native_reference_cancelled": 1929, "no_feasible_candidate": 3, "command_hold_or_braking_rejected_by_latest_state_or_map": 1, "state_feedback_stale": 2}
+bag记录到的轨迹消息（5 ADD、5 ABORT，不保证订阅无丢包）：
+receipt 2026-11-12T12:07:40.283+08:00 / source 2026-11-12T12:07:40.258+08:00 ADD id=1 gear=1 duration=10.799s end=[0.6081956624984737, -1.3416081666946393]
+receipt 2026-11-12T12:07:53.212+08:00 / source None ABORT id=0 gear=0 duration=0.000s end=None
+receipt 2026-11-12T12:07:53.920+08:00 / source 2026-11-12T12:07:53.902+08:00 ADD id=1 gear=1 duration=7.700s end=[0.6081956624984741, -1.3416081666946416]
+receipt 2026-11-12T12:08:06.962+08:00 / source None ABORT id=0 gear=0 duration=0.000s end=None
+receipt 2026-11-12T12:08:08.592+08:00 / source 2026-11-12T12:08:08.555+08:00 ADD id=2 gear=-1 duration=5.461s end=[0.608195662498474, -1.341608166694641]
+receipt 2026-11-12T12:08:09.198+08:00 / source None ABORT id=0 gear=0 duration=0.000s end=None
+receipt 2026-11-12T12:08:10.988+08:00 / source 2026-11-12T12:08:10.981+08:00 ADD id=1 gear=1 duration=2.756s end=[0.6081956624984741, -1.3416081666946411]
+receipt 2026-11-12T12:08:13.306+08:00 / source None ABORT id=0 gear=0 duration=0.000s end=None
+receipt 2026-11-12T12:08:15.498+08:00 / source 2026-11-12T12:08:15.468+08:00 ADD id=2 gear=-1 duration=4.815s end=[0.6081956624984739, -1.3416081666946411]
+receipt 2026-11-12T12:08:17.209+08:00 / source None ABORT id=0 gear=0 duration=0.000s end=None
+关键规划日志（各行首为源时刻，括号为接收时刻）：
+2026-11-12T12:07:39.930+08:00 (2026-11-12T12:07:39.974+08:00) /remani_planner_node: [FSM] Manual target keeps current arm pose. Restore stand-by after goal: true
+2026-11-12T12:07:40.291+08:00 (2026-11-12T12:07:40.313+08:00) /mm_controller_node: [MMctrl] Terminal yaw captured from trajectory: -1.450 rad.
+2026-11-12T12:07:40.291+08:00 (2026-11-12T12:07:40.349+08:00) /mm_controller_node: [MMctrl] Receive the trajectory. STAY --> POLY_TRAJ
+2026-11-12T12:07:53.207+08:00 (2026-11-12T12:07:53.316+08:00) /remani_planner_node: [FSM] Latched collision-event ESDF requirement at seq=3356.
+2026-11-12T12:07:53.221+08:00 (2026-11-12T12:07:53.350+08:00) /mm_controller_node: [MMCtrl] Aborting the trajectory.
+2026-11-12T12:07:53.232+08:00 (2026-11-12T12:07:53.361+08:00) /remani_planner_node: [FSM] Frozen planning-boundary ESDF requirement at seq=3356 in GEN_NEW_TRAJ.
+2026-11-12T12:07:53.232+08:00 (2026-11-12T12:07:53.508+08:00) /remani_planner_node: [FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3356, esdf_seq=3355, wait=0.00 s).
+2026-11-12T12:07:53.320+08:00 (2026-11-12T12:07:53.796+08:00) /remani_planner_node: [FSM] Real whole-body state is in hard collision (type=0, check_distance=0.004 m, base_surface_gap=0.004 m); stop before using nominal trajectory.
+2026-11-12T12:07:53.931+08:00 (2026-11-12T12:07:54.329+08:00) /mm_controller_node: [MMctrl] Receive the trajectory. STAY --> POLY_TRAJ
+2026-11-12T12:08:06.955+08:00 (2026-11-12T12:08:06.977+08:00) /remani_planner_node: [FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry.
+2026-11-12T12:08:06.970+08:00 (2026-11-12T12:08:06.987+08:00) /mm_controller_node: [MMCtrl] Aborting the trajectory.
+2026-11-12T12:08:06.971+08:00 (2026-11-12T12:08:07.008+08:00) /mm_controller_node: [MMctrl] Stop execute the trajectory. POLY_TRAJ --> STAY
+2026-11-12T12:08:06.985+08:00 (2026-11-12T12:08:07.027+08:00) /remani_planner_node: [FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3436, esdf_seq=3435, wait=0.00 s).
+2026-11-12T12:08:08.591+08:00 (2026-11-12T12:08:08.616+08:00) /mm_controller_node: [MMctrl] Reset virtual trajectory clock for update 5.
+2026-11-12T12:08:08.591+08:00 (2026-11-12T12:08:08.616+08:00) /mm_controller_node: [MMctrl] Receive the trajectory. STAY --> POLY_TRAJ
+2026-11-12T12:08:08.677+08:00 (2026-11-12T12:08:08.716+08:00) /remani_planner_node: [FSM] Tracker aligned to the validated recovery trajectory; release the tracking-owned stop.
+2026-11-12T12:08:09.189+08:00 (2026-11-12T12:08:09.390+08:00) /remani_planner_node: [FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry.
+2026-11-12T12:08:09.201+08:00 (2026-11-12T12:08:09.543+08:00) /mm_controller_node: [MMCtrl] Aborting the trajectory.
+2026-11-12T12:08:09.932+08:00 (2026-11-12T12:08:10.379+08:00) /remani_planner_node: [FSM] Frozen planning-boundary ESDF requirement at seq=3452 in GEN_NEW_TRAJ.
+2026-11-12T12:08:10.988+08:00 (2026-11-12T12:08:11.529+08:00) /remani_planner_node: [FSM] Recovery trajectory is ready, but the tracker is not aligned yet; keep zero speed.
+2026-11-12T12:08:10.990+08:00 (2026-11-12T12:08:11.592+08:00) /mm_controller_node: [MMctrl] Reset virtual trajectory clock for update 7.
+2026-11-12T12:08:10.991+08:00 (2026-11-12T12:08:11.598+08:00) /mm_controller_node: [MMctrl] Receive the trajectory. STAY --> POLY_TRAJ
+2026-11-12T12:08:11.429+08:00 (2026-11-12T12:08:11.677+08:00) /remani_planner_node: [FSM] Tracker aligned to the validated recovery trajectory; release the tracking-owned stop.
+2026-11-12T12:08:13.303+08:00 (2026-11-12T12:08:13.416+08:00) /remani_planner_node: [FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry.
+2026-11-12T12:08:13.458+08:00 (2026-11-12T12:08:13.515+08:00) /remani_planner_node: [FSM] Frozen planning-boundary ESDF requirement at seq=3472 in GEN_NEW_TRAJ.
+2026-11-12T12:08:13.459+08:00 (2026-11-12T12:08:13.515+08:00) /remani_planner_node: [FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3472, esdf_seq=3471, wait=0.00 s).
+2026-11-12T12:08:15.501+08:00 (2026-11-12T12:08:15.928+08:00) /mm_controller_node: [MMctrl] Receive the trajectory. STAY --> POLY_TRAJ
+2026-11-12T12:08:17.210+08:00 (2026-11-12T12:08:17.353+08:00) /mm_controller_node: [MMCtrl] Aborting the trajectory.
+2026-11-12T12:08:17.201+08:00 (2026-11-12T12:08:17.363+08:00) /remani_planner_node: [FSM] Tracker reported excessive trajectory error; abort old trajectory and replan from odometry.
+2026-11-12T12:08:17.229+08:00 (2026-11-12T12:08:17.382+08:00) /remani_planner_node: [FSM] Frozen planning-boundary ESDF requirement at seq=3492 in GEN_NEW_TRAJ.
+2026-11-12T12:08:17.229+08:00 (2026-11-12T12:08:17.462+08:00) /remani_planner_node: [FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3492, esdf_seq=3491, wait=0.00 s).
+2026-11-12T12:08:17.969+08:00 (2026-11-12T12:08:18.005+08:00) /remani_planner_node: [FSM] Frozen planning-boundary ESDF requirement at seq=3497 in GEN_NEW_TRAJ.
+2026-11-12T12:08:17.970+08:00 (2026-11-12T12:08:18.025+08:00) /remani_planner_node: [FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=3497, esdf_seq=3496, wait=0.00 s).
+2026-11-12T12:08:18.949+08:00 (2026-11-12T12:08:19.178+08:00) /remani_planner_node: [FSM] Failed to generate new trajectory (2/5).
+2026-11-12T12:08:19.312+08:00 (2026-11-12T12:08:19.408+08:00) /remani_planner_node: [FSM] Failed to generate new trajectory (3/5).
+2026-11-12T12:08:19.324+08:00 (2026-11-12T12:08:19.409+08:00) /remani_planner_node: [FSM] Frozen planning-boundary ESDF requirement at seq=3503 in GEN_NEW_TRAJ.
+2026-11-12T12:08:19.699+08:00 (2026-11-12T12:08:20.018+08:00) /remani_planner_node: [FSM] Frozen planning-boundary ESDF requirement at seq=3505 in GEN_NEW_TRAJ.
+2026-11-12T12:08:20.063+08:00 (2026-11-12T12:08:20.498+08:00) /remani_planner_node: [FSM] Give up current target and return to WAIT_TARGET. Please send a new goal.
+明确终止原因：FSM源时刻12:08:20.063放弃当前目标并返回WAIT_TARGET，要求重发目标；这不是到达。
+末状态：{"receipt": 1794456690.5204234, "receipt_local": "2026-11-12T12:11:30.520+08:00", "receipt_since_goal_s": 230.590108, "state": "native_reference_cancelled", "cycle_ms": 0.64, "candidate_diagnostics": {"plan_time": 1794456690.5132198, "measured_state": [0.5808611357021506, -1.2547666801349069, -1.1807532386431694, -0.008665690508397047, 0.0013190184019033473, 0.0216071761396898, 0.5649805321630844, -1.0837971056109188, 0.006702064327658225, 0.9410640793828225, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "snapshot_header": [3.0, 1.0, 14543.0, 1794456690.2471697, 1.0, 82.0, 82.0, 60.0, -1.4499999999999997, -3.3, 0.0, 0.05, 67.0, 0.0, 4962.0, 0.35, 2.0, 1794456690.4166167, 1794456690.3189604, 1.0, 0.0, 0.03, 1.0, 1.0, 1794456690.4561095, 0.08, 0.25, 0.75, 1.0, 4875.0, 7198.0, 7196.0], "reference_source": "native_polynomial", "native_prefix_atomic": false, "native_prefix_segments": 0, "native_arm_reference": null, "native_phase": null, "native_time_scale": null, "native_gear_block": null, "reference_revision": 14}}
+没有记录到 /planning/finish 消息；不能将 reference_cancelled 当成到达。
+详细零速区间、ABORT 前后消息、进度及失败候选见 navigation_timeline_analysis.json。
+录制边界：recorder订阅queue_size=1，bag中5个ADD不是所有发布消息无丢包的保证；部分ADD是同次恢复的档位块。/planning/finish已订阅但未录到。

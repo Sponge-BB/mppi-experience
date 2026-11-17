@@ -1,0 +1,43 @@
+{
+  "purpose": "机械臂整机前缀接入与可选刷新：8组边界检查和6组闭环仿真；接入有效，摆臂保留收益未通过",
+  "offline_passed": true,
+  "offline_passed_scope": "Experiment execution/integrity and input-contract checks; NOT a claim of improved avoidance performance",
+  "hardware_validation": false,
+  "production_modified": false,
+  "mechanism_cases": 8,
+  "simulation_trials": 6,
+  "safe_goal_reached": 6,
+  "strict_optional_coupled_deliveries": 1,
+  "research_objective_arm_only_retention_improved": false,
+  "promoted_to_hardware": false,
+  "outcome": "All six goal/no contact; one strict optional coupled delivery. Two fixed optional attempts failed and necessary blocked-guide repairs remained live. All three fixed trials had larger base lateral deviation and heading excursion than paired legacy trials.",
+  "measured_lateral_cm": {
+    "fixed_seed11/mppi": 5.817968753533394,
+    "fixed_seed12/mppi": 10.272059168804573,
+    "fixed_seed13/mppi": 5.8744695576298955,
+    "legacy_seed11/mppi": 1.5572284409426977,
+    "legacy_seed12/mppi": 1.4744592980097093,
+    "legacy_seed13/mppi": 2.625607705913388
+  },
+  "tested_changes": [
+    "Pending optional event preserves its map boundary while normal required planning remains available",
+    "Five original source time bounds and task/reference identity verified",
+    "One frozen prediction/capture epoch feeds optional prefix and objective",
+    "Exact prefix origin interpolation; optional prefix rejection no longer silently falls back to uncoupled search"
+  ],
+  "unchanged_limits": [
+    "Original collision checks and wheel/joint limits",
+    "Original freshness durations",
+    "Original objective weights and phase association",
+    "Original numerical plant and MPPI library"
+  ],
+  "known_limits": [
+    "Only three seed pairs; original initial references differ and actual box positions differ by centimetres; no strict causal performance claim",
+    "Initial optional delivery succeeds only once in three fixed trials; merge/optimization feasibility is unresolved",
+    "Current arm objective matches one future state and merged MinSnap recomputes interior derivatives; full arm maneuver retention unproven",
+    "Required native fallback retains existing input/phase handling; strict frozen seed identity applies to pure optional attempts",
+    "Numerical DH/sphere simulation, no hardware or mesh dynamics certification"
+  ],
+  "build_manifest": "experiments/online_remani_validation/builds/arm_box_refresh_20261115_01/build_manifest.json",
+  "analysis_sha256": "5f828d6eade5f98fe6b6bd08150d774b08f2d289e56510d119b44ad1c95f4933"
+}

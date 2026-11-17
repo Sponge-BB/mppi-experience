@@ -1,0 +1,58 @@
+--- /home/l/remani_ws/experiments/online_remani_validation/builds/active_arm_20261104_01/source/remani_replan_fsm.cpp
++++ /home/l/remani_ws/experiments/online_remani_validation/builds/arm_box_fast_only_20261114_01/source/remani_replan_fsm.cpp
+@@ -17,6 +17,22 @@
+ 
+ namespace remani_planner
+ {
++// Experiment-only latch: never changes class layout or mapping callbacks.
++namespace arm_box_fast_only {
++inline bool& frozen(){static bool value=false;return value;}
++inline bool hold(bool local_owner,bool executing,int trajectory_id){
++  if(!local_owner)return false;
++  if(!frozen()&&executing&&trajectory_id>0){
++    frozen()=true;
++    ROS_WARN("[ArmBoxFastOnly] Initial native reference is frozen; subsequent slow planning is disabled. Map/ESDF and fast collision checks remain active.");
++    dual_probe::emit("arm_box_slow_layer_frozen",dual_probe::Fields()
++      .add("guide_id",trajectory_id).add("initial_reference_retained","true")
++      .add("mapping_callbacks_unchanged","true"));
++  }
++  return frozen();
++}
++} // namespace arm_box_fast_only
++
+ // Cooperative base-only SIL mode: execution safety is owned by the fast
+ // validated local rollout. The native polynomial remains a replanning guide.
+ template<class Message> std::string executionHex(const Message&message){
+@@ -40,6 +56,8 @@
+ 
+ void REMANIReplanFSM::checkCooperativeExecution(){
+   const ros::Time now=ros::Time::now();publishExecutionState();
++  if(arm_box_fast_only::hold(local_execution_owner_,exec_state_==EXEC_TRAJ,
++      planner_manager_->traj_container_.singul_traj_data.traj_id))return;
+   // Missing/expired local leases never authorize motion; the fast executor
+   // already brakes without waiting for this (potentially busy) ROS thread.
+   if(!have_target_||exec_state_!=EXEC_TRAJ)return;
+@@ -506,6 +524,12 @@
+   void REMANIReplanFSM::execFSMCallback(const ros::TimerEvent &e)
+   {
+     applyLatestOdom();
++    // Return before stopping the timer.  Keep the first latched task authority
++    // and reference alive even after their nominal polynomial time has ended.
++    if(arm_box_fast_only::hold(local_execution_owner_,exec_state_==EXEC_TRAJ,
++        planner_manager_->traj_container_.singul_traj_data.traj_id)){
++      publishExecutionState();return;
++    }
+     exec_timer_.stop(); // To avoid blockage
+ 
+     static int fsm_num = 0;
+@@ -1280,6 +1304,10 @@
+ 
+   void REMANIReplanFSM::checkCollisionCallback(const ros::TimerEvent &e){
+     applyLatestOdom();
++    if(arm_box_fast_only::hold(local_execution_owner_,exec_state_==EXEC_TRAJ,
++        planner_manager_->traj_container_.singul_traj_data.traj_id)){
++      publishExecutionState();return;
++    }
+     if(local_execution_owner_){checkCooperativeExecution();return;}
+     SingulTrajData *info = &planner_manager_->traj_container_.singul_traj_data;
+     auto map = planner_manager_->grid_map_;

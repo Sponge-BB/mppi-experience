@@ -1,0 +1,51 @@
+{
+  "kind": "read_only_binary_compatibility_audit",
+  "target_planner_sha256": "c56990a636a0bca353af1bbc54e8617b86b7fed8a5fc0121d9729500a414e9e6",
+  "target_plan_env_sha256": "70d8f68810af26124567357d9aaccfbf2cfe6fdab6a64fc2d1422882c835d5e9",
+  "historical_coexistence": {
+    "plan_env_installed": "2026-11-10T15:21:04.384383",
+    "planner_installed": "2026-11-10T17:16:30.393283",
+    "plan_env_next_replaced": "2026-11-10T19:38:22.616374+08:00"
+  },
+  "source_header_checks": {
+    "src/mm_remani_planner/plan_env/src/grid_map.cpp": {
+      "archive_sha256": "f005c7c8b9f7eae51e87f01722e0a04baaca50975c51b3c91f8aad0ccc2ffd3b",
+      "historical_sha256": "f005c7c8b9f7eae51e87f01722e0a04baaca50975c51b3c91f8aad0ccc2ffd3b",
+      "matches": true
+    },
+    "src/mm_remani_planner/plan_env/include/plan_env/esdf_worker.h": {
+      "archive_sha256": "e33ccd6cb929921f4dd73fbca9e12e8b55f27cdd0a9c88009b7a7408d4583fb4",
+      "historical_sha256": "e33ccd6cb929921f4dd73fbca9e12e8b55f27cdd0a9c88009b7a7408d4583fb4",
+      "matches": true
+    },
+    "src/mm_remani_planner/plan_env/include/plan_env/grid_map.h": {
+      "archive_sha256": "71c2361d540612fc0e82a35181a84fff96681c2a401e62273bcf85fc806aad6e",
+      "historical_sha256": "71c2361d540612fc0e82a35181a84fff96681c2a401e62273bcf85fc806aad6e",
+      "matches": true
+    },
+    "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp": {
+      "archive_sha256": "227c6062168c3dd59d9549ca9162b7956af1d7cef1eb0dfe0937150a177531fa",
+      "historical_sha256": "227c6062168c3dd59d9549ca9162b7956af1d7cef1eb0dfe0937150a177531fa",
+      "matches": true
+    }
+  },
+  "dynamic_library_abi": {
+    "old_new_defined_symbols_each": 1793,
+    "added": [],
+    "removed": [],
+    "same_needed_and_soname": true
+  },
+  "deployment_overlay": "Restore all 204057 devel then replace only devel/lib/libplan_env.so from navigation_rear before archive; source must restore matching esdf_worker.cpp and other historical code overlays.",
+  "build_cache": {
+    "build_mib": 484,
+    "build_targets": "/home/l/remani_ws/src and /home/l/remani_ws/devel",
+    "build_ws630_mib": 793,
+    "build_ws630_targets": "/home/l/remani_ws_6_30/src and /home/l/remani_ws_6_30/devel",
+    "recommendation": "Isolate current build directory by rename; do not reuse objects/install, no rebuild necessary for archive restoration."
+  },
+  "limitations": [
+    "Compatibility is historical source/ELF evidence, no hardware execution performed.",
+    "Full 204057 archive is later than 0.2 change; historical overlays are reconstruction, not a claimed independent exact full pre-0.2 archive.",
+    "No OS, firmware, controller persistent parameters restored."
+  ]
+}

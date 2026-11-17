@@ -1,0 +1,35 @@
+2026-11-09 原生起臂与 MPPI 接管修复（离线完成）
+
+问题与修复
+之前把起臂放进 MPPI 预检，启动需要地图和完整碰撞验收；使能后又受 0.3 秒外部指令期限约束，可能尚未正常展开就锁停。
+现在在原工程中恢复原待机目标和原驱动起臂方式：读取 /remani_planner_node/fsm/init_state 的六关节目标，以速度参数 15、5 Hz 持续发送。起臂不等待地图或 MPPI 求解。
+真实六关节反馈到位且稳定 0.3 秒后，驱动允许 MPPI 交接。首条 MPPI 指令仍须经过正常地图、碰撞及制动验收；驱动实际发送成功后返回 command_active 确认，此时才开始执行 0.3 秒外部指令期限。交接确认前底盘保持零速。
+使能等待上限 10 秒、待机到位上限 60 秒；保留关节、状态和电机反馈有效性检查，失败锁停，不自动复位或回退起臂。
+继续使用 can1。use_mppi:=false 保留原控制桥和原启动行为。未增加控制节点，未删除碰撞检测，也未添加肩腕碰撞忽略规则。
+
+修改文件
+src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py
+src/piper_ros/src/piper/launch/start_single_piper.launch
+src/piper_msgs/msg/PiperExecutionState.msg
+src/mm_remani/scripts/whole_body_mppi.py
+src/mm_remani/launch/exp0_real.launch
+src/mm_remani/test/test_piper_feedback_command.py
+src/mm_remani/test/test_mppi_startup.py
+src/mm_remani/test/test_mppi_execution_gate.py
+
+离线验证
+test_mppi_startup.py：28 项通过。
+test_mppi_execution_gate.py：10 项通过。
+test_piper_feedback_command.py：32 组通过（模拟 SDK，未导入或操作真实 CAN）。
+两种 use_mppi 配置完整 XML 展开通过，核对了 CAN、起臂参数及唯一指令源；未连接 ROS master 或启动节点。
+PiperExecutionState 消息绑定已单线程生成；源码 MD5 与生成绑定一致，序列化往返验证通过。
+构建目标仅 piper_msgs_generate_messages，耗时约 3.1 秒、峰值子进程 RSS 31456 KiB。测试峰值子进程 RSS 60980 KiB。没有执行全工程编译。
+日志：test_*.log、test_results.json、launch_and_message_check.json、message_build.log、message_build_resources.json。
+修改前备份：before_sources.tar.gz（driver、driver launch、MPPI node、real launch 及原两份测试）。
+
+实车边界与下一步
+这次未启动程序、未发送使能或运动命令；实际展开及 MPPI 接管仍需下一次实车启动验证。
+旧进程必须退出后重新启动，才能加载新驱动、控制端及消息接口。
+若之前的硬件快停仍留在机械臂中，驱动会明确记录 arm_status=1 等等待原因，且不会自行复位；需按设备原有流程解除快停后再测。
+到位后的预期日志：Piper native standby reached；成功接管后的预期日志：startup_ready: original standby reached; Piper confirmed MPPI takeover.
+若地图未就绪或 MPPI 验收失败，起臂完成后保持原待机目标、底盘保持静止，不能据此宣称动态避障已通过实测。

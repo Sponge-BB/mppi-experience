@@ -1,0 +1,79 @@
+--- before/src/mm_remani/test/test_mppi_shoulder_support.py
++++ src/mm_remani/test/test_mppi_shoulder_support.py
+@@ -21,9 +21,12 @@
+ PRIOR_SEPARATED_Q = np.array([-.10108947027551157, -.03330088212805181,
+                             .010088003076527225, .0976337183565628,
+                             .48288024414927117, -.11770500475449759])
++# Actual disabled feedback from the 2026-11-08 hardware startup recording.
++# Original triangle surfaces are separate; the whole-link convex hulls overlap.
++FOLDED_Q = np.deg2rad([-2.447, -1.909, .943, 5.992, 26.168, -5.879])
+ 
+ 
+-def original_vertex_support(proxy, q, axis):
++def original_vertex_support(proxy, q, axis, wrist_vertices=None, direction_frame='link5'):
+     """Independent scalar world-vertex projection, not the batched runtime path."""
+     transform = np.eye(4)
+     frames = {'arm_base': transform.copy()}
+@@ -33,9 +36,11 @@
+         turn[:2, :2] = [[c, -s], [s, c]]
+         transform = transform @ origin @ turn
+         frames['link'+str(i+1)] = transform.copy()
+-    direction = frames['link5'][:3, :3] @ axis
++    direction = frames[direction_frame][:3, :3] @ axis
+     vertices = {}
+     for name, points in proxy.vertices.items():
++        if name == 'link5' and wrist_vertices is not None:
++            points = wrist_vertices
+         frame = frames[name]
+         vertices[name] = points @ frame[:3, :3].T + frame[:3, 3]
+     shoulder = np.concatenate([vertices['arm_base'], vertices['link1']]) @ direction
+@@ -58,6 +63,7 @@
+         cls.original = copy.copy(cls.model)
+         cls.original.shoulder_wrist_proxy = copy.copy(cls.model.shoulder_wrist_proxy)
+         cls.original.shoulder_wrist_proxy.shoulder_axes = ()
++        cls.original.shoulder_wrist_proxy.wrist_parts = ()
+ 
+     def test_recorded_pose_has_complete_hull_positive_certificate(self):
+         old = self.original.check(RECORDED_Q)
+@@ -91,8 +97,9 @@
+ 
+     def test_every_released_pose_has_independent_whole_hull_separation(self):
+         rng = np.random.default_rng(23)
+-        q = np.vstack([RECORDED_Q, PRIOR_SEPARATED_Q,
+-                       RECORDED_Q+rng.uniform(-.04, .04, (32, 6))])
++        q = np.vstack([RECORDED_Q, PRIOR_SEPARATED_Q, FOLDED_Q,
++                       RECORDED_Q+rng.uniform(-.04, .04, (32, 6)),
++                       FOLDED_Q+rng.uniform(-.005, .005, (32, 6))])
+         proxy = self.model.shoulder_wrist_proxy
+         old = self.original.shoulder_wrist_proxy.pair_gaps(q)[:, 0]
+         new = proxy.pair_gaps(q)[:, 0]
+@@ -101,6 +108,9 @@
+         for row in released:
+             independent = [original_vertex_support(proxy, q[row], axis)
+                            for axis, _ in proxy.shoulder_axes]
++            independent.append(min(original_vertex_support(proxy, q[row], axis,
++                wrist_vertices=vertices, direction_frame='link'+str(frame))
++                for vertices, axis, frame in proxy.wrist_parts))
+             self.assertGreater(max(independent), 0.)
+             self.assertTrue(any(abs(gap-new[row]) < 1e-12 for gap in independent))
+ 
+@@ -112,6 +122,19 @@
+         q = np.asarray(case['q_radians'])
+         self.assertLess(self.model.shoulder_wrist_proxy.gaps(q[None])[0], 0.)
+         self.assertIn('arm_self_collision', self.model.check(q)['violations'])
++
++    def test_folded_feedback_and_standby_path_pass_without_moving_spheres(self):
++        legacy = copy.copy(self.model)
++        legacy.shoulder_wrist_proxy = copy.copy(self.model.shoulder_wrist_proxy)
++        legacy.shoulder_wrist_proxy.wrist_parts = ()
++        self.assertFalse(legacy.check(FOLDED_Q)['valid'])
++        self.assertEqual(legacy.check(FOLDED_Q)['self_pair'], [0, 18])
++        self.assertTrue(self.model.check(FOLDED_Q)['valid'])
++        count = int(np.ceil(np.max(np.abs(self.model.q_nominal-FOLDED_Q))/.02))+1
++        path = np.linspace(FOLDED_Q, self.model.q_nominal, count)
++        self.assertTrue(np.all(self.model.configuration_gaps_batch(path) > 0.))
++        np.testing.assert_array_equal(self.model.arm_spheres(path), legacy.arm_spheres(path))
++        np.testing.assert_array_equal(self.model.fixed_spheres, legacy.fixed_spheres)
+ 
+     def test_mask_scalar_batch_and_exact_q_deduplication(self):
+         proxy = self.model.shoulder_wrist_proxy

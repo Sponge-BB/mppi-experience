@@ -1,0 +1,32 @@
+2026-11-12 仿真与当前实车控制链对比
+
+结论
+仿真与实车复用了部分 REMANI、MPPI 和碰撞检查代码，但执行方式、反馈来源和计算负载并不等价。以前的成功实验只能证明对应数值场景可运行，不能证明当前实车整条链已经通过。本文只核对已有源码和保存数据，没有启动程序或发送运动命令。
+
+一、机械臂究竟执行速度还是位置
+早期11月4日主动机械臂实验，由 /sim/whole_body_command 一次下发底盘线角速度及六关节速度。数值 plant 直接执行这八维速度，并调用与预测器相同的 WholeBodyMPPI.advance；它没有经过 Piper 驱动或实际控制器。
+证据：experiments/online_remani_validation/active_arm_simulator.py 的 WholeBodyPlant.step、ActiveArmSimulator.integrate；run_active_arm.py 中 actuator 明确写为 atomic base and six joint velocity command。
+
+后期11月6日至7日主工程仿真改为接收 /sim/joint_ctrl_single 关节位置目标，但采用人为设定的 position_servo 数值执行模型：位置误差除以0.12秒生成期望速度，再按速度和加速度上限积分。保存的 simulation_overrides.json 明确启用 arm_position_servo=true。
+当前实车仍由 whole_body_mppi.py 将优化的关节速度意图转换为一个短步位置目标，经 /joint_ctrl_single 交给原 Piper 驱动，再由 MotionCtrl_2 和 JointCtrl 发送 MOVEJ 位置命令，fixed_vel 默认15。它不是直接让六个真实关节严格执行优化速度。实车模式禁止启用 nominal position_servo；当前采用 velocity_legacy 预测并另查位置包络，尚未证明真实 MOVEJ 响应等同该模型。
+证据：src/mm_remani/scripts/whole_body_mppi.py 中 checked_first_step 和 arm_position_servo 检查；src/mm_remani/scripts/standby_simulator.py 中 Plant.step；src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py 中 _joint_command。
+
+二、反馈和延迟条件不同
+后期仿真每5毫秒积分，固定20毫秒测量延迟，直接发布数值状态中的关节速度，没有 CAN 位置量化和分组反馈差分噪声。实车驱动则用两次带源时间戳的关节位置之差除以时间间隔估计速度；间隔很短时，小角度变化可能被放大成速度尖峰。
+本次真实记录已经查到尖峰进入慢层轨迹起始导数，并在邻近反馈重放中造成预测关节越界、所有候选失败。数值仿真的干净速度反馈没有覆盖这个输入条件。
+证据：src/mm_remani/scripts/standby_simulator.py 的 MEASUREMENT_DELAY、publish_state；Piper 驱动的 PublishArmJointAndGripper；results/collision_capture_20261112-093943/首段走停与重规划完整分析.txt。
+
+三、地图、速度和预算不同
+11月7日保存的主工程仿真配置为4×4×2.5米地图，规则静态墙面及合成圆柱，底盘速度上限0.05米/秒。ideal 输出完整采样表面；MID360 模型仅增加几何视场与圆柱遮挡，没有真实扫描纹理、反射率、噪声或机器人自遮挡，也不运行真实 FAST-LIO、CAN 和底盘串口链。
+本次实车采集实际为15×10×3米地图、5厘米体素、0.20米/秒快层上限、95毫秒控制交付预算。早期主动臂实验的交付预算则为200毫秒，不能直接当作相同实时条件下的成功对照。
+实车首次轨迹8.58秒内83个周期中25次拒绝交付，出现19段零速，累计约2.88秒；主要与地图源年龄超过350毫秒有关。成功周期中位约55毫秒，因此不能简单说成 MPPI 每轮都算不完。当前地图生成节拍与端到端时效配合尚不稳定。
+证据：results/hardware_core_followup_20261107/empty_mid360_s11/simulation_overrides.json；results/collision_capture_20261112-093943/runtime_parameters.json、freshness_stops_audit.json；早期 run_active_arm.py 的 deadline_s。
+本节实车数值指本次保存数据，不代表本文所属后续调速版本的参数。
+
+四、以前并非所有仿真都通过
+11月7日报告中空场导航能够到达，但动态 ideal、MID360 工况仍出现碰撞；后续核心修复记录也明确写明整机动态避障验收尚未通过。因此不能用空场到达、少量指定收臂演示或某个成功 GIF，概括为当前实车动态避障已经验证。
+证据：results/hardware_core_followup_20261107/report/实验报告.txt；results/core_repair_20261107/修复过程与验收.txt；完整路径均在 experiments/online_remani_validation/ 下。
+
+对应的改进方向
+当前应统一快慢层运动能力，处理真实反馈速度估计及轨迹边界，降低真实地图链延迟，并用相同输入和相同控制模式核验。增加 MPPI 速度上限只能修正其中一项，不能消除反馈尖峰或过期零速。
+点云可以适度减少，但地图体素计算量不与原始点数成正比。既往仿真已有80个原始可见动态点经降采样、聚类后不足持续输出的失败证据；不能把所有输入分支一起粗化。应保留动态跟踪和近障碍可见性，单独量化规划地图支路稀疏化的收益与占据变化。

@@ -1,0 +1,503 @@
+{
+  "scope": "actual stationary shadow only; no actuator nodes or commands",
+  "reason": "memory_threshold_reached",
+  "duration_s": 17.97734667399891,
+  "counts": {
+    "raw": 180,
+    "joints": 3118,
+    "odom": 147,
+    "status": 119,
+    "unhealthy": 16,
+    "filtered": 112,
+    "background": 1,
+    "healthy": 25
+  },
+  "status_counts": {
+    "waiting_stationary_anchor": 5,
+    "filtered_not_received": 2,
+    "static_not_received": 69,
+    "state_time_misalignment": 27,
+    "dynamic_not_received": 12,
+    "shadow_candidate_only_not_validated_for_execution": 2,
+    "waiting_valid_cloud_inputs": 1,
+    "shadow_inputs_stale_after_solve": 1
+  },
+  "last_status": {
+    "ros_stamp": 1793939089.6328158,
+    "planning_snapshot_stamp": 1793939089.5669827,
+    "monotonic_elapsed": 11.857994514999518,
+    "mode": "integration_recording",
+    "status": "shadow_candidate_only_not_validated_for_execution",
+    "ready_for_actuation": false,
+    "hardware_execution_eligible": false,
+    "commands_executed": false,
+    "original_filter_shadow_only": true,
+    "collision_query_sources": [
+      "filtered_cloud",
+      "static_cloud",
+      "dynamic_cloud"
+    ],
+    "raw_cloud_role": "required_fresh_input_and_coverage_diagnostic_only",
+    "namespace": "/standby_trial_20261106_stationary_07",
+    "sources": {
+      "odom": "/standby_trial_20261105_feedback_02/sensors/odom",
+      "joints": "/standby_trial_20261105_feedback_02/sensors/joint_states",
+      "raw_cloud": "/standby_trial_20261105_feedback_02/sensors/lidar_pcl2",
+      "filtered_cloud": "/standby_trial_20261106_stationary_07/perception/filtered_points",
+      "dynamic_cloud": "/standby_trial_20261106_stationary_07/perception/dynamic_points",
+      "static_cloud": "/standby_trial_20261106_stationary_07/perception/background",
+      "perception_health": "/standby_trial_20261106_stationary_07/perception/dynamic_obstacle_tracker/perception_healthy"
+    },
+    "errors": {},
+    "input_transport_latency_s": {
+      "odom": 0.019442081451416016,
+      "joints": 0.001531839370727539,
+      "raw_cloud": 0.11712908744812012,
+      "perception_health": 4.0531158447265625e-05,
+      "filtered_cloud": 0.11799335479736328,
+      "static_cloud": 0.2129225730895996,
+      "dynamic_cloud": 0.12229418754577637
+    },
+    "clouds": {
+      "raw_cloud": {
+        "stamp": 1793939089.4444926,
+        "frame": "standby_feedback_02_odom",
+        "points": 4000
+      },
+      "filtered_cloud": {
+        "stamp": 1793939089.4444926,
+        "frame": "standby_feedback_02_odom",
+        "points": 4000
+      },
+      "static_cloud": {
+        "stamp": 1793939085.6445622,
+        "frame": "standby_feedback_02_odom",
+        "points": 15000
+      },
+      "dynamic_cloud": {
+        "stamp": 1793939089.4444926,
+        "frame": "standby_feedback_02_odom",
+        "points": 0
+      }
+    },
+    "near_arm_raw_diagnostic": {
+      "raw_nearest_arm_surface_gap_m": 0.36066696400443654,
+      "meaning": "unfiltered_raw_may_include_arm_self_returns_not_clearance_certificate"
+    },
+    "cloud_callback_profiles": {
+      "raw_cloud": {
+        "callback_ros_stamp": 1793939089.5494058,
+        "source": "raw_cloud",
+        "width": 19443,
+        "height": 1,
+        "wire_bytes": 311088,
+        "decode_ms": 2.3306769999180688,
+        "tf_lookup_ms": 0.24954500077001285,
+        "transform_ms": 0.7755810001981445,
+        "surface_ms": 8.63372099956905,
+        "lock_wait_ms": 0.0037449990486493334,
+        "message_stamp": 1793939089.4444926,
+        "age_at_callback_entry_s": 0.10491323471069336,
+        "invalid_zero_returns_removed": 3553,
+        "accepted": true,
+        "callback_total_ms": 12.256828998943092,
+        "age_at_callback_exit_s": 0.1171579360961914
+      },
+      "filtered_cloud": {
+        "callback_ros_stamp": 1793939089.5538955,
+        "source": "filtered_cloud",
+        "width": 5951,
+        "height": 1,
+        "wire_bytes": 95216,
+        "decode_ms": 4.568422000374994,
+        "tf_lookup_ms": 0.2800740003294777,
+        "transform_ms": 1.1210969987587305,
+        "surface_ms": 2.4040549997152993,
+        "lock_wait_ms": 0.002815999323502183,
+        "message_stamp": 1793939089.4444926,
+        "age_at_callback_entry_s": 0.10940289497375488,
+        "accepted": true,
+        "callback_total_ms": 8.632121998743969,
+        "age_at_callback_exit_s": 0.11802315711975098
+      },
+      "static_cloud": {
+        "callback_ros_stamp": 1793939085.8308125,
+        "source": "static_cloud",
+        "width": 15000,
+        "height": 1,
+        "wire_bytes": 180000,
+        "decode_ms": 0.3909580009349156,
+        "tf_lookup_ms": 0.0,
+        "transform_ms": 0.0,
+        "surface_ms": 26.216057000056026,
+        "lock_wait_ms": 0.002623999534989707,
+        "message_stamp": 1793939085.6445622,
+        "age_at_callback_entry_s": 0.1862502098083496,
+        "accepted": true,
+        "callback_total_ms": 26.70269800000824,
+        "age_at_callback_exit_s": 0.21294522285461426
+      },
+      "dynamic_cloud": {
+        "callback_ros_stamp": 1793939089.5663857,
+        "source": "dynamic_cloud",
+        "width": 0,
+        "height": 1,
+        "wire_bytes": 0,
+        "decode_ms": 0.19808700017165393,
+        "tf_lookup_ms": 0.0,
+        "transform_ms": 0.0,
+        "surface_ms": 0.02787300036288798,
+        "lock_wait_ms": 0.0027529986255103722,
+        "message_stamp": 1793939089.4444926,
+        "age_at_callback_entry_s": 0.12189316749572754,
+        "accepted": true,
+        "callback_total_ms": 0.4770089999510674,
+        "age_at_callback_exit_s": 0.12236666679382324
+      }
+    },
+    "input_age_s": {
+      "raw_cloud": 0.1883232593536377,
+      "filtered_cloud": 0.1883232593536377,
+      "static_cloud": 3.988253593444824,
+      "dynamic_cloud": 0.1883232593536377
+    },
+    "odom_stamp": 1793939089.5447748,
+    "joint_stamp": 1793939089.5633233,
+    "joint_velocity_source": "bounded_named_position_difference_rad_per_s",
+    "odometry_validation": {
+      "accepted_samples": 119,
+      "requires_restart": false,
+      "fault": null,
+      "validation": "direct_pose_and_measurement_receipt_continuity"
+    },
+    "base_height_convention": "ground_z_zero_odom_z_not_added",
+    "odom_z_ignored": 0.115,
+    "state": [
+      -0.26228350501749204,
+      -0.020644574043982976,
+      0.00509639730531549,
+      0.01157401212942711,
+      0.002869313050566839,
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "anchor": [
+      -0.2763302193603589,
+      -0.018616650816141368,
+      0.0033223143636782956
+    ],
+    "arm_reference": [
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977
+    ],
+    "proposed_controls": [
+      -0.020970896809751415,
+      -0.022922509590633494,
+      -0.032489108558878724,
+      0.0369336480090786,
+      -0.009480590604387745,
+      0.03669197982582512,
+      0.009759112058949788,
+      -0.037566636311076936
+    ],
+    "decision_ms": 65.95449199994619,
+    "solve_ms": 67.4394100005884,
+    "kernel_diagnostics": {
+      "mode": "standby_extension",
+      "intervention": false,
+      "nominal_external_min_gap": 0.13,
+      "structured_candidates": 15,
+      "structured_labels": [
+        [
+          "reference",
+          "hold"
+        ],
+        [
+          "reference",
+          "forward"
+        ],
+        [
+          "reference",
+          "reverse"
+        ],
+        [
+          "reference",
+          "turn_left"
+        ],
+        [
+          "reference",
+          "turn_right"
+        ],
+        [
+          "reference",
+          "curve_left"
+        ],
+        [
+          "reference",
+          "curve_right"
+        ],
+        [
+          "posture_0",
+          "hold"
+        ],
+        [
+          "posture_0",
+          "forward"
+        ],
+        [
+          "posture_0",
+          "reverse"
+        ],
+        [
+          "posture_0",
+          "turn_left"
+        ],
+        [
+          "posture_0",
+          "turn_right"
+        ],
+        [
+          "posture_0",
+          "curve_left"
+        ],
+        [
+          "posture_0",
+          "curve_right"
+        ],
+        [
+          "previous",
+          "previous"
+        ]
+      ],
+      "structured_valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "structured_costs": [
+        0.00635874876254497,
+        0.055583875633511026,
+        0.010980387308231053,
+        0.0324394495219844,
+        0.029145536742698715,
+        0.06775933901910351,
+        0.06356859819306376,
+        0.008060233943795927,
+        0.05728536081476198,
+        0.01268187248948201,
+        0.03414093470323536,
+        0.030847021923949672,
+        0.06946082420035447,
+        0.06527008337431472,
+        0.004095801692707314
+      ],
+      "structured_first_base_commands": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.08,
+          0.0
+        ],
+        [
+          -0.08,
+          0.0
+        ],
+        [
+          0.0,
+          0.24
+        ],
+        [
+          0.0,
+          -0.24
+        ],
+        [
+          0.06,
+          0.18
+        ],
+        [
+          0.06,
+          -0.18
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.08,
+          0.0
+        ],
+        [
+          -0.08,
+          0.0
+        ],
+        [
+          0.0,
+          0.24
+        ],
+        [
+          0.0,
+          -0.24
+        ],
+        [
+          0.06,
+          0.18
+        ],
+        [
+          0.06,
+          -0.18
+        ],
+        [
+          -0.012464373015811119,
+          -0.0118639925571243
+        ]
+      ],
+      "random_samples": 4,
+      "sample_dimensions": 8,
+      "noise_sigma": [
+        0.012,
+        0.08,
+        0.035,
+        0.035,
+        0.035,
+        0.035,
+        0.035,
+        0.035
+      ],
+      "noise_rho": 0.75,
+      "lambda_temperature": 0.15,
+      "noise_rms_per_coordinate": [
+        0.017397961492942676,
+        0.11509435104962006,
+        0.053703313414683936,
+        0.04098671972412797,
+        0.061951561573483305,
+        0.04345498247758178,
+        0.046539674366742445,
+        0.05193433688550968
+      ],
+      "base_noise_rms": [
+        0.017397961492942676,
+        0.11509435104962006
+      ],
+      "random_valid": [
+        true,
+        false,
+        false,
+        true
+      ],
+      "feasible": 17,
+      "candidates": 20,
+      "standby_anchor": [
+        -0.2763302193603589,
+        -0.018616650816141368,
+        0.0033223143636782956
+      ],
+      "selection": "exponential_mean",
+      "selected_family": [
+        "previous",
+        "previous"
+      ],
+      "weights": [
+        0.33981746548537295,
+        0.3336372281649126,
+        0.32654530634971446
+      ],
+      "weighted_pool_costs": [
+        0.004095801692707314,
+        0.0068489538551436005,
+        0.010071787357455607
+      ],
+      "weighted_mean_valid": true,
+      "cost": 0.00400208383250579,
+      "min_gap": 0.000138365086213732,
+      "external_min_gap": 0.13,
+      "arm_motion": 0.048243819245628934,
+      "selected_first_base_command": [
+        -0.020970896809751415,
+        -0.022922509590633494
+      ],
+      "selected_base_displacement_m": 0.010742631280922574,
+      "selected_base_yaw_change_rad": 0.0059599339184943645
+    },
+    "limitations": [
+      "model_geometry_not_hardware_validated",
+      "surface_cloud_not_known_free_space",
+      "original_passthrough_cropbox_not_motion_certified",
+      "cloud_downsampling_not_collision_certificate",
+      "hardware_commissioning_separate_from_offline_validation"
+    ],
+    "command_gateway": {
+      "enabled": false,
+      "reason": "disabled_at_startup",
+      "sent": 0,
+      "last_sequence": -1,
+      "hardware_motion_validated": false
+    }
+  },
+  "clouds": {
+    "raw": {
+      "count": 19376,
+      "stamp": 1793939091.1444707,
+      "frame": "standby_feedback_02_livox_frame"
+    },
+    "filtered": {
+      "count": 5982,
+      "stamp": 1793939089.5445075,
+      "frame": "standby_feedback_02_livox_frame"
+    },
+    "background": {
+      "count": 15000,
+      "stamp": 1793939085.6445622,
+      "frame": "standby_feedback_02_odom"
+    }
+  },
+  "joints": {
+    "stamp": 1793939089.6382568,
+    "q": [
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977
+    ]
+  },
+  "maximum_tree_rss_mib": 585.6875,
+  "minimum_available_mib": 3071.8125,
+  "per_process_address_space_limit_mib": 768,
+  "memory_floor_mib": 3072,
+  "can_tx_before": 0,
+  "can_tx_after": 0,
+  "actuator_publishers": [],
+  "owned_processes_remaining": [],
+  "hardware_commands_sent": false,
+  "recording_only": true
+}

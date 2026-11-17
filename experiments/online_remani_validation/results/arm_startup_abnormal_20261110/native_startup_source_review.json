@@ -1,0 +1,85 @@
+{
+  "scope": "Read-only local source/log review. No ROS, SDK instance, CAN, controller or parameter operations.",
+  "confirmed": [
+    {
+      "fact": "Current driver native-startup methods are AST-identical to the before-lease artifact; source file mtime is before the normal 19:20 run. The later speed/MOVEJ/diagnostic changes affect MPPI after handoff.",
+      "native_methods_unchanged": {
+        "_configure_native_startup": true,
+        "_native_pending": true,
+        "_refresh_native_ready": true,
+        "_native_startup_tick": true
+      }
+    },
+    {
+      "fact": "19:20:50.951 enable, 19:20:53.879 standby reached, 19:20:54.242 MPPI handoff.",
+      "enable_to_ready_s": 2.928,
+      "enable_to_handoff_s": 3.291
+    },
+    {
+      "fact": "19:51:30.472 enable then user signal-2 at19:51:37.327, shutdown stop at19:51:37.329; no ready/handoff or earlier driver fault recorded.",
+      "enable_to_ctrl_c_s": 6.855
+    },
+    {
+      "fact": "19:52:11.921 enable then user signal-2 at19:52:14.477, shutdown stop at19:52:14.478; no ready/handoff or earlier driver fault recorded.",
+      "enable_to_ctrl_c_s": 2.556
+    },
+    {
+      "fact": "All three runs log fixed_vel=1; native startup intentionally sends MOVEJ speed percentage15 until MPPI handoff (independent of fixed_vel=1 for later MPPI).",
+      "source": "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py:342"
+    },
+    {
+      "fact": "Startup target degrees convert to radians once, then to0.001-degree JointCtrl units. The recorded original init_state is consistent with the original controller conversion.",
+      "q_degrees": [
+        0.0,
+        29.85,
+        -60.098,
+        -0.002,
+        54.276,
+        0.003
+      ],
+      "target_counts": [
+        0,
+        29850,
+        -60098,
+        -2,
+        54276,
+        3
+      ],
+      "sources": [
+        "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py:222",
+        "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py:241",
+        "src/mm_controller/src/mm_controller_fsm.cpp:76"
+      ]
+    }
+  ],
+  "startup_order": [
+    "Sample six motor bits/source freshness, real joint feedback and normal arm status under the existing command lock.",
+    "Send EnableArm(7). If the pre-enable sample was not already all-enabled, return and wait for later fresh motor confirmation.",
+    "After all-enabled confirmation, send MotionCtrl_2(CAN,MOVEJ,15,0) and the fixed init target every .20s.",
+    "Require position error<.015rad and speed<.02rad/s continuously .30s; only then accept the first fully checked MPPI command."
+  ],
+  "old_startup_comparison": {
+    "reference_snapshot": "experiments/hardware_standby_mppi/releases/standby_20261106_stationary_07/driver_reference/piper_ctrl_single_node.py",
+    "old_order": "ConnectPort(default PiperInit queries) -> MotionCtrl_2(CAN,MOVEJ,30,0) -> auto-enable loop -> external original bridge target at5Hz, whose driver callback uses configured fixed_vel15.",
+    "current_difference": "New bounded native sender owns the fixed target; current startup does not set mode or write a fresh position before enabling.",
+    "sdk_piper_init": "Installed SDK PiperInit only queries motor angle/speed/acceleration limits and firmware (lines720-728); it does not clear motion targets."
+  },
+  "possible_not_proven": [
+    "There is an enable-before-new-target window. A retained firmware MOVEJ target/mode could matter if firmware resumes it on enable; current logs do not record outgoing first target or firmware target state, so this is not a proven cause.",
+    "No evidence currently establishes a changed startup target, bad radian/degree conversion, MPPI-issued startup motion, or a firmware-reused target. The observed abnormal motion itself needs operator description or existing state records."
+  ],
+  "minimum_next_diagnostic_if_authorized": "Log the same pre-enable feedback q/source age, six motor bits and arm mode together with intended target counts; log once when the first MotionCtrl2/JointCtrl is actually sent. Do not reset firmware, replay an old target, or change enable ordering without review.",
+  "sources": {
+    "driver_sha256": "8c11814f639a78543fa0e6e33c37c5d1922bf431452d96c35be57fb894a02fc5",
+    "driver_mtime": "2026-11-10T17:09:06.318558+08:00",
+    "driver_log": "/home/l/.ros/log/latest/piper_ctrl_single_node-20.log",
+    "source_line_ranges": {
+      "native_sender": "270-344",
+      "native_ready": "246-268",
+      "external_handoff_gate": "850-907",
+      "sdk_connect_port": "587-684",
+      "sdk_piper_init": "720-728",
+      "sdk_jointctrl_units": "2716-2744"
+    }
+  }
+}

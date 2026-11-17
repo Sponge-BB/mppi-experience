@@ -1,0 +1,27 @@
+{
+  "confirmed_direct_cause": "Live planning LiDAR input timeout triggers native FSM Depth Lost emergency stop and ABORT.",
+  "goal_receive_ros": 1794465017.3046353,
+  "trajectory_add_receive_ros": 1794465017.957386,
+  "stop_source_ros": 1794465019.5239248,
+  "lidar_timeout_source_ros": 1794465019.5267246,
+  "lidar_age_s": 0.761,
+  "lidar_deadline_s": 0.75,
+  "input_recovered_source_ros": 1794465019.576721,
+  "recovery_after_stop_ms": 52.796,
+  "abort_receive_ros": 1794465019.529803,
+  "recorded_tracking_fault_true": 0,
+  "recorded_nonzero_commands_after_goal": 3,
+  "planner_state_explanation": "DepthLost sets enable_fail_safe_=false. EMERGENCY_STOP recovery requires enable_fail_safe_; no restore assignment exists. Target stays retained but old reference is aborted, so MPPI stays native_reference_cancelled.",
+  "upstream_boundary": "Concurrent stale execution/joint feedback and self-filter suppression observed. Exact origin of the source/transport/scheduling delay remains unresolved; this does not establish raw LiDAR driver failure.",
+  "runtime_code_modified": false,
+  "recorder_closed_normally": true,
+  "source_evidence": [
+    "1794465017.379584550 WARN /robot_self_filter [velodyne_transformer.py:336(CloudTransformer.filter_self_cloud)] Robot self-filter suppressed cloud: self-filter joint feedback unavailable or stale",
+    "1794465019.534811259 WARN /mm_controller_node [/home/l/remani_ws/src/mm_controller/src/controller_utils.cpp:33(Trajectory_Data_t::feed)] [MMCtrl] Aborting the trajectory.",
+    "1794465019.523924904 ERROR /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1139(REMANIReplanFSM::checkCollisionCallback)] Depth Lost! EMERGENCY_STOP",
+    "1794465019.526724462 ERROR /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp:1075(updateSensorTimeoutState)] [GridMap][LiDAR] Live input timed out: age 0.761s exceeds 0.750s (accepted/fused/pending=391/391/0). Static PCD availability does not mask this fault.",
+    "1794465019.540447235 WARN /robot_self_filter [velodyne_transformer.py:336(CloudTransformer.filter_self_cloud)] Robot self-filter suppressed cloud: self-filter joint feedback unavailable or stale",
+    "1794465019.534920958 INFO /mm_controller_node [/home/l/remani_ws/src/mm_controller/src/mm_controller_fsm.cpp:245(MMControllerFSM::CMD_CTRL_process)] [MMctrl] Stop execute the trajectory. POLY_TRAJ --> STAY",
+    "1794465019.576721026 INFO /remani_planner_node [/home/l/remani_ws/src/mm_remani_planner/plan_env/src/grid_map.cpp:1086(updateSensorTimeoutState)] [GridMap][LiDAR] Live input recovered (accepted/fused=393/391)."
+  ]
+}

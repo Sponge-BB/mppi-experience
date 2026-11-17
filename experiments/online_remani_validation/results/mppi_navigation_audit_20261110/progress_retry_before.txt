@@ -1,0 +1,121 @@
+test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) ... MPPI command rejected: planning_deadline_exceeded (cycle=0.58 ms; snapshot={})
+MPPI command rejected: delivery_deadline_exceeded (cycle=1.81 ms; snapshot={})
+MPPI command rejected: collision_snapshot_unavailable (cycle=2.14 ms; snapshot={})
+MPPI command rejected: collision_snapshot_expired_during_plan (cycle=2.41 ms; snapshot={})
+MPPI command rejected: state_feedback_stale (cycle=2.68 ms; snapshot={})
+MPPI command rejected: feedback_expired_during_plan (cycle=2.93 ms; snapshot={})
+MPPI command rejected: native_progress_stale (cycle=3.44 ms; snapshot={})
+MPPI command rejected: native_progress_stale_during_plan (cycle=3.87 ms; snapshot={})
+MPPI command rejected: native_progress_stale_before_delivery (cycle=4.22 ms; snapshot={})
+MPPI command rejected: inputs_expired_before_delivery (cycle=4.54 ms; snapshot={})
+MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=4.86 ms; snapshot={})
+MPPI command rejected: no_feasible_candidate (cycle=0.64 ms; snapshot={})
+MPPI command rejected: planning_deadline_exceeded (cycle=1.27 ms; snapshot={})
+MPPI command rejected: delivery_deadline_exceeded (cycle=1.75 ms; snapshot={})
+MPPI command rejected: collision_snapshot_unavailable (cycle=2.02 ms; snapshot={})
+MPPI command rejected: collision_snapshot_expired_during_plan (cycle=2.29 ms; snapshot={})
+MPPI command rejected: state_feedback_stale (cycle=2.54 ms; snapshot={})
+MPPI command rejected: feedback_expired_during_plan (cycle=2.80 ms; snapshot={})
+MPPI command rejected: native_progress_stale (cycle=3.25 ms; snapshot={})
+MPPI command rejected: native_progress_stale_during_plan (cycle=3.62 ms; snapshot={})
+MPPI command rejected: native_progress_stale_before_delivery (cycle=4.00 ms; snapshot={})
+MPPI command rejected: inputs_expired_before_delivery (cycle=4.51 ms; snapshot={})
+MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=4.86 ms; snapshot={})
+test_stale_progress_stops_then_fresh_progress_resumes_the_same_reference (test_mppi_collision.CollisionTests) ... MPPI command rejected: native_progress_stale (cycle=1.14 ms; snapshot={})
+FAIL
+
+======================================================================
+FAIL: test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) (existing_fault=False, reason='native_progress_stale')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 118, in test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault
+    self.assertEqual(node.fault_pub.publish.call_args_list, previous_calls)
+AssertionError: [call(data: True)] != []
+
+======================================================================
+FAIL: test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) (existing_fault=False, reason='native_progress_stale_during_plan')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 118, in test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault
+    self.assertEqual(node.fault_pub.publish.call_args_list, previous_calls)
+AssertionError: [call(data: True), call(data: True)] != []
+
+======================================================================
+FAIL: test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) (existing_fault=False, reason='native_progress_stale_before_delivery')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 118, in test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault
+    self.assertEqual(node.fault_pub.publish.call_args_list, previous_calls)
+AssertionError: [call(data: True), call(data: True), call(data: True)] != []
+
+======================================================================
+FAIL: test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) (existing_fault=False, reason='inputs_expired_before_delivery')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 118, in test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault
+    self.assertEqual(node.fault_pub.publish.call_args_list, previous_calls)
+AssertionError: [call(data: True), call(data: True), call(data: True)] != []
+
+======================================================================
+FAIL: test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) (existing_fault=False, reason='waiting_explicit_arm_enable_or_normal_status')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 118, in test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault
+    self.assertEqual(node.fault_pub.publish.call_args_list, previous_calls)
+AssertionError: [call(data: True), call(data: True), call(data: True)] != []
+
+======================================================================
+FAIL: test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) (existing_fault=True, reason='native_progress_stale')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 118, in test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault
+    self.assertEqual(node.fault_pub.publish.call_args_list, previous_calls)
+AssertionError: [call(data: True), call(data: True)] != [call(data: True)]
+
+======================================================================
+FAIL: test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) (existing_fault=True, reason='native_progress_stale_during_plan')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 118, in test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault
+    self.assertEqual(node.fault_pub.publish.call_args_list, previous_calls)
+AssertionError: [call(data: True), call(data: True), call(data: True)] != [call(data: True)]
+
+======================================================================
+FAIL: test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) (existing_fault=True, reason='native_progress_stale_before_delivery')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 118, in test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault
+    self.assertEqual(node.fault_pub.publish.call_args_list, previous_calls)
+AssertionError: [call(data: True), call(data: True), call(data: True), call(data: True)] != [call(data: True)]
+
+======================================================================
+FAIL: test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) (existing_fault=True, reason='inputs_expired_before_delivery')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 118, in test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault
+    self.assertEqual(node.fault_pub.publish.call_args_list, previous_calls)
+AssertionError: [call(data: True), call(data: True), call(data: True), call(data: True)] != [call(data: True)]
+
+======================================================================
+FAIL: test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault (test_mppi_collision.CollisionTests) (existing_fault=True, reason='waiting_explicit_arm_enable_or_normal_status')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 118, in test_transient_rejections_stop_without_setting_or_clearing_an_existing_fault
+    self.assertEqual(node.fault_pub.publish.call_args_list, previous_calls)
+AssertionError: [call(data: True), call(data: True), call(data: True), call(data: True)] != [call(data: True)]
+
+======================================================================
+FAIL: test_stale_progress_stops_then_fresh_progress_resumes_the_same_reference (test_mppi_collision.CollisionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/l/remani_ws/src/mm_remani/test/test_mppi_collision.py", line 142, in test_stale_progress_stops_then_fresh_progress_resumes_the_same_reference
+    node.fault_pub.publish.assert_not_called()
+  File "/usr/lib/python3.8/unittest/mock.py", line 874, in assert_not_called
+    raise AssertionError(msg)
+AssertionError: Expected 'publish' to not have been called. Called 1 times.
+Calls: [call(data: True)].
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.463s
+
+FAILED (failures=11)

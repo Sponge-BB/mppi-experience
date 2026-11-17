@@ -1,0 +1,127 @@
+{
+  "reviewed_at": "2026-11-14T19:54:45.271368",
+  "reviewer": "capacity_audit_and_review",
+  "baseline": "20261114-194013-before-live-witness",
+  "result": "PASS_SOURCE_SCOPE_AND_ABI_REVIEW",
+  "files": [
+    {
+      "path": "src/mm_remani_planner/plan_env/include/plan_env/grid_map.h",
+      "sha256": "565878f047d4eb8d75d9c8c03f1bcfe36f14e9901a73a349e805f14bff1f2e93",
+      "matches_candidate": true,
+      "baseline_matches_original": true,
+      "mode_unchanged": true
+    },
+    {
+      "path": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "sha256": "5ceaf8344977d205d47f0751d297bdf74a232b1095c430fb2020d2524e0ab51f",
+      "matches_candidate": true,
+      "baseline_matches_original": true,
+      "mode_unchanged": true
+    },
+    {
+      "path": "src/mm_remani_planner/mm_config/include/mm_config/mm_config.hpp",
+      "sha256": "efdde403247ed665602ee8c944a867f7bed9dadfd18f6e5b1705ca3c14e0ae9e",
+      "matches_candidate": true,
+      "baseline_matches_original": true,
+      "mode_unchanged": true
+    },
+    {
+      "path": "src/mm_remani_planner/mm_config/src/mm_config.cpp",
+      "sha256": "5b75ba509c90967e163858e8c6ed339778e8d17620b0eb1df5fdbf5e77a51a62",
+      "matches_candidate": true,
+      "baseline_matches_original": true,
+      "mode_unchanged": true
+    },
+    {
+      "path": "src/mm_remani_planner/traj_opt/include/optimizer/poly_traj_optimizer.hpp",
+      "sha256": "05aa49352b26ad991952568dd44dc4084d3b29006c9681c2cec61e7877123bfe",
+      "matches_candidate": true,
+      "baseline_matches_original": true,
+      "mode_unchanged": true
+    },
+    {
+      "path": "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp",
+      "sha256": "96ff28364f4f377d39295c772ee8723b1a975f7883c7135ad3fea6651d6258c0",
+      "matches_candidate": true,
+      "baseline_matches_original": true,
+      "mode_unchanged": true
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "sha256": "f3c1ab3fa35db990dc88c06dd13daa20d2f8188989108094261e4552ba3b3757",
+      "matches_candidate": true,
+      "baseline_matches_original": true,
+      "mode_unchanged": true
+    },
+    {
+      "path": "src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp",
+      "sha256": "495622d8430757abb22ba67d01dd726e114b4b20071fc57edf595ae5e1e8c423",
+      "matches_candidate": true,
+      "baseline_matches_original": true,
+      "mode_unchanged": true
+    }
+  ],
+  "build_input_count": 29,
+  "build_inputs_changed_since_captured": [],
+  "scope_boundary": "All 8 applied files match reviewed candidate bytes and baseline originals; all 29 recorded package build inputs remain unchanged. This is not a filesystem-wide concurrent-change audit.",
+  "api_symbols": {
+    "libplan_env.so": {
+      "old": [
+        "GridMap::getDynamicObstacleDistance(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, double)"
+      ],
+      "new": [
+        "GridMap::getDynamicObstacleDistance(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, double)",
+        "GridMap::getDynamicObstacleDistance(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, double, GridMap::DynamicObstacleHit*)"
+      ],
+      "all_old_retained": true
+    },
+    "libmm_config.so": {
+      "old": [
+        "remani_planner::MMConfig::checkCarDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, bool, double&)",
+        "remani_planner::MMConfig::checkManiDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, double&)",
+        "remani_planner::MMConfig::checkDynamicObstacleCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, int&)"
+      ],
+      "new": [
+        "remani_planner::MMConfig::checkCarDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, bool, double&)",
+        "remani_planner::MMConfig::checkCarDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, bool, double&, remani_planner::MMConfig::DynamicCollisionEvidence*)",
+        "remani_planner::MMConfig::checkManiDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, double&)",
+        "remani_planner::MMConfig::checkManiDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, double&, remani_planner::MMConfig::DynamicCollisionEvidence*)",
+        "remani_planner::MMConfig::checkDynamicObstacleCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, int&)",
+        "remani_planner::MMConfig::checkDynamicObstacleCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, int&, remani_planner::MMConfig::DynamicCollisionEvidence*)"
+      ],
+      "all_old_retained": true
+    },
+    "libtraj_opt.so": {
+      "old": [
+        "remani_planner::PolyTrajOptimizer::checkDynamicObstacleCollision(remani_planner::SingulTrajData const&, double, int&)"
+      ],
+      "new": [
+        "remani_planner::PolyTrajOptimizer::checkDynamicObstacleCollision(remani_planner::SingulTrajData const&, double, int&)",
+        "remani_planner::PolyTrajOptimizer::checkDynamicObstacleCollision(remani_planner::SingulTrajData const&, double, int&, remani_planner::MMConfig::DynamicCollisionEvidence*)"
+      ],
+      "all_old_retained": true
+    }
+  },
+  "class_layout_review": {
+    "GridMap": "Only a nested result type and nonvirtual method overload added; no base, virtual method or instance member added.",
+    "MMConfig": "Only a nested result type and three nonvirtual overloads added; no instance member added.",
+    "PolyTrajOptimizer": "Only one nonvirtual overload added; no instance member added.",
+    "REMANIReplanFSM": "Only callback-local evidence and logging; header and class layout untouched."
+  },
+  "logic_review": [
+    "Original five exported method signatures retained as out-of-line wrappers delegating to explicit optional-pointer overloads.",
+    "GridMap evidence uses existing accepted-neighbor loop and strict dist < min_dist update; static matching and occupancy threshold unchanged. No extra query or fallback.",
+    "MMConfig preserves base-first/arm-second and first-colliding-sphere order; evidence does not change booleans or collision thresholds.",
+    "One LiveCollisionStop line only in the existing selected raw collision emergency branch; candidate queries and static/point-flow-selected stops do not emit it.",
+    "Geometry and map metadata are read in the same Latest ReadScope; query_phase is selected raw trajectory time. Actual pose and source timestamps are recorded separately.",
+    "checked_at is callback-entry time, not LiDAR acquisition or query-completion time; fusion_stamp is map fusion time.",
+    "No runtime parameter, state machine, new member cache, motion command path, collision model or MPPI algorithm changed."
+  ],
+  "validation_boundary": {
+    "compiled_by_reviewer": false,
+    "tests_run_by_reviewer": false,
+    "hardware_verified": false,
+    "deployment_not_validated_in_this_review": true
+  },
+  "blocking_findings": []
+}

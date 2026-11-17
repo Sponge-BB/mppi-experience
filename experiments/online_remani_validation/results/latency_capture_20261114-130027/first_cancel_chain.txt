@@ -1,0 +1,24 @@
+两次轨迹取消触发链（2026-11-14；只读离线）
+
+用户已确认没有手动取消或关闭程序。原始证据first_cancel_chain.json包含源时间与录制接收时间，不能混用二者排序精度。
+
+首次取消：目标接收后6.753秒，planner自己发布ACTION_ABORT。对应源1794632723.7447238日志Future dynamic collision type=0 detected 0.01m / 0.05s ahead；随后Dynamic obstacle only 0.01m ahead(stop threshold0.15m); stop before replanning。planner发限速0，进入EMERGENCY_STOP/SAFETY，callEmergencyStop发布ABORT。
+此前checkCarObsCollision报告球中心[.56,-.52,.10]距离.10、小于规划安全距离.16；当前轨迹警戒带日志先明确推迟硬停到实测姿态检查，实际这次ABORT来自随后raw live future碰撞分支，不应混为同一条判据。
+MPPI到目标后6.822秒才报告native_reference_cancelled；当时snapshot有效、map_age166ms、joint_age22ms，planning_elapsed仅.459ms。取消是已收到上游ABORT的结果。目标后7.541秒发布新的ADD，7.653秒解除限速，MPPI恢复控制。这次恢复流程成功走通。
+
+第二次取消：目标后14.379秒planner再次ACTION_ABORT；源1794632731.3708358 Future dynamic collision type=0 detected 0.00m / .05s ahead，随后相同的距离小于.15m急停分支。之后开始No planning-layer-free local target found(collision type=0)，五次新轨迹尝试均失败。源1794632732.881427（目标后15.887秒）明确Give up current target and return WAIT_TARGET。后续未录到新ADD或finish，MPPI持续cancelled是目标已被规划器放弃后的等待状态。
+原始日志还出现一次link5的ESDF间隙.006<.034，但重复局部目标拒绝标签为type0底盘；不能把放弃目标唯一归因该机械臂点。
+
+全目标后/tracking_fault=true为0；本轮没有no_feasible或command_hold/braking错误。两段执行各有一次delivery_deadline超时；69次snapshot_unavailable全部在第二次取消之后。它们不是这两次取消的上游触发证据。
+
+代码位置：
+- remani_replan_fsm.cpp未来碰撞扫描调用checkDynamicObstacleCollision（约1510-1650行），1776-1783 raw-live碰撞距离≤.15m时SAFETY停；callEmergencyStop约3356-3363发布ABORT。
+- MMConfig::checkCarDynamicObsCollision约895行采用球半径+一格地图分辨率的规划距离，调用GridMap::getDynamicObstacleDistance。
+- GridMap::getDynamicObstacleDistance约4449行检查实时occupancy中不匹配静态PCD的占据体素；此处“dynamic”是实时层命名，不证明点属于真实运动物体。它不是motion-qualified动态点预测检查。
+- planner_manager.cpp约395行局部/最终目标碰撞(type0)则返回失败；FSM约639-652五次失败后清除目标。
+
+证据边界：
+本bag主要是时延、状态和日志，没有保存两次取消当时的整块距离场和占据bits。因此已查明哪条程序逻辑主动停、为什么后续不再给轨迹，但不能从日志单独判断被占据点是真实近障、机器人自点、定位残影还是地图层语义差异。MPPI附近成功周期报告正外部间隙，与慢层警戒/实际碰撞值不同；需要同代地图证据才能判定其原因。停车后另录stopped_scene只能核对当前图，不能当历史同代图。
+本轮未改运行代码、未发送任何控制命令。
+
+日志用词补充：.01/.00m是沿参考轨迹到首个碰撞采样点的路径长度，并非障碍物离车的实测欧氏距离。checkCarObsCollision的pt也是检查球中心，不是实测障碍点。

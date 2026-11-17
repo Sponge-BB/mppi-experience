@@ -1,0 +1,47 @@
+{
+  "version": "20261116-125759-tracker-reasons",
+  "hardware_validation": false,
+  "runtime_code_changed_this_capture": false,
+  "baseline": {
+    "user_observation": "到达目标，调头一次重规划、轻微卡顿",
+    "goal_receipt": 1794816330.519738,
+    "finish_receipt": 1794816356.8118124,
+    "seconds_to_finish": 26.29207444190979
+  },
+  "dynamic_attempt": {
+    "goal_receipt": 1794816983.5886586,
+    "piper_send_failure": 1794816928.626,
+    "send_failure_precedes_goal_by_s": 54.962658643722534,
+    "direct_hold_reason": "arm_stop_latched",
+    "live_status_samples_all_latched": 62,
+    "live_cmd_samples_all_zero": 357,
+    "user_observation": "人进入后已离开；规划有路径，但机器人未运动",
+    "result": "动态运动避障效果不能据此验收，软件锁停已在第二目标之前发生"
+  },
+  "evidence": {
+    "can_frames": 2863252,
+    "can_observer_socket_overflow": 0,
+    "feedback_around_failure": "0x2A1/2A5/2A6约5ms，0x2A7最大约10ms；并非整个CAN接收断流",
+    "counter_deltas": {
+      "rx_packets": 26192,
+      "rx_dropped": 0,
+      "rx_errors": 0,
+      "tx_packets": 99,
+      "tx_dropped": 0,
+      "tx_errors": 0
+    },
+    "dynamic_stop_snapshot_saved": 1,
+    "dynamic_stop_snapshot_errors": [],
+    "bag_messages": {
+      "core.bag": 1652579,
+      "geometry.bag": 46092
+    },
+    "bags_closed": true
+  },
+  "unresolved": [
+    "SDK通用发送失败100017未保留底层异常/errno，现有数据不能唯一确定发送失败来源",
+    "此前地图快照超龄与计算超时依旧存在，需独立统计影响；不能因本次锁停忽略",
+    "CAN内核接收与本地发送回环不是电机端物理收发时间"
+  ],
+  "control_publications": false
+}

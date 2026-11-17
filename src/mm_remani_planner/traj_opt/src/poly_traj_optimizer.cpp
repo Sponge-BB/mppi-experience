@@ -499,10 +499,16 @@ namespace remani_planner
 
   bool PolyTrajOptimizer::checkDynamicObstacleCollision(const SingulTrajData &traj, double t, int &coll_type)
   {
+    return checkDynamicObstacleCollision(traj, t, coll_type, nullptr);
+  }
+
+  bool PolyTrajOptimizer::checkDynamicObstacleCollision(const SingulTrajData &traj, double t, int &coll_type,
+                                                       MMConfig::DynamicCollisionEvidence *evidence)
+  {
     Eigen::VectorXd pos = traj.getPos(t);
     double yaw = traj.getCarAngle(t);
     return mm_config_->checkDynamicObstacleCollision(Eigen::Vector3d(pos(0), pos(1), yaw),
-                                                     pos.tail(manipulator_dof_), false, coll_type);
+                                                     pos.tail(manipulator_dof_), false, coll_type, evidence);
   }
 
   bool PolyTrajOptimizer::checkPredictedDynamicObstacleCollision(

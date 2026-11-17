@@ -1,0 +1,60 @@
+Piper 静止反馈延迟检查（2026-11-09）
+
+本次没有使能、复位、解除急停或发送运动指令。未改 CAN 配置。
+接收探针在创建 SDK 实例前禁用了 SocketCAN 发送接口，连接时显式关闭
+PiperInit 和 SDK 线程，手动调用原接收与解析路径。
+
+1. 基础接收对照，各 30 秒，剔除并单列前 0.5 秒：
+   只收包：P99 0.342 ms，最大 1.005 ms。
+   加入 SDK 解析：P99 0.801 ms，最大 3.151 ms。
+   SDK 单帧解析 P50 0.105 ms，P99 0.151 ms，最大 0.480 ms。
+   SDK 阶段 CPU 约为单核 46.9%；探针结束时实际 RSS 约 28 MiB。
+   原始状态/关节帧约 200 Hz，六个电机低速状态分别约 40 Hz。
+   本轮接口 rx_dropped/rx_errors/tx_packets/tx_errors 增量均为 0。
+   发送尝试 0。
+
+2. 增加 ReadCanMessage 返回值统计后的短复核，各 10 秒：
+   raw_receive: 30404 次 READ_CAN_MSG_OK。
+   sdk_parse: 30491 次 READ_CAN_MSG_OK。
+   无读取/解析失败；SDK 接收 P99 0.895 ms，最大 2.987 ms。
+   接口丢弃、错误和发送计数均未增加，发送尝试 0。
+
+3. 只做一次地图初始化负载对照：
+   使用当前工程 exp0_real.launch，hardware_enabled=false、use_mppi=true，
+   独立本机 ROS master 11457，35 秒后自动退出。
+   已核对不启动 Piper 和底盘驱动，MPPI execute=false。
+   实际 ROS 图中 /cmd_vel、/joint_ctrl_single、/enable_flag 没有发布者。
+   本轮未启动雷达驱动、没有新点云或真实关节 ROS 输入，也没有 MPPI 求解；
+   因此只代表这些进程及静态地图的初始化负载，不代表完整实车运行负载。
+   全图初始化 ESDF 日志耗时 250.05 ms。
+   同时采集 SDK 60 秒：接收 P99 14.130 ms，最大 106.477 ms；
+   单帧解析 P50 0.102 ms，最大 22.599 ms；CPU 约单核 46.4%。
+   全部 182356 次接收返回 READ_CAN_MSG_OK。
+   接口丢弃、错误和发送计数增量仍为 0，发送尝试 0。
+   部分源帧间隔增至 10/15/50 ms，不能因此声称完全没有漏帧。
+   探针 RSS 约 29 MiB。过程中观测主机可用内存约 2.3 GiB，
+   退出后恢复约 3.0 GiB，交换区占用仍为 32 MiB。
+
+判断：
+   静止轻载下 CAN/SDK 基础路径能及时处理反馈。
+   加入启动组合负载后出现明显延迟长尾，支持共享计算负载和线程调度
+   造成接收积压这一排查方向，但尚不能定位某个线程或某次 ESDF 为唯一原因。
+   本轮未越过 150 ms，也未运行真实驱动的发布和命令锁竞争，
+   因而没有复现原来的急停失能，不能宣称故障已经修复。
+   机械臂仍返回原有急停状态（arm_status=1），本次未复位。
+
+工程改动：
+   仅将 piper_ctrl_single_node.py 的原生启动失败日志展开，记录失败时的
+   joint_fresh/source_age/publish_age、status_fresh/状态码/错误码及
+   motor_fresh/enabled/剩余有效期。原判定、150 ms 限制、发送与停止流程未改。
+   修改前备份：同目录 piper_ctrl_single_node.before_diagnostics.py。
+   Python 语法检查通过；既有离线反馈/命令验证 32 组全部通过，无硬件调用。
+
+后续重点：
+   结合展开后的日志区分真正触发项；优先减少重复状态读取和非控制遥测，
+   再按实际调度证据处理地图/规划负载。启动等待、MPPI 接管与运行期故障
+   需要分别处理，不能仅放宽阈值或取消真实反馈检查。
+
+所有探针和隔离 ROS 对照进程均已退出，原整机程序未启动。
+数据：summary.json、verified_read_status/summary.json、
+      map_initialization_load/summary.json、map_initialization_launch.log。

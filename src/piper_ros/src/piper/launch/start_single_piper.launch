@@ -7,6 +7,10 @@
   <arg name="auto_reenable_interval" default="1.0" />
   <arg name="gripper_val_mutiple" default="1" />
   <arg name="fixed_vel" default="15" />
+  <arg name="gripper_exist" default="true" />
+  <arg name="command_timeout" default="0.0" />
+  <arg name="max_command_age" default="0.30" />
+  <arg name="native_startup_to_standby" default="false" />
   <!-- <include file="$(find piper_description)/launch/display_xacro.launch"/> -->
   <!-- 启动机械臂节点 -->
   <node name="piper_ctrl_single_node" pkg="piper" type="piper_ctrl_single_node.py" output="screen">
@@ -18,8 +22,11 @@
     <param name="auto_reenable_interval" value="$(arg auto_reenable_interval)" />
     <param name="gripper_val_mutiple" value="$(arg gripper_val_mutiple)" />
     <param name="fixed_vel" value="$(arg fixed_vel)" />
+    <param name="command_timeout" value="$(arg command_timeout)" />
+    <param name="max_command_age" value="$(arg max_command_age)" />
+    <param name="native_startup_to_standby" value="$(arg native_startup_to_standby)" type="bool" />
     <!-- <param name="rviz_ctrl_flag" value="true" /> -->
-    <param name="girpper_exist" value="true" />
+    <param name="gripper_exist" value="$(arg gripper_exist)" />
     <remap from="joint_ctrl_single" to="/joint_ctrl_single" />
   </node>
 </launch>

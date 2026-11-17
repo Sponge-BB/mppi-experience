@@ -1,0 +1,42 @@
+{
+  "scope": "Small offline analytic scenes; one process, no ROS/CAN, not a live latency claim.",
+  "results": [
+    {
+      "scene": "clear",
+      "trials": 5,
+      "identical_controls_states_rng": true,
+      "median_process_cpu_ms": {
+        "before": 14.1595,
+        "after": 13.4282
+      },
+      "cpu_change_percent": -5.16,
+      "evaluated_candidates_before": 2,
+      "evaluated_candidates_after": 1
+    },
+    {
+      "scene": "arm_only",
+      "trials": 5,
+      "identical_controls_states_rng": true,
+      "median_process_cpu_ms": {
+        "before": 28.0637,
+        "after": 34.458
+      },
+      "cpu_change_percent": 22.78,
+      "evaluated_candidates_before": 11,
+      "evaluated_candidates_after": 11
+    },
+    {
+      "scene": "base_fallback",
+      "trials": 5,
+      "identical_controls_states_rng": true,
+      "median_process_cpu_ms": {
+        "before": 43.7008,
+        "after": 48.9552
+      },
+      "cpu_change_percent": 12.02,
+      "evaluated_candidates_before": 21,
+      "evaluated_candidates_after": 21
+    }
+  ],
+  "deployment_status": "Not deployed to the running robot. Both source and test changes were reverted byte-for-byte to before backups after the comparison showed slower avoidance."
+}

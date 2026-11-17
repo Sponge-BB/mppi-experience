@@ -1,0 +1,83 @@
+动态目标资格与预测链只读核查（2026-11-17）
+
+结论
+本次tracker、发布和预测检查代码确实在运行，但整个记录中没有一帧输出合格动态目标点；因此没有以已识别运动目标为输入的速度外推/动态扫掠避障证据。不能表述成动态节点未启动，也不能把空输出解释成现场无人。
+已存在残差、候选簇和长期关联确认轨迹；其中目标2有3条详细日志显示除了surface_translation之外其他进入条件均满足，但被表面平移验收拒绝。这已把特定失败定位到具体算法门控；日志还不足以认定这些簇的对象身份，或还原该门控的哪条距离不等式失败。
+主代理转述用户确认第二目标期间实际进入并离开路径；用户尚未给出明确进出时刻，不能以本报告的簇时刻替代现场时刻。
+
+数据范围与方法
+- 流式读取analysis/dynamic_points.jsonl、两个track_count JSONL、rosout_agg.jsonl和latest_parameters.json；查当前源码，未启动ROS、未发命令、未改运行代码。
+- 全记录dynamic_points接收时间1794883004.959614至1794883517.248717。
+- 目标1按主代理分段1794883101.6072 <= t < 1794883155.9394603。
+- 目标2按主代理分段1794883271.6000993 <= t < 1794883517.3195465。
+- 诊断日志约1Hz，计数topic约输入帧频率。下述why是每次簇观测的共现条件，既非互斥分类，也不是独立物体/人数计数。
+
+一、输出与关联确认的实测
+全记录：
+  /dynamic_points共4822帧，4822帧points=0。
+  confirmed_track_count共4836帧，仅最初3帧为0，其他4833帧为2至9。
+  motion_qualified_track_count共4836帧，全部为0。
+目标1：
+  dynamic_points508帧全空；confirmed508帧为2至9；motion_qualified508帧全0。
+目标2：
+  dynamic_points2268帧全空；confirmed2268帧为2至9；motion_qualified2268帧全0。
+confirmed的代码含义只是多帧数据关联成立，不是“检测出正在运动的人”（include/mm_remani/dynamic_obstacle_tracker_core.h:62-68）。
+node.cpp:774-796只把motion_qualified或ever_motion_qualified的当前匹配簇写入/dynamic_points，故confirmed非0与动态输出为0可以同时成立。
+
+二、输入链并未全程关闭
+全记录476条详细tracker日志均有残差（84至205点）、候选簇（3至10个）、存活tracks（4至13）。
+476条日志的qualification均truncated=0；共2622次簇观测全部ever=0，phase仅new/candidate。
+最初2条health=0/publish=no；之后474条health=1/publish=yes。
+rosout_agg.jsonl:24记录28137点静态参考ready；:57记录15个稳定帧后health gate打开；后续没有tracker健康降级或残差超限拒绝消息。
+本次残差上限参数800，已见日志残差最大205；没有证据把空动态输出归因于该上限。
+目标2的224条详细日志全部health=1、publish=yes、truncated=0，residual84至205、clusters3至9。
+所以主要已见瓶颈是运动资格未获通过，而不是tracker从未拿到数据或health gate全程阻断。
+
+三、目标2的关键表面验收拒绝证据
+以下为rosout_agg.jsonl行号，时间是bag接收时间；北京时间仅辅助定位，现场身份仍待对齐。
+1) L27147 t=1794883331.187374（约10:42:11.187），id1044：
+   n=61，hits=23，steps=7，hist=.700s，net=.562m，net_v=.803m/s，eff=.925，dir=1.000，max_step_v=2.282m/s；
+   phase=candidate，ever=0，why=surface_translation，surface=rejected，background=0。
+2) L31865 t=1794883388.221117（约10:43:08.221），id1214：
+   n=17，hits=5，steps=4，hist=.399s，net=.459m，net_v=1.151m/s，eff=.989，dir=1.000，max_step_v=1.237m/s；
+   唯一why=surface_translation，surface=rejected，background=0，ever=0。
+3) L31957 t=1794883389.311721（约10:43:09.312），id1214：
+   n=43，hits=15，steps=5，hist=.600s，net=.575m，net_v=.958m/s，eff=.992，dir=1.000，max_step_v=1.168m/s；
+   唯一why=surface_translation，surface=rejected，background=0，ever=0。
+临近L27056 id1044与L32053 id1214分别仅因direction=.667低于.75而拒绝。
+这些是持续位移及单一拒绝门控的证据，不能简单概括为“没有检测到任何运动迹象”。同时，点云簇无人员语义标签，尚不能无条件断言它们就是用户。
+
+四、surface_translation实际算法及配置来源
+src/mm_remani/src/dynamic_obstacle_tracker_core.cpp:659-672先检查coherent_motion，必须同时通过：hits、steps、点数、持续时间、净位移、净速度、效率、方向一致性、单步速度合理性及不在静态背景锚范围。
+:734-740只有coherent_motion已通过且此前未motion_qualified时，才以历史首尾motion_surface和history_net调用surfaceSupportsTranslation。
+:61-120对首尾表面做双向最近邻验收：每个方向至多抽64个真实源点，对完整对侧表面查最近邻，分别计算不移动和按history_net平移后的距离平方低中位数。
+两个方向都必须同时满足：
+  stationary > tolerance^2；
+  moving <= tolerance^2；
+  moving < 0.25 * stationary。
+这用于避免静态表面可见子集变化产生假运动（源码:103-105）；:741-744只有表面通过才首次置motion_qualified/ever_motion_qualified=true。
+node.cpp:193-194设tolerance=max(.03,.5*voxel_leaf_size)。本次latest_parameters.json:1613 voxel_leaf_size=.1，所以实际表面容差.05m。
+对应进入条件真实参数见latest_parameters.json:1642-1655：速度>=.22m/s，净位移>=.1m，时间>=.25s，history目标.6s，效率>=.7，方向一致比例>=.75，方向cosine=.6，confirmed hits>=4、有效motion steps>=3、运动簇点数>=15。
+core.cpp:862-884的why由每条谓词直接生成；surface_translation只会在实际执行了表面判断并失败时出现。故上述三条“only surface_translation”可确认其他进入谓词当时通过。
+当前日志未保存双向stationary/moving中位距离、首尾motion_surface或具体失败方向；不能进一步声称是“表面容差太严”“人非刚体导致”或“错误关联”已被证明。现有日志只证明最终表面判断拒绝。
+
+五、原因出现次数（仅描述这些日志，不能当物体数量或独立概率）
+目标2共1157次簇观测，以下条件共现：
+  background_anchor1084、net_displacement1065、net_speed1008、efficiency934、direction930；
+  cluster_points546、motion_steps317、history_duration276、hits112、new_track54、surface_translation3、step_speed2。
+全记录2622次簇观测中surface_translation也是3次，全部落在目标2；多数其他观测是背景或未形成稳定运动历史，但不解释掉上面的三次单门控拒绝。
+所有详细日志truncated=0，避免了“只打印前12簇”的截断偏差；约1Hz诊断仍不是所有输入帧的完整资格历史。
+
+六、动态预测是否进入工作，以及occupancy究竟做了什么
+本次latest_parameters.json:817-833明确enable=true、active_mode=true、active_replan=true、max_age=.35；并非被参数关闭。
+rosout中有ACTIVE启用通知、连续Swept planning cloud:0 points以及Predicted horizon clear。
+目标2有214条扫掠云日志，全部0点；140条Predicted horizon clear。空动态观测在dynamic_point_buffer.cpp:179-188被标为no_dynamic_detected；remani_replan_fsm.cpp:3045-3048对valid但points.empty直接返回CLEAR。
+因此“Predicted horizon clear”在本次不能证明系统预测并躲过了运动目标；它常是空目标集合的检查结果。
+目标2另有26条overlay stale、18条Input/time basis unavailable(stale)日志；后者明确falling back to occupancy safety。它们是限频日志数量，不是精确独立事件次数/持续时间。
+目标2有13条raw_latest LiveCollisionStop日志；首条L28243 t1794883344.346717，base_sphere10、距离.153263m、阈值.155283m、hit_valid=1，说明实时占据安全确实触发过停车。
+准确说法：动态流基础设施运行、空观测/时效检查参与控制，但本记录没有合格运动目标进入预测几何；实际外部障碍几何防护仍由静态/实时occupancy及ESDF承担，并有实时占据停车实证。系统还保留自碰撞、地面、反馈和时效门控，不能笼统说“整车只有occupancy在工作”。
+
+七、可以定位与尚不能定位的边界
+已定位：候选及确认轨迹存在；全部运动资格输出为0；在三个关键观测中，最终surface_translation门控是直接拒绝原因；没有目标点进入后续速度预测与扫掠规划。
+尚待对齐：用户实际进入/离开时刻及几何位置，关键track是否同一真实目标，surface双向距离不等式失败的具体项，以及是否正确拒绝静态表面或误拒绝真实运动。
+本报告未据此修改门限或判断场景无人，也没有把本次数据标记为动态避障实车验收通过。

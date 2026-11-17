@@ -1,0 +1,53 @@
+{
+  "schema": "commissioning_hold_additional_shoulder_wrist_axis_v1",
+  "scope": "Only commissioning arm_hold_probe current-position hold, maximum 1 second; not a deployed MPPI model or approved motion path.",
+  "axis_local_link5": [
+    -0.9954197235233002,
+    0.042160942448799234,
+    -0.0858022665937532
+  ],
+  "proxy_path": "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261106_stationary_07/model/shoulder_wrist_proxy.json",
+  "proxy_sha256": "3359bee77a77a58150da6741f0de242a2f44b22e618b0db22bbbe84266c00d68",
+  "q_radians": [
+    -0.10108947027551157,
+    -0.03330088212805181,
+    0.010088003076527225,
+    0.0976337183565628,
+    0.48288024414927117,
+    -0.11770500475449759
+  ],
+  "padding_m": 0.0001,
+  "affected_self_pair": [
+    0,
+    18
+  ],
+  "upper_arm_self_pair_unchanged": [
+    7,
+    18
+  ],
+  "geometry_sets": {
+    "shoulder": [
+      "arm_base",
+      "link1"
+    ],
+    "wrist": [
+      "link5",
+      "link6"
+    ]
+  },
+  "evaluation_rule": "Recompute both original and additional shoulder/wrist support gaps at each actual q using the same original complete convex hulls and joint chain. For pair (0,18) only, a positive maximum of those support gaps proves separation; all other pairs, constraints and the existing collision threshold remain unchanged.",
+  "evidence": {
+    "mesh_and_support_report": "/home/l/remani_ws/experiments/hardware_standby_mppi/commissioning_20261106/current_pose_mesh_audit.json",
+    "mesh_and_support_report_sha256": "0e9126d7b3cb4a052f02d15b3750fea9476dd6c6764509ca734cd9b4cf5d1c49",
+    "passive_feedback_report": "/home/l/remani_ws/experiments/hardware_standby_mppi/commissioning_20261106/passive_geometry_1793953363681290602.json",
+    "recorded_q_only_raw_support_gap_m": 0.00015715574837016355,
+    "recorded_q_only_padded_support_gap_m": 5.7155748370163546e-05,
+    "original_mesh_hashes_verified": true
+  },
+  "limitations": [
+    "Recorded gap values are evidence only; never use as runtime acceptance values.",
+    "Numerical padding is not physical calibration or actuator-response validation.",
+    "A nonpositive result at any actual q remains rejected.",
+    "No additional permission for joint displacement, unfolding, MPPI or base movement."
+  ]
+}

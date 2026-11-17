@@ -1,0 +1,29 @@
+{
+  "tests": {
+    "total_passed": 107,
+    "runtime_s": 3.93,
+    "new_targeted_cases": 7,
+    "log": "rejection_related_regression.txt"
+  },
+  "scope": [
+    "Optional checked_first_step diagnostics only on existing rejection; success adds no FK/collision queries.",
+    "Measured-state/control/exact-target and 32-field map header retained on command-check failure.",
+    "Configuration gap combines self and ground checks, not exclusively self-collision. External negative may be physical geometry, map domain or forecast rejection; explicit forecast_in_range identifies the latter when dynamic groups exist.",
+    "Real-hardware no-candidate results now retain existing structured/random candidate diagnostics.",
+    "Planning deadline has precedence over None-result classification: expired no-feasible solves are local retries; timely no-feasible retains hard fault behavior."
+  ],
+  "epoch_boundary": {
+    "tested_cases": 21,
+    "fresh_cases": 14,
+    "fresh_false_rejection_count": 0,
+    "tolerances_changed": false
+  },
+  "rollout_and_target_envelope_ast_unchanged": true,
+  "safety_thresholds_changed": false,
+  "hardware_or_ros_nodes_started": false,
+  "files": {
+    "src/mm_remani/scripts/whole_body_mppi.py": "6aae51a37d94e1d33637aa66e6833c663dc68adc2ab828c79bb30152292501b7",
+    "src/mm_remani/test/test_mppi_rejection_diagnostics.py": "901ba55a3ff7c81d50ec015ae3357b68bde46fe169eaf9d01733e5fd505b8367"
+  },
+  "backup": "before/whole_body_mppi.py"
+}

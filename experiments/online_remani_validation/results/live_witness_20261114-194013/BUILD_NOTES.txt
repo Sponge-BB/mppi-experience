@@ -1,0 +1,3 @@
+独立包编译 mm_config 第一次因原 CMake 使用 Eigen3_INCLUDE_DIRS 而未获得 Eigen include 路径失败。仅私有干净构建命令补充 -I/usr/include/eigen3 后继续；未改运行源码或系统依赖。初次失败结果与日志保留在 attempt1_*。
+随后同一独立 mm_config 编译还缺少其公共 GridMap 头文件的 OpenCV/PCL 依赖 include。按已成功 plan_env 编译 flags 同时补齐 /usr/include/opencv4 与 /usr/include/pcl-1.10；仅私有构建参数。第二次失败记录在 attempt2_*。
+构建复现需将本目录 compile_launcher.sh 恢复为构建脚本所引用的 /tmp/remani_dense_edt_no_debug_compile.sh，或将构建参数改为本目录对应绝对路径；内容相同。所有目标始终 -j1。

@@ -1,0 +1,185 @@
+{
+  "scope": "Read-only audit of the supplied partial capture; no runtime code changes and no new capture.",
+  "time_basis": "Relative times use goal bag time 1794641296.5504305. ROS logs use source time for causality; event topics use receive time. Many rosout records arrived 10-63 seconds late.",
+  "evidence_files": {
+    "summary.json": "809524691cb5d364b1a837b36f09202679e7bee4a1fb1c727d3828a2ab2aa170",
+    "navigation_evidence.jsonl": "a90a03c18be7f622f8ab350ff65db14c7037cfc7586407c29653e699028f9dd7"
+  },
+  "partial_recording": true,
+  "capture_end_rel_s": 139.634,
+  "timeline": [
+    {
+      "kind": "/move_base_simple/goal",
+      "receive_rel_s": 0.0,
+      "evidence_line": 1,
+      "source_rel_s": -0.0247,
+      "receive_delay_s": 0.0247,
+      "topic": "/move_base_simple/goal"
+    },
+    {
+      "kind": "/planning/trajectory",
+      "receive_rel_s": 0.5783,
+      "evidence_line": 101,
+      "source_rel_s": 0.5455,
+      "receive_delay_s": 0.0328,
+      "topic": "/planning/trajectory",
+      "action": 1,
+      "trajectory_id": 1,
+      "duration": 4.246397014978451
+    },
+    {
+      "kind": "/planning/trajectory",
+      "receive_rel_s": 0.5987,
+      "evidence_line": 106,
+      "source_rel_s": 0.5455,
+      "receive_delay_s": 0.0533,
+      "topic": "/planning/trajectory",
+      "action": 1,
+      "trajectory_id": 2,
+      "duration": 9.742265679302758
+    },
+    {
+      "kind": "perception_timeout_stop",
+      "receive_rel_s": 103.8463,
+      "evidence_line": 11128,
+      "source_rel_s": 40.5439,
+      "receive_delay_s": 63.3024,
+      "topic": "/rosout_agg",
+      "name": "/remani_planner_node",
+      "msg": "Depth Lost! EMERGENCY_STOP"
+    },
+    {
+      "kind": "/planning/safety_speed_limit",
+      "receive_rel_s": 40.5446,
+      "evidence_line": 6647,
+      "topic": "/planning/safety_speed_limit",
+      "value": 0.0
+    },
+    {
+      "kind": "live_input_timeout_detail",
+      "receive_rel_s": 103.8465,
+      "evidence_line": 11129,
+      "source_rel_s": 40.5471,
+      "receive_delay_s": 63.2993,
+      "topic": "/rosout_agg",
+      "name": "/remani_planner_node",
+      "msg": "[GridMap][LiDAR] Live input timed out: age 0.756s exceeds 0.750s (accepted/fused/pending=1681/1681/0). Static PCD availability does not mask this fault."
+    },
+    {
+      "kind": "/planning/trajectory",
+      "receive_rel_s": 40.5526,
+      "evidence_line": 6649,
+      "topic": "/planning/trajectory",
+      "action": 2,
+      "trajectory_id": 0,
+      "duration": 0
+    },
+    {
+      "kind": "controller_abort",
+      "receive_rel_s": 98.1611,
+      "evidence_line": 10543,
+      "source_rel_s": 40.5552,
+      "receive_delay_s": 57.6059,
+      "topic": "/rosout_agg",
+      "name": "/mm_controller_node",
+      "msg": "[MMCtrl] Aborting the trajectory."
+    },
+    {
+      "kind": "live_input_recovered",
+      "receive_rel_s": 105.0436,
+      "evidence_line": 12074,
+      "source_rel_s": 94.1114,
+      "receive_delay_s": 10.9322,
+      "topic": "/rosout_agg",
+      "name": "/remani_planner_node",
+      "msg": "[GridMap][LiDAR] Live input recovered (accepted/fused=1682/1681)."
+    },
+    {
+      "kind": "/planning/trajectory",
+      "receive_rel_s": 94.7993,
+      "evidence_line": 10170,
+      "source_rel_s": 94.7756,
+      "receive_delay_s": 0.0237,
+      "topic": "/planning/trajectory",
+      "action": 1,
+      "trajectory_id": 1,
+      "duration": 3.8761634091036776
+    },
+    {
+      "kind": "/planning/trajectory",
+      "receive_rel_s": 94.8006,
+      "evidence_line": 10171,
+      "source_rel_s": 94.7756,
+      "receive_delay_s": 0.025,
+      "topic": "/planning/trajectory",
+      "action": 1,
+      "trajectory_id": 2,
+      "duration": 4.577889452735554
+    },
+    {
+      "kind": "accepted_goal_recovery_validated",
+      "receive_rel_s": 105.1041,
+      "evidence_line": 12126,
+      "source_rel_s": 94.7953,
+      "receive_delay_s": 10.3089,
+      "topic": "/rosout_agg",
+      "name": "/remani_planner_node",
+      "msg": "[FSM] Fresh perception, feedback and accepted goal validated a new recovery trajectory; release only the transient stop."
+    },
+    {
+      "kind": "/planning/safety_speed_limit",
+      "receive_rel_s": 94.8047,
+      "evidence_line": 10172,
+      "topic": "/planning/safety_speed_limit",
+      "value": -1.0
+    },
+    {
+      "kind": "first_nonzero_cmd_after_release",
+      "receive_rel_s": 94.9087,
+      "evidence_line": 10178,
+      "topic": "/cmd_vel",
+      "v": 0.07749581542737054,
+      "w": 0.35
+    }
+  ],
+  "confirmed": [
+    "The +40.5526 s ABORT followed the live LiDAR input timeout stop, not a reported tracking fault. Source log says input age 0.756 s exceeded the 0.750 s threshold.",
+    "Only one /move_base_simple/goal was recorded. After fresh input returned at source +94.1114 s, the planner explicitly logged validation of fresh perception, feedback and the accepted goal at source +94.7953 s.",
+    "Two new ADD trajectory messages arrived at +94.7993/+94.8006 s before safety_speed_limit=-1 at +94.8047 s. A nonzero command arrived at +94.9087 s. This is observed retention and recovery of the accepted navigation task in this perception-timeout episode.",
+    "All 554 recorded /tracking_fault messages are false. All recorded Piper execution states are enabled/active, not latched, with feedback valid.",
+    "No [FSM][MPPIRefresh] event appears in the supplied 8081 rosout records; the new trajectories at +94.80 s belong to perception-stop recovery, not evidence of MPPIRefresh."
+  ],
+  "stop_interval": {
+    "safety_hold_s": 54.2601,
+    "recorded_cmd_vel_count": 241,
+    "recorded_nonzero_cmd_vel_count": 0,
+    "recorded_odom_count": 543,
+    "max_odom_displacement_from_first_stop_sample_m": 0.013673,
+    "coverage_caveat": "/cmd_vel has a 30.397 s receive-time gap from +39.6026 to +69.9997 s; absence of nonzero commands cannot be asserted continuously from command recording alone. /odom continues through that interval."
+  },
+  "not_confirmed": [
+    "The root cause of the live-input interruption is not established by this audit; the timeout message does not by itself identify hardware, software, scheduling or recording causes.",
+    "MPPIRefresh request production, eligibility, triggering and success are not validated. /planning/mppi_refresh_request is absent from the supplied extracted topic set. Map-export refresh=1 logs are a different mechanism.",
+    "Goal completion is not established: this is a partial capture through +139.634 s with no finish message. Last odometry is not evidence of final goal attainment.",
+    "This episode validates observed perception-timeout task retention and resumption only; other transient obstacle/repeated failure recovery branches are not exercised by these observations.",
+    "Trajectory coefficients and final endpoint are absent from navigation_evidence.jsonl, so equality of the recovered trajectory endpoint to the original goal is not independently checked here; accepted-goal retention is supported by the explicit FSM log and lack of a replacement goal."
+  ],
+  "known_remaining_issue": "Freshness rejections continue after safety release. From +94.8047 s to capture end, MPPI status has 249 command_delivered, 131 collision_snapshot_unavailable, 44 collision_snapshot_expired_during_plan, 23 inputs_expired_before_delivery and 1 delivery_deadline_exceeded.",
+  "source_cross_check": [
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 446,
+      "meaning": "recoverPerceptionStop retains have_target_, verifies accepted_goal_revision_, publishes validated trajectory, then logs recovery."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1060,
+      "meaning": "tryMppiRefresh has a distinct [FSM][MPPIRefresh] execution log."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "line": 1433,
+      "meaning": "Depth timeout enters perception recovery with zero safety limit; does not clear accepted goal."
+    }
+  ]
+}

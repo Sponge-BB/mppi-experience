@@ -1,0 +1,80 @@
+{
+  "offline_passed": true,
+  "hardware_validation": false,
+  "purpose": "行驶中机械臂前方一米突然出现长方体：原生/MPPI/冻结慢层三组仿真及实测回放",
+  "checks": {
+    "prepared_sources_configs_models_and_native_binaries_match": true,
+    "python_syntax": true,
+    "inline_javascript_syntax": true,
+    "first_reference_complete_and_zero_slow_planning_after_freeze": true,
+    "production_source_and_devel_unchanged": true
+  },
+  "runs": {
+    "native": {
+      "status": {
+        "group": "native",
+        "result_written": true,
+        "graph_audited": true,
+        "stop_reason": null,
+        "required_process_failure": false,
+        "wall_s": 27.342743177999864,
+        "peak_group_rss_mib": 792.15625,
+        "lowest_available_mib": 2725.625,
+        "return_code": 0,
+        "owned_process_group_stopped": true
+      },
+      "reason": "collision",
+      "goal_reached": false,
+      "physical_collision": true,
+      "min_arm_box_gap_m": -0.0005003177014689802
+    },
+    "mppi": {
+      "status": {
+        "group": "mppi",
+        "result_written": true,
+        "graph_audited": true,
+        "stop_reason": null,
+        "required_process_failure": false,
+        "wall_s": 36.85997036499998,
+        "peak_group_rss_mib": 889.62890625,
+        "lowest_available_mib": 2603.31640625,
+        "return_code": 0,
+        "owned_process_group_stopped": true
+      },
+      "reason": "goal",
+      "goal_reached": true,
+      "physical_collision": false,
+      "min_arm_box_gap_m": 0.0376821437343412
+    },
+    "fast_only": {
+      "status": {
+        "group": "fast_only",
+        "result_written": true,
+        "graph_audited": true,
+        "stop_reason": null,
+        "required_process_failure": false,
+        "wall_s": 33.748842778999915,
+        "peak_group_rss_mib": 906.77734375,
+        "lowest_available_mib": 2518.25,
+        "return_code": 0,
+        "owned_process_group_stopped": true
+      },
+      "reason": "goal",
+      "goal_reached": true,
+      "physical_collision": false,
+      "min_arm_box_gap_m": 0.05177873035915802
+    }
+  },
+  "fast_only_claim_supported": true,
+  "physical_base_locked": false,
+  "production_modified": false,
+  "source_runtime_file_count": 92,
+  "initial_baseline_expected_absent": true,
+  "known_limits": [
+    "One seed/run per group; boxes placed by same relative 1m rule, with slightly different actual world coordinates. No general success-rate or performance ranking.",
+    "Numerical native sphere geometry and shared bounded execution plant, not Gazebo mesh contact or hardware. Native pose/q adapter is a declared simulation execution approximation.",
+    "Native physical collision is a retained negative result; raw desired command bus was not captured separately.",
+    "Fast-only freeze is an isolated capability ablation retaining mapping/MPPI collision checks, not a deployment recommendation.",
+    "Restore preserves previously existing immutable active-arm simulation inputs/builds. Experimental recorded data and original immutable dependency objects are not deleted or duplicated in the code delta."
+  ]
+}

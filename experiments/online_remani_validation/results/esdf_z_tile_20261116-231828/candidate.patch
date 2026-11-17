@@ -1,0 +1,95 @@
+--- baseline/esdf_worker.cpp
++++ z_tile8/esdf_worker.cpp
+@@ -206,6 +206,32 @@
+         delta * delta + values[static_cast<std::size_t>(sites[static_cast<std::size_t>(k)])];
+     set_value(local_q, value);
+   }
++}
++
++// Experiment only: gather/scatter neighboring z-lines together while keeping
++// the native per-line double transform and arithmetic order unchanged.
++template <typename GetValue, typename SetValue>
++void fillDistanceTransformZTile(int length, int coordinate_offset, int lanes,
++                               const GetValue &get_value,
++                               const SetValue &set_value)
++{
++  thread_local std::vector<double> tile;
++  tile.resize(static_cast<std::size_t>(length) * lanes);
++  for (int coordinate = 0; coordinate < length; ++coordinate)
++    for (int lane = 0; lane < lanes; ++lane)
++      tile[static_cast<std::size_t>(lane) * length + coordinate] =
++          get_value(coordinate, lane);
++  for (int lane = 0; lane < lanes; ++lane)
++  {
++    const std::size_t begin = static_cast<std::size_t>(lane) * length;
++    fillDistanceTransform(length, coordinate_offset,
++        [&](int coordinate) { return tile[begin + coordinate]; },
++        [&](int coordinate, double value) { tile[begin + coordinate] = value; });
++  }
++  for (int coordinate = 0; coordinate < length; ++coordinate)
++    for (int lane = 0; lane < lanes; ++lane)
++      set_value(coordinate, lane,
++          tile[static_cast<std::size_t>(lane) * length + coordinate]);
+ }
+ 
+ template <typename IsSeed, typename GetValue, typename SetValue>
+@@ -990,33 +1016,39 @@
+     return false;
+   finish_phase(result->positive_ms[0]);
+ 
++  const int z_tile_size = 8;
++  const int z_tile_count = (nz + z_tile_size - 1) / z_tile_size;
+   if (!parallelFor(
+-          static_cast<std::size_t>(nx) * static_cast<std::size_t>(nz),
+-          lineThreshold(ny),
+-          [&](std::size_t line) {
+-            const int x = static_cast<int>(line / static_cast<std::size_t>(nz));
+-            const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
+-            fillDistanceTransform(
+-                ny, job.min_index.y(),
+-                [&](int y) { return tmp_buffer1_[address(x, y, z)]; },
+-                [&](int y, double value) {
+-                  tmp_buffer2_[address(x, y, z)] = value;
++          static_cast<std::size_t>(nx) * z_tile_count,
++          lineThreshold(ny * z_tile_size),
++          [&](std::size_t tile_index) {
++            if (computationCancelled()) return;
++            const int x = static_cast<int>(tile_index / z_tile_count);
++            const int z_begin = static_cast<int>(tile_index % z_tile_count) * z_tile_size;
++            const int lanes = std::min(z_tile_size, nz - z_begin);
++            fillDistanceTransformZTile(
++                ny, job.min_index.y(), lanes,
++                [&](int y, int lane) { return tmp_buffer1_[address(x, y, z_begin + lane)]; },
++                [&](int y, int lane, double value) {
++                  tmp_buffer2_[address(x, y, z_begin + lane)] = value;
+                 });
+           }))
+     return false;
+   finish_phase(result->positive_ms[1]);
+ 
+   if (!parallelFor(
+-          static_cast<std::size_t>(ny) * static_cast<std::size_t>(nz),
+-          lineThreshold(nx),
+-          [&](std::size_t line) {
+-            const int y = static_cast<int>(line / static_cast<std::size_t>(nz));
+-            const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
+-            fillDistanceTransform(
+-                nx, job.min_index.x(),
+-                [&](int x) { return tmp_buffer2_[address(x, y, z)]; },
+-                [&](int x, double value) {
+-                  result->distance_all[address(x, y, z)] =
++          static_cast<std::size_t>(ny) * z_tile_count,
++          lineThreshold(nx * z_tile_size),
++          [&](std::size_t tile_index) {
++            if (computationCancelled()) return;
++            const int y = static_cast<int>(tile_index / z_tile_count);
++            const int z_begin = static_cast<int>(tile_index % z_tile_count) * z_tile_size;
++            const int lanes = std::min(z_tile_size, nz - z_begin);
++            fillDistanceTransformZTile(
++                nx, job.min_index.x(), lanes,
++                [&](int x, int lane) { return tmp_buffer2_[address(x, y, z_begin + lane)]; },
++                [&](int x, int lane, double value) {
++                  result->distance_all[address(x, y, z_begin + lane)] =
+                       job.resolution * std::sqrt(value);
+                 });
+           }))

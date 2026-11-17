@@ -1,0 +1,307 @@
+{
+  "schema": "offline_original_mesh_pose_comparison_v1",
+  "scope": "Read-only offline comparison of unchanged URDF collision triangle meshes. Original collision origins and scene transforms applied. No hardware, ROS, command publication, collision threshold changes, or production source changes.",
+  "limitations": [
+    "URDF surface intersection does not establish that the physical robot is intersecting; physical geometry and joint calibration remain to be checked.",
+    "Surface separation alone does not exclude solid containment.",
+    "Negative support-certificate gaps mean separation was not certified; they are not penetration-depth measurements.",
+    "The coarse sphere gap of -9.20677983950216 mm is not the original mesh penetration depth."
+  ],
+  "provenance": {
+    "mesh_tool": "experiments/online_remani_validation/results/shoulder_geometry_refinement_20261108/mesh_pair_distance",
+    "reference_script": "experiments/online_remani_validation/results/shoulder_geometry_refinement_20261108/mesh_components_audit.py",
+    "model_parameters": "experiments/online_remani_validation/results/startup_timeout_20261109/parameters.json:planner",
+    "current_pose_source": "experiments/online_remani_validation/results/startup_timeout_20261109/preview_startup.json",
+    "proxy_asset": "src/mm_remani/config/mppi_shoulder_wrist_proxy.json",
+    "mesh_sha256_verified_during_original_run": true,
+    "mesh_scale_verified": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "saved_from_existing_outputs_without_recomputation": true
+  },
+  "meshes": {
+    "arm_base": {
+      "source_mesh": "src/my_description/meshes/arm/base_link.stl",
+      "sha256": "fd4a3d6d0266205fe3f725f048645be66592c23564db22e08b0807d5569b2c64"
+    },
+    "link1": {
+      "source_mesh": "src/my_description/meshes/arm/link1.STL",
+      "sha256": "9ee6e1d67c0241f42a0dbaf5c676d19230375ed078ee1943bb8c4c37ab303d14"
+    },
+    "link5": {
+      "source_mesh": "src/my_description/meshes/arm/link5.STL",
+      "sha256": "a1c69d1c7f6f8c60e2c82331c0f444725200ed4053d3e5ec23aa82cb5db5b29f"
+    },
+    "link6": {
+      "source_mesh": "src/my_description/meshes/arm/dae/camera_v3.dae",
+      "sha256": "c5b74840458937912aea866ca1f50d3eed6417aa390ad7066739415ba5bdcdd4"
+    }
+  },
+  "poses": {
+    "old": {
+      "q_rad": [
+        -0.042708206796301246,
+        -0.03331833542057175,
+        0.01645845484630653,
+        0.10458012877950022,
+        0.45671775866187614,
+        -0.10260790672474664
+      ],
+      "q_deg": [
+        -2.447,
+        -1.909,
+        0.943,
+        5.992,
+        26.168,
+        -5.879
+      ],
+      "proxy_pair_gaps_m": [
+        0.0010831870447234632,
+        0.00526052143378217
+      ],
+      "proxy_pair_order": [
+        [
+          0,
+          18
+        ],
+        [
+          7,
+          18
+        ]
+      ],
+      "wrist_part_padded_support_gaps_m": {
+        "low": 0.001279584066627859,
+        "high": 0.0010831870447235326
+      },
+      "model_check_valid": true,
+      "original_mesh_pairs": {
+        "link1__link5": {
+          "surface_intersection": false,
+          "surface_distance_m": 0.001355080921990473,
+          "triangles": [
+            8954,
+            16672
+          ],
+          "query_ms": 4.153489,
+          "nearest_points": [
+            [
+              0.01574026024954759,
+              0.003831675345828843,
+              0.7240774161219597
+            ],
+            [
+              0.0162070768532554,
+              0.003811726315356412,
+              0.7253493943449764
+            ]
+          ]
+        },
+        "arm_base__link5": {
+          "surface_intersection": false,
+          "surface_distance_m": 0.05642773137192649,
+          "triangles": [
+            12146,
+            16672
+          ],
+          "query_ms": 2.831395,
+          "nearest_points": [
+            [
+              0.04077309604007403,
+              0.002918498191811285,
+              0.6590000029206277
+            ],
+            [
+              0.04328316429904716,
+              0.003197169221836067,
+              0.7153711903089968
+            ]
+          ]
+        },
+        "arm_base__link6": {
+          "surface_intersection": false,
+          "surface_distance_m": 0.07446389662176882,
+          "triangles": [
+            12146,
+            67590
+          ],
+          "query_ms": 5.764489,
+          "nearest_points": [
+            [
+              0.04098610684275627,
+              -0.001000150047497451,
+              0.6590000029206277
+            ],
+            [
+              0.06658167954050255,
+              -0.001444630741027494,
+              0.728925255836044
+            ]
+          ]
+        },
+        "link1__link6": {
+          "surface_intersection": false,
+          "surface_distance_m": 0.02188963715965023,
+          "triangles": [
+            8954,
+            67590
+          ],
+          "query_ms": 4.181362,
+          "nearest_points": [
+            [
+              0.01658348197604903,
+              0.02356345645078334,
+              0.7240774161219597
+            ],
+            [
+              0.02431671851470385,
+              0.02323298283408935,
+              0.7445528661733511
+            ]
+          ]
+        }
+      }
+    },
+    "current": {
+      "q_rad": [
+        -0.04089306437422714,
+        -0.03420845333908886,
+        0.021921335405048776,
+        0.10419615634406147,
+        0.4659680036974461,
+        -0.10234610733694748
+      ],
+      "q_deg": [
+        -2.343,
+        -1.96,
+        1.256,
+        5.97,
+        26.698,
+        -5.864
+      ],
+      "proxy_pair_gaps_m": [
+        -0.001508092109786027,
+        0.007034970731291927
+      ],
+      "proxy_pair_order": [
+        [
+          0,
+          18
+        ],
+        [
+          7,
+          18
+        ]
+      ],
+      "wrist_part_padded_support_gaps_m": {
+        "low": -0.0015080921097860966,
+        "high": -0.0009578255700867344
+      },
+      "model_check_valid": false,
+      "model_violations": [
+        "arm_self_collision"
+      ],
+      "coarse_fallback_pair": [
+        0,
+        18
+      ],
+      "coarse_fallback_gap_m": -0.00920677983950216,
+      "original_mesh_pairs": {
+        "link1__link5": {
+          "surface_intersection": true,
+          "surface_distance_m": 0.0,
+          "triangles": [
+            8954,
+            16672
+          ],
+          "query_ms": 0.083811,
+          "intersecting_triangle_ids": [
+            8604,
+            15784
+          ]
+        },
+        "arm_base__link5": {
+          "surface_intersection": false,
+          "surface_distance_m": 0.05399927450031692,
+          "triangles": [
+            12146,
+            16672
+          ],
+          "query_ms": 2.05412,
+          "nearest_points": [
+            [
+              0.04075076091960572,
+              0.003119676896834395,
+              0.6590000029206277
+            ],
+            [
+              0.04266351450865137,
+              0.00333203327835408,
+              0.712964972345574
+            ]
+          ]
+        },
+        "arm_base__link6": {
+          "surface_intersection": false,
+          "surface_distance_m": 0.07175414763732639,
+          "triangles": [
+            12146,
+            67590
+          ],
+          "query_ms": 5.534977,
+          "nearest_points": [
+            [
+              0.04098610684275627,
+              -0.001000150047497451,
+              0.6590000029206277
+            ],
+            [
+              0.06657763569326433,
+              -0.001384975889072484,
+              0.7260341976523055
+            ]
+          ]
+        },
+        "link1__link6": {
+          "surface_intersection": false,
+          "surface_distance_m": 0.01981257159349377,
+          "triangles": [
+            8954,
+            67590
+          ],
+          "query_ms": 4.195475,
+          "nearest_points": [
+            [
+              0.01652943402715356,
+              0.02330930341701935,
+              0.7240774161219597
+            ],
+            [
+              0.02379557795015294,
+              0.02301200278774218,
+              0.7425070867097214
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "delta_q_deg_current_minus_old": [
+    0.104,
+    -0.051,
+    0.313,
+    -0.022,
+    0.53,
+    0.015
+  ],
+  "resources": {
+    "python_max_rss_kib": 40588,
+    "mesh_children_max_rss_kib": 86896,
+    "mesh_child_address_space_limit_bytes": 1073741824,
+    "mesh_child_timeout_s": 20,
+    "openblas_num_threads": 1,
+    "omp_num_threads": 1
+  },
+  "conclusion": "The current pose intersects the unchanged original link1/link5 URDF collision triangle meshes. The current rejection cannot be treated as only a coarse-sphere or support-axis false positive. Physical/URDF consistency requires calibration evidence; no collision threshold was relaxed."
+}

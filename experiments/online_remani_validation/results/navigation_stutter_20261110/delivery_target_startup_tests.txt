@@ -1,0 +1,60 @@
+test_enable_status_change_during_handoff_rejects_delivery (test_mppi_startup.NativeStartupCycleTests) ... MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=5.70 ms; snapshot={})
+ok
+test_first_command_is_checked_and_zero_base_until_driver_ack (test_mppi_startup.NativeStartupCycleTests) ... ok
+test_first_mppi_command_waits_for_a_fresh_map (test_mppi_startup.NativeStartupCycleTests) ... MPPI command rejected: collision_snapshot_unavailable (cycle=0.54 ms; snapshot={})
+ok
+test_native_driver_can_start_without_map_or_mppi_plan (test_mppi_startup.NativeStartupCycleTests) ... MPPI command rejected: waiting_native_arm_startup (cycle=0.08 ms; snapshot={})
+ok
+test_navigation_goals_wait_for_confirmed_handoff (test_mppi_startup.NativeStartupCycleTests) ... ok
+test_obstacle_prevents_handoff_even_if_native_driver_is_ready (test_mppi_startup.NativeStartupCycleTests) ... MPPI command rejected: command_hold_or_braking_rejected_by_latest_state_or_map (cycle=3.03 ms; snapshot={})
+ok
+test_preexisting_or_pre_delivery_active_status_is_not_a_new_ack (test_mppi_startup.NativeStartupCycleTests) ... MPPI command rejected: native_startup_driver_already_claimed (cycle=0.45 ms; snapshot={})
+ok
+test_ready_report_does_not_override_actual_pose_or_velocity (test_mppi_startup.NativeStartupCycleTests) ... MPPI command rejected: native_startup_standby_not_reached (cycle=0.52 ms; snapshot={})
+MPPI command rejected: native_startup_standby_not_reached (cycle=0.53 ms; snapshot={})
+ok
+test_stop_or_stale_ack_cannot_complete_startup (test_mppi_startup.NativeStartupCycleTests) ... MPPI command rejected: arm_stop_latched (cycle=0.08 ms; snapshot={})
+ok
+test_already_normal_mode_does_not_run_startup_or_publish_enable (test_mppi_startup.StartupCycleTests) ... ok
+test_enable_arriving_during_preflight_cannot_authorize_that_plan (test_mppi_startup.StartupCycleTests) ... MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=17.47 ms; snapshot={})
+ok
+test_enabled_feedback_requires_a_later_cycle_and_new_command_stamp (test_mppi_startup.StartupCycleTests) ... MPPI command rejected: startup_enable_requested (cycle=16.83 ms; snapshot={})
+ok
+test_failed_collision_or_freshness_preflight_never_enables (test_mppi_startup.StartupCycleTests) ... MPPI command rejected: startup_joint_path_obstacle_rejected (cycle=2.00 ms; snapshot={})
+MPPI command rejected: collision_snapshot_unavailable (cycle=0.08 ms; snapshot={})
+MPPI command rejected: state_feedback_stale (cycle=0.08 ms; snapshot={})
+ok
+test_first_joint_sample_cannot_hide_missing_odometry_after_feedback_recovers (test_mppi_startup.StartupCycleTests) ... ok
+test_latched_startup_reports_stop_without_replanning_or_enabling (test_mppi_startup.StartupCycleTests) ... MPPI command rejected: arm_stop_latched (cycle=0.08 ms; snapshot={})
+ok
+test_map_pause_and_fresh_driver_hold_resume_without_reenabling (test_mppi_startup.StartupCycleTests) ... MPPI command rejected: collision_snapshot_unavailable (cycle=0.08 ms; snapshot={})
+ok
+test_measured_pose_and_speed_settle_continuously_before_reset_and_normal_mppi (test_mppi_startup.StartupCycleTests) ... ok
+test_observe_only_neither_enables_nor_completes_startup (test_mppi_startup.StartupCycleTests) ... ok
+test_older_healthy_feedback_cannot_restore_pre_enable_permission (test_mppi_startup.StartupCycleTests) ... MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=16.25 ms; snapshot={})
+MPPI command rejected: startup_enable_requested (cycle=16.61 ms; snapshot={})
+ok
+test_preflight_requests_enable_once_without_sending_an_arm_command (test_mppi_startup.StartupCycleTests) ... MPPI command rejected: startup_enable_requested (cycle=17.17 ms; snapshot={})
+MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=14.93 ms; snapshot={})
+ok
+test_rejected_startup_reports_external_collision_diagnostics (test_mppi_startup.StartupCycleTests) ... MPPI command rejected: no_feasible_candidate (cycle=8.88 ms; snapshot={})
+ok
+test_rejection_resets_the_measured_settling_interval (test_mppi_startup.StartupCycleTests) ... MPPI command rejected: collision_snapshot_unavailable (cycle=0.09 ms; snapshot={})
+ok
+test_startup_ignores_navigation_goal_and_finish_messages (test_mppi_startup.StartupCycleTests) ... ok
+test_unhealthy_stale_latched_feedback_or_disconnected_driver_never_enables (test_mppi_startup.StartupCycleTests) ... MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=16.33 ms; snapshot={})
+MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=16.54 ms; snapshot={})
+MPPI command rejected: arm_stop_latched (cycle=0.08 ms; snapshot={})
+MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=16.52 ms; snapshot={})
+ok
+test_clear_endpoints_do_not_hide_an_obstacle_inside_joint_path (test_mppi_startup.StartupGeometryTests) ... ok
+test_clear_path_uses_actual_geometry_and_zero_base_controls (test_mppi_startup.StartupGeometryTests) ... ok
+test_configuration_collision_at_current_pose_is_rejected (test_mppi_startup.StartupGeometryTests) ... ok
+test_external_obstacle_at_current_pose_rejects_preflight (test_mppi_startup.StartupGeometryTests) ... ok
+test_moving_base_does_not_start_arm_initialization (test_mppi_startup.StartupGeometryTests) ... ok
+test_recorded_folded_pose_can_start_but_external_wrist_obstacle_still_blocks (test_mppi_startup.StartupGeometryTests) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 0.821s
+
+OK

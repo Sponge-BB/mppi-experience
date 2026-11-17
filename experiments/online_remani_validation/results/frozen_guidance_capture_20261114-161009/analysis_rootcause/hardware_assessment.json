@@ -1,0 +1,78 @@
+{
+  "tested_version": "20261114-160514-frozen-guidance",
+  "parent_version": "20261114-155510-before-frozen-guidance",
+  "hardware_result": "ISSUES_OBSERVED_NOT_PASSED",
+  "runtime_files_unchanged": {
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": true,
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": true,
+    "src/mm_remani/scripts/whole_body_mppi.py": true,
+    "src/mm_remani/test/test_mppi_native_phase.py": true,
+    "src/mm_remani/test/test_mppi_collision.py": true,
+    "src/mm_remani/test/test_mppi_frozen_guidance.py": true
+  },
+  "recorded_goal_count": 1,
+  "recorded_goal_to_finish_s": 37.075,
+  "findings": [
+    {
+      "name": "advance_pause_target_conflict",
+      "evidence": "guide_replay_report.json",
+      "actual_first_controls_reproduced": 295,
+      "all_reproduced": true,
+      "uninterrupted_delivery_window_s": [
+        9.16,
+        12.45
+      ],
+      "uninterrupted_delivery_status_count": 33
+    },
+    {
+      "name": "unpaused_endpoint_branch_oscillation",
+      "evidence": "guide_replay_rows.jsonl",
+      "endpoint_distances_mm": [
+        24.73,
+        25.28,
+        24.22,
+        25.83
+      ],
+      "angular_commands_rad_s": [
+        0.187,
+        -0.35,
+        0.092,
+        -0.35
+      ]
+    },
+    {
+      "name": "native_phase_angular_capacity_mismatch",
+      "phase_scaled_max_angular_demand_rad_s": 0.81236,
+      "mppi_cap_rad_s": 0.35,
+      "delivered_nominal_frames_above_cap": 19
+    },
+    {
+      "name": "independent_map_age_delivery_rejections",
+      "navigation_states_rejected": 57,
+      "navigation_states_total": 370
+    }
+  ],
+  "previous_validation_gap": "Fixed frozen-pose fixtures did not cover the closed loop of native progress, recovery, resumed lookahead and gear endpoint transitions.",
+  "next_implementation_scope": "One consistent phase-indexed reference and nominal tracking law over advancing, frozen, resumed and gear-end states; match native progress to fast execution capacity; full coupled regression before real deployment.",
+  "limits": [
+    "Only one goal captured; no separate post-arrival goal was recorded.",
+    "Counterfactual exact input replay is not a new vehicle rollout.",
+    "No live control/driver/SDK changes or commands in this analysis."
+  ],
+  "coupled_ideal_fixture": {
+    "clock_completed": true,
+    "elapsed_s": 17.51,
+    "freeze_events": 0,
+    "max_reference_yaw_error": 0.5347273897505733,
+    "reproduced_real_oscillation": false,
+    "scope": "Ideal fresh feedback and no map rejection; not a calibrated hardware model or a passed repair."
+  },
+  "coupled_recorded_delivery_fixture": {
+    "result_file": "coupled_recorded_delivery_report.json",
+    "recorded_delivery_pattern_used": true,
+    "parameters_tuned": false,
+    "advance_pause_goal_conflict_reproduced": true,
+    "active_endpoint_branch_conflict_reproduced": true,
+    "physical_trajectory_fit": false
+  }
+}

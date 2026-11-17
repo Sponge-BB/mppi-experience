@@ -1,0 +1,74 @@
+动态运动资格最小修改方案（仅方案，2026-11-17）
+
+推荐单一方案
+先对原surfaceSupportsTranslation做不改变决策的失败项记录，并用现有geometry重现三次拒绝；拿到原函数的双向距离证据后，只修正得到证据支持的那一处判据或表面构造问题。当前不预设5cm应改成多少，也不新增多锚点投票等资格框架。
+这是一个明确问题：“真实进入路径的目标为何未通过首次表面运动资格”。本轮未改运行源码、未编译、未启动ROS回放、未发机器人指令。
+
+1. 已知事实与不能越过的边界
+analysis/dynamic_tracking_audit.txt给出三条唯一why=surface_translation的证据：
+  rosout_agg.jsonl L27147 t1794883331.187374 id1044；
+  L31865 t1794883388.221117 id1214；
+  L31957 t1794883389.311721 id1214。
+它们的coherent_motion前置条件通过，唯独最终表面验收失败；用户确认目标2期间实际进入并离开路径。日志尚无表面匹配数值，尚未把这些track与用户身份/精确进出时刻一一对应。
+不能因“存在surface拒绝”直接推断是容差过小、非刚性肢体、首尾可见表面变化、簇错误关联，或静态点混入。以上都需要几何重现区分。
+
+2. 第一轮可具体实施的最小改动
+修改范围限定三个已有文件：
+  src/mm_remani/src/dynamic_obstacle_tracker_core.cpp
+  src/mm_remani/include/mm_remani/dynamic_obstacle_tracker_core.h
+  src/mm_remani/src/dynamic_obstacle_tracker_node.cpp
+及原有test_dynamic_obstacle_tracker_core.cpp中的相应测试。
+
+在core.cpp:61-120原函数增加可选诊断结果，记录本次已算出的标量，不增加最近邻搜索：
+- previous/current表面有效点数、每方向实际采样点数；history首尾原始stamp及实际translation、tolerance。
+- forward与reverse的stationary median distance²、translated median distance²。
+- 分别记录三项布尔结果：stationary>tol²、moving<=tol²、moving<.25*stationary；缺少3个点时单列insufficient_surface。
+- 保留现有求值/短路顺序：如forward先失败、reverse未执行，应标reverse_evaluated=false，不能伪造另一方向通过。若离线需要补算反向，仅离线探针运行，不进入部署控制路径。
+- :734-740调用处将这些标量带入MotionQualificationDiagnostic，node.cpp:45-79沿用现有约1Hz资格日志输出；不另开高频点云话题、不持久复制历史表面。
+- 保留原bool返回值、5cm容差、双向AND和4倍改善条件，以及全部前置motion条件。诊断开关前后运动输出必须逐位一致。
+这样下一次复现可以直接回答“是平移后仍对不上，还是未平移也对得上，还是相对改善不足”，避免凭一个surface=rejected继续猜阈值。
+
+3. 现有数据与回放可行性
+现有geometry.bag约489MiB，recording_start.json明确全发布频率记录/velodyne_points与/velodyne_points_mapping，无主动降采样。
+本次tracker实际输入/velodyne_points；应使用此路，不能换mapping支路。core.bag含/tf、/tf_static、/map_to_odom、/map_correction_applied及诊断。
+原tracker的输入变换、PCL体素/残差/聚类都在dynamic_obstacle_tracker_node.cpp:344-629；应该复用原node和原core，不另写近似Python聚类作为验收依据。
+未找到现成“本次geometry直接精确重建tracker”的小型回放入口。现有CMake的test_dynamic_obstacle_tracker_core是纯core单元测试入口；网上/历史名字带replay的MPPI脚本不是本问题的tracker回放。
+
+静态参考是一个缺口：core/geometry记录的topic清单没有/map_generator/global_cloud。
+当时global_map_publisher使用src/mm_remani/maps/exp0_planner.pcd，input_is_preprocessed=true，robot_map_z=-.075，map roll/pitch/yaw为0；其完整参数在latest_parameters.json。
+可复用publish_shifted_pcd.py结合记录的map correction重建静态参考，但必须先验证PCD版本/校正时序，并与原日志“28137 points in world”及残差/簇计数核对。点数相同只是必要检查，不是几何完全一致的证明。
+若记录的/velodyne_points原始frame已是world，可复用原变换恒等分支；否则必须按同一source stamp回放TF。尚未在本任务读取几何帧验证其实际frame，不能预先省略该检查。
+
+最小回放步骤（后续获准实施时）：
+1) 在隔离ROS master仅启动原tracker的诊断构建及静态参考发布器；输出重映射到/replay命名空间，不启动planner、底盘、机械臂或导航节点。
+2) 使用/use_sim_time及原消息时间戳，流式回放上述所需topic；播放选择中不包含cmd_vel、joint_ctrl或目标话题。以不丢tracker输入帧为准控制速率，不能靠加速播放制造queue_size丢帧。
+3) 从原始起点建立静态背景锚/轨迹历史，顺序处理到三次事件；只把事件前后少量帧和标量另存为回归fixture。不能将两秒片段冷启动后track ID不同视作原运行精确重现。
+4) 对照source stamp、residual、clusters、轨迹中心/历史长度以及why，先证明旧实现确实复现拒绝，再尝试修复。Independent TCPROS记录可能与原tracker收到的帧不同，应显式报告缺帧，不补造数据。
+5) 每次只持有当前云、静态KD树及原有有界track history；不把489MiB bag整体读入内存，不构建新管理平台。
+
+4. 如何让真实人运动与静态表面保护兼容
+现有算法已经有躯干稳定核心：core.cpp:125-181在目标够高且有足够点时取相对高度35%-90%区域，中心和motion_surface使用相同真实点。已有行走测试只验证合成稳定躯干加交替腿；它不能保证实测人体可见表面变化也能通过。
+应先在三次fixture中检查：是否用了stable core、两端core高度界/点数是否一致、首尾surface包含什么、双向距离为何失败。只在查明是某个具体构造/对照错误后改该处；保留完整碰撞点集输出，不通过削掉障碍点提高运动资格。
+严格保护已有静态负样本：静态面遮挡导致中心漂移、静态平面滑动视窗，即使速度/方向/效率看似合格，仍不得首次进入动态层；不能仅因为coherent_motion通过就绕过surface门。
+对任一最终补丁，验收要求“真实、已核对身份的进出fixture可首次运动合格”与“原静态负例仍不合格”同时成立。正例拿不准身份时不将它作为必须变阳性的标签。
+
+5. 已有可直接复用的验证入口
+src/mm_remani/CMakeLists.txt:54-60的test_dynamic_obstacle_tracker_core。
+现有tests至少包括：
+- MotionQualificationDiagnostics.DoesNotChangeTrackingBitsOrPersistentMemory（:164），验证诊断不改变轨迹输出或持久状态。
+- ProductionWalkingProfilePassesWithoutRetuning（:196），固定真实profile的合成人运动。
+- SurfaceRejectionIsDistinctFromUnevaluated（:231），真实profile静态滑动视窗，唯一拒绝应为surface。
+- MovingAnchorWithoutSurfaceDoesNotQualify（:510），禁止仅中心运动、无表面证据首次放行。
+- LosingPartOfStaticSurfaceIsNotMotion（:527）、SlidingViewOfStaticSurfaceIsNotMotion（:562），保护遮挡/可见子集变化。
+- RealTranslationWithSamplingNoiseStillQualifies（:590）、WalkingPersonUsesMovingTorsoDespiteLegChanges（:610），保留已有正例。
+新增测试应保存本次实际重建的短fixture和source stamp，不改fixture制造通过；至少覆盖三次事件及相邻未进入/离开后的静态场景。诊断补丁前后原轨迹/资格位逐位一致；真正行为补丁只允许预期fixture改变，并记录首次资格延迟与误报。
+同时比较tracker processing_ms/内存和下游动态点输出，防止为资格修复增添新的主机延迟。
+
+6. 当前不推荐直接实施的做法
+- 不直接放宽5cm、4倍改善、速度/点数/效率门限；目前没有距离分布支持具体新数值。
+- 不删除surface门；已有静态滑动视窗明确能通过其他motion谓词。
+- 不把多锚点、多帧投票列为已确定补丁。如果回放证明唯一原因是最老首帧可见表面异常且中间真实表面持续支持运动，它才是备选；需独立验证静态假阳性和计算开销，不能为了“方案具体”先加新状态机。
+
+版本交付要求
+后续动运行代码前按AGENTS核对当前回退基线；诊断和实际行为修复分别记录明确版本/父版本，不把两件事混为“已经修好”。涉及core头/库时保存对应libdynamic_obstacle_tracker_core.so与dynamic_obstacle_tracker_node，源码和部署配套；单job干净受影响包构建，旧build不覆盖恢复库。
+本轮仅写本方案，没有新运行版本，也没有实车验证通过结论。下一步最小可执行交付是“原始三事件可复现+原函数具体失败项”，之后才能给出有证据支持的单一行为修补。

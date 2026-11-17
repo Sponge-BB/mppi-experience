@@ -1,0 +1,27 @@
+{
+  "trigger_local": "2026-11-13 09:53:39.752 Asia/Shanghai",
+  "reason": "joint feedback expired",
+  "accepted_source_age_ms": 151.303,
+  "sdk_source_age_ms": 151.303,
+  "sdk_pair_update_age_ms": [
+    13.347,
+    13.281,
+    13.221
+  ],
+  "pair_spread_ms": 0.125,
+  "pair_advanced": [
+    false,
+    false,
+    false
+  ],
+  "source_age_threshold_ms": 150.0,
+  "kernel_to_sdk_delay_estimate_ms": 138.082,
+  "interpretation": "SO_TIMESTAMPNS kernel receive time is preserved as SDK source timestamp. SDK pair counter update time uses perf_counter. Subject to wallclock continuity, difference supports host receive-to-SDK-processing delay, not CAN on-wire transmission duration. Exact share of scheduling/GIL/locks/socket backlog is unproven.",
+  "guard": "A single >=150ms freshness failure immediately sends quick-stop and latches. Command-stream expiry separately retains last bounded MOVEJ target with motors enabled.",
+  "raw_can_gap": "Independent raw CAN baseline ended around09:53:30; next companion started09:54:06.842. This trigger instant is not covered. Subsequent fresh CAN traffic cannot establish trigger-time continuity.",
+  "capture_effect_caveat": "Failure occurred after record segment rotation/subscriber reconnect. Added observation load must not be excluded without evidence. Increasing height to3m also increases point processing; neither is established as the specific cause.",
+  "goal_count": 0,
+  "map_retest_complete": false,
+  "source_changes_this_turn": false,
+  "no_robot_command_sent": true
+}

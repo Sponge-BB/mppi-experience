@@ -1,0 +1,21 @@
+{
+  "reviewer": "audit_candidate_failure",
+  "blocking_findings": [],
+  "checked": [
+    "生产callReboundReplan失败恢复last_published_trajectory",
+    "tryMppiRefresh失败恢复local_target/start与两global游标",
+    "不写回exec_state、不清安全owner、不进入普通20次retry",
+    "goal与reference头戳相同、旧消息被拒",
+    "terminal/finish先于refresh执行",
+    "实际交付启动episode、4clear复位、拒绝打断clear、换参考不重复、源时间区分进程重启"
+  ],
+  "considered_not_adopted": {
+    "suggestion": "用mppi_terminal_control_限制事件",
+    "decision": "不采用；该开关负责终点策略，事件不应依赖它。无MPPI执行节点时无事件发布，仍需同目标/参考/来源有效性门。"
+  },
+  "limitations": [
+    "优化同步运行，额外耗时须实测",
+    "不是前缀注入",
+    "测试求解/几何/通信边界有桩，实车未验"
+  ]
+}

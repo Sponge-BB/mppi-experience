@@ -1,0 +1,78 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Name: Local odometry grid
+      Enabled: true
+      Cell Size: 0.25
+      Plane: XY
+      Reference Frame: world
+    - Class: rviz/PointCloud2
+      Name: Measured filtered cloud
+      Enabled: true
+      Topic: /standby_trial_20261106_distributed_08/perception/filtered_points
+      Queue Size: 1
+      Decay Time: 0
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: AxisColor
+      Position Transformer: XYZ
+    - Class: rviz/PointCloud2
+      Name: Measured raw cloud (optional)
+      Enabled: false
+      Topic: /standby_trial_20261105_feedback_02/sensors/lidar_pcl2
+      Queue Size: 1
+      Decay Time: 0
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: AxisColor
+      Position Transformer: XYZ
+    - Class: rviz/MarkerArray
+      Name: Measured robot and MPPI proposals - no execution
+      Enabled: true
+      Marker Topic: /standby_trial_20261106_distributed_08/markers
+      Queue Size: 1
+    - Class: rviz/Path
+      Name: REMANI planned path - no execution
+      Enabled: true
+      Topic: /standby_trial_20261106_distributed_08/native/path
+      Queue Size: 1
+      Buffer Length: 1
+      Color: 80; 230; 120
+      Line Style: Lines
+      Line Width: 0.02
+      Pose Style: None
+  Enabled: true
+  Global Options:
+    Background Color: 35; 38; 45
+    Fixed Frame: world
+    Frame Rate: 10
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/SetGoal
+      Topic: /standby_trial_20261106_distributed_08/goal
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 4
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0.65
+      Pitch: 0.35
+      Yaw: 0.8
+Window Geometry:
+  Hide Left Dock: false
+  Hide Right Dock: true
+  Width: 1000
+  Height: 700

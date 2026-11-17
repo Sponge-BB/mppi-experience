@@ -1,0 +1,210 @@
+{
+  "scope": "actual stationary shadow only; no actuator nodes or commands",
+  "reason": "memory_threshold_reached",
+  "duration_s": 13.918977087001622,
+  "counts": {
+    "raw": 139,
+    "joints": 2329,
+    "odom": 107,
+    "status": 217,
+    "unhealthy": 1,
+    "filtered": 73
+  },
+  "status_counts": {
+    "waiting_stationary_anchor": 10,
+    "static_not_received": 162,
+    "state_time_misalignment": 44,
+    "waiting_valid_cloud_inputs": 1
+  },
+  "last_status": {
+    "ros_stamp": 1793939225.5768688,
+    "planning_snapshot_stamp": 1793939225.5766697,
+    "monotonic_elapsed": 7.789114434999647,
+    "mode": "integration_recording",
+    "status": "waiting_valid_cloud_inputs",
+    "ready_for_actuation": false,
+    "hardware_execution_eligible": false,
+    "commands_executed": false,
+    "original_filter_shadow_only": true,
+    "collision_query_sources": [
+      "filtered_cloud",
+      "static_cloud",
+      "dynamic_cloud"
+    ],
+    "raw_cloud_role": "required_fresh_input_and_coverage_diagnostic_only",
+    "namespace": "/standby_trial_20261106_stationary_07",
+    "sources": {
+      "odom": "/standby_trial_20261105_feedback_02/sensors/odom",
+      "joints": "/standby_trial_20261105_feedback_02/sensors/joint_states",
+      "raw_cloud": "/standby_trial_20261105_feedback_02/sensors/lidar_pcl2",
+      "filtered_cloud": "/standby_trial_20261106_stationary_07/perception/filtered_points",
+      "dynamic_cloud": "/standby_trial_20261106_stationary_07/perception/dynamic_points",
+      "static_cloud": "/standby_trial_20261106_stationary_07/perception/background",
+      "perception_health": "/standby_trial_20261106_stationary_07/perception/dynamic_obstacle_tracker/perception_healthy"
+    },
+    "errors": {
+      "raw_cloud": "Lookup would require extrapolation 0.000564336s into the future.  Requested time 1793939225.445229530 but the latest data is at time 1793939225.444665194, when looking up transform from frame [standby_feedback_02_livox_frame] to frame [standby_feedback_02_odom]",
+      "filtered_cloud": "Lookup would require extrapolation 0.000564336s into the future.  Requested time 1793939225.445229530 but the latest data is at time 1793939225.444665194, when looking up transform from frame [standby_feedback_02_livox_frame] to frame [standby_feedback_02_odom]"
+    },
+    "input_transport_latency_s": {
+      "joints": 0.0015590190887451172,
+      "odom": 0.0320436954498291,
+      "raw_cloud": 0.12899518013000488,
+      "perception_health": 4.124641418457031e-05,
+      "filtered_cloud": 0.13109183311462402
+    },
+    "clouds": {
+      "raw_cloud": {
+        "stamp": 1793939225.3453257,
+        "frame": "standby_feedback_02_odom",
+        "points": 4000
+      },
+      "filtered_cloud": {
+        "stamp": 1793939225.3453257,
+        "frame": "standby_feedback_02_odom",
+        "points": 4000
+      }
+    },
+    "near_arm_raw_diagnostic": {
+      "raw_nearest_arm_surface_gap_m": 0.27237977398307733,
+      "meaning": "unfiltered_raw_may_include_arm_self_returns_not_clearance_certificate"
+    },
+    "cloud_callback_profiles": {
+      "raw_cloud": {
+        "callback_ros_stamp": 1793939225.5474098,
+        "source": "raw_cloud",
+        "width": 19378,
+        "height": 1,
+        "wire_bytes": 310048,
+        "decode_ms": 1.2834389999625273,
+        "tf_lookup_ms": 0.0,
+        "transform_ms": 0.0,
+        "surface_ms": 0.0,
+        "lock_wait_ms": 0.0,
+        "message_stamp": 1793939225.4452295,
+        "age_at_callback_entry_s": 0.10218024253845215,
+        "invalid_zero_returns_removed": 3616,
+        "accepted": false,
+        "error": "Lookup would require extrapolation 0.000564336s into the future.  Requested time 1793939225.445229530 but the latest data is at time 1793939225.444665194, when looking up transform from frame [standby_feedback_02_livox_frame] to frame [standby_feedback_02_odom]",
+        "callback_total_ms": 21.868026999072754,
+        "age_at_callback_exit_s": 0.1240394115447998
+      },
+      "filtered_cloud": {
+        "callback_ros_stamp": 1793939225.5508733,
+        "source": "filtered_cloud",
+        "width": 6031,
+        "height": 1,
+        "wire_bytes": 96496,
+        "decode_ms": 0.44283200077188667,
+        "tf_lookup_ms": 0.0,
+        "transform_ms": 0.0,
+        "surface_ms": 0.0,
+        "lock_wait_ms": 0.0,
+        "message_stamp": 1793939225.4452295,
+        "age_at_callback_entry_s": 0.10564374923706055,
+        "accepted": false,
+        "error": "Lookup would require extrapolation 0.000564336s into the future.  Requested time 1793939225.445229530 but the latest data is at time 1793939225.444665194, when looking up transform from frame [standby_feedback_02_livox_frame] to frame [standby_feedback_02_odom]",
+        "callback_total_ms": 20.79362000040419,
+        "age_at_callback_exit_s": 0.1264350414276123
+      }
+    },
+    "input_age_s": {
+      "raw_cloud": 0.23154306411743164,
+      "filtered_cloud": 0.23154306411743164
+    },
+    "odom_stamp": 1793939225.544545,
+    "joint_stamp": 1793939225.5742128,
+    "joint_velocity_source": "bounded_named_position_difference_rad_per_s",
+    "odometry_validation": {
+      "accepted_samples": 78,
+      "requires_restart": false,
+      "fault": null,
+      "validation": "direct_pose_and_measurement_receipt_continuity"
+    },
+    "base_height_convention": "ground_z_zero_odom_z_not_added",
+    "odom_z_ignored": 0.115,
+    "state": [
+      -0.26955613416936974,
+      -0.024142109193273344,
+      0.000775561233571124,
+      -0.003906514208302362,
+      -0.00681798833258714,
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "anchor": [
+      -0.26830887176153256,
+      -0.014473385008185995,
+      0.002514826169688029
+    ],
+    "arm_reference": [
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977
+    ],
+    "proposed_controls": null,
+    "decision_ms": 0.2175760000682203,
+    "solve_ms": 1.9093170012638438,
+    "kernel_diagnostics": {},
+    "limitations": [
+      "model_geometry_not_hardware_validated",
+      "surface_cloud_not_known_free_space",
+      "original_passthrough_cropbox_not_motion_certified",
+      "cloud_downsampling_not_collision_certificate",
+      "hardware_commissioning_separate_from_offline_validation"
+    ],
+    "command_gateway": {
+      "enabled": false,
+      "reason": "disabled_at_startup",
+      "sent": 0,
+      "last_sequence": -1,
+      "hardware_motion_validated": false
+    }
+  },
+  "clouds": {
+    "raw": {
+      "count": 19462,
+      "stamp": 1793939227.0452003,
+      "frame": "standby_feedback_02_livox_frame"
+    },
+    "filtered": {
+      "count": 6031,
+      "stamp": 1793939225.4452295,
+      "frame": "standby_feedback_02_livox_frame"
+    }
+  },
+  "joints": {
+    "stamp": 1793939225.5791435,
+    "q": [
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977
+    ]
+  },
+  "maximum_tree_rss_mib": 579.7578125,
+  "minimum_available_mib": 3068.4921875,
+  "per_process_address_space_limit_mib": 768,
+  "memory_floor_mib": 3072,
+  "can_tx_before": 0,
+  "can_tx_after": 0,
+  "actuator_publishers": [],
+  "owned_processes_remaining": [],
+  "hardware_commands_sent": false,
+  "recording_only": true
+}

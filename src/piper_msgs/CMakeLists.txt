@@ -76,6 +76,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   PiperStatusMsg.msg
+  PiperExecutionState.msg
   PosCmd.msg
   PiperEulerPose.msg
 )
@@ -124,7 +125,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES piper
- CATKIN_DEPENDS actionlib actionlib_msgs control_msgs roscpp rospy sensor_msgs std_msgs trajectory_msgs message_generation geometry_msgs
+ CATKIN_DEPENDS actionlib actionlib_msgs control_msgs roscpp rospy sensor_msgs std_msgs trajectory_msgs message_generation message_runtime geometry_msgs
 #  DEPENDS system_lib
 )
 

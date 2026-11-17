@@ -1,0 +1,91 @@
+新库实车地图性能：20261113-172845-map-latency
+已用hai完整compact源日志修正：bag中的rosout_agg缺消息，先前“连续59秒停止”判断撤回。
+仅离线读取日志、小topic和各级头；未发送动作，未修改生产文件。
+runtime_library.json确认planner映射的库inode与验证过的部署版本一致。
+
+1. 目标窗口（goal header源戳）
+  G1 17:45:13.126941 -> 下一目标17:45:36.935839。
+  G2 17:45:36.935839 -> 17:46:24.177130；17:46:20.458源日志Give up。
+  G3 17:46:24.177130 -> 17:46:40.682124；17:46:38.436源日志Give up。
+  G4 17:46:40.682124 -> bag末17:48:52.243411。
+本袋没有planning/finish，不能据此宣布任何目标正式完成。
+首目标前均不是本轮导航观测窗口。G1/G3有terminal_yaw_alignment，
+这属于目标过程的一部分，不当作纯直行比较。
+
+2. 地图计算观测改进（pipeline已换用完整compact日志）
+G1完整目标观察窗：ESDF窗口平均值中位77.44ms，首次地图可见年龄中位141.995ms，
+新fusion间隔中位144.456ms；map_age>350拒绝5/186，95ms拒绝0。
+G2到Give up：79.94ms，141.883ms，142.416ms；map_age>350为12/418，95ms拒绝3。
+G3到Give up：76.83ms，136.132ms，148.675ms；map_age>350为3/124，95ms拒绝0。
+G1包含一次0.518秒perception停，已在JSON进一步拆开；不是全程无安全停。
+实际LocalESDF输入约188.65万至227.77万体素，0.6m cap保持，
+不是通过降低距离范围或地图分辨率获得这些数值。
+
+正确的旧基线是15:43:07.631 -> 15:43:39.907导航段：
+ESDF窗口平均值中位135.04ms；首次可见年龄中位200.25ms；fusion间隔中位198.25ms。
+其map_age>350接收状态125/291（源时刻校正后124条），95ms拒绝2。
+新旧路线、点云、变化体素、占据厚度和CPU负载不同，不能称严格受控A/B。
+这些是现场观测改进，与离线同输入验证相互补充，而不能替代同输入基准。
+pipeline值是5秒窗口平均值的中位数，不是每帧P50，窗口可能跨目标边界。
+
+3. 完整compact日志纠正了安全停事件，不能将缺日志当成连续长停
+源日志Depth Lost -> release：
+  17:45:25.205437 -> 17:45:25.723516，0.518078秒。
+  17:46:50.894377 -> 17:46:51.422107，0.527730秒。
+  17:46:58.285767 -> 17:47:02.217935，3.932168秒。
+  17:47:48.715153 -> 17:47:49.508416，0.793263秒。
+  17:47:54.101508 -> 17:47:54.594307，0.492799秒。
+  17:48:02.127061 -> 17:48:53.235957，51.108897秒，恢复已超出bag末。
+  17:48:55.306667 -> 17:48:56.017166，0.710499秒，整对已在bag之后。
+这些都见perception_recovery_events_complete_log.json；不再沿用“17:46:50到17:47:49连续59秒”。
+
+第四目标性能分段：
+  G4初段17:46:40.682 -> Depth Lost 17:46:50.894：
+    ESDF中位73.98ms，首次地图可见134.008ms，fusion间隔145.898ms；
+    74条status中1条map_age>350、1条95ms拒绝。
+  17:46:51.422恢复后至58.285又停；17:47:02.217恢复后运行至48.715又停。
+    这两段ESDF窗口平均值中位约75.47/75.99ms。
+  17:47:49.508 -> 54.101、54.594 -> 17:48:02.127两段中，
+    ESDF中位109.98/116.87ms；各有8/13条map_age>350拒绝、95ms拒绝均0。
+后段确有退化，现有数据未单独证明是算法fallback、输入改变还是CPU调度。
+G4整窗507条snapshot_unavailable中490条h4=false，471条dynamic_valid=false，
+501条map_age>350，包含长时间安全停段，不能将其全部归为正常计算性能。
+
+4. 全袋95ms总数会误导
+全袋173 planning+115 delivery=288次预算拒绝；
+首目标后四个目标观察窗1926条status合计仅5次预算拒绝，另283次在首目标前。
+首3目标成功交付cycle中位34.79/40.22/28.84ms，max75.78/94.51/88.58ms。
+本文件不据此解释调头或人出现停车，那些需要控制/碰撞/恢复事件的独立原因分析。
+
+5. 记录边界
+云payload因预算最后在17:45:42.10（三上游）/42.844（mapping）保存。
+cloud_headers仍记全部收到回调，注册/去地头持续到17:48:52.207/208。
+自滤波/ mapping头真正最后为17:48:01.135/141，源戳17:48:01.082，
+与17:48:02.127这次Depth Lost相符，不能把该真实下游断流归咎payload预算。
+G1注册/去地源间隔最高103ms，下游出现1.2s源间隔；
+G3上游最高102ms，下游600ms；这些缺口应从全速头分析而非1Hz payload推断。
+
+6. 关节输入与自滤证据链（不扩大为物理CAN结论）
+17:46:50.154753 -> 50.769767发布的raw JointState源断档615.014ms；
+filtered到50.819769恢复，断档665.015ms。50.772自滤明确报joint feedback unavailable/stale；
+去地云连续，下游源从50.082982跳到50.882862约800ms，随后触发Depth Lost。
+17:48:01.109907 -> 04.154905 raw q源断档3044.997ms；filtered到04.209893恢复。
+但mapping在01.082144之后直至bag末都无输出；07.202仍报joint unavailable/stale，
+10.382/15.525/52.306/52.775报scan/joint source time unavailable/stale。
+这说明51秒长停还包含自滤扫描/关节证据链持续失效，不能仅由最初3秒q缺口解释，
+更不能无独立CAN抓帧就断言是物理CAN断流。具体回调排队/源时间/锁等仍需专门证据。
+
+源时间约定
+goal/log/odom使用各自header源戳；String status和cmd_vel没有header，用接收时刻。
+h3是占据提交时间、h17是ESDF-copy获取时间，均不是雷达源戳。
+按新fusion计算可见年龄，避免把移动ROI导致的同fusion cache版本变化重复计数。
+
+文件
+map_performance_window_summary.json：目标整窗、剔除perception停止的分段、pipeline、
+  LocalESDF输入体素/变化量、snapshot年龄与各级云源间隔。
+performance_stutter_analysis.json：小topic计数、速度指令和状态分布。
+cloud_payload_header_recording_boundaries.json：payload和header结束时刻。
+performance_pipeline_metrics.json、performance_runtime_logs.jsonl：原始可核对指标。
+performance_pipeline_metrics_complete_log.json：完整compact提取的性能窗口（以此为准）。
+depth_lost_q_and_cloud_chain.json：两处关节源缺口、上下游头和近邻日志。
+runtime_logs/hai_navigation_logs.jsonl：完整compact日志，是恢复事件权威边界。

@@ -22,6 +22,16 @@ namespace remani_planner
         MMConfig() {}
         ~MMConfig() {}
 
+        struct DynamicCollisionEvidence {
+            GridMap::DynamicObstacleHit hit;
+            Eigen::Vector3d query = Eigen::Vector3d::Zero();
+            double threshold = 0.0;
+            int collision_type = -1;
+            int base_sphere = -1;
+            int arm_link = -1;
+            int arm_point = -1;
+        };
+
         int getManiDof() const {
             return manipulator_dof_;
         }
@@ -68,7 +78,11 @@ namespace remani_planner
         bool checkCarPlanningObsCollision(Eigen::Vector3d car_state, bool precise, bool safe, double &min_dist);
         bool checkManiPlanningObsCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, double &min_dist);
         bool checkCarDynamicObsCollision(Eigen::Vector3d car_state, bool safe, double &min_dist);
+        bool checkCarDynamicObsCollision(Eigen::Vector3d car_state, bool safe, double &min_dist,
+                                         DynamicCollisionEvidence *evidence);
         bool checkManiDynamicObsCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, double &min_dist);
+        bool checkManiDynamicObsCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, double &min_dist,
+                                          DynamicCollisionEvidence *evidence);
         bool checkCarPredictedDynamicObsCollision(
             Eigen::Vector3d car_state, const ros::Time &query_time,
             const plan_env::DynamicPointSnapshot &snapshot, bool safe,
@@ -85,6 +99,8 @@ namespace remani_planner
         bool checkcollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type /*0: car, 1: mani, 2: car-mani, 3: mani-mani*/);
         bool checkPlanningCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type);
         bool checkDynamicObstacleCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type);
+        bool checkDynamicObstacleCollision(Eigen::Vector3d car_state, Eigen::VectorXd mani_state, bool safe, int &coll_type,
+                                           DynamicCollisionEvidence *evidence);
         bool checkPredictedDynamicObstacleCollision(
             Eigen::Vector3d car_state, Eigen::VectorXd mani_state,
             const ros::Time &query_time,

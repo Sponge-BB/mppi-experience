@@ -1,0 +1,85 @@
+{
+  "status": "Read-only proposal; wait for independent baseline before runtime edits",
+  "purpose": "One reproducible witness at the actual raw/live collision emergency stop, no search-level logging and no collision decision change",
+  "files": [
+    {
+      "path": "src/mm_remani_planner/plan_env/include/plan_env/grid_map.h",
+      "change": "Declare small DynamicObstacleHit POD and explicit 3-argument getDynamicObstacleDistance overload; keep original signature."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "function": "GridMap::getDynamicObstacleDistance at 4449",
+      "change": "Original signature delegates to evidence overload with nullptr. Existing loop and strict min update unchanged. If evidence requested, retain nearest accepted voxel id/center, occupancy log value and distance on original dist<min_dist branch; no logging, no search repetition."
+    },
+    {
+      "path": "src/mm_remani_planner/mm_config/include/mm_config/mm_config.hpp",
+      "change": "Declare DynamicCollisionEvidence with GridMap hit plus queried world sphere center, exact threshold, kind/base sphere or arm link/point indices; explicit evidence overloads, old signatures retained."
+    },
+    {
+      "path": "src/mm_remani_planner/mm_config/src/mm_config.cpp",
+      "functions": [
+        "checkCarDynamicObsCollision:895",
+        "checkManiDynamicObsCollision:912",
+        "checkDynamicObstacleCollision:1094"
+      ],
+      "change": "On the first existing dist<safe_dist return, fill evidence from that exact query. Keep current base-first/arm-next ordering, threshold and bool semantics. Calls without evidence do not retain witnesses."
+    },
+    {
+      "path": "src/mm_remani_planner/traj_opt/include/optimizer/poly_traj_optimizer.hpp",
+      "change": "Explicit evidence overload for checkDynamicObstacleCollision; retain original signature."
+    },
+    {
+      "path": "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp",
+      "function": "checkDynamicObstacleCollision:500",
+      "change": "Forward optional witness with the exact native pos, yaw and joints already used; original function remains a nullptr delegate."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp",
+      "function": "checkCollisionCallback:1392; raw sample:1662; actual stop branch:1888",
+      "change": "Local witness lives only within this safety callback and pinned Latest ReadScope. Capture first raw collision t_check/pose/gear/speed during actual loop. Emit a single LiveCollisionStop record only when raw !point_flow emergency branch is selected, immediately before existing stop transition. No permanent last-hit global state."
+    }
+  ],
+  "evidence_line_fields": [
+    "checked_at",
+    "trajectory_start/id",
+    "t_cur and first collision t_check",
+    "original path_distance and stop_distance",
+    "reference xy/yaw and all six joints",
+    "gear and raw planar speed",
+    "query sphere center world",
+    "body kind plus base sphere index or arm link/point indices",
+    "voxel id/center",
+    "distance and exact threshold",
+    "occupied log value and occupancy threshold",
+    "Latest epoch/observation/esdf/distance_revision/fusion and lidar accepted/fused seq",
+    "actual odom xy/yaw, six joint feedback, measured velocity, odom/joint source stamps",
+    "configured map resolution and static matching radius"
+  ],
+  "important_boundaries": [
+    "Evidence describes original stop decision; do not change low-speed yaw or margins in this diagnostic version.",
+    "Do not emit from optimizer candidate checks; these use unchanged original signatures/nullptr.",
+    "A point-flow-selected event must not log a leftover raw witness as its cause.",
+    "Whole line is emitted only on the state transition; after EMERGENCY_STOP future collision callback returns, avoiding per-sphere/per-sample log flood.",
+    "If isolated snapshots disabled, report actual writer mode explicitly rather than inventing a Latest epoch.",
+    "Preserve original exported function symbols with overload delegates; adding a default parameter alone changes ABI. No class member additions."
+  ],
+  "deployed_files": [
+    "devel/lib/libplan_env.so",
+    "devel/lib/libmm_config.so",
+    "devel/lib/libtraj_opt.so",
+    "devel/lib/plan_manage/remani_planner_node"
+  ],
+  "validation": [
+    "For identical map/query inputs compare exact return values with and without evidence, including no-hit/outside/static-matched/tie/first-body-vs-arm hit.",
+    "Verify evidence nearest voxel reconstructs distance and strict threshold decision.",
+    "FSM test emits for selected raw emergency only, not merely candidate collision, distant slowdown, point-flow selected event, or recovery polling.",
+    "Bounded one-job build after verified baseline, with source and deployed outputs in same version."
+  ],
+  "old_field_work_assessment": {
+    "current_behavior": "capture checks current stored snapshot using cycle-start now at whole_body_mppi.py:635; post-plan and delivery check latest self.snapshot (:741,766,777), intentionally allowing a newly arrived map to validate delivery.",
+    "reject_additional_lifetime_margin": "A remaining-life<estimated-solve prefilter could discard cycles that receive a new valid snapshot during solve. It reduces the 10Hz delivery opportunity and causes earlier extra zero publications; not a safe no-behavior-change performance optimization.",
+    "reject_field_version_dedup": "Same h14 ESDF does not imply same dynamic points, measured state, phase, goal or proposed action. Skipping repeated field versions is incorrect.",
+    "possible_tiny_correction": "Use actual ROS time after capture lock acquisition rather than original cycle now to avoid checking freshness with a stale clock. This only addresses lock-delay acceptance; if large lock waits are not measured it is not worth mixing into producer latency fix. It can stop earlier, not guarantee fewer interruptions.",
+    "recommendation": "Do not add waiting/age-reserve/field-dedup gates in current latency fix. Improve measured producer-to-delivery timing while retaining regular command opportunities and current latest-state checks."
+  }
+}

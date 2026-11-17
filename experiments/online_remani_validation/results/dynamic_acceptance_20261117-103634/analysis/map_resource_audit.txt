@@ -1,0 +1,184 @@
+地图与资源离线审计（只读；未改运行代码；不是实车验证通过结论）
+数据目录: /home/l/remani_ws/experiments/online_remani_validation/results/dynamic_acceptance_20261117-103634
+分位数使用线性插值；时间ms、内存MiB；CPU 100%=一个逻辑核。
+主要发现：三次早期撤轨前obs1592/1604/1617的compute仅85.404/93.519/114.854ms，首个导出距fusion 146.855/142.227/166.030ms却cached_valid=0；cached_joint_age已达268.741/278.850/298.801ms。不能把这些撤轨解释成新地图计算超过350ms。
+交叉证据：feedback_can_audit.json五次LiDAR失效窗口的ROS关节反馈间隔为1.053s,1.417s,2.233s,1.576s,1.271s；同窗口CAN三类角度帧最大间隔9.012ms，独立reader延迟最大31.748ms。
+这些关节反馈空档内execution-state采样条数为[1, 1, 1, 0, 0]，反馈发布流停顿与自过滤禁止点云、LiDAR超时链相符。具体GIL/锁等待没有栈或调度追踪，不能硬判。
+
+goal1: 2026-11-17T10:38:21.607200+08:00 至 2026-11-17T10:39:15.939460+08:00
+地图阶段:
+  fusion.input_age_ms: n=284 p50=165.048 p95=226.623 p99=288.207 max=343.432
+  fusion.pending_ms: n=284 p50=53.232 p95=100.205 p99=117.416 max=140.504
+  fusion.occupancy_ms: n=284 p50=36.199 p95=66.056 p99=76.591 max=98.495
+  region.prepare_ms: n=284 p50=2.288 p95=5.854 p99=12.361 max=14.217
+  submit.snapshot_ms: n=284 p50=2.862 p95=7.329 p99=15.853 max=21.604
+  commit.queue_ms: n=284 p50=0.025 p95=0.431 p99=4.116 max=18.004
+  commit.compute_ms: n=284 p50=103.996 p95=143.773 p99=168.806 max=183.064
+  commit.ready_wait_ms: n=284 p50=4.649 p95=9.456 p99=9.997 max=13.836
+  commit.commit_ms: n=284 p50=8.195 p95=14.964 p99=22.070 max=25.475
+  commit.compute_cells: n=284 p50=2131200.000 p95=2257875.000 p99=2281260.000 max=2292480.000
+  read.occ_copy=1.occ_ms: n=284 p50=11.122 p95=34.560 p99=49.557 max=69.571
+  read.occ_copy=1.total_ms: n=284 p50=11.161 p95=34.567 p99=49.565 max=69.578
+  read.dist_copy=1.dist_ms: n=284 p50=8.494 p95=22.669 p99=31.749 max=70.337
+  read.dist_copy=1.total_ms: n=284 p50=8.759 p95=23.085 p99=31.798 max=70.368
+  export_sample.refresh=0.sample_ms: n=694 p50=0.451 p95=0.615 p99=1.005 max=5.002
+  export_sample.refresh=1.sample_ms: n=324 p50=1.384 p95=2.090 p99=3.168 max=5.696
+  export_output.full=0.output_ms: n=762 p50=0.032 p95=0.365 p99=1.051 max=4.205
+  export_output.full=0.bytes: n=762 p50=4008.000 p95=4008.000 p99=4008.000 max=4008.000
+  export_output.full=1.output_ms: n=325 p50=0.928 p95=2.392 p99=7.520 max=14.307
+  export_output.full=1.bytes: n=325 p50=3231528.000 p95=3231528.000 p99=3231528.000 max=3231528.000
+  commit.negative_fallbacks=0.compute_ms: n=282 p50=103.975 p95=143.786 p99=168.818 max=183.064
+  commit.negative_fallbacks=1.compute_ms: n=2 p50=121.593 p95=125.620 p99=125.978 max=126.067
+  positive_z_ms: n=284 p50=6.774 p95=16.087 p99=23.484 max=37.793
+  positive_y_ms: n=284 p50=35.284 p95=52.444 p99=64.289 max=74.770
+  positive_x_ms: n=284 p50=49.788 p95=75.881 p99=88.565 max=109.645
+  positive_total_ms: n=284 p50=93.696 p95=130.850 p99=151.339 max=174.286
+  negative_z_ms: n=284 p50=0.000 p95=0.000 p99=0.000 max=7.049
+  negative_y_ms: n=284 p50=0.000 p95=0.000 p99=0.000 max=25.455
+  negative_x_ms: n=284 p50=0.000 p95=0.000 p99=0.000 max=21.112
+  negative_total_ms: n=284 p50=0.000 p95=0.000 p99=0.000 max=53.616
+  positive_sum_share_of_compute: 0.9003
+  negative_sum_share_of_compute: 0.003
+  counts: {"commit.regions": {"1": 284}, "commit.negative_fallbacks": {"0": 282, "1": 2}, "region.reuse": {"0": 284}, "region.full": {"0": 284}, "export_sample.refresh": {"0": 694, "1": 324}, "export_sample.valid": {"1": 1012, "0": 6}, "export_output.full": {"0": 762, "1": 325}, "export_output.valid": {"1": 1000, "0": 87}}
+  compute_cells==input_cells: 284/284; compute_cells>=2M: 284/284
+同代fusion匹配首个valid导出: 283/284，缺失1，跨窗口导出1
+  fusion_to_first_valid_export_ms: n=283 p50=165.199 p95=219.040 p99=246.549 max=257.115
+  input_to_first_valid_export_ms: n=283 p50=314.385 p95=412.299 p99=508.565 max=510.556
+  首次valid导出fusion age>350ms: 0
+  所有valid导出（含缓存复用）fusion age: n=1000 p50=227.124 p95=324.490 p99=346.501 max=350.224
+  所有valid导出（含缓存复用）fusion age>350ms: 1
+
+goal2: 2026-11-17T10:41:11.600100+08:00 至 2026-11-17T10:45:17.320000+08:00
+地图阶段:
+  fusion.input_age_ms: n=1156 p50=139.994 p95=203.478 p99=258.855 max=310.468
+  fusion.pending_ms: n=1156 p50=53.624 p95=106.203 p99=141.690 max=165.211
+  fusion.occupancy_ms: n=1156 p50=26.670 p95=49.989 p99=60.774 max=112.741
+  region.prepare_ms: n=1156 p50=2.030 p95=3.646 p99=7.525 max=21.540
+  submit.snapshot_ms: n=1157 p50=2.440 p95=4.904 p99=10.488 max=17.227
+  commit.queue_ms: n=1156 p50=0.025 p95=0.416 p99=2.274 max=9.729
+  commit.compute_ms: n=1156 p50=110.938 p95=171.015 p99=200.652 max=223.040
+  commit.ready_wait_ms: n=1156 p50=4.421 p95=9.375 p99=9.990 max=12.169
+  commit.commit_ms: n=1156 p50=6.561 p95=11.707 p99=15.824 max=18.797
+  commit.compute_cells: n=1156 p50=2016960.000 p95=2292480.000 p99=2315520.000 max=2327040.000
+  read.occ_copy=1.occ_ms: n=1157 p50=8.837 p95=27.058 p99=42.396 max=78.828
+  read.occ_copy=1.total_ms: n=1157 p50=8.843 p95=27.065 p99=42.404 max=78.836
+  read.dist_copy=1.dist_ms: n=1156 p50=7.944 p95=22.224 p99=30.789 max=76.483
+  read.dist_copy=1.total_ms: n=1156 p50=8.466 p95=22.552 p99=30.809 max=76.762
+  export_sample.refresh=0.sample_ms: n=2567 p50=0.450 p95=0.605 p99=0.958 max=11.906
+  export_sample.refresh=1.sample_ms: n=1297 p50=1.364 p95=1.925 p99=2.739 max=5.954
+  export_output.full=0.output_ms: n=3134 p50=0.036 p95=0.325 p99=0.801 max=6.165
+  export_output.full=0.bytes: n=3134 p50=4008.000 p95=4008.000 p99=4008.000 max=4008.000
+  export_output.full=1.output_ms: n=1313 p50=0.920 p95=2.375 p99=4.514 max=14.992
+  export_output.full=1.bytes: n=1313 p50=3231528.000 p95=3231528.000 p99=3231528.000 max=3231528.000
+  commit.negative_fallbacks=0.compute_ms: n=0
+  commit.negative_fallbacks=1.compute_ms: n=1156 p50=110.938 p95=171.015 p99=200.652 max=223.040
+  positive_z_ms: n=1156 p50=6.016 p95=11.925 p99=17.182 max=25.346
+  positive_y_ms: n=1156 p50=25.526 p95=44.080 p99=54.958 max=65.600
+  positive_x_ms: n=1156 p50=35.069 p95=60.039 p99=73.915 max=85.920
+  positive_total_ms: n=1156 p50=67.096 p95=107.546 p99=128.471 max=142.261
+  negative_z_ms: n=1156 p50=5.727 p95=11.099 p99=16.338 max=30.378
+  negative_y_ms: n=1156 p50=15.725 p95=27.674 p99=33.713 max=48.235
+  negative_x_ms: n=1156 p50=17.524 p95=30.292 p99=39.072 max=57.066
+  negative_total_ms: n=1156 p50=40.100 p95=64.338 p99=79.663 max=100.120
+  positive_sum_share_of_compute: 0.6124
+  negative_sum_share_of_compute: 0.3616
+  counts: {"commit.regions": {"1": 1156}, "commit.negative_fallbacks": {"1": 1156}, "region.reuse": {"0": 1156}, "region.full": {"0": 1156}, "export_sample.refresh": {"1": 1297, "0": 2567}, "export_sample.valid": {"1": 3814, "0": 50}, "export_output.full": {"1": 1313, "0": 3134}, "export_output.valid": {"1": 3789, "0": 658}}
+  compute_cells==input_cells: 1156/1156; compute_cells>=2M: 606/1156
+同代fusion匹配首个valid导出: 1144/1156，缺失12，跨窗口导出0
+  fusion_to_first_valid_export_ms: n=1144 p50=170.291 p95=236.923 p99=278.301 max=342.275
+  input_to_first_valid_export_ms: n=1144 p50=309.638 p95=410.998 p99=463.634 max=559.346
+  首次valid导出fusion age>350ms: 0
+  所有valid导出（含缓存复用）fusion age: n=3789 p50=226.651 p95=330.066 p99=344.897 max=352.262
+  所有valid导出（含缓存复用）fusion age>350ms: 5
+
+资源 whole_record:
+  MemAvailable: n=425 p50=1909.699 p95=1966.162 p99=3052.746 max=3146.980
+  最低可用内存MiB: 1702.145
+  最低可用内存时刻: 2026-11-17T10:39:08.060841+08:00
+  SwapFree first/last/net MiB: 3602.602 / 3241.852 / -360.750
+  采样间隔秒: n=424 p50=1.076 p95=1.984 p99=4.284 max=4.964
+  core: CPU时间加权19.81%单核；RSS max 24.37MiB；线程1..16；major faults Δ43
+  geometry: CPU时间加权1.50%单核；RSS max 22.91MiB；线程1..16；major faults Δ37
+  can: CPU时间加权9.82%单核；RSS max 10.30MiB；线程1..1；major faults Δ0
+  map_observer: CPU时间加权8.79%单核；RSS max 102.96MiB；线程1..10；major faults Δ3
+  planner: CPU时间加权123.57%单核；RSS max 637.54MiB；线程1..15；major faults Δ423
+  mppi: CPU时间加权43.97%单核；RSS max 86.88MiB；线程1..39；major faults Δ126
+  piper: CPU时间加权49.43%单核；RSS max 51.41MiB；线程1..19；major faults Δ6
+  transformer: CPU时间加权29.92%单核；RSS max 53.88MiB；线程1..24；major faults Δ11
+  tracker: CPU时间加权5.09%单核；RSS max 46.45MiB；线程6..6；major faults Δ9
+  CPU已采集进程均值之和: {"robot": 251.98190412413294, "recorder": 39.92099244508378}
+
+资源 goal1:
+  MemAvailable: n=49 p50=1860.852 p95=1942.260 p99=1947.007 max=1949.055
+  最低可用内存MiB: 1702.145
+  最低可用内存时刻: 2026-11-17T10:39:08.060841+08:00
+  SwapFree first/last/net MiB: 3386.602 / 3310.602 / -76.000
+  采样间隔秒: n=48 p50=1.090 p95=1.344 p99=1.605 max=1.697
+  core: CPU时间加权19.83%单核；RSS max 22.77MiB；线程16..16；major faults Δ0
+  geometry: CPU时间加权1.50%单核；RSS max 22.47MiB；线程16..16；major faults Δ0
+  can: CPU时间加权9.84%单核；RSS max 10.30MiB；线程1..1；major faults Δ0
+  map_observer: CPU时间加权9.28%单核；RSS max 97.65MiB；线程8..10；major faults Δ0
+  planner: CPU时间加权114.43%单核；RSS max 609.65MiB；线程14..14；major faults Δ4
+  mppi: CPU时间加权42.39%单核；RSS max 81.43MiB；线程38..39；major faults Δ0
+  piper: CPU时间加权49.14%单核；RSS max 51.41MiB；线程19..19；major faults Δ0
+  transformer: CPU时间加权30.81%单核；RSS max 53.33MiB；线程24..24；major faults Δ0
+  tracker: CPU时间加权5.22%单核；RSS max 46.32MiB；线程6..6；major faults Δ0
+  CPU已采集进程均值之和: {"robot": 241.98707413085913, "recorder": 40.448313292891235}
+
+资源 goal2:
+  MemAvailable: n=175 p50=1922.883 p95=1966.609 p99=1972.116 max=1977.273
+  最低可用内存MiB: 1741.070
+  最低可用内存时刻: 2026-11-17T10:41:59.427238+08:00
+  SwapFree first/last/net MiB: 3319.602 / 3241.852 / -77.750
+  采样间隔秒: n=174 p50=1.076 p95=3.426 p99=4.506 max=4.964
+  core: CPU时间加权19.64%单核；RSS max 24.37MiB；线程16..16；major faults Δ0
+  geometry: CPU时间加权1.46%单核；RSS max 22.91MiB；线程16..16；major faults Δ0
+  can: CPU时间加权9.73%单核；RSS max 10.30MiB；线程1..1；major faults Δ0
+  map_observer: CPU时间加权8.06%单核；RSS max 102.96MiB；线程8..8；major faults Δ0
+  planner: CPU时间加权132.28%单核；RSS max 637.54MiB；线程14..14；major faults Δ1
+  mppi: CPU时间加权31.77%单核；RSS max 84.59MiB；线程38..38；major faults Δ0
+  piper: CPU时间加权48.20%单核；RSS max 51.41MiB；线程19..19；major faults Δ0
+  transformer: CPU时间加权28.88%单核；RSS max 53.88MiB；线程24..24；major faults Δ0
+  tracker: CPU时间加权4.80%单核；RSS max 46.45MiB；线程6..6；major faults Δ0
+  CPU已采集进程均值之和: {"robot": 245.93379623494954, "recorder": 38.88828674311755}
+
+关键撤轨时刻资源间隔（更完整逐间隔明细见JSON）:
+2026-11-17T10:41:35.489000+08:00
+  mppi 2026-11-17T10:41:34.704219+08:00→2026-11-17T10:41:35.744209+08:00 dt=1.083s CPU=6.5% main_sched_wait=0.8ms threads=38
+  piper 2026-11-17T10:41:34.704219+08:00→2026-11-17T10:41:35.744209+08:00 dt=1.083s CPU=23.1% main_sched_wait=0.0ms threads=19 piper_all_sampled_threads_wait=82.8ms
+  planner 2026-11-17T10:41:34.704219+08:00→2026-11-17T10:41:35.744209+08:00 dt=1.083s CPU=50.8% main_sched_wait=31.0ms threads=14
+  tracker 2026-11-17T10:41:34.704219+08:00→2026-11-17T10:41:35.744209+08:00 dt=1.083s CPU=1.8% main_sched_wait=0.0ms threads=6
+  transformer 2026-11-17T10:41:34.704219+08:00→2026-11-17T10:41:35.744209+08:00 dt=1.083s CPU=2.8% main_sched_wait=0.0ms threads=24
+2026-11-17T10:41:39.231000+08:00
+  mppi 2026-11-17T10:41:39.109851+08:00→2026-11-17T10:41:42.552429+08:00 dt=3.399s CPU=17.7% main_sched_wait=78.3ms threads=38
+  piper 2026-11-17T10:41:39.109851+08:00→2026-11-17T10:41:42.552429+08:00 dt=3.399s CPU=43.0% main_sched_wait=242.7ms threads=19 piper_all_sampled_threads_wait=1774.3ms
+  planner 2026-11-17T10:41:39.109851+08:00→2026-11-17T10:41:42.552429+08:00 dt=3.399s CPU=110.9% main_sched_wait=297.0ms threads=14
+  tracker 2026-11-17T10:41:39.109851+08:00→2026-11-17T10:41:42.552429+08:00 dt=3.399s CPU=3.8% main_sched_wait=46.3ms threads=6
+  transformer 2026-11-17T10:41:39.109851+08:00→2026-11-17T10:41:42.552429+08:00 dt=3.399s CPU=22.4% main_sched_wait=0.3ms threads=24
+2026-11-17T10:41:43.543000+08:00
+  mppi 2026-11-17T10:41:42.552429+08:00→2026-11-17T10:41:46.427865+08:00 dt=3.884s CPU=11.6% main_sched_wait=11.9ms threads=38
+  piper 2026-11-17T10:41:42.552429+08:00→2026-11-17T10:41:46.427865+08:00 dt=3.884s CPU=36.6% main_sched_wait=110.3ms threads=19 piper_all_sampled_threads_wait=1324.1ms
+  planner 2026-11-17T10:41:42.552429+08:00→2026-11-17T10:41:46.427865+08:00 dt=3.884s CPU=77.0% main_sched_wait=251.8ms threads=14
+  tracker 2026-11-17T10:41:42.552429+08:00→2026-11-17T10:41:46.427865+08:00 dt=3.884s CPU=2.3% main_sched_wait=25.6ms threads=6
+  transformer 2026-11-17T10:41:42.552429+08:00→2026-11-17T10:41:46.427865+08:00 dt=3.884s CPU=12.4% main_sched_wait=1.5ms threads=24
+
+观测与推断边界:
+观测：两段主要计算对象仍是约200万格，所有commit只有一个region且compute_cells==input_cells；region.full=0表示不是全地图强制更新，不等于小计算量。
+观测：目标2每个commit的negative_fallbacks=1；按当前源码语义，near_free捷径有未解析占用格，触发负距离三轴变换。该分支的时间直接记录在negative_zyx_ms。
+推断：ESDF worker compute是主要地图处理成本，上游输入年龄也显著；导出output序列化不是最慢阶段。并发阶段不能简单相加分位数来解释端到端时延。
+观测：关键撤轨区间有进程CPU及主线程runnable等待，但首个撤轨区间多个进程CPU和wait都低，后续采样间隔扩大到数秒。
+限制：这只能证明存在调度竞争，不能从目前采样认定某个节点/地图计算耗尽系统CPU而造成三次heartbeat中断；缺系统总CPU、未采集节点与线程、阻塞栈/调度追踪。
+限制：SwapFree有净下降，但目标1/2的major faults很少且无pswpin/pswpout；不能把换页当已证明根因。
+
+Read-only offline audit; no running code, ROS state, firmware, controller parameters or deployed binaries changed.
+Stage metrics select ROS log source_t in each goal interval. First-valid-export metrics select the fusion timestamp in the interval, then match exact obs+fusion over all traces; outputs beyond the interval are explicitly counted.
+p50/p90/p95/p99 use linear interpolation at (n-1)*q. Times ending _ms are milliseconds; cell counts are voxel counts; KiB values /1024 give MiB.
+Fusion timestamp marks completed coherent occupancy update; input timestamp is the source LiDAR/cloud stamp. Only fusion-to-export is comparable to the 350 ms fusion-age threshold. The first valid export age excludes transport/consumer delay and later cached reuse.
+CPU core percent = 100*delta(utime+stime)/(SC_CLK_TCK*delta monotonic seconds); 100% is one logical CPU, not whole-machine saturation. proc/PID/stat CPU ticks aggregate threads; per-thread ticks must not be added again. Current same-host SC_CLK_TCK and page size used.
+Resource mono is sampled before the process scan and wall after it; process reads within one row are not simultaneous. Event alignment and short CPU intervals therefore have scan-time uncertainty. Interval duration uses mono, while event lookup uses stored wall endpoints.
+proc/PID/schedstat refers to the main task only. Only Piper has per-thread schedstat snapshots. Wait is runnable scheduling wait, not I/O/sleep wait. Summed thread waits overlap and can exceed elapsed wall time.
+Only five selected robot processes and four capture children were sampled. LiDAR driver, LIO, mm_controller, ROS, capture supervisor, desktop/IDE and kernel CPU are not included; no /proc/stat system total CPU, runqueue, PSI, per-thread map-worker wait or pswpin/pswpout was recorded.
+Substring process matching also captured diagnostic bash/codex commands; these are excluded by stable actual robot PIDs. Their comm names and sample counts are retained, command contents omitted.
+SwapFree decline shows more swap allocation/use net of release, not swap transfer rate or page-fault latency. Major faults may load file-backed pages; neither they nor SwapFree alone prove swap-caused stalls.
+MapTrace final source time precedes target2 interval end; missing final generations cannot be assumed exported or failed. Source-code interpretations refer to current workspace files, not independently hash-verified deployed build.
+First-valid-export age is conditioned on successful observed valid export; missing generations are retained separately and must not be inferred to satisfy the threshold. A few valid outputs slightly exceed 350 ms at the post-publish trace timestamp; the source checks age at callback entry before output assembly/publish.

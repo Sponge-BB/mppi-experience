@@ -1,0 +1,42 @@
+{
+  "change": "Bounded terminal yaw alignment replaces only eligible expired-reference zero holds. Goal pose is retained after validation and cleared on invalid/transform-failed goals and finish.",
+  "guards": [
+    "active matching goal and intact reference",
+    "no pending reference",
+    "fresh matching progress at or after endpoint",
+    "native endpoint XY matches current goal within 0.01m",
+    "measured XY and joint endpoint errors satisfy original FSM tolerances",
+    "delivery recomputes yaw with latest feedback before original whole-body collision/hold/brake checks",
+    "reference revision, map/state freshness, execution permission, safety speed limit, and final terminal eligibility remain checked"
+  ],
+  "unchanged": [
+    "checked_first_step implementation from the parallel bounded-MOVEJ repair",
+    "original command source stamp",
+    "FSM 8-second timeout and finish authority",
+    "existing ROS nodes/topics/parameter names"
+  ],
+  "backup": "before_terminal_yaw",
+  "validation": {
+    "passed": 62,
+    "suites": [
+      "test_mppi_terminal_yaw",
+      "test_mppi_native_phase",
+      "test_mppi_reference_wait",
+      "test_mppi_execution_gate"
+    ],
+    "test_seconds": 0.318,
+    "log": "terminal_yaw_tests.txt",
+    "ROS_CAN_motion_commands": false
+  },
+  "live_status": "Offline change only; user was told online capture is complete and the robot program may be closed. No claim that shutdown was observed. Live terminal rotation still needs a user-controlled test.",
+  "file_sha256": {
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": "01859364dde415be76925042769eaa8c20a28d2660b1b842963de90bec5a25a8",
+    "src/mm_remani/scripts/whole_body_mppi.py": "0800b21e9146c0632a385b65521d85a13f7a080a2c2b242c574e5386d46806f0",
+    "src/mm_remani/test/test_mppi_terminal_yaw.py": "20d05f75141f2f92af9f83d7c87de37b2a3bd7e78c143174918e3a8599265fe9"
+  },
+  "final_combined_validation": {
+    "passed": 147,
+    "log": "second_round_combined_tests.txt",
+    "includes_controller_endpoint_tolerance_regression": true
+  }
+}

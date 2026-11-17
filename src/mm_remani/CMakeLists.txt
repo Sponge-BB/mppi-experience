@@ -17,7 +17,7 @@ find_package(PCL REQUIRED COMPONENTS common filters kdtree segmentation)
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES dynamic_obstacle_tracker_core
+  LIBRARIES dynamic_obstacle_tracker_core mppi_position_servo
   CATKIN_DEPENDS geometry_msgs livox_ros_driver2 pcl_conversions pcl_ros
                  roscpp rospy sensor_msgs std_msgs tf2_ros
 )
@@ -29,6 +29,10 @@ include_directories(
 )
 
 add_definitions(${PCL_DEFINITIONS})
+
+add_library(mppi_position_servo SHARED src/mppi_position_servo.cpp)
+target_compile_options(mppi_position_servo PRIVATE -O2 -std=c++11)
+install(TARGETS mppi_position_servo LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 
 add_library(dynamic_obstacle_tracker_core
   src/dynamic_obstacle_tracker_core.cpp)

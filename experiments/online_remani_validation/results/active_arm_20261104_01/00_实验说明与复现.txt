@@ -1,0 +1,44 @@
+﻿活动机械臂双时间尺度实验：复现与结果说明
+
+本轮于2026-11-04启动、2026-11-05完成。目录沿用启动日期。
+正式结果以 comparison_plan_v2.json 的四轮为准；v1/development/smoke全保留。
+先看 report/对照数据.png、report/主动收臂对照.gif、report/实验结果.txt。
+
+本次实现：
+1. 新的整机采样快层优化底盘v/w与六个关节速度；先尝试保持底盘推进的关节候选，不可行时再扩大底盘机动。
+2. 每条候选按关节构型重算47固定球+20臂球；查询原生3D ESDF/观测动态点，检查关节范围、非相邻自碰、臂底盘与球底地面。
+3. 首控以原子整机消息发布，底盘和机械臂共用250ms租约；租约检查按首控保持到期再共同制动，包含实测起始状态。
+4. 慢层恢复关节路点与时间优化；全状态seed v2将q/dq用于前缀初始化与同采样相位交接代价/梯度。
+5. 仿真实际积分q/dq；独立<=5ms解析圆柱/球模型审计，不以候选控制器的判定代替物理审计。
+
+同一新快层、同一native二进制的两种子A/B：A固定臂，B启用活动臂及全身前缀/交接。
+A不是历史旧C++ MPPI控制器，不能把本轮与旧项目图直接拼成单因素性能对比。
+
+seed 11：
+  最大|y|：0.283 -> 0.194 m；全程路程：3.072 -> 3.043 m。
+  起步到结束：23.360 -> 22.426 s；B最小外障物理间隙：0.052 m。
+  B实际使用全身前缀4次，交接代价活跃记录8条；最大单关节调整31.67度。
+seed 23：
+  最大|y|：0.269 -> 0.148 m；全程路程：3.061 -> 3.030 m。
+  起步到结束：22.021 -> 23.217 s；B最小外障物理间隙：0.054 m。
+  B实际使用全身前缀5次，交接代价活跃记录10条；最大单关节调整32.34度。
+
+核验：四轮全部goal，无采样物理碰撞、关节位置/速度/加速度越限。31项Python/数值回归通过；另有186项全状态协议检查和668项实际MinSnap梯度检查。
+独立核验细节见 verification/closed_loop_audit_v2.json；原始状态/控制/原生轨迹/慢层事件/ROS图审计在各trial目录。
+
+当前边界与下一步：
+仅一个高处有限圆柱场景、两个种子的数值ROS闭环；不是实车/Gazebo/URDF网格精确验证。模型沿用native DH，与本地URDF存在约定/几何差异。
+无末端位姿保持硬约束；任务是主动调臂通行。存在预声明收臂姿态候选，不能称完全无先验搜索。
+全程时间没有稳定改善，不能写整体提速。callback仍有超过200ms的周期，不能写硬实时保证。
+关节调整幅度、底盘侧偏和交付延迟仍需共同优化；后续应增加多高度/横穿障碍与末端任务约束实验。
+球模型自碰排除对及安装邻接排除在result.json显式记录；离散无接触不是连续时间安全证明。
+
+复现命令（在已配置的ROS工作区终端，创建新的tag，旧输出不覆盖）：
+PYTHONNOUSERSITE=1 /usr/bin/python3 experiments/online_remani_validation/build_active_arm.py check
+PYTHONNOUSERSITE=1 /usr/bin/python3 experiments/online_remani_validation/run_active_arm.py --tag new_B --enabled 1 --seed 11 --duration 45
+PYTHONNOUSERSITE=1 /usr/bin/python3 -m unittest discover -s experiments/online_remani_validation -p "test_active_arm_*.py" -v
+PYTHONNOUSERSITE=1避免用户numpy与系统scipy版本冲突；无需安装新包。
+构建位于 builds/active_arm_20261104_01；只复制/改动隔离源码，未替换生产默认启动。
+新代码与测试在 experiments/online_remani_validation/ 下的 active_arm*、build/run/report/audit_active_arm*、test_active_arm*。
+
+关机：用户已明确要求实验结束后关机。最终请求回执见 shutdown_receipt.json；该文件区分请求已提交与主机实际断电。

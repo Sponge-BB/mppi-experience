@@ -1,0 +1,78 @@
+主动机械臂避障：数值闭环记录
+
+本图 4 轮，2 个种子形成 A/B 对照；样本不足以推断总体成功率。开发记录另列保留。
+统一条件：原生 DH 球采样模型（47 个固定球＋20 个臂球），机械臂位置随实测关节变化。
+不是 URDF 网格精确碰撞、Gazebo 或实车验证；离散采样无接触不等于连续安全证明。
+路程、最大横移和关节累计路长使用完整 state.csv；时间曲线/GIF 按 motion_anchor 对齐，未将此前记录从全程统计中丢弃。
+
+比较版本来源：comparison_plan_v2.json；本次选择与该计划完全一致：True。
+v1、development 和 smoke 原始试验均保留在结果目录，并在本报告末尾列出；最终比较版本以 v2 计划为准。
+
+A 固定臂 · seed 11：到达目标
+  全程实走 3.072 m，最大 |y| 0.283 m，对齐至结束 23.360 s。
+  时间对齐来源 motion_anchor，原始时刻 9.090 s。
+  最小物理外部间隙 0.071 m（来源 min_external_gap_m）；物理采样接触 False。
+  自碰/底盘臂/地面综合最小间隙 0.003 m；关节约束违规 False。
+  最大单关节变化 0.00°，关节空间累计 L2 路长 0.000 rad。
+  已记录周期 P95/最大 168.9/246.0 ms，共 300 条，实际计时键 ['callback_ms']。
+  callback 超过配置期限 200.0 ms 的周期 7/300；配置期限不等于硬实时保证。
+  获准非零关节命令 0 周期；获准预测含臂运动 0 周期。
+  实际配置 horizon=20，random_samples=6，deadline_s=0.2，rate_hz=10.0。
+  周期状态 {"native_hard_stop": 72, "waiting_native_trajectory": 3, "validation_to_command_delay": 4, "ok": 195, "latest_rollout_rejected": 1, "deadline_missed": 6, "publication_collision_stale": 4, "collision_snapshot_stale": 14, "odom_stale": 1}；记录读取问题 []。
+
+B 主动臂 · seed 11：到达目标
+  全程实走 3.043 m，最大 |y| 0.194 m，对齐至结束 22.426 s。
+  时间对齐来源 motion_anchor，原始时刻 8.936 s。
+  最小物理外部间隙 0.052 m（来源 min_external_gap_m）；物理采样接触 False。
+  自碰/底盘臂/地面综合最小间隙 0.003 m；关节约束违规 False。
+  最大单关节变化 31.67°，关节空间累计 L2 路长 1.685 rad。
+  已记录周期 P95/最大 165.2/271.1 ms，共 296 条，实际计时键 ['callback_ms']。
+  callback 超过配置期限 200.0 ms 的周期 1/296；配置期限不等于硬实时保证。
+  获准非零关节命令 191 周期；获准预测含臂运动 190 周期。
+  实际配置 horizon=20，random_samples=6，deadline_s=0.2，rate_hz=10.0。
+  周期状态 {"native_hard_stop": 70, "waiting_native_trajectory": 4, "ok": 192, "validation_to_command_delay": 6, "latest_rollout_rejected": 1, "collision_snapshot_stale": 21, "publication_collision_stale": 1, "deadline_missed": 1}；记录读取问题 []。
+
+B 主动臂 · seed 23：到达目标
+  全程实走 3.030 m，最大 |y| 0.148 m，对齐至结束 23.217 s。
+  时间对齐来源 motion_anchor，原始时刻 9.176 s。
+  最小物理外部间隙 0.054 m（来源 min_external_gap_m）；物理采样接触 False。
+  自碰/底盘臂/地面综合最小间隙 0.003 m；关节约束违规 False。
+  最大单关节变化 32.34°，关节空间累计 L2 路长 3.036 rad。
+  已记录周期 P95/最大 154.8/217.4 ms，共 305 条，实际计时键 ['callback_ms']。
+  callback 超过配置期限 200.0 ms 的周期 1/305；配置期限不等于硬实时保证。
+  获准非零关节命令 150 周期；获准预测含臂运动 150 周期。
+  实际配置 horizon=20，random_samples=6，deadline_s=0.2，rate_hz=10.0。
+  周期状态 {"native_hard_stop": 72, "waiting_native_trajectory": 4, "validation_to_command_delay": 6, "ok": 198, "latest_rollout_rejected": 1, "publication_collision_stale": 5, "collision_snapshot_stale": 18, "deadline_missed": 1}；记录读取问题 []。
+
+A 固定臂 · seed 23：到达目标
+  全程实走 3.061 m，最大 |y| 0.269 m，对齐至结束 22.021 s。
+  时间对齐来源 motion_anchor，原始时刻 9.088 s。
+  最小物理外部间隙 0.079 m（来源 min_external_gap_m）；物理采样接触 False。
+  自碰/底盘臂/地面综合最小间隙 0.003 m；关节约束违规 False。
+  最大单关节变化 0.00°，关节空间累计 L2 路长 0.000 rad。
+  已记录周期 P95/最大 163.0/252.6 ms，共 286 条，实际计时键 ['callback_ms']。
+  callback 超过配置期限 200.0 ms 的周期 3/286；配置期限不等于硬实时保证。
+  获准非零关节命令 0 周期；获准预测含臂运动 0 周期。
+  实际配置 horizon=20，random_samples=6，deadline_s=0.2，rate_hz=10.0。
+  周期状态 {"native_hard_stop": 72, "waiting_native_trajectory": 4, "ok": 173, "latest_rollout_rejected": 2, "deadline_missed": 3, "publication_collision_stale": 2, "collision_snapshot_stale": 8, "validation_to_command_delay": 7, "odom_stale": 3, "joint_stale": 1, "reference_changed": 1, "no_active_task": 10}；记录读取问题 []。
+
+此前开发/冒烟及其他未入本次对照的记录（原文件全部保留；不混入正式对照）：
+  A_fixed_seed11：终止 goal，到达目标 True，物理采样接触 False，最小外部间隙 0.070 m。
+  A_fixed_seed23：终止 goal，到达目标 True，物理采样接触 False，最小外部间隙 0.061 m。
+  B_active_seed11：终止 goal，到达目标 True，物理采样接触 False，最小外部间隙 0.054 m。
+  B_active_seed23：终止 goal，到达目标 True，物理采样接触 False，最小外部间隙 0.051 m。
+  development_B_04：终止 goal，到达目标 True，物理采样接触 False，最小外部间隙 0.060 m。
+  smoke_B_01：终止 shutdown，到达目标 False，物理采样接触 False，最小外部间隙 1.173 m。
+  smoke_B_02：终止 timeout，到达目标 False，物理采样接触 False，最小外部间隙 0.273 m。
+  smoke_B_03_profile：终止 timeout，到达目标 False，物理采样接触 False，最小外部间隙 0.325 m。
+
+解释边界：
+2 个种子的 2 对异步 A/B 仍不能直接给出总体成功率。固定臂基线也有几何绕行通道；不得把预检通道当作在线成功。
+主动臂包含较大的实际关节调整，应结合每组最大单关节变化评估，不能描述为小幅或已证明平滑。
+实测 callback 最大值可能超过配置的 200 ms 期限；报告逐组列出超期数量，不能宣称硬实时保证。
+只启用主动臂开关不等于实际选中了臂运动，应结合 measured q 与周期日志判断。
+cycles 的 min_gap 混合外障/自碰/地面，未拿它充当独立外障最小物理间隙。
+失败/超时的终止时刻不是成功通行时间，不能按更早结束宣称更快。
+GIF 从实测底盘与关节重算球心；只展示已出现障碍，结束面板冻结，没有补画搜索或未来动作。
+有起步记录时按起步时刻对齐；没有起步的失败样本按目标或首条记录对齐，见每组时间来源。
+JSON 保存源记录 SHA256、模型来源、计时键和全部终止状态。

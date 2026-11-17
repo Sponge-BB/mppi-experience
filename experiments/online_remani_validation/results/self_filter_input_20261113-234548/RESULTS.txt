@@ -1,0 +1,75 @@
+修复自滤旧关节消息覆盖新状态，明确扫描时效报错并增大点云接收批次
+离线验证通过，实车待验证。
+版本：20261113-235027-self-filter-input
+可回退父版本：20261113-234548-before-self-filter-input
+{
+  "offline_passed": true,
+  "hardware_validation": false,
+  "purpose": "修复自滤旧关节消息覆盖新状态，明确扫描时效报错并增大点云接收批次",
+  "changes": [
+    "早于或等于已接收有效源戳的关节消息直接忽略；异常分支在锁内重新检查源序，防止并发覆盖新状态",
+    "非法新关节及0/NaN源戳继续使缓存失效，保留原150ms时效/20ms最近匹配/50ms插值限制",
+    "扫描入口错误明确打印scan源戳、now与age_ms",
+    "点云输入缓冲设为1MiB，queue_size仍为1；不改订阅话题或过滤几何"
+  ],
+  "verification": {
+    "command": [
+      "nice",
+      "-n",
+      "15",
+      "/usr/bin/python3",
+      "-m",
+      "unittest",
+      "-v",
+      "test_robot_self_filter",
+      "test_mapping_cloud_sparse"
+    ],
+    "environment": {
+      "PYTHONNOUSERSITE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MALLOC_ARENA_MAX": "2",
+      "PYTHONPATH": "/home/l/remani_ws/src/mm_remani/test:/home/l/remani_ws/src/mm_remani/scripts:/home/l/remani_ws/src/mm_remani/scripts/mppi:/home/l/remani_ws/devel/lib/python3/dist-packages:/home/l/ws_livox/devel/lib/python3/dist-packages:/opt/ros/noetic/lib/python3/dist-packages"
+    },
+    "returncode": 0,
+    "elapsed_s": 2.0526447289739735,
+    "peak_rss_kib": 76032,
+    "earlier_attempt": {
+      "command": "/usr/bin/time -v ...",
+      "returncode": 127,
+      "reason": "/usr/bin/time unavailable; no tests executed by that attempt"
+    },
+    "baseline": "20261113-234548-before-self-filter-input",
+    "parent": "20261113-234545-terminal-settle",
+    "files": {
+      "src/mm_remani/scripts/velodyne_transformer.py": {
+        "before_sha256": "48a9ed895610ab68aa2ec961400903d3e74f4a320afb088cb92616b2aca638bb",
+        "after_sha256": "9fcd3a8c3025ed56deae40ef7a630cdaf8f0f4bc8570b0abca34e20072b4000c",
+        "mode": "0o775",
+        "size": 21180
+      },
+      "src/mm_remani/test/test_robot_self_filter.py": {
+        "before_sha256": "7c1ea0a10e0eafd7c5af2cba183c878c9244460ccc8d929b040b6920e61e8105",
+        "after_sha256": "1b8f5a845f93a5724aaa98ff9df24275af58217a1cefe57a8d5f165e647b3948",
+        "mode": "0o664",
+        "size": 19269
+      }
+    },
+    "test_count": 37,
+    "status": "OFFLINE_VERIFIED_HARDWARE_PENDING",
+    "scope": "Only self-filter source ordering, explicit scan time diagnostics, cloud receive buffer; no topic or threshold changes",
+    "hardware_or_ros_node_started": false,
+    "build_required": false,
+    "limitations": [
+      "The 1 MiB receive buffer is backlog mitigation, not a strict latest-frame guarantee.",
+      "This change does not prove the source of or eliminate the previous 51-second scan freshness failure."
+    ]
+  },
+  "deployment": "Python source resolved by existing launch; no separate deployed wrapper or binary to replace",
+  "known_issues": [
+    "1MiB缓冲为积压缓解尝试，不保证端到端只处理最新帧",
+    "此前51.109秒扫描失鲜根因及修复效果仍待实车验证",
+    "动态识别与近碰撤轨问题保留原保护，需要同代输入证据，未声称动态绕行已经解决"
+  ],
+  "no_hardware_commands": true
+}

@@ -1,10 +1,27 @@
 #include <plan_manage/remani_replan_fsm.h>
 
 #include <cmath>
+#include <iomanip>
 #include <limits>
+#include <tuple>
 
 namespace remani_planner
 {
+  namespace {
+    void rebaseStoppedTrajectory(SingulTrajData &candidate, const ros::Time &now)
+    {
+      candidate.start_time = now.toSec();
+      candidate.start_time_ros = now;
+      double start = candidate.start_time;
+      for (auto &segment : candidate.singul_traj)
+      {
+        segment.start_time = start;
+        segment.end_time = start + segment.duration;
+        start = segment.end_time;
+      }
+    }
+  }
+
   REMANIReplanFSM::~REMANIReplanFSM(){}
   void REMANIReplanFSM::init(ros::NodeHandle &nh)
   {
@@ -34,6 +51,7 @@ namespace remani_planner
     nh.param("fsm/goal_yaw_tolerance", goal_yaw_tolerance_, 0.15);
     nh.param("fsm/goal_arm_tolerance", goal_arm_tolerance_, 0.12);
     nh.param("fsm/goal_yaw_alignment_timeout", goal_yaw_alignment_timeout_, 8.0);
+    nh.param("mppi/enable", mppi_terminal_control_, false);
     nh.param("fsm/actual_state_collision_check_interval",
              actual_state_collision_check_interval_, 0.05);
     nh.param("fsm/actual_base_emergency_margin",
@@ -318,17 +336,21 @@ namespace remani_planner
       ROS_WARN("[DynamicPointFlow][active] Experimental predictive avoidance is ACTIVE. Existing occupancy/ESDF safety remains enabled.");
     }
     /* callback */
+    feedback_node_.reset(new ros::NodeHandle(nh));
+    feedback_node_->setCallbackQueue(&feedback_callback_queue_);
     exec_timer_ = nh.createTimer(ros::Duration(0.01), &REMANIReplanFSM::execFSMCallback, this);
     safety_timer_ = nh.createTimer(ros::Duration(0.01), &REMANIReplanFSM::checkCollisionCallback, this);
 
-    odom_sub_ = nh.subscribe("odom_world", 1, &REMANIReplanFSM::mmCarOdomCallback, this);
-    joint_state_sub_ = nh.subscribe("joint_state", 1, &REMANIReplanFSM::mmManiOdomCallback, this);
+    odom_sub_ = feedback_node_->subscribe("odom_world", 1, &REMANIReplanFSM::mmCarOdomCallback, this);
+    joint_state_sub_ = feedback_node_->subscribe("joint_state", 1, &REMANIReplanFSM::mmManiOdomCallback, this);
     gripper_state_sub_ = nh.subscribe("gripper_state", 1, &REMANIReplanFSM::gripperCallback, this);
-    trajectory_progress_sub_ = nh.subscribe(
+    trajectory_progress_sub_ = feedback_node_->subscribe(
         "/mm_controller_node/trajectory_progress", 1,
         &REMANIReplanFSM::trajectoryProgressCallback, this);
     tracking_fault_sub_ = nh.subscribe(
         "/tracking_fault", 1, &REMANIReplanFSM::trackingFaultCallback, this);
+    mppi_refresh_sub_ = nh.subscribe(
+        "/planning/mppi_refresh_request", 1, &REMANIReplanFSM::mppiRefreshCallback, this);
 
     poly_traj_pub_ = nh.advertise<quadrotor_msgs::PolynomialTraj>("planning/trajectory", 10);
     data_disp_pub_ = nh.advertise<traj_utils::DataDisp>("planning/data_display", 100);
@@ -350,8 +372,234 @@ namespace remani_planner
     
   }
 
+  bool REMANIReplanFSM::perceptionRecoveryReady() const
+  {
+    const double now = ros::Time::now().toSec();
+    const double odom_age = now - perception_odom_stamp_.toSec();
+    const double joint_age = now - perception_joint_stamp_.toSec();
+    return have_odom_ && !perception_odom_stamp_.isZero() &&
+        !perception_joint_stamp_.isZero() &&
+        odom_age >= -.005 && odom_age <= .15 &&
+        joint_age >= -.005 && joint_age <= .15 &&
+        mm_state_pos_.allFinite() && mm_state_vel_.allFinite() &&
+        std::isfinite(mm_car_yaw_) && std::isfinite(mm_car_yaw_rate_) &&
+        planner_manager_->grid_map_->mapReadyForPlanning();
+  }
+
+  bool REMANIReplanFSM::goalTerminalFeedbackReady() const
+  {
+    return have_target_ && exec_state_ != EMERGENCY_STOP &&
+        !perception_recovery_pending_ && !tracking_fault_active_ &&
+        !tracking_safety_stop_active_ && !tracking_recovery_pending_ &&
+        !try_plan_after_emergency_ && !dynamic_safety_speed_limit_active_ &&
+        !dynamic_point_flow_hazard_active_ && dynamic_event_required_esdf_seq_ == 0 &&
+        !hasUnmetRequiredESDF() &&
+        !planner_manager_->grid_map_->getOdomDepthTimeout() &&
+        perceptionRecoveryReady();
+  }
+
+  bool REMANIReplanFSM::waitForGoalTerminal(
+      const ros::Time &now, double position_error, double yaw_error, double arm_error)
+  {
+    if (!mppi_terminal_control_ || target_type_ != TARGET_TYPE::MANUAL_TARGET ||
+        !goalTerminalFeedbackReady() || position_error > goal_position_tolerance_ ||
+        arm_error > std::max(0.30, goal_arm_tolerance_) ||
+        (yaw_error <= goal_yaw_tolerance_ && arm_error <= goal_arm_tolerance_))
+      return false;
+    if (goal_yaw_alignment_start_time_.isZero())
+      goal_yaw_alignment_start_time_ = now;
+    const double elapsed = (now - goal_yaw_alignment_start_time_).toSec();
+    if (elapsed < 0.0 || elapsed >= goal_yaw_alignment_timeout_)
+      return false;
+    ROS_INFO_THROTTLE(
+        1.0,
+        "[FSM] Final position reached; wait for bounded MPPI yaw/arm settling "
+        "(yaw=%.3f rad, arm=%.3f rad, %.1f/%.1f s).",
+        yaw_error, arm_error, elapsed, goal_yaw_alignment_timeout_);
+    return true;
+  }
+
+  void REMANIReplanFSM::finishManualGoal()
+  {
+    manual_restore_running_ = false;
+    have_target_ = false;
+    have_trigger_ = false;
+    goal_feedback_recheck_pending_ = false;
+    goal_yaw_alignment_start_time_ = ros::Time(0);
+    std::cout << "reach goal\n";
+    changeFSMExecState(WAIT_TARGET, "FSM");
+    std_msgs::Bool msg;
+    msg.data = true;
+    reached_pub_.publish(msg);
+  }
+
+  void REMANIReplanFSM::beginTransientObstacleRecovery()
+  {
+    // Reuse the perception recovery's stopped, two-phase publication path.
+    // Ordinary GEN_NEW_TRAJ failure counts must not discard this accepted goal.
+    transient_obstacle_recovery_ = true;
+    perception_recovery_pending_ = true;
+    perception_recovery_candidate_ready_ = false;
+    recovery_last_attempt_map_ = {0, 0};
+    perception_retry_after_ = ros::SteadyTime();
+    publishSafetySpeedLimit(0.0);
+    flag_escape_emergency_ = true;
+    changeFSMExecState(EMERGENCY_STOP, "SAFETY");
+  }
+
+  void REMANIReplanFSM::recoverPerceptionStop()
+  {
+    if (!perception_recovery_pending_)
+      return;
+    publishSafetySpeedLimit(0.0);
+    const auto map = planner_manager_->grid_map_;
+    if (!have_target_ || map->getOdomDepthTimeout())
+    {
+      perception_recovery_candidate_ready_ = false;
+      return;
+    }
+    if (!enable_fail_safe_ || !have_target_ || !perceptionRecoveryReady() ||
+        mm_state_vel_.head(2).norm() >= .1 ||
+        ros::SteadyTime::now() < perception_retry_after_)
+      return;
+    if (!waitForRequiredESDF("PERCEPTION_RECOVERY", true))
+      return;
+
+    if (!perception_recovery_candidate_ready_)
+    {
+      const auto attempt_map = std::make_pair(
+          map->getReadESDFVersion().first, map->getESDFObservationSeq());
+      if (transient_obstacle_recovery_ &&
+          attempt_map == recovery_last_attempt_map_)
+        return;
+      recovery_last_attempt_map_ = attempt_map;
+      const std::uint64_t request_goal = accepted_goal_revision_;
+      have_local_traj_ = false;
+      try_plan_after_emergency_ = true;
+      changeFSMExecState(GEN_NEW_TRAJ, "PERCEPTION_RECOVERY");
+      const int trials = isRearDistantGoal() ? rear_goal_plan_trial_times_ :
+                                             global_plan_trial_times_;
+      if (!planFromGlobalTraj(trials))
+      {
+        // Retain the accepted goal. Waiting or a failed recovery must not
+        // consume the ordinary budget and silently discard that goal.
+        perception_retry_after_ = ros::SteadyTime::now() + ros::WallDuration(.5);
+        ROS_WARN_THROTTLE(1.0, "[FSM] No validated transient-stop recovery candidate; retain the accepted goal and retry from fresh feedback/map.");
+      }
+      else if (!have_target_ || accepted_goal_revision_ != request_goal)
+        perception_recovery_candidate_ready_ = false;
+      else
+        recovery_candidate_goal_revision_ = request_goal;
+      return;  // Yield to fresh odometry/joint callbacks before publication.
+    }
+
+    if (recovery_candidate_goal_revision_ != accepted_goal_revision_)
+    {
+      perception_recovery_candidate_ready_ = false;
+      return;
+    }
+    auto &candidate = planner_manager_->traj_container_.singul_traj_data;
+    const auto matches_feedback = [&]() {
+      const Eigen::VectorXd first = candidate.singul_traj.empty() ?
+          Eigen::VectorXd() : candidate.getPos(0.0);
+      const double yaw_error = std::fabs(std::atan2(
+          std::sin(mm_car_yaw_ - start_yaw_), std::cos(mm_car_yaw_ - start_yaw_)));
+      return first.size() == traj_dim_ && first.allFinite() &&
+          (first.head(2) - mm_state_pos_.head(2)).norm() <= replan_feedback_position_threshold_ &&
+          (first.segment(mobile_base_dim_, manipulator_dim_) -
+           mm_state_pos_.segment(mobile_base_dim_, manipulator_dim_)).cwiseAbs().maxCoeff() <=
+              replan_feedback_arm_threshold_ && yaw_error <= replan_feedback_yaw_threshold_;
+    };
+    if (!matches_feedback())
+    {
+      perception_recovery_candidate_ready_ = false;
+      perception_retry_after_ = ros::SteadyTime::now() + ros::WallDuration(.5);
+      return;
+    }
+    rebaseStoppedTrajectory(candidate, ros::Time::now());
+    map->refreshReadSnapshot();
+    std::uint64_t validation_seq = 0, prediction_seq = 0;
+    if (!validateTrajectoryForPublication(candidate, validation_seq, prediction_seq))
+    {
+      perception_recovery_candidate_ready_ = false;
+      perception_retry_after_ = ros::SteadyTime::now() + ros::WallDuration(.5);
+      return;
+    }
+    if (!have_target_ || recovery_candidate_goal_revision_ != accepted_goal_revision_)
+    {
+      perception_recovery_candidate_ready_ = false;
+      return;
+    }
+    if (!perceptionRecoveryReady())
+      return;
+    if (!matches_feedback())
+    {
+      perception_recovery_candidate_ready_ = false;
+      perception_retry_after_ = ros::SteadyTime::now() + ros::WallDuration(.5);
+      return;
+    }
+    sendPolyTrajROSMsg(validation_seq, prediction_seq);
+    perception_recovery_candidate_ready_ = false;
+    perception_recovery_pending_ = false;
+    transient_obstacle_recovery_ = false;
+    recovery_last_attempt_map_ = {0, 0};
+    ROS_INFO("[FSM] Fresh perception, feedback and accepted goal validated a new recovery trajectory; release only the transient stop.");
+    finishNewTrajectory();
+  }
+
+  void REMANIReplanFSM::finishNewTrajectory()
+  {
+    goal_feedback_recheck_pending_ = false;
+    goal_yaw_alignment_start_time_ = ros::Time(0);
+    new_traj_fail_time_ = 0;
+    // Only actual publication may enter this success path. A staged recovery
+    // candidate has no execution authority. A tracker-owned stop may use
+    // that candidate for alignment, but it may resume only after the
+    // tracker has also reported recovery.  This prevents a false message
+    // alone from restarting the rejected old trajectory.
+    if (tracking_safety_stop_active_)
+    {
+      tracking_recovery_candidate_published_ = true;
+      if (!tracking_fault_active_)
+      {
+        tracking_safety_stop_active_ = false;
+        tracking_recovery_candidate_published_ = false;
+        ROS_INFO("[FSM] Validated a recovery trajectory after tracker alignment; release the tracking-owned stop.");
+      }
+      else
+      {
+        ROS_WARN_THROTTLE(
+            1.0,
+            "[FSM] Recovery trajectory is ready, but the tracker is not aligned yet; keep zero speed.");
+      }
+    }
+    tracking_recovery_pending_ = false;
+    if (dynamic_safety_speed_limit_active_ &&
+        ((dynamic_point_flow_active_mode_ &&
+          dynamic_point_flow_hazard_active_) ||
+         dynamic_event_required_esdf_seq_ > 0))
+    {
+      ROS_WARN_THROTTLE(
+          1.0,
+          "[FSM] Keep the obstacle speed guard until the new trajectory "
+          "is independently cleared by live safety checks.");
+    }
+    else if (dynamic_safety_speed_limit_active_)
+    {
+      clearDynamicSafetySpeedLimit(ros::Time::now(), true);
+    }
+    else
+      publishSafetySpeedLimit(
+          tracking_safety_stop_active_ ? 0.0 : -1.0);
+    changeFSMExecState(EXEC_TRAJ, "FSM");
+    flag_escape_emergency_ = true;
+    try_plan_after_emergency_ = false;
+  }
+
   void REMANIReplanFSM::execFSMCallback(const ros::TimerEvent &e)
   {
+    drainFeedbackCallbacks();
+    GridMap::ReadScope map_read(*planner_manager_->grid_map_);
     exec_timer_.stop(); // To avoid blockage
 
     static int fsm_num = 0;
@@ -387,6 +635,32 @@ namespace remani_planner
 
     case GEN_NEW_TRAJ:
     {
+      if (perception_recovery_pending_)
+      {
+        recoverPerceptionStop();
+        goto force_return;
+      }
+      // Only a final-reference feedback retry may complete here. Feedback can
+      // arrive during a failed synchronous solve; retain this provenance until
+      // a new trajectory/goal or safety stop replaces it. Never restart settling.
+      if (goal_feedback_recheck_pending_ && mppi_terminal_control_ &&
+          target_type_ == TARGET_TYPE::MANUAL_TARGET &&
+          !manual_restore_standby_after_goal_ && goalTerminalFeedbackReady())
+      {
+        const double position_error =
+            (mm_state_pos_.head(2) - end_pt_.head(2)).norm();
+        const double yaw_error = std::fabs(std::atan2(
+            std::sin(mm_car_yaw_ - end_yaw_), std::cos(mm_car_yaw_ - end_yaw_)));
+        const double arm_error =
+            (mm_state_pos_.segment(mobile_base_dim_, manipulator_dim_) -
+             end_pt_.segment(mobile_base_dim_, manipulator_dim_)).cwiseAbs().maxCoeff();
+        if (position_error <= goal_position_tolerance_ &&
+            yaw_error <= goal_yaw_tolerance_ && arm_error <= goal_arm_tolerance_)
+        {
+          finishManualGoal();
+          goto force_return;
+        }
+      }
       // Global/recovery planning freezes one raw-map freshness boundary when
       // the attempt starts. Waiting for it blocks only candidate generation;
       // it does not create a zero-speed owner.
@@ -412,49 +686,7 @@ namespace remani_planner
       bool success = planFromGlobalTraj(trial_times);
       // std::cout << "gen new traj 2\n";
       if (success){
-        new_traj_fail_time_ = 0;
-        // planFromGlobalTraj() returns true only after callReboundReplan()
-        // validates and publishes a candidate.  A tracker-owned stop may use
-        // that candidate for alignment, but it may resume only after the
-        // tracker has also reported recovery.  This prevents a false message
-        // alone from restarting the rejected old trajectory.
-        if (tracking_safety_stop_active_)
-        {
-          tracking_recovery_candidate_published_ = true;
-          if (!tracking_fault_active_)
-          {
-            tracking_safety_stop_active_ = false;
-            tracking_recovery_candidate_published_ = false;
-            ROS_INFO("[FSM] Validated a recovery trajectory after tracker alignment; release the tracking-owned stop.");
-          }
-          else
-          {
-            ROS_WARN_THROTTLE(
-                1.0,
-                "[FSM] Recovery trajectory is ready, but the tracker is not aligned yet; keep zero speed.");
-          }
-        }
-        tracking_recovery_pending_ = false;
-        if (dynamic_safety_speed_limit_active_ &&
-            ((dynamic_point_flow_active_mode_ &&
-              dynamic_point_flow_hazard_active_) ||
-             dynamic_event_required_esdf_seq_ > 0))
-        {
-          ROS_WARN_THROTTLE(
-              1.0,
-              "[FSM] Keep the obstacle speed guard until the new trajectory "
-              "is independently cleared by live safety checks.");
-        }
-        else if (dynamic_safety_speed_limit_active_)
-        {
-          clearDynamicSafetySpeedLimit(ros::Time::now(), true);
-        }
-        else
-          publishSafetySpeedLimit(
-              tracking_safety_stop_active_ ? 0.0 : -1.0);
-        changeFSMExecState(EXEC_TRAJ, "FSM");
-        flag_escape_emergency_ = true;
-        try_plan_after_emergency_ = false;
+        finishNewTrajectory();
       }
       else
       {
@@ -486,6 +718,18 @@ namespace remani_planner
       // Do not allow retry timing, point-flow ownership, or A* selection to
       // bypass a raw occupancy generation that has not reached the ESDF yet.
       if (!waitForRequiredESDF("REPLAN_TRAJ"))
+        goto force_return;
+
+      // A missing execution clock is waiting, not a failed native solve.
+      // Gate before consuming either ordinary or dynamic retry accounting.
+      // A genuine zero-speed guard instead replans from measured stopped state.
+      const bool guarded_zero_speed = dynamic_safety_speed_limit_active_ &&
+          std::isfinite(current_safety_speed_limit_) &&
+          current_safety_speed_limit_ <= 1e-3;
+      if (!guarded_zero_speed &&
+          !waitForControllerProgress(
+              planner_manager_->traj_container_.singul_traj_data,
+              ros::Time::now()))
         goto force_return;
 
       if (dynamic_replan_retry_pending_) {
@@ -584,6 +828,8 @@ namespace remani_planner
       /* determine if need to replan */
       SingulTrajData *info = &planner_manager_->traj_container_.singul_traj_data;
       const ros::Time now = ros::Time::now();
+      if (!waitForControllerProgress(*info, now))
+        goto force_return;
       double t_cur = getCurrentTrajectoryTime(*info, now);
       const bool trajectory_finished = t_cur >= info->duration - 1e-2;
       bool need_to_plan_next = trajectory_finished;
@@ -610,7 +856,15 @@ namespace remani_planner
           actual_position_at_goal && actual_arm_at_goal;
       bool accept_manual_yaw_timeout = false;
 
-      if(trajectory_finished && touch_the_goal &&
+      if (mppi_terminal_control_ && target_type_ == TARGET_TYPE::MANUAL_TARGET &&
+          trajectory_finished && touch_the_goal)
+      {
+        if (!goalTerminalFeedbackReady())
+          goto force_return;
+        if (waitForGoalTerminal(now, actual_goal_position_error,
+                                actual_goal_yaw_error, actual_goal_arm_error))
+          break;
+      }else if(trajectory_finished && touch_the_goal &&
          actual_position_and_arm_at_goal && !actual_yaw_at_goal){
         if(goal_yaw_alignment_start_time_.isZero())
           goal_yaw_alignment_start_time_ = now;
@@ -678,25 +932,11 @@ namespace remani_planner
             goto force_return;
           }
 
-          manual_restore_running_ = false;
           ROS_WARN("[FSM] Failed to plan arm restore trajectory. Mark manual target as finished.");
-          have_target_ = false;
-          have_trigger_ = false;
-          std::cout << "reach goal\n";
-          changeFSMExecState(WAIT_TARGET, "FSM");
-          std_msgs::Bool msg;
-          msg.data = true;
-          reached_pub_.publish(msg);
+          finishManualGoal();
           goto force_return;
         }else{
-          manual_restore_running_ = false;
-          have_target_ = false;
-          have_trigger_ = false;
-          std::cout << "reach goal\n";
-          changeFSMExecState(WAIT_TARGET, "FSM");
-          std_msgs::Bool msg;
-          msg.data = true;
-          reached_pub_.publish(msg);
+          finishManualGoal();
           goto force_return;
         }
       }else if(trajectory_finished && touch_the_goal && actual_at_goal){
@@ -728,7 +968,11 @@ namespace remani_planner
             "(base=%.3f m, yaw=%.3f rad, arm=%.3f rad); replan from feedback.",
             actual_goal_position_error, actual_goal_yaw_error, actual_goal_arm_error);
         have_local_traj_ = false;
+        goal_feedback_recheck_pending_ = mppi_terminal_control_ &&
+            target_type_ == TARGET_TYPE::MANUAL_TARGET;
         changeFSMExecState(GEN_NEW_TRAJ, "GOAL_FEEDBACK");
+        goto force_return;
+      }else if(!trajectory_finished && tryMppiRefresh()){
         goto force_return;
       }else if(!close_to_no_replan_thresh && t_cur > replan_thresh_ && (!global_plan_)){
         changeFSMExecState(REPLAN_TRAJ, "FSM");
@@ -741,7 +985,9 @@ namespace remani_planner
         callEmergencyStop(mm_state_pos_, mm_car_yaw_, mm_car_singul_);
       }
       else{
-        if(enable_fail_safe_ && mm_state_vel_.head(2).norm() < 0.1){
+        if (perception_recovery_pending_)
+          recoverPerceptionStop();
+        else if(enable_fail_safe_ && mm_state_vel_.head(2).norm() < 0.1){
           // A safety-caused stop snapshots the newest raw observation at this
           // recovery boundary. A tracker-caused stop takes the independent
           // branch below; GEN_NEW_TRAJ still captures a normal planning ESDF
@@ -778,9 +1024,78 @@ namespace remani_planner
     exec_timer_.start();
   }
 
+  void REMANIReplanFSM::mppiRefreshCallback(
+      const std_msgs::Float64MultiArray::ConstPtr &msg)
+  {
+    mppi_refresh::parse(msg->data, mppi_refresh_request_);
+  }
+
+  bool REMANIReplanFSM::tryMppiRefresh()
+  {
+    const ros::Time now = ros::Time::now();
+    const ros::SteadyTime steady_now = ros::SteadyTime::now();
+    if (exec_state_ != EXEC_TRAJ || !have_target_ ||
+        !have_local_traj_ || !have_published_trajectory_ || have_new_target_ ||
+        last_published_trajectory_.singul_traj.empty() ||
+        perception_recovery_pending_ || tracking_fault_active_ ||
+        tracking_safety_stop_active_ || tracking_recovery_pending_ ||
+        try_plan_after_emergency_ || dynamic_replan_retry_pending_ ||
+        (dynamic_safety_speed_limit_active_ &&
+         (!std::isfinite(current_safety_speed_limit_) || current_safety_speed_limit_ <= 1e-3)) ||
+        hasUnmetRequiredESDF() || !perceptionRecoveryReady() ||
+        (!mppi_refresh_attempt_.isZero() &&
+         (steady_now-mppi_refresh_attempt_).toSec() < global_plan_dynamic_replan_hold_time_) ||
+        !mppi_refresh::eligible(mppi_refresh_request_, now.toSec(), mppi_goal_stamp_,
+            last_published_trajectory_.start_time, mppi_consumed_goal_, mppi_consumed_episode_))
+      return false;
+
+    // Waiting for the execution clock must not consume this optional event.
+    if (!waitForControllerProgress(last_published_trajectory_, now))
+      return false;
+    // One attempt per avoidance episode, even across reference replacements.
+    // A failed optional refresh must not enter the ordinary 20-attempt loop.
+    mppi_consumed_goal_ = mppi_refresh_request_.goal();
+    mppi_consumed_episode_ = mppi_refresh_request_.episode();
+    mppi_refresh_attempt_ = steady_now;
+    auto &global = planner_manager_->traj_container_.global_traj;
+    const double old_cursor = global.glb_t_of_lc_tgt;
+    const double old_previous = global.last_glb_t_of_lc_tgt;
+    const auto old_metadata = std::make_tuple(local_target_pt_, local_target_vel_,
+        local_target_acc_, start_pos_, start_vel_, start_acc_, start_jer_,
+        start_yaw_, start_singul_, have_new_target_);
+    const double budget = std::min(
+        planner_manager_->ploy_traj_opt_->getMaxWallTime(), dynamic_astar_replan_wall_time_);
+    // Existing initializer and acceptance, including frozen dynamic prediction
+    // and late moving-handoff rejection. This event contains no prefix initial guess.
+    const bool success = planFromLocalTraj(false, false, budget, true);
+    if (!success)
+    {
+      // callReboundReplan already restores the last published trajectory.
+      global.glb_t_of_lc_tgt = old_cursor;
+      global.last_glb_t_of_lc_tgt = old_previous;
+      std::tie(local_target_pt_, local_target_vel_, local_target_acc_, start_pos_,
+          start_vel_, start_acc_, start_jer_, start_yaw_, start_singul_,
+          have_new_target_) = old_metadata;
+      // Do not restore exec_state_ or any safety owner changed during acceptance.
+    }
+    ROS_INFO("[FSM][MPPIRefresh] goal=%.9f reference=%.9f episode=%.9f success=%d elapsed_ms=%.2f prefix_used=0",
+        mppi_consumed_goal_, mppi_refresh_request_.reference(), mppi_consumed_episode_,
+        success, (ros::SteadyTime::now()-steady_now).toSec()*1000.0);
+    return true;
+  }
+
   void REMANIReplanFSM::trajectoryProgressCallback(
       const geometry_msgs::Vector3Stamped::ConstPtr &msg)
   {
+    // Validate the source values before clamping: std::max/min can turn a
+    // NaN phase/scale into a seemingly valid zero-valued progress packet.
+    if (!std::isfinite(msg->vector.x) || !std::isfinite(msg->vector.y) ||
+        !std::isfinite(msg->vector.z) || msg->vector.y < 0.0 ||
+        msg->vector.y > 300.0 || msg->vector.z < 0.0 || msg->vector.z > 1.0)
+    {
+      have_controller_progress_ = false;
+      return;
+    }
     controller_trajectory_start_time_ = msg->vector.x;
     controller_trajectory_time_ = std::max(0.0, msg->vector.y);
     controller_trajectory_scale_ =
@@ -791,6 +1106,7 @@ namespace remani_planner
 
   void REMANIReplanFSM::trackingFaultCallback(const std_msgs::Bool::ConstPtr &msg)
   {
+    GridMap::ReadScope map_read(*planner_manager_->grid_map_);
     if (!msg->data) {
       tracking_fault_active_ = false;
 
@@ -830,41 +1146,97 @@ namespace remani_planner
     }
   }
 
+  void REMANIReplanFSM::drainFeedbackCallbacks()
+  {
+    // Only odometry, arm feedback and controller progress are on this queue.
+    // No planning/safety timers, goals, services or recursive FSM callbacks.
+    feedback_callback_queue_.callAvailable(ros::WallDuration(0.0));
+  }
+
+  bool REMANIReplanFSM::currentTrajectoryPhase(
+      const SingulTrajData &traj, const ros::Time &now,
+      double &phase, double &scale) const
+  {
+    phase = 0.0;
+    scale = 0.0;
+    // A published future reference is still pending; an early phase packet
+    // must not make the slow layer advance that candidate before activation.
+    if (mppi_terminal_control_ && now.toSec() < traj.start_time)
+      return false;
+    const bool matching_progress =
+        have_controller_progress_ &&
+        std::isfinite(controller_trajectory_start_time_) &&
+        std::isfinite(controller_trajectory_time_) &&
+        std::isfinite(controller_trajectory_scale_) &&
+        controller_trajectory_time_ >= 0.0 &&
+        controller_trajectory_scale_ >= 0.0 &&
+        controller_trajectory_scale_ <= 1.0 &&
+        std::fabs(controller_trajectory_start_time_ - traj.start_time) < 1e-3 &&
+        !controller_progress_stamp_.isZero();
+    if (matching_progress)
+    {
+      const double age = (now - controller_progress_stamp_).toSec();
+      // Match native_reference_adapter.py's strict MPPI source clock skew;
+      // native mode keeps its historical 50 ms tolerance and age clamp.
+      const double clock_skew = mppi_terminal_control_ ? 0.005 + 1e-8 : 0.05;
+      if (std::isfinite(age) && age >= -clock_skew &&
+          age <= controller_progress_timeout_)
+      {
+        phase = std::max(0.0, std::min(
+            traj.duration, controller_trajectory_time_ +
+            (mppi_terminal_control_ ? age : std::max(0.0, age)) *
+                controller_trajectory_scale_));
+        scale = controller_trajectory_scale_;
+        return true;
+      }
+      // A non-authoritative held value is useful for diagnostics only. Callers
+      // must check readiness before phase-dependent decisions or moving splices.
+      phase = std::max(0.0, std::min(traj.duration, controller_trajectory_time_));
+    }
+    if (mppi_terminal_control_)
+      return false;
+
+    // Native execution without the MPPI controller-clock contract retains its
+    // original wall-clock behavior, including first-reference startup.
+    phase = std::max(0.0, std::min(traj.duration, now.toSec() - traj.start_time));
+    scale = 1.0;
+    return true;
+  }
+
+  bool REMANIReplanFSM::waitForControllerProgress(
+      const SingulTrajData &traj, const ros::Time &now) const
+  {
+    double phase, scale;
+    if (currentTrajectoryPhase(traj, now, phase, scale))
+      return true;
+    ROS_WARN_THROTTLE(
+        1.0, "[FSM] Waiting for fresh matching controller progress "
+        "(reference=%.9f received=%.9f age=%.3fs); retain goal and reference.",
+        traj.start_time, controller_trajectory_start_time_,
+        (now - controller_progress_stamp_).toSec());
+    return false;
+  }
+
   double REMANIReplanFSM::getCurrentTrajectoryTime(
       const SingulTrajData &traj, const ros::Time &now) const
   {
-    const bool progress_matches =
-        have_controller_progress_ &&
-        std::fabs(controller_trajectory_start_time_ - traj.start_time) < 1e-3 &&
-        !controller_progress_stamp_.isZero();
-    if (progress_matches) {
-      const double age = std::max(0.0, (now - controller_progress_stamp_).toSec());
-      if (age <= controller_progress_timeout_) {
-        return std::max(
-            0.0, std::min(
-                traj.duration,
-                controller_trajectory_time_ + age * controller_trajectory_scale_));
-      }
-    }
-
-    return std::max(
-        0.0, std::min(traj.duration, now.toSec() - traj.start_time));
+    double phase, scale;
+    currentTrajectoryPhase(traj, now, phase, scale);
+    return phase;
   }
 
   double REMANIReplanFSM::getCurrentTrajectoryScale(
       const SingulTrajData &traj, const ros::Time &now) const
   {
-    const bool progress_matches =
-        have_controller_progress_ &&
-        std::fabs(controller_trajectory_start_time_ - traj.start_time) < 1e-3 &&
-        !controller_progress_stamp_.isZero() &&
-        (now - controller_progress_stamp_).toSec() <= controller_progress_timeout_;
-    return progress_matches ? controller_trajectory_scale_ : 1.0;
+    double phase, scale;
+    currentTrajectoryPhase(traj, now, phase, scale);
+    return scale;
   }
 
   void REMANIReplanFSM::publishSafetySpeedLimit(double speed_limit)
   {
-    const double normalized_limit = speed_limit < 0.0 ? -1.0 : std::max(0.0, speed_limit);
+    const double normalized_limit = perception_recovery_pending_ ? 0.0 :
+        (speed_limit < 0.0 ? -1.0 : std::max(0.0, speed_limit));
     if (std::isfinite(current_safety_speed_limit_) &&
         std::fabs(current_safety_speed_limit_ - normalized_limit) < 1e-3)
       return;
@@ -1103,10 +1475,21 @@ namespace remani_planner
   }
 
   void REMANIReplanFSM::checkCollisionCallback(const ros::TimerEvent &e){
+    drainFeedbackCallbacks();
+    GridMap::ReadScope map_read(*planner_manager_->grid_map_);
     SingulTrajData *info = &planner_manager_->traj_container_.singul_traj_data;
     auto map = planner_manager_->grid_map_;
     const ros::Time now = ros::Time::now();
 
+    if (perception_recovery_pending_)
+    {
+      // traj_container_ may hold an unpublished recovery candidate. It must
+      // never be mistaken for the trajectory currently being executed.
+      if (map->getOdomDepthTimeout())
+        perception_recovery_candidate_ready_ = false;
+      publishSafetySpeedLimit(0.0);
+      return;
+    }
     if (!have_target_){
       if (!waitForRequiredESDF("NO_ACTIVE_TARGET"))
         return;
@@ -1134,13 +1517,21 @@ namespace remani_planner
     /* ---------- check lost of depth ---------- */
     if (map->getOdomDepthTimeout()){
       ROS_ERROR("Depth Lost! EMERGENCY_STOP");
-      dynamic_safety_speed_limit_active_ = false;
+      perception_recovery_pending_ = true;
+      perception_recovery_candidate_ready_ = false;
+      transient_obstacle_recovery_ = false;
+      recovery_last_attempt_map_ = {0, 0};
+      perception_retry_after_ = ros::SteadyTime();
       publishSafetySpeedLimit(0.0);
-      enable_fail_safe_ = false;
-      changeFSMExecState(EMERGENCY_STOP, "SAFETY");
+      flag_escape_emergency_ = true;
+      changeFSMExecState(EMERGENCY_STOP, "PERCEPTION");
       return;
     }
     /* ---------- check trajectory ---------- */
+    // Sensor-health handling above remains independent of execution progress.
+    // Unknown phase cannot certify a raw-map distance/TTC or a goal arrival.
+    if (!waitForControllerProgress(*info, now))
+      return;
     constexpr double time_step = 0.01;
     double t_cur = getCurrentTrajectoryTime(*info, now);
     Eigen::VectorXd p_cur = info->getPos(t_cur);
@@ -1148,6 +1539,7 @@ namespace remani_planner
     bool occ = false;
     bool collision_is_dynamic = false;
     bool collision_from_point_flow = false;
+    MMConfig::DynamicCollisionEvidence live_collision_evidence;
     std::uint64_t collision_dynamic_observation_seq = 0;
     bool point_flow_emergency = false;
     bool point_flow_requires_stop_for_planning = false;
@@ -1358,7 +1750,8 @@ namespace remani_planner
           if (within_time_horizon || far_sample_due){
             if (!within_time_horizon)
               next_far_sample_distance = scanned_path_distance + global_plan_dynamic_far_sample_distance_;
-            if (planner_manager_->ploy_traj_opt_->checkDynamicObstacleCollision(*info, t_check, dynamic_coll_type)){
+            if (planner_manager_->ploy_traj_opt_->checkDynamicObstacleCollision(
+                    *info, t_check, dynamic_coll_type, &live_collision_evidence)){
               dynamic_collision_time = t_check;
               dynamic_collision_path_distance = scanned_path_distance;
               dynamic_collision_position = dynamic_position;
@@ -1586,11 +1979,45 @@ namespace remani_planner
       }
       if (collision_is_dynamic && !collision_from_point_flow &&
           dynamic_collision_path_distance <= dynamic_emergency_distance){
+        // Record only the raw hit selected for this stop, from this callback's
+        // pinned Latest map. Optimizer probes and rejected candidates never log.
+        const auto version = map->getReadESDFVersion();
+        const auto &evidence = live_collision_evidence;
+        const Eigen::VectorXd query_state = info->getPos(t_temp);
+        ROS_ERROR_STREAM(std::setprecision(17)
+            << "[LiveCollisionStop] source=raw_latest checked_at=" << now.toSec()
+            << " obs=" << map->getDynamicObservationSeq()
+            << " esdf=" << map->getESDFObservationSeq()
+            << " epoch=" << version.first << " revision=" << version.second
+            << " fusion_stamp=" << map->getReadFusionTime().toSec()
+            << " traj_id=" << info->traj_id << " traj_start=" << info->start_time
+            << " phase=" << t_cur << " query_phase=" << t_temp
+            << " gear=" << info->getSingul(t_temp)
+            << " raw_speed=" << info->getVel(t_temp).head(2).norm()
+            << " reference_xy_q=[" << query_state.transpose() << "]"
+            << " reference_yaw=" << info->getCarAngle(t_temp)
+            << " path_distance=" << dynamic_collision_path_distance
+            << " stop_threshold=" << dynamic_emergency_distance
+            << " hit_valid=" << evidence.hit.valid
+            << " collision_type=" << evidence.collision_type
+            << " base_sphere=" << evidence.base_sphere
+            << " arm_link=" << evidence.arm_link << " arm_point=" << evidence.arm_point
+            << " query=[" << evidence.query.transpose() << "]"
+            << " voxel=[" << evidence.hit.voxel.transpose() << "]"
+            << " voxel_center=[" << evidence.hit.center.transpose() << "]"
+            << " distance=" << evidence.hit.distance << " threshold=" << evidence.threshold
+            << " occupancy=" << evidence.hit.occupancy
+            << " occupancy_threshold=" << evidence.hit.occupancy_threshold
+            << " actual_xy_q=[" << mm_state_pos_.transpose() << "]"
+            << " actual_yaw=" << mm_car_yaw_
+            << " actual_vxy=[" << mm_state_vel_.head(2).transpose() << "]"
+            << " odom_stamp=" << perception_odom_stamp_.toSec()
+            << " joint_stamp=" << perception_joint_stamp_.toSec());
         ROS_ERROR_THROTTLE(1.0,
                            "[FSM] Dynamic obstacle only %.2f m ahead (stop threshold %.2f m); stop before replanning.",
                            dynamic_collision_path_distance, dynamic_emergency_distance);
         applyDynamicSafetySpeedLimit(0.0);
-        changeFSMExecState(EMERGENCY_STOP, "SAFETY");
+        beginTransientObstacleRecovery();
         return;
       }
 
@@ -1760,7 +2187,7 @@ namespace remani_planner
       }else{
         if (!collision_is_dynamic && t_temp - t_cur < emergency_time_){
           ROS_WARN_THROTTLE(2.0, "Emergency stop! time=%f", t_temp - t_cur);
-          changeFSMExecState(EMERGENCY_STOP, "SAFETY");
+          beginTransientObstacleRecovery();
         }else if (collision_is_dynamic){
           last_dynamic_replan_collision_pos_ = dynamic_collision_position;
           last_dynamic_replan_collision_type_ = coll_type;
@@ -1855,6 +2282,7 @@ namespace remani_planner
 
   // manual waypoint
   void REMANIReplanFSM::waypointCallback(const geometry_msgs::PoseStamped::ConstPtr &msg){
+    GridMap::ReadScope map_read(*planner_manager_->grid_map_);
     if (!planner_manager_->grid_map_->mapReadyForPlanning()){
       ROS_WARN_THROTTLE(1.0,
                         "[FSM] Goal ignored because the static global-map ESDF is not ready yet. "
@@ -1983,8 +2411,15 @@ namespace remani_planner
             /*preserve_active_target_on_failure=*/true))
       return;
 
+    // A candidate for the previous accepted goal cannot serve this new goal.
+    ++accepted_goal_revision_;
+    mppi_goal_stamp_ = msg->header.stamp.toSec();
+    perception_recovery_candidate_ready_ = false;
+    recovery_last_attempt_map_ = {0, 0};
+    perception_retry_after_ = ros::SteadyTime();
     cout << "Triggered! traget type: " << target_type_ << endl;
     wpt_id_ = requested_wpt_id;
+    goal_feedback_recheck_pending_ = false;
     goal_yaw_alignment_start_time_ = ros::Time(0);
 
     if (target_type_ == TARGET_TYPE::PRESET_TARGET)
@@ -2089,6 +2524,12 @@ namespace remani_planner
 
     mm_car_yaw_rate_ = msg->twist.twist.angular.z;
 
+    const auto &q = msg->pose.pose.orientation;
+    const double qnorm = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
+    perception_odom_stamp_ = std::isfinite(qnorm) && qnorm > 1e-12 &&
+        mm_state_pos_.head(2).allFinite() && mm_state_vel_.head(2).allFinite() &&
+        std::isfinite(mm_car_yaw_) && std::isfinite(mm_car_yaw_rate_) ?
+        msg->header.stamp : ros::Time(0);
     have_odom_ = true;
   }
 
@@ -2108,6 +2549,11 @@ namespace remani_planner
         mm_state_acc_(mobile_base_dim_ + i) = 0.0;
       }
     }
+    perception_joint_stamp_ = msg->position.size() >= static_cast<size_t>(manipulator_dim_) &&
+        msg->velocity.size() >= static_cast<size_t>(manipulator_dim_) &&
+        mm_state_pos_.segment(mobile_base_dim_, manipulator_dim_).allFinite() &&
+        mm_state_vel_.segment(mobile_base_dim_, manipulator_dim_).allFinite() ?
+        msg->header.stamp : ros::Time(0);
     // Fallback only: keep the configured stand-by pose if fsm/init_state exists.
     if (!has_default_arm_) {
       has_default_arm_ = true;
@@ -2127,6 +2573,11 @@ namespace remani_planner
   }
 
   void REMANIReplanFSM::changeFSMExecState(FSM_EXEC_STATE new_state, string pos_call){
+    if (new_state == EMERGENCY_STOP)
+    {
+      goal_feedback_recheck_pending_ = false;
+      goal_yaw_alignment_start_time_ = ros::Time(0);
+    }
     if (new_state == exec_state_)
       continously_called_times_++;
     else
@@ -2179,7 +2630,8 @@ namespace remani_planner
     return std::pair<int, FSM_EXEC_STATE>(continously_called_times_, exec_state_);
   }
 
-  void REMANIReplanFSM::sendPolyTrajROSMsg(){
+  void REMANIReplanFSM::sendPolyTrajROSMsg(
+      std::uint64_t validation_seq, std::uint64_t prediction_validation_seq){
     auto data = &planner_manager_->traj_container_.singul_traj_data;
     
     for(unsigned int i = 0; i < data->singul_traj.size(); ++i){
@@ -2201,7 +2653,17 @@ namespace remani_planner
       }
       poly_traj_pub_.publish(msg);
     }
-
+    if (!data->singul_traj.empty())
+    {
+      goal_feedback_recheck_pending_ = false;
+      goal_yaw_alignment_start_time_ = ros::Time(0);
+    }
+    have_local_traj_ = true;
+    last_published_trajectory_ = *data;
+    have_published_trajectory_ = true;
+    if (global_plan_)
+      last_published_dynamic_validation_seq_ = validation_seq;
+    last_published_point_flow_validation_seq_ = prediction_validation_seq;
   }
 
   bool REMANIReplanFSM::isRearDistantGoal() const
@@ -2247,11 +2709,16 @@ namespace remani_planner
                                           bool allow_random_retry,
                                           double optimization_wall_time,
                                           bool dynamic_repair){
+    drainFeedbackCallbacks();
     SingulTrajData *info = &planner_manager_->traj_container_.singul_traj_data;
     const bool guarded_dynamic_stop_handoff =
         dynamic_safety_speed_limit_active_ &&
         std::isfinite(current_safety_speed_limit_) &&
         current_safety_speed_limit_ <= 1e-3;
+    MovingHandoff moving;
+    const bool moving_mppi_handoff = moving_handoff::enabled(
+        mppi_terminal_control_, dynamic_repair, have_local_traj_,
+        guarded_dynamic_stop_handoff || perception_recovery_pending_);
     if (guarded_dynamic_stop_handoff)
     {
       // A genuine dynamic-safety zero-speed guard (emergency TTC or raw
@@ -2269,6 +2736,8 @@ namespace remani_planner
     else
     {
     const ros::Time now = ros::Time::now();
+    if (!waitForControllerProgress(*info, now))
+      return false;
     const double t_now = getCurrentTrajectoryTime(*info, now);
     const double current_time_scale =
         getCurrentTrajectoryScale(*info, now);
@@ -2276,6 +2745,31 @@ namespace remani_planner
         dynamic_replan_handoff_time_ : replan_trajectory_time_;
     const double expected_progress = handoff_time * current_time_scale;
     const double t_cur = std::min(info->duration, t_now + expected_progress);
+
+    if (moving_mppi_handoff)
+    {
+      // Freeze the matching old clock before synchronous planning can age its
+      // callbacks. Do not use the general wall-clock fallback for this splice.
+      const double progress_age = (now - controller_progress_stamp_).toSec();
+      if (info->singul_traj.empty() || !have_published_trajectory_ ||
+          !have_controller_progress_ || controller_progress_stamp_.isZero() ||
+          std::fabs(controller_trajectory_start_time_ - info->start_time) >= 1e-3 ||
+          std::fabs(last_published_trajectory_.start_time - info->start_time) >= 1e-3 ||
+          progress_age < -0.05 || progress_age > controller_progress_timeout_ ||
+          now.toSec() < info->start_time)
+      {
+        ROS_WARN("[FSM] Moving MPPI handoff requires a current published reference and matching controller clock.");
+        return false;
+      }
+      moving.timing.epoch = now.toSec();
+      moving.timing.activation = now.toSec() + handoff_time;
+      moving.timing.phase = t_now;
+      moving.timing.scale = current_time_scale;
+      moving.timing.duration = info->duration;
+      if (!moving.timing.valid())
+        return false;
+      moving.executing = *info;
+    }
 
     start_pos_     = info->getPos(t_cur);
     start_vel_    = info->getVel(t_cur) * current_time_scale;
@@ -2317,6 +2811,15 @@ namespace remani_planner
       start_jer_.segment(mobile_base_dim_, manipulator_dim_).setZero();
       ROS_WARN("[FSM] Replan handoff uses measured arm state (max error %.3f rad).",
                arm_position_error.cwiseAbs().maxCoeff());
+    }
+    if (moving_mppi_handoff)
+    {
+      // Match the residual actually used to construct the candidate boundary;
+      // do not silently replace it with a different measured-state forecast.
+      moving.position_offset = start_pos_ - info->getPos(t_cur);
+      const double old_yaw = info->getCarAngle(t_cur);
+      moving.yaw_offset = std::atan2(std::sin(start_yaw_ - old_yaw),
+                                    std::cos(start_yaw_ - old_yaw));
     }
     }
 
@@ -2367,10 +2870,12 @@ namespace remani_planner
 
     const ros::WallTime repair_start = ros::WallTime::now();
     bool success = callReboundReplan(
-        flag_use_poly_init, false, dynamic_repair);
+        flag_use_poly_init, false, dynamic_repair,
+        moving_mppi_handoff ? &moving : nullptr);
     if (!success && allow_random_retry){
       for (int i = 0; i < 1; i++){
-        success = callReboundReplan(true, true, dynamic_repair);
+        success = callReboundReplan(true, true, dynamic_repair,
+                                  moving_mppi_handoff ? &moving : nullptr);
         if (success)
           break;
       }
@@ -2438,7 +2943,7 @@ namespace remani_planner
   bool REMANIReplanFSM::validatePredictedDynamicTrajectory(
       const SingulTrajData &traj,
     const plan_env::DynamicPointSnapshot &snapshot,
-      int &coll_type) const
+      int &coll_type, bool moving_bridge_validated) const
   {
     if (!snapshot.valid)
       return false;
@@ -2462,7 +2967,7 @@ namespace remani_planner
     // stopped state, so validate that hold interval against the same snapshot.
     double hold_wall = 0.0;
     const double hold_horizon = std::min(start_delay, valid_wall_horizon);
-    while (hold_wall <= hold_horizon + 1e-9)
+    while (!moving_bridge_validated && hold_wall <= hold_horizon + 1e-9)
     {
       bool query_valid = true;
       if (planner_manager_->ploy_traj_opt_->
@@ -2736,8 +3241,12 @@ namespace remani_planner
     if (evaluation.status ==
         DYNAMIC_POINT_FLOW_EVAL_STATUS::UNAVAILABLE)
     {
+      // Prediction availability is separate from spatial obstacle occupancy.
+      // Identity changes do not grant a global stop; the live-map trajectory
+      // checks below still own real and retained obstacle geometry.
+      const bool must_hold = dynamic_point_flow_fail_safe_on_unavailable_;
       const bool release_point_flow_only_guard =
-          !dynamic_point_flow_fail_safe_on_unavailable_ &&
+          !must_hold &&
           dynamic_point_flow_hazard_active_ &&
           dynamic_event_required_esdf_seq_ == 0;
       dynamic_point_flow_input_unavailable_ = true;
@@ -2745,7 +3254,7 @@ namespace remani_planner
       dynamic_point_flow_collision_confirmed_ = false;
       dynamic_point_flow_confirm_count_ = 0;
       dynamic_point_flow_clear_since_ = ros::Time(0);
-      if (dynamic_point_flow_fail_safe_on_unavailable_)
+      if (must_hold)
       {
         dynamic_point_flow_hazard_active_ = true;
         last_dynamic_seen_time_ = now;
@@ -2770,7 +3279,7 @@ namespace remani_planner
           1.0,
           "[DynamicPointFlow][active] Input/time basis unavailable (%s); %s.",
           evaluation.reason.c_str(),
-          dynamic_point_flow_fail_safe_on_unavailable_ ?
+          must_hold ?
               "holding zero speed" : "falling back to occupancy safety");
       return;
     }
@@ -2877,14 +3386,20 @@ namespace remani_planner
 
   bool REMANIReplanFSM::callReboundReplan(bool flag_use_poly_init,
                                            bool flag_randomPolyTraj,
-                                           bool dynamic_repair){
+                                           bool dynamic_repair,
+                                           const MovingHandoff *handoff){
+    if (perception_recovery_pending_ &&
+        !planner_manager_->grid_map_->mapReadyForPlanning())
+      return false;
     // Current callers freeze a planning generation only when an optimization
     // is actually due. Do not capture a second, newer generation here: doing
     // so after the outer frozen generation becomes ready would turn normal
     // LiDAR progress into a false optimization failure. Existing raw/event
     // requirements remain fail-closed, and the final live-occupancy check
     // below covers frames newer than the frozen planning generation.
-    if (!waitForRequiredESDF("REBOUND_REPLAN_GUARD"))
+    planner_manager_->grid_map_->refreshReadSnapshot();
+    if (!waitForRequiredESDF("REBOUND_REPLAN_GUARD") ||
+        !planner_manager_->grid_map_->beginPlanningReadSnapshot())
       return false;
 
     const bool preserve_executing_trajectory =
@@ -2942,13 +3457,29 @@ namespace remani_planner
     double desired_start_yaw;
     double desired_start_time;
     const bool guarded_dynamic_stop_handoff =
-        dynamic_safety_speed_limit_active_ &&
-        std::isfinite(current_safety_speed_limit_) &&
-        current_safety_speed_limit_ <= 1e-3;
+        perception_recovery_pending_ ||
+        (dynamic_safety_speed_limit_active_ &&
+         std::isfinite(current_safety_speed_limit_) &&
+         current_safety_speed_limit_ <= 1e-3);
+    const bool moving_mppi_handoff = handoff != nullptr &&
+        moving_handoff::enabled(mppi_terminal_control_, dynamic_repair,
+                                have_local_traj_, guarded_dynamic_stop_handoff);
+    if (handoff != nullptr &&
+        (!moving_mppi_handoff || !preserve_executing_trajectory ||
+         handoff->executing.singul_traj.empty() ||
+         std::fabs(executing_trajectory.start_time -
+                   handoff->executing.start_time) >= 1e-3 ||
+         executing_trajectory.traj_id != handoff->executing.traj_id ||
+         !handoff->timing.canPublish(ros::Time::now().toSec())))
+    {
+      ROS_WARN("[FSM] Moving MPPI handoff context expired or no longer matches the executing reference.");
+      return finish_failed_planning_attempt();
+    }
     
     if(have_local_traj_)
     {
-      desired_start_time = ros::Time::now().toSec() +
+      desired_start_time = moving_mppi_handoff ? handoff->timing.activation :
+          ros::Time::now().toSec() +
           (guarded_dynamic_stop_handoff ? 0.0 :
            (dynamic_repair ? dynamic_replan_handoff_time_ :
                              replan_trajectory_time_));
@@ -2982,11 +3513,27 @@ namespace remani_planner
         desired_start_pt, desired_start_vel, desired_start_acc,desired_start_jerk, desired_start_yaw, desired_start_singul, gripper_state_,
         desired_start_time, local_target_pt_, local_target_vel_, local_target_acc_, local_target_yaw, local_target_gripper,
         (have_new_target_ || flag_use_poly_init),
-        flag_randomPolyTraj, have_local_traj_, init_time, opt_time);
+        flag_randomPolyTraj, have_local_traj_, init_time, opt_time,
+        /*wait_for_start=*/!moving_mppi_handoff);
+    // Solve-time traffic is already queued on the three-feedback inbox. Adopt
+    // it before acceptance; it never changes an unpublished candidate/goal.
+    drainFeedbackCallbacks();
+    // A matching clock used before solve is not evidence of its validity now.
+    // Keep the previously published reference if the actual execution clock
+    // disappeared or changed while this moving handoff was being optimized.
+    if (handoff != nullptr &&
+        !waitForControllerProgress(handoff->executing, ros::Time::now()))
+    {
+      ROS_WARN("[FSM] Rejecting moving MPPI handoff: execution progress expired or changed during solve; retain old reference.");
+      return finish_failed_planning_attempt();
+    }
     have_new_target_ = false;
 
     if (plan_success){
-      int coll_type = -1;
+      // A* and optimization used one immutable generation. Revalidate the
+      // candidate on the newest complete publication, including live occupancy;
+      // a successful solve never grants authority to its old map snapshot.
+      planner_manager_->grid_map_->refreshReadSnapshot();
       std::uint64_t prediction_validation_seq = 0;
       SingulTrajData &candidate =
           planner_manager_->traj_container_.singul_traj_data;
@@ -2996,16 +3543,7 @@ namespace remani_planner
         // may already be hundreds of milliseconds old at publication, while
         // the guarded robot has stayed at trajectory t=0. Rebase only the
         // wall-clock metadata; the measured-state polynomial is unchanged.
-        const ros::Time activation_time = ros::Time::now();
-        double segment_start = activation_time.toSec();
-        candidate.start_time = segment_start;
-        candidate.start_time_ros = activation_time;
-        for (auto &segment : candidate.singul_traj)
-        {
-          segment.start_time = segment_start;
-          segment.end_time = segment_start + segment.duration;
-          segment_start = segment.end_time;
-        }
+        rebaseStoppedTrajectory(candidate, ros::Time::now());
       }
       else if (dynamic_repair && !candidate.singul_traj.empty())
       {
@@ -3014,8 +3552,12 @@ namespace remani_planner
         // fallback will stop, re-anchor at feedback and rebase safely instead.
         const double activation_lead =
             candidate.start_time - ros::Time::now().toSec();
-        constexpr double minimum_activation_lead = 0.02;
-        if (activation_lead < minimum_activation_lead)
+        const double minimum_activation_lead = moving_mppi_handoff ?
+            moving_handoff::minimum_publication_lead : 0.02;
+        if (activation_lead < minimum_activation_lead ||
+            (moving_mppi_handoff &&
+             (std::fabs(candidate.start_time - handoff->timing.activation) > 1e-6 ||
+              !handoff->timing.canPublish(ros::Time::now().toSec()))))
         {
           ROS_WARN("[FSM] Rejecting late moving repair: only %.3f s remains "
                    "before activation (minimum %.3f s).",
@@ -3023,80 +3565,35 @@ namespace remani_planner
           return finish_failed_planning_attempt();
         }
       }
-      if (global_plan_ && !validateStaticTrajectory(candidate, coll_type)){
-        ROS_WARN("[FSM] Rejecting replan candidate: static or swept point-flow planning collision type=%d remains after optimization.", coll_type);
+      std::uint64_t validation_seq = 0;
+      if (!validateTrajectoryForPublication(candidate, validation_seq,
+                                            prediction_validation_seq, handoff))
         return finish_failed_planning_attempt();
-      }
-      if (dynamic_point_flow_active_mode_)
-      {
-        const ros::Time validation_now = ros::Time::now();
-        const plan_env::DynamicPointSnapshot latest_snapshot =
-            planner_manager_->grid_map_->getDynamicPointSnapshot(
-                validation_now);
-        if (!latest_snapshot.valid)
-        {
-          if (dynamic_point_flow_fail_safe_on_unavailable_)
-          {
-            DynamicPointFlowEvaluation unavailable;
-            unavailable.status =
-                DYNAMIC_POINT_FLOW_EVAL_STATUS::UNAVAILABLE;
-            unavailable.snapshot = latest_snapshot;
-            unavailable.reason = latest_snapshot.invalid_reason.empty() ?
-                "latest point-flow snapshot is invalid" :
-                latest_snapshot.invalid_reason;
-            updateDynamicPointFlowDecision(unavailable, validation_now);
-            ROS_ERROR("[FSM] Rejecting replan candidate: latest point-flow "
-                      "snapshot is unavailable (%s) and fail-safe mode is enabled.",
-                      unavailable.reason.c_str());
-            return finish_failed_planning_attempt();
-          }
-          ROS_WARN_THROTTLE(
-              1.0,
-              "[FSM] Latest point-flow snapshot unavailable (%s); explicit "
-              "fail-open configuration leaves occupancy safety authoritative.",
-              latest_snapshot.invalid_reason.c_str());
-        }
-        else if (!validatePredictedDynamicTrajectory(
-                     candidate, latest_snapshot, coll_type))
-        {
-          ROS_WARN("[FSM] Rejecting replan candidate: latest time-aligned "
-                   "point-flow validation failed (collision type=%d or "
-                   "prediction horizon unavailable, seq=%lu).",
-                   coll_type,
-                   static_cast<unsigned long>(latest_snapshot.sequence));
-          return finish_failed_planning_attempt();
-        }
-        else
-        {
-          prediction_validation_seq = latest_snapshot.sequence;
-        }
-      }
-      const std::uint64_t validation_seq = global_plan_ ?
-          planner_manager_->grid_map_->getDynamicObservationSeq() : 0;
-      if (global_plan_ &&
-          !validateDynamicTrajectory(candidate, coll_type)){
-        const auto map = planner_manager_->grid_map_;
-        ROS_WARN("[FSM] Rejecting replan candidate: live obstacle collision "
-                 "type=%d remains (map_seq=%lu, esdf_seq=%lu).",
-                 coll_type,
-                 static_cast<unsigned long>(
-                     map->getDynamicObservationSeq()),
-                 static_cast<unsigned long>(
-                     map->getESDFObservationSeq()));
-        return finish_failed_planning_attempt();
-      }
       init_time_list_.push_back(init_time);
       opt_time_list_.push_back(opt_time);
       total_time_list_.push_back(init_time + opt_time);
-      sendPolyTrajROSMsg();
-      have_local_traj_ = true;
-      last_published_trajectory_ =
-          planner_manager_->traj_container_.singul_traj_data;
-      have_published_trajectory_ = true;
-      if (global_plan_)
-        last_published_dynamic_validation_seq_ = validation_seq;
-      last_published_point_flow_validation_seq_ =
-          prediction_validation_seq;
+      if (perception_recovery_pending_)
+      {
+        // Optimization runs on the callback thread. Yield once so current
+        // source-stamped feedback can be processed before final acceptance.
+        perception_recovery_candidate_ready_ = true;
+        return true;
+      }
+      if (moving_mppi_handoff)
+        ROS_INFO("[MovingHandoff] epoch=%.9f activation=%.9f remaining=%.3f old_start=%.9f phase=%.6f scale=%.3f",
+                 handoff->timing.epoch, handoff->timing.activation,
+                 handoff->timing.activation - ros::Time::now().toSec(),
+                 handoff->executing.start_time, handoff->timing.phase,
+                 handoff->timing.scale);
+      // Validation and logging consume time. Keep the same absolute splice
+      // and check again immediately before handing it to the publisher.
+      if (moving_mppi_handoff &&
+          !handoff->timing.canPublish(ros::Time::now().toSec()))
+      {
+        ROS_WARN("[FSM] Moving MPPI handoff expired during publication validation; retain the old reference.");
+        return finish_failed_planning_attempt();
+      }
+      sendPolyTrajROSMsg(validation_seq, prediction_validation_seq);
 
       // vis local traj
       int i_end = floor(planner_manager_->traj_container_.singul_traj_data.duration / 0.02);
@@ -3113,6 +3610,146 @@ namespace remani_planner
     }
 
     return plan_success;
+  }
+
+  bool REMANIReplanFSM::validateMovingHandoffBridge(
+      const MovingHandoff &handoff, const ros::Time &now,
+      const plan_env::DynamicPointSnapshot *snapshot, int &coll_type) const
+  {
+    if (handoff.executing.singul_traj.empty() ||
+        handoff.position_offset.size() != mobile_base_dim_ + manipulator_dim_ ||
+        !handoff.position_offset.allFinite() ||
+        !std::isfinite(handoff.yaw_offset))
+      return false;
+
+    const double step = std::max(0.01, std::min(
+        0.05, global_plan_static_check_time_step_));
+    // Use the frozen pre-solve clock and curve. Calling
+    // getCurrentTrajectoryTime here could fall back to wall time after the
+    // synchronous solve, and traj_container already contains the new curve.
+    // These corrected reference samples do not replace MPPI's independent
+    // measured-state collision acceptance on every actual command.
+    return moving_handoff::checkBridge(handoff.timing, now.toSec(), step,
+        [&](double phase, double wall_time) {
+          const Eigen::VectorXd pos =
+              handoff.executing.getPos(phase) + handoff.position_offset;
+          const double old_yaw = handoff.executing.getCarAngle(phase);
+          const double yaw = std::atan2(
+              std::sin(old_yaw + handoff.yaw_offset),
+              std::cos(old_yaw + handoff.yaw_offset));
+          if (!pos.allFinite() || !std::isfinite(yaw))
+            return false;
+          const Eigen::Vector3d base(pos(0), pos(1), yaw);
+          const Eigen::VectorXd arm = pos.tail(manipulator_dim_);
+          const auto &model = planner_manager_->mm_config_;
+          if (model->checkPlanningCollision(base, arm, false, coll_type) ||
+              model->checkDynamicObstacleCollision(base, arm, false, coll_type))
+            return false;
+          if (snapshot != nullptr)
+          {
+            ros::Time query_time;
+            query_time.fromSec(wall_time);
+            bool query_valid = true;
+            if (model->checkPredictedDynamicObstacleCollision(
+                    base, arm, query_time, *snapshot, false,
+                    coll_type, query_valid) || !query_valid)
+              return false;
+          }
+          return true;
+        });
+  }
+
+  bool REMANIReplanFSM::validateTrajectoryForPublication(
+      SingulTrajData &candidate, std::uint64_t &validation_seq,
+      std::uint64_t &prediction_validation_seq, const MovingHandoff *handoff)
+  {
+    int coll_type = -1;
+    if (perception_recovery_pending_ &&
+        !planner_manager_->grid_map_->mapReadyForPlanning())
+      return false;
+    if (global_plan_ && !validateStaticTrajectory(candidate, coll_type)){
+      ROS_WARN("[FSM] Rejecting replan candidate: static or swept point-flow planning collision type=%d remains after optimization.", coll_type);
+      return false;
+    }
+    bool moving_bridge_validated = false;
+    if (dynamic_point_flow_active_mode_)
+    {
+      const ros::Time validation_now = ros::Time::now();
+      const plan_env::DynamicPointSnapshot latest_snapshot =
+          planner_manager_->grid_map_->getDynamicPointSnapshot(
+              validation_now);
+      if (!latest_snapshot.valid)
+      {
+        if (dynamic_point_flow_fail_safe_on_unavailable_)
+        {
+          DynamicPointFlowEvaluation unavailable;
+          unavailable.status =
+              DYNAMIC_POINT_FLOW_EVAL_STATUS::UNAVAILABLE;
+          unavailable.snapshot = latest_snapshot;
+          unavailable.reason = latest_snapshot.invalid_reason.empty() ?
+              "latest point-flow snapshot is invalid" :
+              latest_snapshot.invalid_reason;
+          updateDynamicPointFlowDecision(unavailable, validation_now);
+          ROS_ERROR("[FSM] Rejecting replan candidate: latest point-flow "
+                    "snapshot is unavailable (%s) and the safety policy requires a hold.",
+                    unavailable.reason.c_str());
+          return false;
+        }
+        ROS_WARN_THROTTLE(
+            1.0,
+            "[FSM] Latest point-flow snapshot unavailable (%s); explicit "
+            "fail-open configuration leaves occupancy safety authoritative.",
+            latest_snapshot.invalid_reason.c_str());
+      }
+      else
+      {
+        if (handoff != nullptr)
+        {
+          if (!validateMovingHandoffBridge(
+                  *handoff, validation_now, &latest_snapshot, coll_type))
+          {
+            ROS_WARN("[FSM] Rejecting moving MPPI handoff: old executing interval is unsafe or its time basis expired (type=%d).", coll_type);
+            return false;
+          }
+          moving_bridge_validated = true;
+        }
+        if (!validatePredictedDynamicTrajectory(
+                candidate, latest_snapshot, coll_type, moving_bridge_validated))
+        {
+          ROS_WARN("[FSM] Rejecting replan candidate: latest time-aligned "
+                   "point-flow validation failed (collision type=%d or "
+                   "prediction horizon unavailable, seq=%lu).",
+                   coll_type,
+                   static_cast<unsigned long>(latest_snapshot.sequence));
+          return false;
+        }
+        prediction_validation_seq = latest_snapshot.sequence;
+      }
+    }
+    // Empty/unavailable prediction retains the existing policy; static/live
+    // occupancy must still cover the actual old interval until activation.
+    if (handoff != nullptr && !moving_bridge_validated &&
+        !validateMovingHandoffBridge(
+            *handoff, ros::Time::now(), nullptr, coll_type))
+    {
+      ROS_WARN("[FSM] Rejecting moving MPPI handoff: old interval has a static/live collision or expired activation (type=%d).", coll_type);
+      return false;
+    }
+    validation_seq = global_plan_ ?
+        planner_manager_->grid_map_->getDynamicObservationSeq() : 0;
+    if (global_plan_ &&
+        !validateDynamicTrajectory(candidate, coll_type)){
+      const auto map = planner_manager_->grid_map_;
+      ROS_WARN("[FSM] Rejecting replan candidate: live obstacle collision "
+               "type=%d remains (map_seq=%lu, esdf_seq=%lu).",
+               coll_type,
+               static_cast<unsigned long>(
+                   map->getDynamicObservationSeq()),
+               static_cast<unsigned long>(
+                   map->getESDFObservationSeq()));
+      return false;
+    }
+    return true;
   }
 
   bool REMANIReplanFSM::callEmergencyStop(Eigen::VectorXd stop_pos, double stop_yaw, const int singul){

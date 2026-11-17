@@ -1,0 +1,17 @@
+16 groups passed, no SDK/ROS/CAN imports:
+ - three-pair completeness, exact angle units, source stamp, no cached republish
+ - position-derived velocity and missing/stale pair withholding
+ - enable requires feedback; pending motor enable waits; fresh command; replay rejected
+ - malformed, nonfinite, unordered and future command rejection
+ - command expiration stops once and cannot auto-enable/replay after latch
+ - independent feedback expiration stops before command lease
+ - one stale motor enable state stops even when other five update
+ - ArmStatus requires received source, publishes only advancing stamp/count, copies all scalar flags
+ - ArmStatus source count, wall and monotonic ages gate publication and enable
+ - ArmStatus loss alone stops before live command expiry; fresh normal status cannot release latch
+ - fresh abnormal ArmStatus stops at command entry without sending JointCtrl
+ - send failure and quick-stop failure preserve latch
+ - pos/gozero/reset/gripper bypass disabled and shutdown stops
+ - native mode retains unstamped command and repeated cached status publication compatibility
+ - bridge retains velocities/source header, gripper metres and rejects missing position
+ - filter never fills missing joints/velocities with zero; derives real velocity

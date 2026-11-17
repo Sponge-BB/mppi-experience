@@ -1,0 +1,49 @@
+[
+  {
+    "launch": "native_planner.launch",
+    "nodes": [
+      [
+        "remani_planner",
+        "remani_planner_node",
+        "remani_planner_node"
+      ],
+      [
+        "tf2_ros",
+        "static_transform_publisher",
+        "native_world_to_local_odom"
+      ]
+    ],
+    "errors": []
+  },
+  {
+    "launch": "stationary_perception.launch",
+    "nodes": [
+      [
+        "nodelet",
+        "nodelet",
+        "pcl_manager"
+      ],
+      [
+        "nodelet",
+        "nodelet",
+        "passthrough_z"
+      ],
+      [
+        "nodelet",
+        "nodelet",
+        "crop_box"
+      ],
+      [
+        "standby_distributed_trial",
+        "stationary_background",
+        "stationary_background"
+      ],
+      [
+        "standby_hardware_trial",
+        "private_dynamic_obstacle_tracker_node",
+        "dynamic_obstacle_tracker"
+      ]
+    ],
+    "errors": []
+  }
+]

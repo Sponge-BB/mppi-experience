@@ -10,11 +10,15 @@
 #include <nav_msgs/Path.h>
 #include <sensor_msgs/Imu.h>
 #include <ros/ros.h>
+#include <ros/callback_queue.h>
+#include <memory>
 #include <ros/package.h>
 #include <std_msgs/Empty.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float64.h>
+#include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/Int32.h>
+#include <utility>
 #include <vector>
 #include <visualization_msgs/Marker.h>
 
@@ -24,6 +28,8 @@
 #include <geometry_msgs/Vector3Stamped.h>
 #include <traj_utils/DataDisp.h>
 #include <plan_manage/planner_manager.h>
+#include <plan_manage/mppi_refresh_event.hpp>
+#include <plan_manage/moving_handoff_timing.hpp>
 #include <plan_manage/planning_visualization.h>
 #include <quadrotor_msgs/PolynomialTraj.h>
 #include <traj_utils/Assignment.h>
@@ -106,6 +112,16 @@ namespace remani_planner
     double planning_horizen_;
     double emergency_time_;
     bool enable_fail_safe_;
+    // Shared transient perception/live-occupancy stop owner. A newly checked
+    // candidate, never a retry count or an empty old path, releases this stop.
+    bool perception_recovery_pending_ = false;
+    bool perception_recovery_candidate_ready_ = false;
+    bool transient_obstacle_recovery_ = false;
+    std::pair<std::uint64_t, std::uint64_t> recovery_last_attempt_map_{0, 0};
+    std::uint64_t accepted_goal_revision_ = 0;
+    std::uint64_t recovery_candidate_goal_revision_ = 0;
+    ros::Time perception_odom_stamp_, perception_joint_stamp_;
+    ros::SteadyTime perception_retry_after_;
     int last_end_id_;
     double replan_trajectory_time_;
     double replan_feedback_position_threshold_;
@@ -115,6 +131,12 @@ namespace remani_planner
     double goal_yaw_tolerance_;
     double goal_arm_tolerance_;
     double goal_yaw_alignment_timeout_;
+    bool mppi_terminal_control_ = false;
+    mppi_refresh::Event mppi_refresh_request_;
+    double mppi_goal_stamp_ = 0.0, mppi_consumed_goal_ = 0.0;
+    double mppi_consumed_episode_ = 0.0;
+    ros::SteadyTime mppi_refresh_attempt_;
+    bool goal_feedback_recheck_pending_ = false;
     double actual_state_collision_check_interval_;
     double actual_base_emergency_margin_;
     double esdf_freshness_wait_timeout_;
@@ -204,10 +226,15 @@ namespace remani_planner
     bool try_plan_after_emergency_;
 
     /* ROS utils */
+    // Pumped only on the existing FSM thread, never by an AsyncSpinner. Keep
+    // this queue alive until its subscriptions/NodeHandle have been destroyed.
+    ros::CallbackQueue feedback_callback_queue_;
+    std::unique_ptr<ros::NodeHandle> feedback_node_;
     ros::NodeHandle node_;
     ros::Timer exec_timer_, safety_timer_;
     ros::Subscriber waypoint_sub_, odom_sub_, joint_state_sub_, gripper_state_sub_, trigger_sub_, assignment_sub_;
     ros::Subscriber trajectory_progress_sub_, tracking_fault_sub_;
+    ros::Subscriber mppi_refresh_sub_;
     ros::Publisher replan_pub_, new_pub_, poly_traj_pub_, data_disp_pub_, gripper_cmd_pub_, map_state_pub_;
     ros::Publisher safety_speed_limit_pub_;
     ros::Publisher dynamic_point_flow_state_pub_;
@@ -287,10 +314,35 @@ namespace remani_planner
     std::vector<double> init_time_list_;
     std::vector<double> opt_time_list_;
     std::vector<double> total_time_list_;
+    // Local to one synchronous moving repair; never retained as a new
+    // execution owner. The old published curve survives candidate generation.
+    struct MovingHandoff {
+      moving_handoff::Timing timing;
+      SingulTrajData executing;
+      Eigen::VectorXd position_offset;
+      double yaw_offset = 0.0;
+    };
+
     /* helper functions */
     bool callReboundReplan(bool flag_use_poly_init, bool flag_randomPolyTraj,
-                           bool dynamic_repair = false);           // front-end and back-end method
+                           bool dynamic_repair = false,
+                           const MovingHandoff *handoff = nullptr); // front-end and back-end method
     bool callEmergencyStop(Eigen::VectorXd stop_pos, double stop_yaw, const int singul); // front-end and back-end method
+    bool perceptionRecoveryReady() const;
+    bool tryMppiRefresh();
+    bool goalTerminalFeedbackReady() const;
+    bool waitForGoalTerminal(const ros::Time &now, double position_error,
+                             double yaw_error, double arm_error);
+    void finishManualGoal();
+    void beginTransientObstacleRecovery();
+    void recoverPerceptionStop();
+    void finishNewTrajectory();
+    bool validateTrajectoryForPublication(SingulTrajData &candidate,
+        std::uint64_t &validation_seq, std::uint64_t &prediction_validation_seq,
+        const MovingHandoff *handoff = nullptr);
+    bool validateMovingHandoffBridge(const MovingHandoff &handoff,
+        const ros::Time &now, const plan_env::DynamicPointSnapshot *snapshot,
+        int &coll_type) const;
     bool planFromGlobalTraj(const int trial_times = 1);
     bool planFromLocalTraj(bool flag_use_poly_init, bool allow_random_retry = true,
                            double optimization_wall_time = -1.0,
@@ -313,6 +365,11 @@ namespace remani_planner
                              bool capture_planning_boundary = false);
     bool hasUnmetRequiredESDF() const;
     void resetDynamicReplanEvent(bool preserve_esdf_requirement = false);
+    void drainFeedbackCallbacks();
+    bool currentTrajectoryPhase(const SingulTrajData &traj, const ros::Time &now,
+                                double &phase, double &scale) const;
+    bool waitForControllerProgress(const SingulTrajData &traj,
+                                   const ros::Time &now) const;
     double getCurrentTrajectoryTime(const SingulTrajData &traj, const ros::Time &now) const;
     double getCurrentTrajectoryScale(const SingulTrajData &traj, const ros::Time &now) const;
     bool validateStaticTrajectory(const SingulTrajData &traj, int &coll_type) const;
@@ -320,7 +377,7 @@ namespace remani_planner
     bool validatePredictedDynamicTrajectory(
         const SingulTrajData &traj,
         const plan_env::DynamicPointSnapshot &snapshot,
-        int &coll_type) const;
+        int &coll_type, bool moving_bridge_validated = false) const;
     DynamicPointFlowEvaluation evaluateDynamicPointFlow(
         const SingulTrajData &traj, double t_cur, const ros::Time &now);
     void updateDynamicPointFlowDecision(
@@ -337,7 +394,9 @@ namespace remani_planner
     void gripperCallback(const std_msgs::Bool::ConstPtr &msg);
     void trajectoryProgressCallback(const geometry_msgs::Vector3Stamped::ConstPtr &msg);
     void trackingFaultCallback(const std_msgs::Bool::ConstPtr &msg);
-    void sendPolyTrajROSMsg();
+    void mppiRefreshCallback(const std_msgs::Float64MultiArray::ConstPtr &msg);
+    void sendPolyTrajROSMsg(std::uint64_t validation_seq = 0,
+                           std::uint64_t prediction_validation_seq = 0);
     bool frontEndPathSearching();
     bool checkCollision();
 

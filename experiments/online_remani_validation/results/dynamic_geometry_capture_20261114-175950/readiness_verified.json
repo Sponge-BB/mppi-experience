@@ -1,0 +1,180 @@
+{
+  "full_collision_field_received": true,
+  "frames": [
+    {
+      "received_wall": 1794650427.672058,
+      "wire_bytes": 3231540,
+      "double_count": 403941,
+      "header": [
+        3.0,
+        1.0,
+        3691.0,
+        1794650427.503025,
+        1.0,
+        82.0,
+        82.0,
+        60.0,
+        -2.3,
+        -2.05,
+        0.0,
+        0.05,
+        67.0,
+        0.0,
+        1235.0,
+        0.35,
+        2.0,
+        1794650427.6546233,
+        1794650427.4902332,
+        1.0,
+        1.0,
+        0.03,
+        1.0,
+        1.0,
+        1794650427.64954,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1237.0,
+        1825.0,
+        1824.0
+      ],
+      "full_field": true,
+      "valid": true
+    }
+  ],
+  "parameters": {
+    "/whole_body_mppi/base_limits": [
+      1,
+      "Parameter [/whole_body_mppi/base_limits]",
+      {
+        "vmax": 0.25,
+        "wmax": 0.35,
+        "accel": 0.25,
+        "angular_accel": 0.8,
+        "track": 0.37,
+        "wheel_v": 0.25,
+        "wheel_a": 0.2975
+      }
+    ],
+    "/whole_body_mppi/execute": [
+      1,
+      "Parameter [/whole_body_mppi/execute]",
+      true
+    ],
+    "/whole_body_mppi/dt": [
+      -1,
+      "Parameter [/whole_body_mppi/dt] is not set",
+      0
+    ],
+    "/mm_controller_node/controller/use_mppi_execution_limits": [
+      1,
+      "Parameter [/mm_controller_node/controller/use_mppi_execution_limits]",
+      true
+    ],
+    "/piper_ctrl_single_node/can_port": [
+      1,
+      "Parameter [/piper_ctrl_single_node/can_port]",
+      "can1"
+    ],
+    "/use_sim_time": [
+      1,
+      "Parameter [/use_sim_time]",
+      false
+    ],
+    "/dynamic_obstacle_tracker/input_topic": [
+      1,
+      "Parameter [/dynamic_obstacle_tracker/input_topic]",
+      "/velodyne_points"
+    ]
+  },
+  "control_publications": false,
+  "recorder_status": {
+    "phase": "ready_for_user_goal",
+    "reason": "",
+    "pid": 184518,
+    "elapsed_s": 35.62,
+    "first_goal_stamp": null,
+    "since_first_goal_s": null,
+    "sample_counts": {
+      "/cmd_vel": 345,
+      "/mppi/status": 343,
+      "/mm/joint_states": 4970,
+      "/odom": 346,
+      "/velodyne_points_mapping": 335,
+      "/dynamic_points": 336
+    },
+    "input_age_s": {
+      "/cmd_vel": 0.04,
+      "/mppi/status": 0.038,
+      "/mm/joint_states": 0.004,
+      "/odom": 0.071,
+      "/velodyne_points_mapping": 0.044,
+      "/dynamic_points": 0.044
+    },
+    "required_missing_or_stale": [],
+    "diagnostic_started": false,
+    "diagnostic_limit": "Dynamic-test marker triggers optional occupancy evidence: producer at most 16 frames at about 1 Hz.",
+    "dynamic_test_started": false,
+    "dynamic_test_elapsed_s": null,
+    "children": [
+      {
+        "name": "dynamic_capture",
+        "pid": 184571,
+        "returncode": null
+      }
+    ],
+    "control_publications": false,
+    "main_buffer_mib": 32,
+    "max_main_file_mib": 4096,
+    "after_goal_limit_s": null,
+    "after_dynamic_marker_limit_s": 120,
+    "topics": [
+      "/mppi/status",
+      "/mppi/prediction_rollouts",
+      "/mppi/collision_snapshot",
+      "/cmd_vel",
+      "/odom",
+      "/move_base_simple/goal",
+      "/planning/trajectory",
+      "/planning/finish",
+      "/planning/safety_speed_limit",
+      "/planning/mppi_refresh_request",
+      "/tracking_fault",
+      "/piper_execution_state",
+      "/joint_states_single",
+      "/mm/joint_states",
+      "/joint_ctrl_single",
+      "/mm_controller_node/trajectory_progress",
+      "/mm_controller_node/base_tracking_error",
+      "/mm_controller_node/arm_tracking_error",
+      "/rosout_agg",
+      "/dynamic_points",
+      "/velodyne_points_mapping",
+      "/velodyne_points",
+      "/cloud_registered",
+      "/tf",
+      "/tf_static",
+      "/map_generator/global_cloud",
+      "/dynamic_obstacle_tracker/confirmed_track_count",
+      "/dynamic_obstacle_tracker/motion_qualified_track_count",
+      "/dynamic_obstacle_tracker/maximum_motion_qualified_speed",
+      "/dynamic_obstacle_tracker/perception_healthy",
+      "/dynamic_obstacle_tracker/processing_ms",
+      "/dynamic_obstacle_tracker/input_age"
+    ]
+  },
+  "process_memory": {
+    "184518": [
+      "VmHWM:\t   41408 kB",
+      "VmRSS:\t   41408 kB"
+    ],
+    "184571": [
+      "VmHWM:\t   71748 kB",
+      "VmRSS:\t   71748 kB"
+    ]
+  },
+  "bag_bytes": {
+    "dynamic_capture.bag.active": 163409920
+  }
+}

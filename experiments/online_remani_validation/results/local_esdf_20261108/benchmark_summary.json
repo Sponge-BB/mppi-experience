@@ -1,0 +1,154 @@
+{
+  "scope": "offline EDT pipeline, not live sensor-to-controller latency",
+  "timing_exclusions": "PCD load, occupancy fusion, fixture copy, field comparison, immutable publication, ROS transport, MPPI export",
+  "all_equal": true,
+  "compared_voxels_per_frame": 3600000,
+  "frames": 14,
+  "nearby_frames": 12,
+  "max_abs_error_m": 0,
+  "nearby": {
+    "full": {
+      "pipeline_wall_ms": {
+        "median": 119.4340955,
+        "min": 118.375478,
+        "max": 152.398641
+      },
+      "prepare_ms": {
+        "median": 0.00112,
+        "min": 0.00048,
+        "max": 0.001728
+      },
+      "snapshot_copy_ms": {
+        "median": 0.888387,
+        "min": 0.802656,
+        "max": 0.988775
+      },
+      "compute_ms": {
+        "median": 108.89608100000001,
+        "min": 107.950684,
+        "max": 141.826642
+      },
+      "commit_ms": {
+        "median": 9.382001500000001,
+        "min": 9.29099,
+        "max": 9.514583
+      },
+      "compute_voxels": {
+        "median": 3600000.0,
+        "min": 3600000,
+        "max": 3600000
+      },
+      "write_voxels": {
+        "median": 3600000.0,
+        "min": 3600000,
+        "max": 3600000
+      }
+    },
+    "local": {
+      "pipeline_wall_ms": {
+        "median": 9.862197,
+        "min": 9.674269,
+        "max": 11.21929
+      },
+      "prepare_ms": {
+        "median": 4.2002135,
+        "min": 4.18298,
+        "max": 4.512722
+      },
+      "snapshot_copy_ms": {
+        "median": 0.069587,
+        "min": 0.059522,
+        "max": 0.079107
+      },
+      "compute_ms": {
+        "median": 4.536035,
+        "min": 4.329931,
+        "max": 6.063663
+      },
+      "commit_ms": {
+        "median": 0.8498574999999999,
+        "min": 0.773438,
+        "max": 0.880035
+      },
+      "compute_voxels": {
+        "median": 165300.0,
+        "min": 162450,
+        "max": 175446
+      },
+      "write_voxels": {
+        "median": 36704.0,
+        "min": 35557,
+        "max": 36704
+      }
+    },
+    "median_paired_speedup": 12.172062382960199
+  },
+  "widely_separated_changes": {
+    "name": "widely_separated_changes",
+    "changed_voxels": 16,
+    "occupied_voxels": 21713,
+    "compared_voxels": 3600000,
+    "mismatches": 0,
+    "max_abs_error_m": 0,
+    "full": {
+      "fixture_copy_ms": 0.445489,
+      "prepare_ms": 0.001472,
+      "submit_ms": 0.846849,
+      "snapshot_copy_ms": 0.822368,
+      "compute_ms": 108.972899,
+      "queue_wait_ms": 0.032162,
+      "commit_ms": 9.383409,
+      "pipeline_wall_ms": 119.240824,
+      "compute_voxels": 3600000,
+      "write_voxels": 3600000,
+      "reused": false
+    },
+    "local": {
+      "fixture_copy_ms": 0.537909,
+      "prepare_ms": 4.201061,
+      "submit_ms": 1.025801,
+      "snapshot_copy_ms": 0.998632,
+      "compute_ms": 139.115719,
+      "queue_wait_ms": 0.032097,
+      "commit_ms": 10.963248,
+      "pipeline_wall_ms": 155.600688,
+      "compute_voxels": 3600000,
+      "write_voxels": 3600000,
+      "reused": false
+    }
+  },
+  "unchanged_occupancy": {
+    "name": "unchanged_occupancy",
+    "changed_voxels": 0,
+    "occupied_voxels": 21713,
+    "compared_voxels": 3600000,
+    "mismatches": 0,
+    "max_abs_error_m": 0,
+    "full": {
+      "fixture_copy_ms": 0.460146,
+      "prepare_ms": 0.000608,
+      "submit_ms": 0.950981,
+      "snapshot_copy_ms": 0.928837,
+      "compute_ms": 108.431982,
+      "queue_wait_ms": 0.025985,
+      "commit_ms": 9.493558,
+      "pipeline_wall_ms": 119.049392,
+      "compute_voxels": 3600000,
+      "write_voxels": 3600000,
+      "reused": false
+    },
+    "local": {
+      "fixture_copy_ms": 0.434769,
+      "prepare_ms": 4.186149,
+      "submit_ms": 0,
+      "snapshot_copy_ms": 0,
+      "compute_ms": 0,
+      "queue_wait_ms": 0,
+      "commit_ms": 0,
+      "pipeline_wall_ms": 4.186277,
+      "compute_voxels": 0,
+      "write_voxels": 0,
+      "reused": true
+    }
+  }
+}

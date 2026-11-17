@@ -1,0 +1,74 @@
+{
+  "schema": "esdf_z_tile_decision_v1",
+  "decision": "REJECT_CANDIDATE_NOT_DEPLOYED",
+  "reason": "5轮交错配对表明本实现净耗时增加；数学输出精确不等于优化有效。额外分块gather/scatter未带来净收益，不据此修改生产或继续盲调。",
+  "runtime_src_devel_modified": false,
+  "baseline_sha256": "8f8a1e107e2d8a288f57f8b6b4f858ace89571c1cd02cb015728abaeab8dc6d5",
+  "production_source_sha256_after": "8f8a1e107e2d8a288f57f8b6b4f858ace89571c1cd02cb015728abaeab8dc6d5",
+  "production_source_still_matches_baseline": true,
+  "candidate_sha256": "9f2ee4959c4311d26b1e0461e29ec323440b3d1c8de685e44156f2c8801c3d16",
+  "paired_result": "paired_t3/summary.json",
+  "measured_pairs": 5,
+  "warmup_pairs": 1,
+  "compared_frames_per_pair": 19,
+  "total_exact_frame_comparisons": 114,
+  "zero_mismatch_all_pairs": true,
+  "real_crop_median_of_per_frame_reduction_percent": -8.748577483299202,
+  "synthetic_reduction_percent": {
+    "synthetic_empty": -6.130611608269552,
+    "synthetic_dense": -4.341702272204897,
+    "synthetic_thick": -5.09352785022706
+  },
+  "resources": {
+    "compiler": {
+      "baseline": {
+        "exit_code": 0,
+        "elapsed_s": 18.599486301005527,
+        "peak_child_rss_MiB": 212.0
+      },
+      "z_tile8": {
+        "exit_code": 0,
+        "elapsed_s": 20.126602465999895,
+        "peak_child_rss_MiB": 211.18359375
+      }
+    },
+    "worker_peak_rss_MiB": 62.23828125,
+    "analysis_peak_rss_MiB": 66.2890625,
+    "benchmark_elapsed_s": 9.545639544005098
+  },
+  "boundaries": [
+    "真实输入为历史40.3万格独立crop，非本轮198万格原始worker输入；220.8万格是合成输入。",
+    "测试期间未运行实车节点，结果不代表有ROS/MPPI并发的实时延迟；但目前负收益已足够拒绝该实现。",
+    "候选性能未通过，不扩大运行gtest/构建生产库。未验证该候选全部边界与取消行为，不作可部署声明。"
+  ],
+  "artifacts": {
+    "candidate.patch": {
+      "sha256": "03d9b1203c03b1e53a82ede8bf6f483a4135c3f0a66d5985e55c00d3a60a22e0",
+      "bytes": 4533
+    },
+    "baseline/esdf_worker.cpp": {
+      "sha256": "8f8a1e107e2d8a288f57f8b6b4f858ace89571c1cd02cb015728abaeab8dc6d5",
+      "bytes": 39851
+    },
+    "z_tile8/esdf_worker.cpp": {
+      "sha256": "9f2ee4959c4311d26b1e0461e29ec323440b3d1c8de685e44156f2c8801c3d16",
+      "bytes": 41542
+    },
+    "dense_worker_benchmark.cpp": {
+      "sha256": "44e2eb003d00f9c5ca0efab9da639970d85c6b7623327c5df766f745cb9ff95c",
+      "bytes": 5567
+    },
+    "run_interleaved.py": {
+      "sha256": "4c23fafdc6c7e24f3c0271fed06b1432e2aba8b9d52894d46964fdff4f5ae5a6",
+      "bytes": 5597
+    },
+    "paired_t3/summary.json": {
+      "sha256": "85b41c9a697ce7e07cd54e5b2a530a48516ba74d9d4dc733165324a30c2404f9",
+      "bytes": 56533
+    },
+    "paired_t3/comparisons.json": {
+      "sha256": "d730e6b064749b24b0e69b2a0f4234e717ce3b026b76aef5e02131bd2fd49647",
+      "bytes": 41474
+    }
+  }
+}

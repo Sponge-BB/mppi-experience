@@ -1,0 +1,85 @@
+{
+  "tests": 16,
+  "passed": true,
+  "test_wall_s": 1.1446070420061005,
+  "peak_rss_mib": 45.296875,
+  "scope": "Offline fused advancement equivalence; no ROS or full-plan benchmark. Base full-dt and arm <=10ms stepping unchanged.",
+  "compiler": "g++ -O2 -std=c++11 -shared -fPIC src/mm_remani/src/mppi_position_servo.cpp -o devel/lib/libmppi_position_servo.so",
+  "metrics": {
+    "first_100ms": {
+      "target_lead_rad": 0.025500000000000078,
+      "predicted_q_progress_rad": 0.0017500000000003624,
+      "plant_q_progress_rad": 0.0017500000000003624,
+      "maximum_q_error_rad": 0.0
+    },
+    "fused_full_step_equivalence": {
+      "states": 240,
+      "limit_sets": 4,
+      "update_comparisons": 3840,
+      "maximum_absolute_error": 4.440892098500626e-16,
+      "absolute_tolerance": 1e-12
+    },
+    "fused_multistep_equivalence": {
+      "states": 24,
+      "steps": 80,
+      "maximum_absolute_error": 1.7763568394002505e-15,
+      "absolute_tolerance": 1e-10,
+      "includes_braking": true
+    },
+    "native_numpy_equivalence": {
+      "states": 240,
+      "hold_and_brake": true,
+      "update_comparisons": 3840,
+      "maximum_absolute_error": 4.163336342344337e-16
+    },
+    "periodic_2s": {
+      "predicted_q_progress_rad": 0.25082509209030146,
+      "plant_q_progress_rad": 0.24925996169595477,
+      "plant_final_dq_rad_s": 0.13552805826573244,
+      "maximum_q_error_rad": 0.001565130394346692,
+      "regression_q_error_budget_rad": 0.002,
+      "feedback_reset_single_step_q_errors_rad": [
+        0.0,
+        2.220446049250313e-16,
+        1.383463541504426e-07,
+        2.4900684364004277e-05,
+        2.55578801688916e-05,
+        2.2414304471141122e-05,
+        2.2512533802476753e-05,
+        2.2544451999895188e-05,
+        2.2553437153849387e-05,
+        2.25559665252284e-05,
+        2.2556678558771637e-05,
+        2.255687899976877e-05,
+        2.2556935424411506e-05,
+        2.2556951308594364e-05,
+        2.255695577835226e-05,
+        2.255695703823335e-05,
+        2.255695739261654e-05,
+        2.2556957491648433e-05,
+        2.255695752051423e-05,
+        2.255695752761966e-05
+      ],
+      "feedback_reset_max_q_error_rad": 2.55578801688916e-05,
+      "feedback_reset_max_velocity_error_rad_s": 0.0008715932361711975
+    },
+    "periodic_2s_20ms_feedback": {
+      "plant_q_progress_rad": 0.23609279017058027,
+      "plant_final_dq_rad_s": 0.12544541739650916
+    },
+    "watchdog_0.3": {
+      "samples": 17,
+      "maximum_q_error_rad": 0.0001828132065613275,
+      "final_joint_velocity_rad_s": 0.001956866768614643
+    },
+    "watchdog_0.275": {
+      "samples": 16,
+      "maximum_q_error_rad": 7.323107606671542e-05,
+      "final_joint_velocity_rad_s": 0.002381872125991709
+    }
+  },
+  "sha256": {
+    "src/mm_remani/src/mppi_position_servo.cpp": "98932778131ce409936c570e2bb79676ecb2d4002650fe47797ae49d85512bba",
+    "devel/lib/libmppi_position_servo.so": "9847b680ddeb876da9d91a70a17d742d4f43b19d376a32b4fd04ffa270367ed0"
+  }
+}

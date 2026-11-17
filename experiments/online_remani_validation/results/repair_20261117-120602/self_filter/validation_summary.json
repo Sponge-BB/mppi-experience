@@ -1,0 +1,52 @@
+{
+  "implementation": "optional filter-only fixed_padding_overrides, default [] / all 67 padding values 0.010 m",
+  "candidate_enabled_by_default": false,
+  "candidate": [
+    [
+      14,
+      0.011
+    ],
+    [
+      28,
+      0.011
+    ]
+  ],
+  "local_observed_input_points": 274037,
+  "local_frames": 71,
+  "candidate_new_removals": 4,
+  "retained_unchanged": 274033,
+  "known_collision_witnesses_removed": 3,
+  "new_removal_bounds_model": {
+    "min": [
+      0.1728383687378493,
+      -0.02947737530225013,
+      0.19420893496497227
+    ],
+    "max": [
+      0.1940777370294466,
+      0.012317346633954562,
+      0.2408999074127342
+    ]
+  },
+  "static_pcd_points": 28138,
+  "static_pose_samples": 71,
+  "static_point_pose_checks": 1997798,
+  "static_candidate_new_removals": 0,
+  "static_minimum_gap_to_selected_physical_spheres_m": 0.42218376378362094,
+  "evidence_reused_sha256": {
+    "experiments/online_remani_validation/results/dynamic_acceptance_20261117-103634/analysis/live_collision_audit.json": "d35cfa389eb16c1394235818ac0d7f136c4a22266bde9c8c7b10d4c638e93451",
+    "experiments/online_remani_validation/results/dynamic_acceptance_20261117-103634/analysis/self_filter_candidate_evidence.json": "9a889fee23d117b7f7d1637ae60f989bb5e572be2d88d819ed3fd4098693bcea",
+    "src/mm_remani_planner/plan_manage/config/fixed_collision_spheres_b.yaml": "db5825318c6307c506d93081d112aa8a45bcda8459114dbbbd0e8e3ee27b59f7"
+  },
+  "semantic_limit": "Four candidate-removal points have no independently verified physical label. Tests use controlled geometrically external points, not newly observed physical obstacles. 11 mm has not been calibrated or vehicle-validated.",
+  "source_original_sha256": "9fcd3a8c3025ed56deae40ef7a630cdaf8f0f4bc8570b0abca34e20072b4000c",
+  "source_candidate_sha256": "d50d68e12aaa0eb285125ace6ec9bd1d07546a119143794cbd2329fca7ac735d",
+  "deployment_entry_check": "devel/lib/mm_remani/velodyne_transformer.py is absent; source script is regular executable mode 0775, not a symlink. No src/devel edits by this agent.",
+  "offline_passed": true,
+  "hardware_validation": false,
+  "tests_passed": 46,
+  "known_issues": [
+    "11mm实体覆盖未标定，因此候选仅离线配置，未在实车launch默认启用",
+    "默认输出保持原10mm；本版本增加局部修正能力，不宣称三次实车停轨已消除"
+  ]
+}

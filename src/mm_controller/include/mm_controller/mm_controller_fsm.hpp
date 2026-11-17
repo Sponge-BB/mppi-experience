@@ -1,6 +1,8 @@
 #ifndef __CONTROL_FSM_H
 #define __CONTROL_FSM_H
 
+#include <algorithm>
+#include <cmath>
 #include <ros/ros.h>
 #include <ros/assert.h>
 
@@ -18,6 +20,37 @@ namespace MMController{
 class MMControllerFSM
 {
 public:
+
+	struct BaseExecutionLimits {
+		bool enabled = false;
+		double linear = 0.0, angular = 0.0, wheel = 0.0, track = 0.0;
+	};
+	// Same signed differential-drive speed envelope as the MPPI executor.
+	// The caller supplies the native, unscaled polynomial derivatives.
+	static double baseExecutionTimeScale(const Eigen::Vector2d &velocity,
+	                                    const Eigen::Vector2d &acceleration,
+	                                    double yaw_hold_speed,
+	                                    const BaseExecutionLimits &limits) {
+		if(!limits.enabled) return 1.0;
+		if(!velocity.allFinite() || !acceleration.allFinite() ||
+		   !std::isfinite(yaw_hold_speed) || yaw_hold_speed < 0.0 ||
+		   !std::isfinite(limits.linear) || limits.linear <= 0.0 ||
+		   !std::isfinite(limits.angular) || limits.angular <= 0.0 ||
+		   !std::isfinite(limits.wheel) || limits.wheel <= 0.0 ||
+		   !std::isfinite(limits.track) || limits.track <= 0.0) return 0.0;
+		const double speed = velocity.norm();
+		double omega = 0.0;
+		// Match cal_traj_ctrl_input and the unified native guide: below this
+		// raw speed, reference yaw holds the measured orientation.
+		if(speed > yaw_hold_speed && speed > 1e-8)
+			omega = (velocity.x()*acceleration.y()-velocity.y()*acceleration.x()) /
+			        velocity.squaredNorm();
+		if(!std::isfinite(speed) || !std::isfinite(omega)) return 0.0;
+		const double peak_wheel = speed + .5*limits.track*std::fabs(omega);
+		const double demand = std::max(1.0, std::max(speed/limits.linear,
+			std::max(std::fabs(omega)/limits.angular, peak_wheel/limits.wheel)));
+		return 1.0/demand;
+	}
 
 	State_Data_t state_data;
 	Command_Data_t cmd_data;
@@ -65,6 +98,7 @@ private:
 	double curvature_ff_start_speed_;
 	double curvature_ff_full_speed_;
 	double max_feedforward_omega_;
+	BaseExecutionLimits base_execution_limits_;
 	double odom_timeout_;
 	double virtual_time_min_reference_speed_;
 	double virtual_time_scale_rise_rate_;

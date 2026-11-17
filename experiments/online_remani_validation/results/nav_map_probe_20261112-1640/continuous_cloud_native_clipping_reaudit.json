@@ -1,0 +1,1680 @@
+{
+  "purpose": "Correct prior audit method: far valid endpoints are clipped, never discarded. Reaudit existing planning-input frames only; no live access or runtime modification.",
+  "method": {
+    "input": "73 final /velodyne_points_mapping frames with scan-stamped world TF from mapping_history.json",
+    "native_projection": "finite, abs(sensor_xyz)<[8,8,3], world_z>=.15",
+    "map_origin": [
+      -7.5,
+      -5.0,
+      0.0
+    ],
+    "map_size": [
+      15.0,
+      10.0,
+      3.0
+    ],
+    "native_map_clip": "closetPointInMap exact positive boundary parameter minus .001",
+    "max_ray_length_m": 4.5,
+    "test": "Euclidean 3-D segment / 5cm voxel box positive-volume intersection. Does not simulate native DDA or endpoint/traverse dedup.",
+    "uncertainty": "Only final filtered planning inputs captured. Cannot infer whether upstream raw/registered lidar had other free-space rays."
+  },
+  "summary": {
+    "frames": 73,
+    "source_points": 130217,
+    "projected_points": 120636,
+    "original_far_endpoints": 4221,
+    "out_of_map_clipped": 0,
+    "box_crossings": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "conclusion": "Corrected clipping leaves all nine blockers with zero geometric free-ray-box intersections in captured final planning frames. This does not prove why physical post-person rays were absent."
+  },
+  "blockers": [
+    {
+      "goal": "goal1",
+      "center": [
+        0.5250000000000004,
+        -1.9749999999999996,
+        1.0250000000000001
+      ],
+      "frame_count": 0,
+      "free_ray_box_crossings": 0,
+      "crossings": []
+    },
+    {
+      "goal": "goal1",
+      "center": [
+        0.5250000000000004,
+        -1.8249999999999997,
+        1.125
+      ],
+      "frame_count": 0,
+      "free_ray_box_crossings": 0,
+      "crossings": []
+    },
+    {
+      "goal": "goal2",
+      "center": [
+        0.6750000000000003,
+        -1.4249999999999996,
+        0.775
+      ],
+      "frame_count": 0,
+      "free_ray_box_crossings": 0,
+      "crossings": []
+    },
+    {
+      "goal": "goal2",
+      "center": [
+        0.5750000000000002,
+        -1.5249999999999995,
+        0.8250000000000001
+      ],
+      "frame_count": 0,
+      "free_ray_box_crossings": 0,
+      "crossings": []
+    },
+    {
+      "goal": "goal2",
+      "center": [
+        0.6250000000000004,
+        -1.3249999999999997,
+        0.7250000000000001
+      ],
+      "frame_count": 0,
+      "free_ray_box_crossings": 0,
+      "crossings": []
+    },
+    {
+      "goal": "goal2",
+      "center": [
+        0.47500000000000053,
+        -1.4249999999999996,
+        0.775
+      ],
+      "frame_count": 0,
+      "free_ray_box_crossings": 0,
+      "crossings": []
+    },
+    {
+      "goal": "goal2",
+      "center": [
+        0.5250000000000004,
+        -1.5249999999999995,
+        1.125
+      ],
+      "frame_count": 0,
+      "free_ray_box_crossings": 0,
+      "crossings": []
+    },
+    {
+      "goal": "goal2",
+      "center": [
+        0.5750000000000002,
+        -1.3749999999999996,
+        1.075
+      ],
+      "frame_count": 0,
+      "free_ray_box_crossings": 0,
+      "crossings": []
+    },
+    {
+      "goal": "goal2",
+      "center": [
+        0.5250000000000004,
+        -1.4749999999999996,
+        0.8250000000000001
+      ],
+      "frame_count": 0,
+      "free_ray_box_crossings": 0,
+      "crossings": []
+    }
+  ],
+  "per_frame": [
+    {
+      "file": "mapping_000.msg",
+      "source_stamp": 1794472638.222045,
+      "source_point_count": 1826,
+      "projected_point_count": 1662,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 57,
+      "length_clipped_after_map_clip": 57,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_001.msg",
+      "source_stamp": 1794472638.3220007,
+      "source_point_count": 1817,
+      "projected_point_count": 1685,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 64,
+      "length_clipped_after_map_clip": 64,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_002.msg",
+      "source_stamp": 1794472638.4216146,
+      "source_point_count": 1756,
+      "projected_point_count": 1658,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 62,
+      "length_clipped_after_map_clip": 62,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_003.msg",
+      "source_stamp": 1794472638.5234876,
+      "source_point_count": 1785,
+      "projected_point_count": 1632,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 58,
+      "length_clipped_after_map_clip": 58,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_004.msg",
+      "source_stamp": 1794472638.622585,
+      "source_point_count": 1830,
+      "projected_point_count": 1683,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 60,
+      "length_clipped_after_map_clip": 60,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_005.msg",
+      "source_stamp": 1794472638.7223947,
+      "source_point_count": 1805,
+      "projected_point_count": 1676,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 61,
+      "length_clipped_after_map_clip": 61,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_006.msg",
+      "source_stamp": 1794472638.8220742,
+      "source_point_count": 1755,
+      "projected_point_count": 1635,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 59,
+      "length_clipped_after_map_clip": 59,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_007.msg",
+      "source_stamp": 1794472638.9220273,
+      "source_point_count": 1805,
+      "projected_point_count": 1663,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 60,
+      "length_clipped_after_map_clip": 60,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_008.msg",
+      "source_stamp": 1794472639.0223763,
+      "source_point_count": 1851,
+      "projected_point_count": 1720,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 68,
+      "length_clipped_after_map_clip": 68,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_009.msg",
+      "source_stamp": 1794472639.1225069,
+      "source_point_count": 1776,
+      "projected_point_count": 1676,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 62,
+      "length_clipped_after_map_clip": 62,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_010.msg",
+      "source_stamp": 1794472639.2220333,
+      "source_point_count": 1821,
+      "projected_point_count": 1659,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_011.msg",
+      "source_stamp": 1794472639.3220677,
+      "source_point_count": 1817,
+      "projected_point_count": 1706,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 60,
+      "length_clipped_after_map_clip": 60,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_012.msg",
+      "source_stamp": 1794472639.4221172,
+      "source_point_count": 1768,
+      "projected_point_count": 1659,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 60,
+      "length_clipped_after_map_clip": 60,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_013.msg",
+      "source_stamp": 1794472639.52235,
+      "source_point_count": 1741,
+      "projected_point_count": 1622,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_014.msg",
+      "source_stamp": 1794472639.6225107,
+      "source_point_count": 1820,
+      "projected_point_count": 1671,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 58,
+      "length_clipped_after_map_clip": 58,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_015.msg",
+      "source_stamp": 1794472639.7223692,
+      "source_point_count": 1790,
+      "projected_point_count": 1661,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 65,
+      "length_clipped_after_map_clip": 65,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_016.msg",
+      "source_stamp": 1794472639.8219945,
+      "source_point_count": 1756,
+      "projected_point_count": 1647,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 61,
+      "length_clipped_after_map_clip": 61,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_017.msg",
+      "source_stamp": 1794472639.9223874,
+      "source_point_count": 1800,
+      "projected_point_count": 1656,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 56,
+      "length_clipped_after_map_clip": 56,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_018.msg",
+      "source_stamp": 1794472640.0220144,
+      "source_point_count": 1769,
+      "projected_point_count": 1646,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 62,
+      "length_clipped_after_map_clip": 62,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_019.msg",
+      "source_stamp": 1794472640.1224394,
+      "source_point_count": 1779,
+      "projected_point_count": 1673,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_020.msg",
+      "source_stamp": 1794472640.2223482,
+      "source_point_count": 1709,
+      "projected_point_count": 1618,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_021.msg",
+      "source_stamp": 1794472640.3220935,
+      "source_point_count": 1745,
+      "projected_point_count": 1611,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 56,
+      "length_clipped_after_map_clip": 56,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_022.msg",
+      "source_stamp": 1794472640.4219873,
+      "source_point_count": 1769,
+      "projected_point_count": 1586,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 64,
+      "length_clipped_after_map_clip": 64,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_023.msg",
+      "source_stamp": 1794472640.5225306,
+      "source_point_count": 1709,
+      "projected_point_count": 1596,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 57,
+      "length_clipped_after_map_clip": 57,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_024.msg",
+      "source_stamp": 1794472640.6223783,
+      "source_point_count": 1739,
+      "projected_point_count": 1632,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_025.msg",
+      "source_stamp": 1794472640.7224836,
+      "source_point_count": 1779,
+      "projected_point_count": 1618,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 59,
+      "length_clipped_after_map_clip": 59,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_026.msg",
+      "source_stamp": 1794472640.822397,
+      "source_point_count": 1731,
+      "projected_point_count": 1608,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 55,
+      "length_clipped_after_map_clip": 55,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_027.msg",
+      "source_stamp": 1794472640.9220295,
+      "source_point_count": 1688,
+      "projected_point_count": 1590,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 50,
+      "length_clipped_after_map_clip": 50,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_028.msg",
+      "source_stamp": 1794472641.0223985,
+      "source_point_count": 1830,
+      "projected_point_count": 1681,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 53,
+      "length_clipped_after_map_clip": 53,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_029.msg",
+      "source_stamp": 1794472641.1223812,
+      "source_point_count": 1777,
+      "projected_point_count": 1599,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 61,
+      "length_clipped_after_map_clip": 61,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_030.msg",
+      "source_stamp": 1794472641.2220154,
+      "source_point_count": 1742,
+      "projected_point_count": 1637,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 60,
+      "length_clipped_after_map_clip": 60,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_031.msg",
+      "source_stamp": 1794472641.3224132,
+      "source_point_count": 1758,
+      "projected_point_count": 1647,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 57,
+      "length_clipped_after_map_clip": 57,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_032.msg",
+      "source_stamp": 1794472641.4222066,
+      "source_point_count": 1644,
+      "projected_point_count": 1478,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 56,
+      "length_clipped_after_map_clip": 56,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_033.msg",
+      "source_stamp": 1794472641.5223782,
+      "source_point_count": 1866,
+      "projected_point_count": 1745,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 64,
+      "length_clipped_after_map_clip": 64,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_034.msg",
+      "source_stamp": 1794472641.6224844,
+      "source_point_count": 1755,
+      "projected_point_count": 1658,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 55,
+      "length_clipped_after_map_clip": 55,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_035.msg",
+      "source_stamp": 1794472641.7224185,
+      "source_point_count": 1776,
+      "projected_point_count": 1621,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_036.msg",
+      "source_stamp": 1794472641.8220236,
+      "source_point_count": 1792,
+      "projected_point_count": 1627,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 63,
+      "length_clipped_after_map_clip": 63,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_037.msg",
+      "source_stamp": 1794472641.922464,
+      "source_point_count": 1711,
+      "projected_point_count": 1613,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 56,
+      "length_clipped_after_map_clip": 56,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_038.msg",
+      "source_stamp": 1794472642.0223818,
+      "source_point_count": 1753,
+      "projected_point_count": 1634,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 53,
+      "length_clipped_after_map_clip": 53,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_039.msg",
+      "source_stamp": 1794472642.122137,
+      "source_point_count": 1811,
+      "projected_point_count": 1631,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 57,
+      "length_clipped_after_map_clip": 57,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_040.msg",
+      "source_stamp": 1794472642.2221577,
+      "source_point_count": 1801,
+      "projected_point_count": 1683,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 62,
+      "length_clipped_after_map_clip": 62,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_041.msg",
+      "source_stamp": 1794472642.3224504,
+      "source_point_count": 1774,
+      "projected_point_count": 1673,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_042.msg",
+      "source_stamp": 1794472642.4223433,
+      "source_point_count": 1798,
+      "projected_point_count": 1637,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 59,
+      "length_clipped_after_map_clip": 59,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_043.msg",
+      "source_stamp": 1794472642.5220466,
+      "source_point_count": 1826,
+      "projected_point_count": 1683,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 66,
+      "length_clipped_after_map_clip": 66,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_044.msg",
+      "source_stamp": 1794472642.6224887,
+      "source_point_count": 1749,
+      "projected_point_count": 1642,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_045.msg",
+      "source_stamp": 1794472642.721977,
+      "source_point_count": 1779,
+      "projected_point_count": 1641,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_046.msg",
+      "source_stamp": 1794472642.8222868,
+      "source_point_count": 1824,
+      "projected_point_count": 1639,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 59,
+      "length_clipped_after_map_clip": 59,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_047.msg",
+      "source_stamp": 1794472642.9224288,
+      "source_point_count": 1802,
+      "projected_point_count": 1681,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 62,
+      "length_clipped_after_map_clip": 62,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_048.msg",
+      "source_stamp": 1794472643.0221395,
+      "source_point_count": 1750,
+      "projected_point_count": 1656,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_049.msg",
+      "source_stamp": 1794472643.1224449,
+      "source_point_count": 1804,
+      "projected_point_count": 1651,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 55,
+      "length_clipped_after_map_clip": 55,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_050.msg",
+      "source_stamp": 1794472643.2224004,
+      "source_point_count": 1794,
+      "projected_point_count": 1668,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 65,
+      "length_clipped_after_map_clip": 65,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_051.msg",
+      "source_stamp": 1794472643.3223448,
+      "source_point_count": 1755,
+      "projected_point_count": 1658,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_052.msg",
+      "source_stamp": 1794472643.422322,
+      "source_point_count": 1815,
+      "projected_point_count": 1675,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 49,
+      "length_clipped_after_map_clip": 49,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_053.msg",
+      "source_stamp": 1794472643.5224273,
+      "source_point_count": 1853,
+      "projected_point_count": 1683,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 64,
+      "length_clipped_after_map_clip": 64,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_054.msg",
+      "source_stamp": 1794472643.6224508,
+      "source_point_count": 1794,
+      "projected_point_count": 1677,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 58,
+      "length_clipped_after_map_clip": 58,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_055.msg",
+      "source_stamp": 1794472643.7224796,
+      "source_point_count": 1782,
+      "projected_point_count": 1668,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 58,
+      "length_clipped_after_map_clip": 58,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_056.msg",
+      "source_stamp": 1794472643.8223403,
+      "source_point_count": 1811,
+      "projected_point_count": 1647,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 59,
+      "length_clipped_after_map_clip": 59,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_057.msg",
+      "source_stamp": 1794472643.9207346,
+      "source_point_count": 1798,
+      "projected_point_count": 1670,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 62,
+      "length_clipped_after_map_clip": 62,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_058.msg",
+      "source_stamp": 1794472644.022435,
+      "source_point_count": 1755,
+      "projected_point_count": 1654,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 55,
+      "length_clipped_after_map_clip": 55,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_059.msg",
+      "source_stamp": 1794472644.1226826,
+      "source_point_count": 1834,
+      "projected_point_count": 1667,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 52,
+      "length_clipped_after_map_clip": 52,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_060.msg",
+      "source_stamp": 1794472644.2223272,
+      "source_point_count": 1846,
+      "projected_point_count": 1680,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 62,
+      "length_clipped_after_map_clip": 62,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_061.msg",
+      "source_stamp": 1794472644.3219867,
+      "source_point_count": 1784,
+      "projected_point_count": 1676,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_062.msg",
+      "source_stamp": 1794472644.4224346,
+      "source_point_count": 1769,
+      "projected_point_count": 1653,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 56,
+      "length_clipped_after_map_clip": 56,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_063.msg",
+      "source_stamp": 1794472644.522156,
+      "source_point_count": 1818,
+      "projected_point_count": 1658,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 55,
+      "length_clipped_after_map_clip": 55,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_064.msg",
+      "source_stamp": 1794472644.622321,
+      "source_point_count": 1824,
+      "projected_point_count": 1699,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 58,
+      "length_clipped_after_map_clip": 58,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_065.msg",
+      "source_stamp": 1794472644.7221158,
+      "source_point_count": 1753,
+      "projected_point_count": 1659,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 52,
+      "length_clipped_after_map_clip": 52,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_066.msg",
+      "source_stamp": 1794472644.8221233,
+      "source_point_count": 1816,
+      "projected_point_count": 1658,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 54,
+      "length_clipped_after_map_clip": 54,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_067.msg",
+      "source_stamp": 1794472644.9221528,
+      "source_point_count": 1824,
+      "projected_point_count": 1681,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 64,
+      "length_clipped_after_map_clip": 64,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_068.msg",
+      "source_stamp": 1794472645.022482,
+      "source_point_count": 1738,
+      "projected_point_count": 1633,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 49,
+      "length_clipped_after_map_clip": 49,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_069.msg",
+      "source_stamp": 1794472645.1218448,
+      "source_point_count": 1774,
+      "projected_point_count": 1651,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 58,
+      "length_clipped_after_map_clip": 58,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_070.msg",
+      "source_stamp": 1794472645.2219915,
+      "source_point_count": 1841,
+      "projected_point_count": 1667,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 60,
+      "length_clipped_after_map_clip": 60,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_071.msg",
+      "source_stamp": 1794472645.3224185,
+      "source_point_count": 1816,
+      "projected_point_count": 1688,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 56,
+      "length_clipped_after_map_clip": 56,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "mapping_072.msg",
+      "source_stamp": 1794472645.4220734,
+      "source_point_count": 1765,
+      "projected_point_count": 1660,
+      "out_of_map_clipped": 0,
+      "original_range_beyond_4_5_m": 55,
+      "length_clipped_after_map_clip": 55,
+      "crossings_per_blocker": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "input_sha256": {
+    "mapping_history.json": "eb89bd6dbcc055b1f60a09ee441dd0d30d36ae888d72c975d788883c3e44219b",
+    "continuous_cloud_static_voxel_audit.json": "b6f7e2b1f2e6353dbdaabd3b9a73b4086d0aae072118510cf36ad0ed34bcea96",
+    "mapping_000.msg": "693499c73f705ece56b25e028b9054690d7f5d821df90831b575f0f214a7a085",
+    "mapping_001.msg": "b9dbae75e3f89e7ba4d656efa9abe8e90714320fc32a5ecd8789283a348fa525",
+    "mapping_002.msg": "4f043d8460456b38e3b6273663a1ac64240adf41acf62224cee80b45c7933433",
+    "mapping_003.msg": "a7759109ef66f117c42bfbb88e4baf60c02e336560f463dc351a55798c5f384a",
+    "mapping_004.msg": "21c4f0ef85dd60295c1ea9dc90169a58543867a95361b5d855f8e3cb4eff9504",
+    "mapping_005.msg": "55819746c46e9bd72cea8bb9e8a13abd7cbb024991ccedd184a71aea6c50554d",
+    "mapping_006.msg": "eccce41e488e83eae6106ccf68c20e69cdac82ac4abebb584cc5600738111c56",
+    "mapping_007.msg": "01311904a803a246857c4ab602c02372aba5714322b4ac543dded692302b84b2",
+    "mapping_008.msg": "9e1b946ba47f31abd726b839d50a6ec3eb7aa79746b3e23380dd24a29f754cc9",
+    "mapping_009.msg": "2f93dd9904dd366fbe58854f37ccb2a23359c8f275494c985416e75ad60994dd",
+    "mapping_010.msg": "d84b3456f63509a7ceaafaa446fe5514f044bdc1874e6113f591f0dff0e5809a",
+    "mapping_011.msg": "a64e39c616d55d5e2372a1e72a6a8c7a9b256f7e86c137cf4294c9e851b7a2d2",
+    "mapping_012.msg": "1664422e146972bb41a55742c03bf5c1a18b812746b951ce8ce97051db27b33e",
+    "mapping_013.msg": "16af39b5043305591e9a19a0a861dfc0b5c96b977f43c0e4487c66229d4dec6f",
+    "mapping_014.msg": "e9938e969c6985857f6c15927687680b0ac16d4ed9680695b9b51c288725f735",
+    "mapping_015.msg": "739ab1c4d117b2bf74250ad7c3f82a821882a06e1954564cdb81d5e5f86ed312",
+    "mapping_016.msg": "ffeb5f55fe155ad7831049ff23177e1a27f05895de101a088cb8fb691c1a34e9",
+    "mapping_017.msg": "28f398e4e3d30ddef9d35a9e34a607a7910d0196bea310c80ba04c5025c8db82",
+    "mapping_018.msg": "f7d57d04a51bb340f73298ce3aecb6865eed539800074eecf0e308c72d3b733e",
+    "mapping_019.msg": "147bd4e1268c791b68782169c603794f21b9c3e5a17763aa5e379c529ffdbb8b",
+    "mapping_020.msg": "33b64735a666cba8c9e0434d0e8ef18e91144b86752dcc9c7c1427316f29125d",
+    "mapping_021.msg": "ee1c61e52cfec612386772cdeb09a9d7f0a1d53835b1dfaca58b2b16d51a1c2c",
+    "mapping_022.msg": "747fdf9ed99dcb31ba62a4e309b0a48952a35aed10108a070f16929b6cddf2c8",
+    "mapping_023.msg": "1fac7ca91349081b677d2e7b86b4e0688c0374ced0cf6ddaca0e278f71d6eaf0",
+    "mapping_024.msg": "cbe5e7e483d2784a50396e15ea82c88f6c492b5fda861e0ef043765fead46ba3",
+    "mapping_025.msg": "9ee064cc4e012daa50f4b7d882cf925a931de51c8ddfe2d2ff2a147aed259437",
+    "mapping_026.msg": "2daf16a69f73fa5f33abfc43c17f718cb16953732fd3a594cc6e95d52e00cfbb",
+    "mapping_027.msg": "2388399c6e64c03332d2c79dc30dce5d2cb314d8e40d467b381e1f2a6a0f366d",
+    "mapping_028.msg": "2de041862d62be7628c2254b8050d7aa4d058cffeb47f718d0a3c3f09d1d381c",
+    "mapping_029.msg": "4c594677281945781126de219eda9ee34d6f32a3490515e5a1c01f688f17144e",
+    "mapping_030.msg": "daba195eeae7a09bded80a8090374502d1aa2f415acad0c94838a9cae133dd34",
+    "mapping_031.msg": "d2686343260e967de65d80440a362b97a54a3629f1bab860593349c99ecacce4",
+    "mapping_032.msg": "70e2c909cacbef72e6a99a42fbda5b749bcf243d2587c9cd401ba983a7cd485e",
+    "mapping_033.msg": "dae26e6847f6cef45033ee93c7064d8c2fd08f6ab9d4a866aa163e3df0c601a0",
+    "mapping_034.msg": "e08051821dc0cf721bfd0e6fd7ce60a1b21cf29ce124eaf65ab446543e2520dc",
+    "mapping_035.msg": "93342764c2ddaf0a060081d85df6c10e3cee7ae03b312f4571019683322dc32e",
+    "mapping_036.msg": "a4dab76aca3b4e5660f0df62dcfd075be4ad8f89bdb245610d89ea417099fed1",
+    "mapping_037.msg": "1a787514be9f4b96bbe5b1aee0701d278ebcae3e88800cbf5400b1d752b58820",
+    "mapping_038.msg": "4758febfebff41ea944b96941d0bc5183bbc9f5007dfa0de78fc97db3f9f7bb3",
+    "mapping_039.msg": "eb2ebb6015f1c4298f25c84a1f908bd28e76e5f8f7a68c650e4623da122853cc",
+    "mapping_040.msg": "c39312ba9e709661c9f6e480da58b4b48269c7ba756a7e2714f54918fdec2c38",
+    "mapping_041.msg": "a4c13a3b0ef08fbed8df064edaf763b918ed05eedde47b84746e6ddb239a630b",
+    "mapping_042.msg": "5c6b36fe070215004ac5a6532b9b4609b9dd29af4b948bb78094c2153ffe992a",
+    "mapping_043.msg": "f2271c9e7bbf0c73ad5163240379a2369fbaeacf146579aa5d8f183b153bf20e",
+    "mapping_044.msg": "50d5d7b35195293f5cdd7af762cf43a32ec75590959967239a1fb61dc1e4dda9",
+    "mapping_045.msg": "4c72b5f9ebe9999c884aa5385843fb1b489aab8b67c699def7ac074f0cb3af2b",
+    "mapping_046.msg": "752ac05c8947eb0c9d433724d9ce1a28eec9c14d509110fc2264eab26f5f6c9b",
+    "mapping_047.msg": "252ccf652b068d381187ad78a509f88f3457a075bdfddce209df9dd33bd43e8d",
+    "mapping_048.msg": "527cb7051d44b8e6134882a3b8d05d2ff5a5c3ec26ae1faa20b3e51fa718d2df",
+    "mapping_049.msg": "b435689cb5eb53f5f98b582b5afd437c65635e6fdb23ee0b46491127338eb4ab",
+    "mapping_050.msg": "f5718134faa3755e7b28d0c5fbb558b5ba226546701b460252c32e83cd306ef8",
+    "mapping_051.msg": "8dcf10b75913b84159318709f9013c222f976fa2571e4d1872f866330c168372",
+    "mapping_052.msg": "da4215a5b2064e003080136153193d792823ba37c28fb51a007c25c59676069e",
+    "mapping_053.msg": "2284d35896d594982f2a8c243c84552676c8faa38bfb82a05b12ff49ceba3600",
+    "mapping_054.msg": "326db81463abfa01ff29a0f91881ddf4be839e4ea88d08a582344212c342ff73",
+    "mapping_055.msg": "7250f08ae0f9509a46da356f16e4cfbdb27468ef5fdbd626cf740050049ab526",
+    "mapping_056.msg": "0129ccb3b2035c7ccac0fb725efea3d22714d25f55c48af20cb2108093303e80",
+    "mapping_057.msg": "116827ed881118a0a5e12a78b0dff7cc98260647fbfc1e531e66d7f904e08948",
+    "mapping_058.msg": "c00ea467297144e63aad514c30fd6384d2328072fe54409409d402752b56344a",
+    "mapping_059.msg": "163b5f705c25c9ebc4cce6d914d679c22aadc6ff64131802d2a7779c01353f14",
+    "mapping_060.msg": "e453a1a674a85f5dc7cba15f26ac9bda32b1ace2e81254aac5c84ad136e00f21",
+    "mapping_061.msg": "1db7b550f183a634e20b64f770a80514815e20902b697111e1c0e2be32941f5c",
+    "mapping_062.msg": "cb5530d2570e16e3b4552f03b842675b79dc3367c4704e01f2959548ad6d1f31",
+    "mapping_063.msg": "645e5de2491d0174b5ab009fe0e68754ad0cf4c67fe154bc5ca442eab1e545a3",
+    "mapping_064.msg": "1b4b573b677c0b0d9c23dd6857aca1bf01ee3ab08be7f8d4c5f0bd6f1a4c0075",
+    "mapping_065.msg": "be2fdd4454c09ba0d0187d628dae64bd71c30ed973a1c5f8220523be795b2102",
+    "mapping_066.msg": "4913c990e4f8eaf04267ed460f9bc46034bcd503fe92a1e9b56655c5571b8555",
+    "mapping_067.msg": "148ca9bf9583bb1e7457345898cb1fe8b4083a6bbdae6be790a3364fbc18c9f6",
+    "mapping_068.msg": "c61466ed76a4779b3888be6e570f084ebc34cb839286836d96fdd83698702f75",
+    "mapping_069.msg": "ea0206fc637102c71039ac90f3b2cf9fcf1907ac0ee451915856bc8d5e6cd29d",
+    "mapping_070.msg": "8c97588e5c77bd953468a96f5b9b3597a4610ddee1946f50e9bc16e3ca6a8089",
+    "mapping_071.msg": "0ad92b3f334edf926fee5f744e5ef77591acd35df985be68dcdb51c043c712d2",
+    "mapping_072.msg": "525f461b92862954580c2c74d56989232809738f16b460df74149dd1f7d5dab1"
+  }
+}

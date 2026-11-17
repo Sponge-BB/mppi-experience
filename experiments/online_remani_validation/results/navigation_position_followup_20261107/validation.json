@@ -1,0 +1,47 @@
+{
+  "tests": {
+    "command": "PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 MPPI_STANDBY_RECORDED_RUN=experiments/online_remani_validation/results/standby_runtime_followup_20261106/fast_current_s11 /usr/bin/python3 -m unittest discover -s src/mm_remani/test -p 'test_mppi*.py' -v",
+    "requires": "source devel/setup.bash; recorded snapshot path resolves from workspace",
+    "total": 52,
+    "passed": 52,
+    "skipped": 0,
+    "seconds": 2.438,
+    "log": "regression.txt"
+  },
+  "scope": "Main-project Python navigation integration and simulation; no physical hardware execution or calibration",
+  "final_comparison_runs": [
+    "empty_native",
+    "empty_final_s11",
+    "moving_native",
+    "moving_mppi_s11"
+  ],
+  "intermediate_debug_runs": [
+    "empty_mppi_s11",
+    "empty_clockfix_s11"
+  ],
+  "diagnostic_only_runs": [
+    "diagnostic_zero_mppi_s11"
+  ],
+  "independent_feasibility_witness": "scene_audit.json",
+  "nominal_position_model_hardware_enabled": false,
+  "hardware_migration_ready_for_autonomous_motion": false,
+  "checks_preserved": [
+    "full-body collision and configuration constraints",
+    "delivery-time state and map freshness",
+    "native reference validity and current gear",
+    "first-command lease and braking check",
+    "95 ms delivery deadline",
+    "simulation isolation and memory guard"
+  ],
+  "plot_validation": {
+    "comparison_png": "visually inspected",
+    "comparison_gif_frames": 43,
+    "comparison_gif_resolution": [
+      1000,
+      450
+    ],
+    "comparison_gif_frame_17": "visually inspected; native freezes after collision; MPPI runs through recorded duration"
+  },
+  "source_archive": "final_relevant_sources.tar.gz",
+  "cleanup": "cleanup_check.json"
+}

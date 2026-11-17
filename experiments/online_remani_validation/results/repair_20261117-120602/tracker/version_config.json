@@ -1,0 +1,30 @@
+{
+  "suffix": "planar-motion-surface",
+  "purpose": "修复二维运动估计与三维表面门控不一致导致动态预测漏检，保留3D碰撞点",
+  "files": [
+    "src/mm_remani/include/mm_remani/dynamic_obstacle_tracker_core.h",
+    "src/mm_remani/src/dynamic_obstacle_tracker_core.cpp",
+    "src/mm_remani/src/dynamic_obstacle_tracker_node.cpp",
+    "src/mm_remani/test/test_dynamic_obstacle_tracker_core.cpp",
+    "devel/lib/libdynamic_obstacle_tracker_core.so",
+    "devel/lib/mm_remani/dynamic_obstacle_tracker_node",
+    "src/mm_remani/launch/exp0_real.launch"
+  ],
+  "evidence": [
+    "validation_summary.json",
+    "tracker_validation.json",
+    "tracker_fix_report.txt",
+    "deployment_report.json",
+    "deployment_manifest.json",
+    "selected_surface_analysis.json",
+    "selected_surface_events.json",
+    "recorded_surface_regression.tar.gz",
+    "consumer_schema_check.json",
+    "replay_full_fixture/summary.json",
+    "replay_xy_shared_full/nonempty_dynamic_samples.bag",
+    "replay_xy_shared_full/nonempty_dynamic_samples.json",
+    "libdynamic_obstacle_tracker_core.so.deployed.ldd.txt",
+    "dynamic_obstacle_tracker_node.deployed.ldd.txt",
+    "node.deployed.dynamic.txt"
+  ]
+}

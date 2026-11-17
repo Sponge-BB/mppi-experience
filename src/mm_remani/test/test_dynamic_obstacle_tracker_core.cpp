@@ -1,6 +1,7 @@
 #include <mm_remani/dynamic_obstacle_tracker_core.h>
 
 #include <cmath>
+#include <cstring>
 #include <limits>
 #include <vector>
 
@@ -15,6 +16,13 @@ DynamicDetection detection(double x, double y = 0.0, double z = 0.5)
 {
   DynamicDetection value;
   value.centroid = Eigen::Vector3d(x, y, z);
+  // Four real observations of the visible front face of a rigid object.
+  // Motion qualification must not depend on a synthetic centroid alone.
+  for (const double dy : {-0.1, 0.1})
+  {
+    for (const double dz : {-0.1, 0.1})
+      value.motion_surface.emplace_back(x, y + dy, z + dz);
+  }
   return value;
 }
 
@@ -59,6 +67,286 @@ std::vector<Eigen::Vector3f> articulatedTargetPoints(
         static_cast<float>(0.02 * static_cast<double>(index % 2)));
   }
   return points;
+}
+
+DynamicDetection surfaceDetection(const std::vector<Eigen::Vector3f> &points)
+{
+  DynamicDetection value;
+  value.centroid = estimateStableMotionCenter(
+      points, StableMotionCenterParameters(), nullptr, &value.motion_surface);
+  value.point_count = points.size();
+  if (!points.empty())
+  {
+    Eigen::Vector3f minimum = points.front();
+    Eigen::Vector3f maximum = points.front();
+    for (const Eigen::Vector3f &point : points)
+    {
+      minimum = minimum.cwiseMin(point);
+      maximum = maximum.cwiseMax(point);
+    }
+    value.extent = (maximum - minimum).cast<double>();
+  }
+  return value;
+}
+
+// Frozen real-robot profile recorded 2026-11-16. No tuning to make a fixture pass.
+DynamicObstacleTrackerCore::Parameters productionMotionParameters()
+{
+  DynamicObstacleTrackerCore::Parameters p;
+  p.association_gate = 0.35;
+  p.association_position_allowance = 0.12;
+  p.association_shape_weight = 0.20;
+  p.maximum_extent_change = 0.45;
+  p.maximum_point_count_ratio = 4.0;
+  p.position_alpha = 0.65;
+  p.velocity_alpha = 0.30;
+  p.regression_velocity_weight = 0.75;
+  p.motion_direction_alpha = 0.30;
+  p.velocity_deadband = 0.10;
+  p.max_speed = 2.0;
+  p.dynamic_enter_speed = 0.22;
+  p.dynamic_exit_speed = 0.10;
+  p.minimum_dynamic_displacement = 0.10;
+  p.surface_motion_tolerance = 0.05;  // node: max(.03, .5 * voxel_leaf=.10)
+  p.direction_consistency_cosine = 0.60;
+  p.minimum_motion_duration = 0.25;
+  p.motion_history_duration = 0.60;
+  p.minimum_motion_efficiency = 0.70;
+  p.minimum_direction_consistency_fraction = 0.75;
+  p.maximum_motion_step_speed_ratio = 1.25;
+  p.min_dt = 0.03;
+  p.max_dt = 0.35;
+  p.min_confirmed_hits = 4;
+  p.minimum_dynamic_hits = 3;
+  p.minimum_motion_cluster_points = 15;
+  p.minimum_stationary_hits = 3;
+  p.minimum_stationary_background_hits = 5;
+  p.stationary_background_minimum_duration = 0.50;
+  p.stationary_background_maximum_speed = 0.10;
+  p.stationary_background_maximum_displacement = 0.06;
+  p.stationary_background_merge_radius = 0.20;
+  p.stationary_background_release_radius = 0.25;
+  p.stationary_background_dwell_duration = 2.0;
+  p.stationary_background_dwell_radius = 0.30;
+  p.maximum_stationary_background_anchors = 128;
+  p.max_missed_frames = 3;
+  return p;
+}
+
+DynamicDetection frontFace(double x, int levels = 10)
+{
+  std::vector<Eigen::Vector3f> points;
+  for (int i = 0; i < levels; ++i)
+    for (double y : {-0.10, 0.10})
+      points.emplace_back(x, y, 0.20 + 0.06 * i);
+  return surfaceDetection(points);
+}
+
+void expectBitIdentical(const std::vector<TrackedDetection> &a,
+                        const std::vector<TrackedDetection> &b)
+{
+  ASSERT_EQ(a.size(), b.size());
+  for (std::size_t i = 0; i < a.size(); ++i)
+  {
+    EXPECT_EQ(a[i].detection_index, b[i].detection_index);
+    EXPECT_EQ(a[i].track_id, b[i].track_id);
+    EXPECT_EQ(a[i].confirmed, b[i].confirmed);
+    EXPECT_EQ(a[i].motion_qualified, b[i].motion_qualified);
+    EXPECT_EQ(a[i].ever_motion_qualified, b[i].ever_motion_qualified);
+    EXPECT_EQ(0, std::memcmp(a[i].filtered_position.data(),
+                            b[i].filtered_position.data(), 3 * sizeof(double)));
+    EXPECT_EQ(0, std::memcmp(a[i].velocity.data(), b[i].velocity.data(),
+                            3 * sizeof(double)));
+    EXPECT_EQ(0, std::memcmp(&a[i].confidence, &b[i].confidence, sizeof(double)));
+  }
+}
+
+TEST(MotionQualificationDiagnostics, DoesNotChangeTrackingBitsOrPersistentMemory)
+{
+  DynamicObstacleTrackerCore plain(productionMotionParameters());
+  auto observed_parameters = productionMotionParameters();
+  observed_parameters.collect_surface_diagnostics = true;
+  DynamicObstacleTrackerCore observed(observed_parameters);
+  std::vector<MotionQualificationDiagnostic> diagnostics;
+  for (int frame = 0; frame < 70; ++frame)
+  {
+    const double x = frame < 20 ? 2.0 + 0.04 * frame : 2.76;
+    std::vector<DynamicDetection> input{
+        surfaceDetection(articulatedTargetPoints(x, frame % 2 ? -.32 : .32))};
+    if (frame == 17)
+      input.clear();
+    if (frame >= 35)
+      input.push_back(frontFace(4.0));
+    const auto a = plain.update(input, 200.0 + .1 * frame);
+    const auto b = observed.update(input, 200.0 + .1 * frame, &diagnostics);
+    expectBitIdentical(a, b);
+    ASSERT_EQ(diagnostics.size(), b.size());
+    for (std::size_t i = 0; i < b.size(); ++i)
+    {
+      EXPECT_EQ(diagnostics[i].detection_index, b[i].detection_index);
+      EXPECT_EQ(diagnostics[i].track_id, b[i].track_id);
+      EXPECT_EQ(diagnostics[i].motion_qualified, b[i].motion_qualified);
+    }
+    EXPECT_EQ(plain.trackCount(), observed.trackCount());
+    EXPECT_EQ(plain.stationaryBackgroundAnchorCount(),
+              observed.stationaryBackgroundAnchorCount());
+  }
+  EXPECT_TRUE(observed.update({frontFace(9.0)}, 200.0, &diagnostics).empty());
+  EXPECT_TRUE(diagnostics.empty());  // Invalid inputs cannot reuse old evidence.
+}
+
+TEST(MotionQualificationDiagnostics, ProductionWalkingProfilePassesWithoutRetuning)
+{
+  DynamicObstacleTrackerCore tracker(productionMotionParameters());
+  std::vector<MotionQualificationDiagnostic> diagnostics;
+  bool qualified = false;
+  for (int frame = 0; frame < 9; ++frame)
+  {
+    const auto tracks = tracker.update({surfaceDetection(articulatedTargetPoints(
+        2.0 + .04 * frame, frame % 2 ? -.32 : .32))},
+        220.0 + .1 * frame, &diagnostics);
+    ASSERT_EQ(tracks.size(), 1u);
+    ASSERT_EQ(diagnostics.size(), 1u);
+    const auto &d = diagnostics.front();
+    if (frame == 0)
+    {
+      EXPECT_FALSE(d.motion_evaluated);
+      EXPECT_NE(d.rejection_mask & MOTION_NEW_TRACK, 0u);
+      EXPECT_EQ(d.surface, MotionSurfaceResult::NOT_EVALUATED);
+    }
+    if (frame == 1)
+    {
+      EXPECT_NE(d.rejection_mask & MOTION_HISTORY, 0u);
+      EXPECT_EQ(d.rejection_mask & MOTION_SURFACE, 0u);
+      EXPECT_EQ(d.surface, MotionSurfaceResult::NOT_EVALUATED);
+    }
+    if (tracks.front().motion_qualified && !d.was_motion_qualified)
+    {
+      qualified = true;
+      EXPECT_EQ(d.rejection_mask, 0u);
+      EXPECT_EQ(d.surface, MotionSurfaceResult::PASSED);
+    }
+  }
+  EXPECT_TRUE(qualified);
+}
+
+TEST(MotionQualificationDiagnostics, ReportsBothDirectionsWithoutChangingDecision)
+{
+  auto parameters = productionMotionParameters();
+  parameters.collect_surface_diagnostics = true;
+  DynamicObstacleTrackerCore tracker(parameters);
+  std::vector<MotionQualificationDiagnostic> diagnostics;
+  bool saw_surface = false;
+  for (int frame = 0; frame < 8; ++frame)
+  {
+    tracker.update({frontFace(2.0 + .04 * frame)}, 230.0 + .1 * frame, &diagnostics);
+    ASSERT_EQ(diagnostics.size(), 1u);
+    const auto &d = diagnostics.front();
+    if (!d.surface_details.evaluated) continue;
+    saw_surface = true;
+    const auto &x = d.surface_details;
+    EXPECT_TRUE(d.motion_qualified);
+    EXPECT_EQ(x.previous_points, 20u);
+    EXPECT_EQ(x.current_points, 20u);
+    EXPECT_DOUBLE_EQ(x.last_stamp, d.stamp_seconds);
+    EXPECT_NEAR(x.last_stamp-x.first_stamp, d.history_duration, 1e-12);
+    for (const auto *v : {&x.forward, &x.reverse})
+    {
+      EXPECT_TRUE(v->evaluated);
+      EXPECT_EQ(v->samples, 20u);
+      EXPECT_NEAR(v->stationary_squared, d.net_displacement*d.net_displacement, 1e-7);
+      EXPECT_LT(v->translated_squared, 1e-12);
+      EXPECT_TRUE(v->stationary_distinct);
+      EXPECT_TRUE(v->translated_close);
+      EXPECT_TRUE(v->translation_improves);
+    }
+  }
+  EXPECT_TRUE(saw_surface);
+}
+
+TEST(MotionQualificationDiagnostics, SurfaceRejectionIsDistinctFromUnevaluated)
+{
+  auto parameters = productionMotionParameters();
+  parameters.collect_surface_diagnostics = true;
+  DynamicObstacleTrackerCore tracker(parameters);
+  std::vector<MotionQualificationDiagnostic> diagnostics;
+  bool saw_surface_rejection = false;
+  for (int frame = 0; frame < 14; ++frame)
+  {
+    std::vector<Eigen::Vector3f> points;
+    // Existing stationary-plane sliding-visibility control, with real profile.
+    for (int col = 2 * frame; col <= 2 * frame + 40; ++col)
+      for (float z : {.25f, .40f})
+        points.emplace_back(.02f * col, 0.f, z);
+    const auto tracks = tracker.update({surfaceDetection(points)},
+        240.0 + .1 * frame, &diagnostics);
+    ASSERT_EQ(tracks.size(), 1u);
+    EXPECT_FALSE(tracks.front().motion_qualified);
+    if (diagnostics.front().surface == MotionSurfaceResult::REJECTED)
+    {
+      saw_surface_rejection = true;
+      const auto &x = diagnostics.front().surface_details;
+      EXPECT_TRUE(x.evaluated);
+      EXPECT_TRUE(x.forward.evaluated);
+      EXPECT_FALSE(x.forward.stationary_distinct);
+      EXPECT_FALSE(x.reverse.evaluated);  // Original short circuit is retained.
+      EXPECT_DOUBLE_EQ(x.reverse.stationary_squared, -1.0);
+      EXPECT_EQ(diagnostics.front().rejection_mask,
+                static_cast<std::uint32_t>(MOTION_SURFACE));
+      EXPECT_EQ(motionRejectionReasons(diagnostics.front().rejection_mask),
+                "surface_translation");
+    }
+  }
+  EXPECT_TRUE(saw_surface_rejection);
+}
+
+TEST(MotionQualificationDiagnostics, SparseObservedClusterReportsItsActualGate)
+{
+  DynamicObstacleTrackerCore tracker(productionMotionParameters());
+  std::vector<MotionQualificationDiagnostic> diagnostics;
+  for (int frame = 0; frame < 10; ++frame)
+  {
+    const auto tracks = tracker.update({frontFace(2.0 + .04 * frame, 5)},
+        260.0 + .1 * frame, &diagnostics);
+    ASSERT_EQ(tracks.size(), 1u);
+    EXPECT_FALSE(tracks.front().motion_qualified);
+  }
+  EXPECT_EQ(diagnostics.front().point_count, 10u);
+  EXPECT_NE(diagnostics.front().rejection_mask & MOTION_POINTS, 0u);
+  EXPECT_EQ(diagnostics.front().surface, MotionSurfaceResult::NOT_EVALUATED);
+}
+
+TEST(MotionQualificationDiagnostics, BackgroundReasonClearsWhenRealFaceLeavesAnchor)
+{
+  DynamicObstacleTrackerCore tracker(productionMotionParameters());
+  std::vector<MotionQualificationDiagnostic> diagnostics;
+  for (int frame = 0; frame < 20; ++frame)
+    tracker.update({frontFace(2.0)}, 280.0 + .1 * frame, &diagnostics);
+  ASSERT_GT(tracker.stationaryBackgroundAnchorCount(), 0u);
+  bool saw_background = false;
+  bool qualified_after_release = false;
+  for (int frame = 0; frame < 20; ++frame)
+  {
+    const auto tracks = tracker.update({frontFace(2.0 + .04 * (frame + 1))},
+        282.0 + .1 * frame, &diagnostics);
+    ASSERT_EQ(tracks.size(), 1u);
+    const auto &d = diagnostics.front();
+    if (d.inside_stationary_background)
+    {
+      saw_background = true;
+      EXPECT_LE(d.matching_background_distance, .25);
+      EXPECT_NE(d.rejection_mask & MOTION_BACKGROUND, 0u);
+      EXPECT_FALSE(tracks.front().motion_qualified);
+    }
+    if (tracks.front().motion_qualified)
+    {
+      qualified_after_release = true;
+      EXPECT_FALSE(d.inside_stationary_background);
+      EXPECT_EQ(d.rejection_mask & MOTION_BACKGROUND, 0u);
+    }
+  }
+  EXPECT_TRUE(saw_background);
+  EXPECT_TRUE(qualified_after_release);
 }
 
 TEST(StableMotionCenter, RejectsAlternatingLegSurfaceBias)
@@ -232,6 +520,7 @@ TEST(DynamicObstacleTrackerCore, MatureStationaryResidualIsNotDynamic)
     if (index > 0)
       EXPECT_TRUE(tracked.front().confirmed);
     EXPECT_FALSE(tracked.front().motion_qualified);
+    EXPECT_FALSE(tracked.front().ever_motion_qualified);
   }
 }
 
@@ -260,6 +549,145 @@ TEST(DynamicObstacleTrackerCore, QualifiesOnlyPersistentCoherentMotion)
   ASSERT_EQ(tracked.size(), 1u);
   EXPECT_TRUE(tracked.front().confirmed);
   EXPECT_TRUE(tracked.front().motion_qualified);
+}
+
+TEST(DynamicObstacleTrackerCore, MovingAnchorWithoutSurfaceDoesNotQualify)
+{
+  DynamicObstacleTrackerCore::Parameters parameters;
+  parameters.position_alpha = 1.0;
+  parameters.velocity_alpha = 1.0;
+  DynamicObstacleTrackerCore tracker(parameters);
+  for (int index = 0; index < 10; ++index)
+  {
+    DynamicDetection candidate = detection(0.04 * index);
+    candidate.motion_surface.clear();
+    const auto tracks = tracker.update({candidate}, 100.0 + 0.1 * index);
+    ASSERT_EQ(tracks.size(), 1u);
+    EXPECT_FALSE(tracks.front().motion_qualified);
+    EXPECT_FALSE(tracks.front().ever_motion_qualified);
+  }
+}
+
+TEST(DynamicObstacleTrackerCore, LosingPartOfStaticSurfaceIsNotMotion)
+{
+  DynamicObstacleTrackerCore::Parameters parameters;
+  parameters.position_alpha = 1.0;
+  parameters.velocity_alpha = 1.0;
+  parameters.maximum_stationary_background_anchors = 0;
+  DynamicObstacleTrackerCore tracker(parameters);
+  std::uint32_t identity = 0;
+  for (int frame = 0; frame <= 10; ++frame)
+  {
+    std::vector<Eigen::Vector3f> points;
+    // A static panel is progressively occluded from the left. Its stable
+    // centre advances 2 cm / frame with a coherent apparent speed of 0.2 m/s,
+    // although every remaining surface point has stayed in the same place.
+    for (int column = 2 * frame; column <= 50; ++column)
+    {
+      for (const float z : {0.25f, 0.40f})
+        points.emplace_back(0.02f * column, 0.0f, z);
+    }
+    const auto tracks = tracker.update(
+        {surfaceDetection(points)}, 110.0 + 0.1 * frame);
+    ASSERT_EQ(tracks.size(), 1u);
+    if (frame == 0)
+      identity = tracks.front().track_id;
+    EXPECT_EQ(tracks.front().track_id, identity);
+    if (frame >= 3)
+    {
+      EXPECT_TRUE(tracks.front().confirmed);
+      EXPECT_GT(tracks.front().velocity.x(), 0.18);
+    }
+    EXPECT_FALSE(tracks.front().motion_qualified);
+    EXPECT_FALSE(tracks.front().ever_motion_qualified);
+  }
+}
+
+TEST(DynamicObstacleTrackerCore, SlidingViewOfStaticSurfaceIsNotMotion)
+{
+  DynamicObstacleTrackerCore::Parameters parameters;
+  parameters.position_alpha = 1.0;
+  parameters.velocity_alpha = 1.0;
+  parameters.maximum_stationary_background_anchors = 0;
+  DynamicObstacleTrackerCore tracker(parameters);
+  std::uint32_t identity = 0;
+  for (int frame = 0; frame < 14; ++frame)
+  {
+    std::vector<Eigen::Vector3f> points;
+    // Constant-size, translating visibility window on a stationary plane.
+    // Shape/count association and efficient centroid motion both pass.
+    for (int column = 2 * frame; column <= 2 * frame + 40; ++column)
+    {
+      for (const float z : {0.25f, 0.40f})
+        points.emplace_back(0.02f * column, 0.0f, z);
+    }
+    const auto tracks = tracker.update(
+        {surfaceDetection(points)}, 120.0 + 0.1 * frame);
+    ASSERT_EQ(tracks.size(), 1u);
+    if (frame == 0)
+      identity = tracks.front().track_id;
+    EXPECT_EQ(tracks.front().track_id, identity);
+    EXPECT_FALSE(tracks.front().ever_motion_qualified);
+  }
+}
+
+TEST(DynamicObstacleTrackerCore, RealTranslationWithSamplingNoiseStillQualifies)
+{
+  DynamicObstacleTrackerCore::Parameters parameters;
+  parameters.position_alpha = 1.0;
+  parameters.velocity_alpha = 1.0;
+  DynamicObstacleTrackerCore tracker(parameters);
+  std::vector<TrackedDetection> tracks;
+  for (int frame = 0; frame < 6; ++frame)
+  {
+    DynamicDetection candidate = detection(0.04 * frame);
+    for (std::size_t index = 0; index < candidate.motion_surface.size(); ++index)
+      candidate.motion_surface[index].x() +=
+          (frame + index) % 2 == 0 ? 0.008f : -0.008f;
+    tracks = tracker.update({candidate}, 130.0 + 0.1 * frame);
+    ASSERT_EQ(tracks.size(), 1u);
+  }
+  EXPECT_TRUE(tracks.front().motion_qualified);
+  EXPECT_TRUE(tracks.front().ever_motion_qualified);
+}
+
+TEST(DynamicObstacleTrackerCore, WalkingPersonUsesMovingTorsoDespiteLegChanges)
+{
+  DynamicObstacleTrackerCore::Parameters parameters;
+  parameters.position_alpha = 1.0;
+  parameters.velocity_alpha = 1.0;
+  parameters.minimum_motion_cluster_points = 15;
+  DynamicObstacleTrackerCore tracker(parameters);
+  std::vector<TrackedDetection> tracks;
+  for (int frame = 0; frame < 6; ++frame)
+  {
+    const auto points = articulatedTargetPoints(
+        2.0 + 0.04 * frame, frame % 2 == 0 ? -0.32 : 0.32);
+    const auto candidate = surfaceDetection(points);
+    ASSERT_EQ(candidate.motion_surface.size(), 8u);
+    ASSERT_EQ(points.size(), 20u);
+    tracks = tracker.update({candidate}, 140.0 + 0.1 * frame);
+    ASSERT_EQ(tracks.size(), 1u);
+  }
+  EXPECT_TRUE(tracks.front().motion_qualified);
+  EXPECT_NEAR(tracks.front().velocity.x(), 0.40, 0.02);
+  EXPECT_NEAR(tracks.front().velocity.y(), 0.0, 1e-6);
+}
+
+TEST(DynamicObstacleTrackerCore, ResetNeverReusesPublishedTrackIdentity)
+{
+  DynamicObstacleTrackerCore tracker;
+  const auto first = tracker.update({detection(0.0)}, 150.0);
+  ASSERT_EQ(first.size(), 1u);
+  tracker.reset(false);  // Transient invalid residual / perception health.
+  const auto second = tracker.update({detection(0.0)}, 151.0);
+  ASSERT_EQ(second.size(), 1u);
+  EXPECT_GT(second.front().track_id, first.front().track_id);
+  EXPECT_FALSE(second.front().ever_motion_qualified);
+  tracker.reset(true);   // Replacement of the static reference map.
+  const auto third = tracker.update({detection(0.0)}, 152.0);
+  ASSERT_EQ(third.size(), 1u);
+  EXPECT_GT(third.front().track_id, second.front().track_id);
 }
 
 TEST(DynamicObstacleTrackerCore,
@@ -411,6 +839,76 @@ TEST(DynamicObstacleTrackerCore,
   ASSERT_TRUE(tracked.front().motion_qualified);
   tracked = tracker.update({detection(0.12)}, 8.6);
   ASSERT_FALSE(tracked.front().motion_qualified);
+}
+
+TEST(DynamicObstacleTrackerCore,
+     PreviouslyMovingTrackKeepsCurrentObservationAfterStopping)
+{
+  DynamicObstacleTrackerCore::Parameters parameters;
+  parameters.position_alpha = 1.0;
+  parameters.velocity_alpha = 1.0;
+  parameters.velocity_deadband = 0.0;
+  parameters.minimum_motion_cluster_points = 15;
+  DynamicObstacleTrackerCore tracker(parameters);
+
+  std::vector<TrackedDetection> tracked;
+  for (int index = 0; index < 6; ++index)
+    tracked = tracker.update(
+        {shapedDetection(0.04 * index, 0.20, 20)}, 70.0 + 0.1 * index);
+  ASSERT_EQ(tracked.size(), 1u);
+  ASSERT_TRUE(tracked.front().motion_qualified);
+  ASSERT_TRUE(tracked.front().ever_motion_qualified);
+  const auto identity = tracked.front().track_id;
+
+  // Motion qualification must still clear promptly for a stopped target.
+  // Current associated geometry remains available even when sparse returns
+  // would prevent a new track from qualifying as moving.
+  for (int index = 1; index <= 10; ++index)
+  {
+    tracked = tracker.update(
+        {shapedDetection(0.20, 0.20, 10)}, 70.5 + 0.1 * index);
+    ASSERT_EQ(tracked.size(), 1u);
+    EXPECT_EQ(tracked.front().track_id, identity);
+    EXPECT_EQ(tracked.front().detection_index, 0u);
+    EXPECT_TRUE(tracked.front().ever_motion_qualified);
+    if (index >= parameters.minimum_stationary_hits)
+      EXPECT_FALSE(tracked.front().motion_qualified);
+  }
+  EXPECT_NEAR(tracked.front().velocity.norm(), 0.0, 1e-9);
+}
+
+TEST(DynamicObstacleTrackerCore,
+     MissingPreviouslyMovingTrackDoesNotSynthesizeCurrentObservation)
+{
+  DynamicObstacleTrackerCore::Parameters parameters;
+  parameters.position_alpha = 1.0;
+  parameters.velocity_alpha = 1.0;
+  parameters.velocity_deadband = 0.0;
+  DynamicObstacleTrackerCore tracker(parameters);
+  std::vector<TrackedDetection> tracked;
+  for (int index = 0; index < 6; ++index)
+    tracked = tracker.update({detection(0.04 * index)}, 80.0 + 0.1 * index);
+  ASSERT_EQ(tracked.size(), 1u);
+  ASSERT_TRUE(tracked.front().ever_motion_qualified);
+  const auto identity = tracked.front().track_id;
+
+  EXPECT_TRUE(tracker.update({}, 80.6).empty());
+  EXPECT_EQ(tracker.trackCount(), 1u);  // Internally coasting is not an observation.
+  tracked = tracker.update({detection(2.0)}, 80.7);
+  ASSERT_EQ(tracked.size(), 1u);
+  EXPECT_NE(tracked.front().track_id, identity);
+  EXPECT_FALSE(tracked.front().ever_motion_qualified);
+  EXPECT_EQ(tracked.front().detection_index, 0u);
+  EXPECT_EQ(tracker.trackCount(), 2u);
+
+  // Retiring the missing identity must not transfer its history to a new
+  // stationary detection, even if the new point appears at its old position.
+  tracker.update({}, 80.8);
+  tracker.update({}, 80.9);
+  tracked = tracker.update({detection(0.20)}, 81.0);
+  ASSERT_EQ(tracked.size(), 1u);
+  EXPECT_NE(tracked.front().track_id, identity);
+  EXPECT_FALSE(tracked.front().ever_motion_qualified);
 }
 
 TEST(DynamicObstacleTrackerCore, RejectsLowEfficiencyCentroidWander)

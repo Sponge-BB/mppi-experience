@@ -1,0 +1,324 @@
+--- before/src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp
++++ after/src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp
+@@ -326,10 +326,25 @@
+       latest_snapshot_.points.empty() || !latest_snapshot_.has_track_ids ||
+       !latest_observation_.has_track_ids ||
+       !std::isfinite(map_resolution) || map_resolution <= 0.0 ||
+-      !std::isfinite(position_uncertainty_) || position_uncertainty_ < 0.0 ||
+-      !checkSnapshotAge(latest_observation_, stamp, max_age_,
+-                        future_stamp_tolerance_).valid)
++      !std::isfinite(position_uncertainty_) || position_uncertainty_ < 0.0)
+     return 0;
++
++  // The mapping queue and tracker process different source epochs. A newer
++  // tracker frame is not future-dated merely because a valid LiDAR scan is
++  // still being fused. Transport age belongs to the actual current clock;
++  // the per-ID check below separately orders ray evidence after observation.
++  const ros::Time now = ros::Time::now();
++  const auto current_input = checkSnapshotAge(
++      latest_observation_, now, max_age_, future_stamp_tolerance_);
++  if (!current_input.valid)
++  {
++    ROS_WARN_THROTTLE(3.0,
++        "[DynamicPointFlow][recovery] Tracker input unavailable (%s): "
++        "ray_stamp=%.3f tracker_stamp=%.3f now=%.3f; keep missing tracks.",
++        current_input.invalid_reason.c_str(), stamp.toSec(),
++        latest_observation_.stamp.toSec(), now.toSec());
++    return 0;
++  }
+ 
+   last_recovery_stamp_ = stamp;
+   std::unordered_set<std::uint32_t> observed_ids;
+@@ -365,9 +380,14 @@
+     if (history.free_stamps.size() != history.observation.points.size() * samples_per_point)
+       history.free_stamps.assign(history.observation.points.size() * samples_per_point, ros::Time(0));
+     bool track_free = true;
++    std::size_t free_samples = 0, occupied_samples = 0;
++    Eigen::Vector3d minimum = history.observation.points.front().position;
++    Eigen::Vector3d maximum = minimum;
+     for (std::size_t i = 0; i < history.observation.points.size(); ++i)
+     {
+       const auto &point = history.observation.points[i];
++      minimum = minimum.cwiseMin(point.position);
++      maximum = maximum.cwiseMax(point.position);
+       std::size_t sample = 0;
+       for (std::size_t x = 0; x < axis_samples; ++x)
+         for (std::size_t y = 0; y < axis_samples; ++y)
+@@ -379,16 +399,30 @@
+                               step*y-position_uncertainty_,
+                               step*z-position_uncertainty_);
+           ros::Time &free_stamp = history.free_stamps[i * samples_per_point + sample];
+-          if (observed_occupied && observed_occupied(position))
++          const bool occupied = observed_occupied && observed_occupied(position);
++          occupied_samples += occupied ? 1 : 0;
++          if (occupied)
+             free_stamp = ros::Time(0);
+           else if (observed_free(position))
+             free_stamp = stamp;
+-          track_free = track_free && free_stamp > history.observation.stamp &&
+-                       (stamp - free_stamp).toSec() <= max_age_;
++          const bool sample_free = free_stamp > history.observation.stamp &&
++                                   (stamp - free_stamp).toSec() <= max_age_;
++          free_samples += sample_free ? 1 : 0;
++          track_free = track_free && sample_free;
+         }
+     }
+     if (track_free)
+       cleared.push_back(track.first);
++    else
++      ROS_WARN_THROTTLE(3.0,
++          "[DynamicPointFlow][recovery] Missing track=%u age=%.2fs "
++          "bounds=[%.2f %.2f %.2f]-[%.2f %.2f %.2f], free=%zu/%zu "
++          "occupied=%zu; ray_age=%.3fs tracker_age=%.3fs. "
++          "Uncovered samples remain UNKNOWN.",
++          track.first, (now-history.observation.stamp).toSec(),
++          minimum.x(), minimum.y(), minimum.z(), maximum.x(), maximum.y(), maximum.z(),
++          free_samples, history.free_stamps.size(), occupied_samples,
++          (now-stamp).toSec(), (now-latest_observation_.stamp).toSec());
+   }
+   if (cleared.empty())
+     return 0;
+--- before/src/mm_remani_planner/plan_env/test/test_dynamic_point_buffer.cpp
++++ after/src/mm_remani_planner/plan_env/test/test_dynamic_point_buffer.cpp
+@@ -9,8 +9,19 @@
+   static void feed(plan_env::DynamicPointBuffer &buffer,
+                    const plan_env::DynamicPointSnapshot &incoming)
+   {
++    ros::Time::setNow(incoming.receive_time);
+     buffer.enabled_ = true;
+     buffer.recordObservation(incoming);
++  }
++
++  static std::size_t recover(
++      plan_env::DynamicPointBuffer &buffer, const ros::Time &stamp,
++      const std::function<bool(const Eigen::Vector3d &)> &free,
++      const std::function<bool(const Eigen::Vector3d &)> &occupied = {},
++      double resolution = .05)
++  {
++    ros::Time::setNow(std::max(ros::Time::now(), stamp));
++    return buffer.recoverObservedTracks(stamp, free, occupied, resolution);
+   }
+ 
+   static void setMargin(plan_env::DynamicPointBuffer &buffer, double margin)
+@@ -297,7 +308,7 @@
+   {
+     const double stamp = 10. + i * .1;
+     DynamicPointBufferTestAccessor::feed(buffer, observation(stamp, {}));
+-    EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(stamp),
++    EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(stamp),
+         [](const Eigen::Vector3d &) { return false; }), 0u);
+   }
+   const auto held = buffer.getSnapshot(timeFromSec(12.));
+@@ -311,7 +322,7 @@
+   plan_env::DynamicPointBuffer buffer;
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.5, {}));
+-  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.5),
++  ASSERT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.5),
+       [](const Eigen::Vector3d &) { return true; }), 1u);
+   const auto current = buffer.getSnapshot(timeFromSec(10.5));
+   EXPECT_TRUE(current.valid);
+@@ -325,7 +336,7 @@
+   plan_env::DynamicPointBuffer buffer;
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1, 2}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.5, {3}));
+-  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.5),
++  ASSERT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.5),
+       [](const Eigen::Vector3d &p) { return p.x() < 1.5; }), 1u);
+   auto held = buffer.getSnapshot(timeFromSec(10.5));
+   EXPECT_FALSE(held.valid);
+@@ -333,7 +344,7 @@
+   EXPECT_EQ(held.points[0].track_id, 2u);
+   EXPECT_EQ(held.stamp, timeFromSec(10.));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.6, {3}));
+-  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.6),
++  ASSERT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.6),
+       [](const Eigen::Vector3d &p) { return p.x() > 1.5; }), 1u);
+   const auto current = buffer.getSnapshot(timeFromSec(10.6));
+   EXPECT_TRUE(current.valid);
+@@ -347,9 +358,9 @@
+   plan_env::DynamicPointBuffer buffer;
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.1),
+       [](const Eigen::Vector3d &p) { return p.x() <= 1.; }), 0u);
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.2),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.2),
+       [](const Eigen::Vector3d &p) { return p.x() > 1.; }), 1u);
+   EXPECT_TRUE(buffer.getSnapshot(timeFromSec(10.2)).valid);
+ }
+@@ -359,14 +370,14 @@
+   plan_env::DynamicPointBuffer buffer;
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.),
+       [](const Eigen::Vector3d &) { return true; }), 0u);
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.1),
+       [](const Eigen::Vector3d &p) { return p.x() <= 1.; }), 0u);
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.1),
+       [](const Eigen::Vector3d &) { return true; }), 0u);
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.6, {}));
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.6),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.6),
+       [](const Eigen::Vector3d &p) { return p.x() > 1.; }), 0u);
+   EXPECT_FALSE(buffer.getSnapshot(timeFromSec(10.6)).valid);
+ }
+@@ -376,7 +387,7 @@
+   plan_env::DynamicPointBuffer buffer;
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.6),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.6),
+       [](const Eigen::Vector3d &) { return true; }), 0u);
+   EXPECT_FALSE(buffer.getSnapshot(timeFromSec(10.6)).valid);
+ }
+@@ -386,10 +397,10 @@
+   plan_env::DynamicPointBuffer buffer;
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.1),
+       [](const Eigen::Vector3d &p) { return p.x() <= 1.; }), 0u);
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.2, {1}));
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.3),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.3),
+       [](const Eigen::Vector3d &) { return true; }), 0u);
+   const auto current = buffer.getSnapshot(timeFromSec(10.3));
+   EXPECT_TRUE(current.valid);
+@@ -403,17 +414,17 @@
+   plan_env::DynamicPointBuffer buffer;
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.1),
+       [](const Eigen::Vector3d &p) { return p.x() <= 1.; }), 0u);
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.2, {}));
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.2),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.2),
+       [](const Eigen::Vector3d &p) { return p.x() > 1.; },
+       [](const Eigen::Vector3d &p) { return p.x() <= 1.; }), 0u);
+   EXPECT_TRUE(buffer.getSnapshot(timeFromSec(10.2)).valid);
+   EXPECT_EQ(buffer.getSnapshot(timeFromSec(10.2)).invalid_reason,
+             "coasting_observation");
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.3, {}));
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.3),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.3),
+       [](const Eigen::Vector3d &) { return true; }), 1u);
+ }
+ 
+@@ -423,7 +434,7 @@
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {2}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.2, {}));
+-  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.2),
++  ASSERT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.2),
+       [](const Eigen::Vector3d &p) { return p.x() < 1.5; }), 1u);
+   const auto remaining = buffer.getSnapshot(timeFromSec(10.2));
+   EXPECT_FALSE(remaining.valid);
+@@ -432,7 +443,7 @@
+   EXPECT_EQ(2u, remaining.points.front().track_id);
+   EXPECT_EQ(timeFromSec(10.1), remaining.stamp);
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.3, {}));
+-  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.3),
++  ASSERT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.3),
+       [](const Eigen::Vector3d &p) { return p.x() > 1.5; }), 1u);
+   const auto recovered = buffer.getSnapshot(timeFromSec(10.3));
+   EXPECT_TRUE(recovered.valid);
+@@ -448,20 +459,20 @@
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.21, {}));
+   // The map scan is within allowed transport skew, but predates track 2.
+   // It can clear track 1 only; track 2 must keep its actual newer epoch.
+-  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.18),
++  ASSERT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.18),
+       [](const Eigen::Vector3d &) { return true; }), 1u);
+   auto held = buffer.getSnapshot(timeFromSec(10.22));
+   EXPECT_FALSE(held.valid);
+   ASSERT_EQ(1u, held.points.size());
+   EXPECT_EQ(2u, held.points.front().track_id);
+   EXPECT_EQ(timeFromSec(10.2), held.stamp);
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.22),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.22),
+       [](const Eigen::Vector3d &) { return false; }), 0u);
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.23, {2}));
+   held = buffer.getSnapshot(timeFromSec(10.23));
+   EXPECT_TRUE(held.valid);
+   EXPECT_EQ(timeFromSec(10.23), held.stamp);
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.24),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.24),
+       [](const Eigen::Vector3d &) { return true; }), 0u);
+ }
+ 
+@@ -472,14 +483,14 @@
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
+   bool checked_intermediate = false;
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.1),
+       [&checked_intermediate](const Eigen::Vector3d &p) {
+         const bool intermediate = std::abs(p.x() - 1.04) < .005;
+         checked_intermediate = checked_intermediate || intermediate;
+         return !intermediate;
+       }, {}, .05), 0u);
+   EXPECT_TRUE(checked_intermediate);
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.2),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.2),
+       [](const Eigen::Vector3d &) { return true; }, {}, .05), 1u);
+ }
+ 
+@@ -491,7 +502,7 @@
+     DynamicPointBufferTestAccessor::feed(buffer, observation(10. + .1*id, {id}));
+   EXPECT_EQ(4u, DynamicPointBufferTestAccessor::retainedPoints(buffer));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.6, {}));
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.6),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.6),
+       [](const Eigen::Vector3d &) { return true; }), 0u);
+   const auto held = buffer.getSnapshot(timeFromSec(10.6));
+   EXPECT_FALSE(held.valid);
+@@ -506,16 +517,42 @@
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
+   DynamicPointBufferTestAccessor::feed(buffer, observation(10.5, {}));
+   bool queried = false;
+-  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.5),
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(10.5),
+       [&queried](const Eigen::Vector3d &) { queried = true; return true; }), 0u);
+   EXPECT_FALSE(queried);
+   EXPECT_FALSE(buffer.getSnapshot(timeFromSec(10.5)).valid);
+ }
+ 
++TEST(DynamicPointBuffer, NewerFreshTrackerFrameDoesNotBlockOlderValidMapEvidence)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(90., {1}));
++  auto current = observation(100.15, {});
++  current.receive_time = timeFromSec(100.25);
++  DynamicPointBufferTestAccessor::feed(buffer, current);
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(100.),
++      [](const Eigen::Vector3d &) { return true; }), 1u);
++  EXPECT_TRUE(buffer.getSnapshot(timeFromSec(100.25)).valid);
++}
++
++TEST(DynamicPointBuffer, FutureTrackerSourceIsCheckedAgainstActualClock)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(90., {1}));
++  auto current = observation(100.40, {});
++  current.receive_time = timeFromSec(100.25);
++  DynamicPointBufferTestAccessor::feed(buffer, current);
++  bool queried = false;
++  EXPECT_EQ(DynamicPointBufferTestAccessor::recover(buffer, timeFromSec(100.20),
++      [&queried](const Eigen::Vector3d &) { queried = true; return true; }), 0u);
++  EXPECT_FALSE(queried);
++}
++
+ }  // namespace
+ 
+ int main(int argc, char **argv)
+ {
+   testing::InitGoogleTest(&argc, argv);
++  ros::Time::init();
+   return RUN_ALL_TESTS();
+ }

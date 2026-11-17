@@ -1,0 +1,133 @@
+{
+  "group": "mppi_arm",
+  "seed": 11,
+  "scene": "empty",
+  "source": "current main project; native control means MPPI disabled, not untouched upstream",
+  "physical_base_locked": false,
+  "controller_profile": {
+    "rate_hz": 10.0,
+    "deadline_s": 0.095,
+    "horizon": 8,
+    "random_samples": 4,
+    "base_limits": {
+      "vmax": 0.05,
+      "wmax": 0.15,
+      "accel": 0.1,
+      "angular_accel": 0.3,
+      "track": 0.37,
+      "wheel_v": 0.2296,
+      "wheel_a": 0.2975
+    },
+    "arm_velocity": [
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "arm_acceleration": [
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35
+    ],
+    "postures": [
+      [
+        0.0,
+        2.4434609528,
+        -1.0471975512,
+        0.0,
+        0.2617993878,
+        0.0
+      ]
+    ],
+    "standby": {}
+  },
+  "duration_s": 75.0,
+  "navigation_goal": null,
+  "uncertainty_scale": 1.0,
+  "arm_execution_model": "velocity_legacy",
+  "sensor_model": "mid360",
+  "sensor_geometry": {
+    "base_link_ground_z_m": 0.115,
+    "base_to_lidar_xyz_m": [
+      0.28,
+      0.0,
+      0.002
+    ],
+    "lidar_ground_z_m": 0.117,
+    "base_to_lidar_rpy_rad": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "source_parameters": [
+      "/fastlio_to_odom/base_z",
+      "/remani_planner_node/grid_map/lidar_offset_{x,y,z}",
+      "/fastlio_to_odom/lidar_offset_{x,y,z}"
+    ],
+    "elevation_deg": [
+      -7.0,
+      52.0
+    ],
+    "minimum_range_m": 0.1,
+    "cylinder_occlusion": true,
+    "robot_occlusion": false,
+    "static_map_is_complete_known_prior": true,
+    "physical_calibration_performed": false,
+    "limitations": "geometric envelope only; no scan pattern, reflectivity or range noise; ideal emits full sampled surfaces with no visibility filtering"
+  },
+  "command_topics": [
+    "/sim/cmd_vel",
+    "/sim/joint_ctrl_single"
+  ],
+  "master": "http://127.0.0.1:11466",
+  "startup_override": {
+    "parameters": {
+      "/remani_planner_node/fsm/init_state": [
+        0.0,
+        0.0,
+        0.0,
+        29.85,
+        -60.098,
+        -0.002,
+        54.276,
+        0.003
+      ],
+      "/mm_controller_node/fsm/init_state": [
+        0.0,
+        0.0,
+        0.0,
+        29.85,
+        -60.098,
+        -0.002,
+        54.276,
+        0.003
+      ],
+      "/whole_body_mppi/startup_to_standby": true
+    },
+    "initial_q_rad": [
+      -0.10072295113259275,
+      -0.03183480555637657,
+      0.01345648853287628,
+      0.10487683475233926,
+      0.46677085515336353,
+      -0.10257300013970674
+    ],
+    "source": "experiments/online_remani_validation/results/hardware_startup_check_20261107/runtime_feedback.json",
+    "source_sha256": "0e205f4a370ea4eca12e6dc30377cfe5ac0903801db5ff652a56f90c7204e042",
+    "simulator_override": "Only module Q_START changes; original 11466/use_sim_time entry guards retained",
+    "production_files_modified": false,
+    "free_base": true,
+    "hardware_equivalence": false,
+    "driver_watchdog_note": "Plant brakes after .30 s but does not latch; report command gaps explicitly",
+    "runner_memory_guards": {
+      "minimum_available_mib": 1200,
+      "maximum_graph_rss_mib": 1600
+    },
+    "snapshot_note": "Real compiled mapper/exporter; original complete fusion timestamps retained, no synthetic freshness"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "send_failure_code_audit_v1",
+  "audited_local": "2026-11-16T16:23:14.152241",
+  "recorded_version": "20261116-125759-tracker-reasons",
+  "read_only_runtime_audit": true,
+  "geometry_or_bags_read": false,
+  "meaning": {
+    "reported_code": 100017,
+    "sdk_enum": "C_STD_CAN.CAN_STATUS.SEND_MESSAGE_FAILED",
+    "enum_resolution": "AST-resolved IntEnum begins at 100001 and auto increments; no SDK imported",
+    "source": "/home/l/.local/lib/python3.8/site-packages/piper_sdk/hardware_port/can_encapsulation_v0_4_0.py",
+    "enum_line": 65,
+    "meaning": "The SDK passed its BUS_STATE_ACTIVE precheck, then caught an Exception raised by bus.send. This is a generic SDK send failure code, not a Linux errno, an arm-controller error code, or proof of a particular physical failure.",
+    "distinct_nonactive_precheck_code": 100018
+  },
+  "exception_path": [
+    {
+      "file": "/home/l/.local/lib/python3.8/site-packages/can/interfaces/socketcan/socketcan.py",
+      "line": 764,
+      "fact": "SocketcanBus.send checks socket writability for the supplied timeout; expiry raises CanOperationError(\"Transmit buffer full\") at line 800."
+    },
+    {
+      "file": "/home/l/.local/lib/python3.8/site-packages/can/interfaces/socketcan/socketcan.py",
+      "line": 802,
+      "fact": "_send_once catches OSError and constructs CanOperationError(\"Failed to transmit: ...\", error.errno) from the original error at lines 809–812."
+    },
+    {
+      "file": "/home/l/.local/lib/python3.8/site-packages/can/exceptions.py",
+      "line": 55,
+      "fact": "CanError stores error_code and includes it in the exception string."
+    },
+    {
+      "file": "/home/l/.local/lib/python3.8/site-packages/piper_sdk/hardware_port/can_encapsulation_v0_4_0.py",
+      "line": 200,
+      "fact": "SendCanMessage checks BUS_STATE_ACTIVE, then calls self.bus.send. Its blanket except Exception as e at 207–208 returns SEND_MESSAGE_FAILED without logging e, preserving e, its errno, or exception type."
+    },
+    {
+      "file": "/home/l/remani_ws/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+      "line": 185,
+      "fact": "For command_timeout>0, transport is wrapped: bounded_send uses timeout=0.005 at line 192; checked_send raises RuntimeError containing only the returned enum at line 201. The original low-level exception has already been discarded by the SDK."
+    }
+  ],
+  "stop_chain": [
+    {
+      "file": "/home/l/remani_ws/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+      "line": 881,
+      "fact": "joint_callback catches the propagated send error; logs Piper joint command failed at line 888; if command_timeout>0 invokes _stop_commands(\"joint command/send failed\") at line 890."
+    },
+    {
+      "file": "/home/l/remani_ws/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+      "line": 706,
+      "fact": "_stop_commands latches _command_latched, clears application enable and command authority, publishes stopped execution state, then attempts MotionCtrl_1(0x01,0,0) quick-stop at line 722. It does not automatically reset/re-enable."
+    },
+    {
+      "file": "/home/l/remani_ws/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+      "line": 498,
+      "fact": "PublishExecutionState copies _command_latched into stop_latched at line 505 and publishes on execution_state_pub at line 532."
+    },
+    {
+      "file": "/home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py",
+      "line": 473,
+      "fact": "on_execution_state latches stop_latched with OR at line 491, withdraws execution authority and calls stop_base at line 498."
+    },
+    {
+      "file": "/home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py",
+      "line": 654,
+      "fact": "Subsequent execute/non-simulation cycles raise arm_stop_latched before proposing/delivering new commands."
+    },
+    {
+      "file": "/home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py",
+      "line": 561,
+      "fact": "reject calls stop_base; stop_base at lines 556–559 publishes a zero Twist when base_pub exists and does not publish a new stale arm target."
+    }
+  ],
+  "observed_driver_log": [
+    {
+      "path": "/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/piper_ctrl_single_node-21.log",
+      "line": 8918,
+      "text": "[rosout][ERROR] 2026-11-16 16:15:28,626: Piper joint command failed: Piper CAN send failed: SEND_MESSAGE_FAILED (100017)"
+    },
+    {
+      "path": "/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/piper_ctrl_single_node-21.log",
+      "line": 8919,
+      "text": "[rosout][ERROR] 2026-11-16 16:15:28,631: Piper command stop latched: joint command/send failed; no automatic reset/re-enable."
+    },
+    {
+      "path": "/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/piper_ctrl_single_node-21.log",
+      "line": 8920,
+      "text": "[rosout][ERROR] 2026-11-16 16:15:28,641: Piper quick-stop send failed: Piper CAN send failed: SEND_MESSAGE_FAILED (100017)"
+    }
+  ],
+  "whole_body_effect": "MPPI ceases new arm target delivery and publishes zero base Twist. This is not a measured all-joint zero-velocity command. The log also reports quick-stop send failure, so successful hardware quick-stop/physical motor disable cannot be concluded from this application latch alone.",
+  "preserved_and_missing_evidence": {
+    "preserved": "Generic SDK SEND_MESSAGE_FAILED status and driver stop reason/timestamp.",
+    "not_preserved": "Underlying Python exception type/message, Linux errno/error_code, exact failed arbitration ID in the driver wrapper error.",
+    "unproven_causes": [
+      "5ms writability timeout versus socket OSError versus another bus.send exception",
+      "Physical connector, power, emergency-stop state, bus load, kernel interface state, firmware behavior or runtime scheduling as the cause of the send exception"
+    ],
+    "not_a_feedback_timeout_code": true
+  },
+  "source_integrity": {
+    "driver_sha256_now": "63d5c809a2686abb1c297c1f3459676dfba6f6ed83aa9b520b3d89d0aa81933f",
+    "driver_sha256_at_recording_start": "63d5c809a2686abb1c297c1f3459676dfba6f6ed83aa9b520b3d89d0aa81933f",
+    "driver_matches_recording_start": true,
+    "sdk_transport_sha256_at_audit": "9a75a19d92073f2842b02cdc53475306345013160840401b9f58e297b273e4d3",
+    "python_can_socketcan_sha256_at_audit": "8d0f171c70ab0d20db59af1991ae54ddd3a2bd8924dbe0c9137389788de6ada0",
+    "whole_body_mppi_sha256_at_audit": "87813ae8097c1d92ea71b05d43489fdafe557aa87ac60e812c17bf7d0e4b5e28",
+    "sdk_change_history_boundary": "Current SDK bytes were read only; this case recording_start did not contain an SDK hash, so no independent SDK before/after assertion is made by this audit."
+  }
+}

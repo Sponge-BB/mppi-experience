@@ -1,0 +1,45 @@
+{
+  "runtime_version": "20261116-232420-snapshot-resync",
+  "rollback_parent": "20261116-231305-before-snapshot-resync",
+  "installed_changes": [
+    "完整/增量地图接收保序与请求重发，缺包暂停本轮、不错误撤销慢层轨迹",
+    "增量只重用形状/位置/分辨率/版本/原始复制时间完全匹配的场；不改变TTL"
+  ],
+  "verification": {
+    "regression_tests": 65,
+    "failures": 0,
+    "actual_recorded_packet_replay": "PASS",
+    "fresh_planner_build": "PASS",
+    "source_and_deployment_sha_mode": {
+      "src/mm_remani/scripts/whole_body_mppi.py": true,
+      "src/mm_remani/scripts/mppi/active_arm_mppi.py": true,
+      "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp": true,
+      "src/mm_remani/test/test_mppi_snapshot_resync.py": true,
+      "devel/lib/remani_planner/remani_planner_node": true
+    },
+    "archive_sha_verified": true,
+    "hardware_validation": false
+  },
+  "rejected_trials": [
+    {
+      "path": "experiments/online_remani_validation/results/esdf_z_tile_20261116-231828/decision.json",
+      "reason": "逐double零差异但慢4%-9%，没有部署"
+    },
+    {
+      "path": "experiments/online_remani_validation/results/nominal_first_20261116-233126/decision.json",
+      "reason": "控制/预测/随机状态一致，空旷约快1.3ms但避障分支慢11%-19%，没有部署"
+    }
+  ],
+  "remaining": [
+    "本次导航ESDF计算中位104.051ms、工作区域约198万格的主开销未解决",
+    "95ms交付性能门与动态预测时间对齐问题未修改；不能无界取消",
+    "后续raw_latest近车体回波碰撞停车尚不能全部断言为自回波，未扩大滤波遮罩"
+  ],
+  "unchanged": [
+    "350ms地图TTL",
+    "150ms快层反馈TTL",
+    "95ms性能门限",
+    "避障阈值/结构化候选/机械臂控制驱动/固件"
+  ],
+  "conclusion": "这轮消除一条确认的误停/撤轨链路；不声称已解决实车全部卡顿。"
+}

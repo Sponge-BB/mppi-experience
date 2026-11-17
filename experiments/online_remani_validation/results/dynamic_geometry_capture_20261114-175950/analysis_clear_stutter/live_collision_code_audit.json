@@ -1,0 +1,55 @@
+{
+  "runtime_modified": false,
+  "source_sha256": {
+    "src/mm_remani_planner/plan_env/src/grid_map.cpp": "4d50a3862e68612345cb4b2c5dd57ef57a12aec0d52be8ff16a5387e10b3d378",
+    "src/mm_remani_planner/plan_env/include/plan_env/grid_map.h": "c474929e9de92f9fe4331f085e66c4319e8b41536b67a17566c4016007c74f2c",
+    "src/mm_remani_planner/mm_config/src/mm_config.cpp": "a4476cf29b0e05981646045941cf3374b1448b2b9775dabdd1b63c0add93f717",
+    "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "e61e815a647b55af866494da0bc82301dbe7f01234c6eb3028268724c2fb9d8e",
+    "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp": "6e4d19964670e8827b6fc87d57f7efc59116a99ec5a5c436364ba5cd1ec337c3",
+    "src/mm_remani_planner/traj_utils/include/traj_utils/poly_traj_utils.hpp": "534aefad32addb5aa9c300bbdeac50bdf8354635ab5deecbec8f0b8c6e60f117"
+  },
+  "findings": [
+    {
+      "claim": "No-neighbor result does not itself trigger a collision.",
+      "evidence": "grid_map.cpp4449–4505 returns max_search_distance if outside map or no qualifying occupied voxel; mm_config.cpp897–909 declares collision only when dist < the identical safe_dist.",
+      "qualification": "Outside-map return is permissive, but does not explain observed false stops."
+    },
+    {
+      "claim": "Occupancy threshold mismatch hypothesis is rejected.",
+      "evidence": "grid_map.cpp517–519 sets clamp_min_log=logit(p_min) and min_occupancy_log=logit(p_occ). Diagnostic bit0 (grid_map.h515), inflate (grid_map.cpp1784), getOccupancy (grid_map.h851/873), and direct live query (grid_map.cpp4492) share >min_occupancy_log.",
+      "additional": "Initial unknown is clamp_min−0.01; raycast miss sets clamp_min, hit sets clamp_max (cpp1622–1626). No low-confidence residual accumulation is used in this branch."
+    },
+    {
+      "claim": "Raw dynamic query identifies occupied non-fixed voxels, not measured object motion.",
+      "evidence": "grid_map.cpp4451–4493 filters raw occupied cells against the fixed map using dynamic_static_match_radius; no track speed or dynamic_points input is consulted.",
+      "qualification": "An unmodeled static object, localization mismatch beyond static matching, or false sensor occupancy can enter this layer; recorded stop logs alone do not identify which."
+    },
+    {
+      "claim": "Latest and Complete reads differ deliberately.",
+      "evidence": "ReadScope default Latest pins latest_read_snapshot_; Complete calls beginPlanningReadSnapshot to pin latest_complete_snapshot with matching occupancy/ESDF. checkCollisionCallback uses default Latest (fsm1393); exporter uses Complete.",
+      "qualification": "A Complete diagnostic cannot certify the exact newer live occupancy generation used by the FSM."
+    },
+    {
+      "claim": "Coordinate and radius formulas inspected are consistent.",
+      "evidence": "Custom getCarPts rotates fixed sphere XY by car yaw and translates XY, preserving configured Z (mm_config.cpp468–483); raw collision checks sphere radius+map_resolution. Voxel centers use origin+(index+0.5)*resolution (grid_map.h946). Exported base hard radius already includes same resolution."
+    },
+    {
+      "claim": "The reported 0.00/0.01 m is path length along reference, not physical gap.",
+      "evidence": "fsm1650–1665 accumulates distances between sampled reference XY positions. Raw check starts at t_cur+0.05. Actual body location is not the path-length origin."
+    },
+    {
+      "claim": "Stale progress fallback is a code-level risk, not demonstrated as these events cause.",
+      "evidence": "fsm1119–1150 uses fresh matching controller progress within0.5s, otherwise wall-time since trajectory start and scale1. Published progress at all six stops is matching and4–9ms old in the bag.",
+      "qualification": "Bag evidence cannot show the planner process exact last-consumed progress callback."
+    },
+    {
+      "claim": "Derivative yaw at zero speed is not guarded in the native checker, but no singular yaw is reproduced near selected stops.",
+      "evidence": "poly_traj_utils.hpp153–156 uses atan2(gear*vy,gear*vx); sampled selected stop reference speeds are0.050–0.207m/s and measured/reference yaw discrepancies<0.007rad."
+    }
+  ],
+  "replay_result": "reference_stop_replay.json: selected three stop windows have no fixed-body overlap for next0.5phase seconds on nearby Complete maps, even using all raw occupied cells without fixed-map removal. Minimum raw gaps0.359,0.341,0.380m. This does not disprove a newer live-map collision.",
+  "remaining_evidence": [
+    "Exact triggering live occupancy generation and candidate voxel/sphere coordinates",
+    "Exact FSM internal reference and progress value consumed for its collision query"
+  ]
+}

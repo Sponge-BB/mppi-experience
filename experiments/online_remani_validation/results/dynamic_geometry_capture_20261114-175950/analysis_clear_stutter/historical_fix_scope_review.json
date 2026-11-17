@@ -1,0 +1,142 @@
+{
+  "scope": "Read-only historical production diff review plus already extracted summary; no large bag read, no runtime modification",
+  "statistics_source": "analysis_clear_stutter/stutter_timing_summary.json",
+  "version_reviews": [
+    {
+      "version": "20261113-172845-map-latency",
+      "parent": "20261113-165655-before-map-latency",
+      "recorded_state": "OFFLINE_VERIFIED_HARDWARE_PENDING",
+      "diff_path": "rollback/20261113-172845-map-latency/changes.diff",
+      "diff_sha256": "d5655c04753f65bbdb20d18b63f38215b09263d11d991274fe751f12873aed84",
+      "actual_diff_change": "Diff replaces longest-axis midpoint partition with all-axis occupied cuts; adds exact near-free negative-distance fast path with full EDT fallback; writer loop polls completed ESDF jobs before publishReadSnapshot.",
+      "current_source_evidence": [
+        "src/mm_remani_planner/plan_env/src/esdf_worker.cpp:746",
+        "src/mm_remani_planner/plan_env/src/esdf_worker.cpp:1000",
+        "src/mm_remani_planner/plan_env/src/grid_map.cpp:250"
+      ],
+      "not_fixed_by_this_diff": "Does not modify fusion/source timestamp, Complete snapshot transport, 350ms receiver freshness, 50ms export timer, or reject-to-zero behavior. It reduces selected map stages, not all end-to-end latency.",
+      "current_record_implication": "Latest test: 259 start snapshot rejections (258 map_age false), 88 during-plan map expiry, 30 delivery rejections with map_age false. EDT recheck against 16 same-generation occupancy samples is exact over checked interior, so do not conflate stale data with wrong distance computation."
+    },
+    {
+      "version": "20261114-134215-obstacle-recovery",
+      "parent": "20261114-132800-before-obstacle-recovery",
+      "recorded_state": "OFFLINE_VERIFIED_HARDWARE_PENDING",
+      "diff_path": "rollback/20261114-134215-obstacle-recovery/changes.diff",
+      "diff_sha256": "0d2f1609ffaaf2b1ce70fbf8f7a44605101efdd263ed382bb0c7e358313b1b4c",
+      "actual_diff_change": "Diff routes emergency near raw/live obstacle to beginTransientObstacleRecovery; retains accepted goal; retries per new map generation; candidate must match feedback and goal revision before publish/release.",
+      "current_source_evidence": [
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:433",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:447",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1888"
+      ],
+      "not_fixed_by_this_diff": "Does not change raw collision classification/sampling or remove zero+ABORT on this branch. It fixes recovery/goal loss, not whether the initial stop is justified or whether stop/start repeats.",
+      "current_record_implication": "Six raw/live emergency stop logs, subsequent ABORT/recovery publications and 285 cancelled status cycles are consistent with retained-goal retry but not continuous avoidance."
+    },
+    {
+      "version": "20261114-135547-fast-refresh",
+      "parent": "20261114-134219-before-fast-refresh",
+      "recorded_state": "OFFLINE_VERIFIED_HARDWARE_PENDING",
+      "diff_path": "rollback/20261114-135547-fast-refresh/changes.diff",
+      "diff_sha256": "33bdaa8d33533e84dc7fe2ccfb862e26ead86107ef25795757216f31693e9a00",
+      "actual_diff_change": "Diff adds event after accepted arm/base topic publication. Event contains timestamps/goal/reference/episode only; slow layer optionally calls planFromLocalTraj once per episode; failure retains old trajectory metadata.",
+      "current_source_evidence": [
+        "src/mm_remani/scripts/whole_body_mppi.py:601",
+        "src/mm_remani/scripts/whole_body_mppi.py:826",
+        "src/mm_remani/scripts/mppi/mppi_refresh_event.py:31",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1015"
+      ],
+      "not_fixed_by_this_diff": "Not a committed fast prefix handoff: no predicted base/arm endpoint or rollout geometry transported. Slow safety still owns stop; refresh is blocked after cancellation/recovery/zero-speed ownership, and absent if first fast command cannot be delivered.",
+      "current_record_implication": "80 arm_only deliveries/refresh requests are not evidence of 80 accepted slow updates nor of confirmed moving obstacle. Motion-qualified count/speed are zero throughout 1207 tracker samples."
+    },
+    {
+      "version": "20261114-164726-unified-reference",
+      "parent": "20261114-163406-before-unified-reference",
+      "recorded_state": "OFFLINE_VERIFIED_HARDWARE_PENDING",
+      "diff_path": "rollback/20261114-164726-unified-reference/changes.diff",
+      "diff_sha256": "1772784107bf00af6a87254386d73d458b247e5882c02ef9effbfd70ee3560ae",
+      "actual_diff_change": "Diff adds exact timed base polynomial sampling and feeds signed velocity/angular feedforward into all native candidate generation/scoring paths; same tracking law across clock scale, with geometric lateral capture hysteresis; exact gear endpoint left-sided.",
+      "current_source_evidence": [
+        "src/mm_remani/scripts/mppi/native_reference_adapter.py:225",
+        "src/mm_remani/scripts/mppi/active_arm_mppi.py:332",
+        "src/mm_remani/scripts/mppi/active_arm_mppi.py:360",
+        "src/mm_remani/scripts/mppi/active_arm_mppi.py:542"
+      ],
+      "not_fixed_by_this_diff": "Changes local guidance consistency only. Does not affect map/driver gates, reject-to-zero, slow live collision authority, or cancelled-reference return-before-plan. Does not align slow collision getCarAngle low-speed convention with MPPI.",
+      "current_record_implication": "Current cancelled cycles have sub-millisecond median: they skip solving, so improving native guidance cannot help those cycles. Live turning performance cannot be certified by the offline fixture alone."
+    },
+    {
+      "version": "20261114-165513-phase-capacity",
+      "parent": "20261114-164751-before-phase-capacity",
+      "recorded_state": "OFFLINE_VERIFIED_HARDWARE_PENDING",
+      "diff_path": "rollback/20261114-165513-phase-capacity/changes.diff",
+      "diff_sha256": "d6569d50b4d981b0f7686792dff96c5a59117881dc0647bdcbd38f619597886a",
+      "actual_diff_change": "Diff reads MPPI linear/angular/wheel/track limits in controller startup when launch enables use_mppi_execution_limits; constrains phase scale before integration and again at published advanced phase; existing force-freeze retained.",
+      "current_source_evidence": [
+        "src/mm_controller/src/mm_controller_fsm.cpp:14",
+        "src/mm_controller/include/mm_controller/mm_controller_fsm.hpp:20",
+        "src/mm_controller/src/mm_controller_fsm.cpp:371",
+        "src/mm_controller/src/mm_controller_fsm.cpp:544",
+        "src/mm_remani/launch/exp0_real.launch:202"
+      ],
+      "not_fixed_by_this_diff": "Changes allowable reference feedforward/clock advance, not command delivery timing, occupancy query, abort arbitration, motion model calibration, or recovery. Does not guarantee every future rollout point is within capacity nor establish actual delivered command continuation.",
+      "current_record_implication": "No evidence in latest summary makes phase angular capacity the dominant cause of the 713 zero commands; the identified direct gates are map expiry and cancelled references."
+    }
+  ],
+  "remaining_interfaces": [
+    {
+      "name": "End-to-end source freshness versus always-zero local retry",
+      "evidence": [
+        "src/mm_remani/scripts/mppi/active_arm_mppi.py:104",
+        "src/mm_remani/scripts/whole_body_mppi.py:561",
+        "src/mm_remani/scripts/whole_body_mppi.py:635",
+        "src/mm_remani/scripts/whole_body_mppi.py:739",
+        "src/mm_remani/scripts/whole_body_mppi.py:775",
+        "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp:134",
+        "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp:328"
+      ],
+      "finding": "Local retry avoids cancelling reference but still publishes zero each failed cycle. Alternating map validity/expiry can therefore create alternating commands without any new planner fault. No end-to-end latency closure is demonstrated by the ESDF optimization."
+    },
+    {
+      "name": "Two different map/trajectory states at the safety boundary",
+      "evidence": [
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1393",
+        "src/mm_remani_planner/plan_env/include/plan_env/grid_map.h:315",
+        "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp:134",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1648",
+        "src/mm_remani_planner/plan_env/src/grid_map.cpp:4449"
+      ],
+      "finding": "Slow safety uses Latest and future original polynomial; MPPI uses Complete field and measured state/candidate. Raw dynamic occupancy means occupied non-PCD cells, not motion-qualified tracks. Same-generation actual body clearance does not prove future reference on newer raw occupancy is safe."
+    },
+    {
+      "name": "Low-speed yaw convention still differs at slow collision query",
+      "evidence": [
+        "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp:500",
+        "src/mm_remani_planner/traj_utils/include/traj_utils/poly_traj_utils.hpp:153",
+        "src/mm_remani/scripts/mppi/native_reference_adapter.py:249",
+        "src/mm_controller/src/mm_controller_fsm.cpp:621"
+      ],
+      "finding": "Slow collision yaw directly atan2(gear*vy,gear*vx), whereas MPPI/controller hold measured yaw below raw 0.04m/s. A concrete ununified interface; must compute exact collision sample and measured yaw before attributing any recorded stop to it."
+    },
+    {
+      "name": "Cancellation revokes fast navigation as well as slow reference",
+      "evidence": [
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:3471",
+        "src/mm_remani/scripts/mppi/native_reference_adapter.py:270",
+        "src/mm_remani/scripts/mppi/native_reference_adapter.py:457",
+        "src/mm_remani/scripts/whole_body_mppi.py:68"
+      ],
+      "finding": "ABORT clears native+pending; active goal with no path returns before kernel plan. No independently validated fast-prefix continuation exists in these changes."
+    }
+  ],
+  "least_scope_next_steps": [
+    "First use existing extracted trajectory/pose and available map epochs to reproduce the first raw collision: exact polynomial sample, yaw, link/sphere, voxel, and whether query used newer Latest occupancy. Compare low-speed yaw convention without changing safety thresholds. If geometry mismatch is verified, fix that shared evaluation rather than adding a new fallback controller.",
+    "Separately account map source age at fusion, ESDF completion, snapshot sampling, adoption and actual delivery. Pick measured dominant delay; recent commit optimization alone does not justify more EDT changes or simply extending freshness. Tests must include 10Hz real input timing, 20Hz export, 10Hz fast solve/delivery and alternating map validity.",
+    "For later dynamic avoidance integration, distinguish safe-prefix continuation from old reference hazard. Existing timestamp refresh is notification only. Define one minimal validated prefix/handoff ownership path with hard actual collision/freshness stops retained, rather than disabling ABORT or letting cancelled old controls run blindly.",
+    "Keep obstacle-recovery and map/guidance fixes independently revertible; validate zero-command transitions and stop-owner changes together. Offline guide/capacity cases do not certify real dynamic avoidance."
+  ],
+  "not_established": [
+    "Which exact newer raw voxel caused each of six stops; actual-body Complete-map clearance alone cannot determine false collision.",
+    "Whether recording amplified latency; same-process off/on baseline absent.",
+    "Successful real dynamic avoidance: operator explicitly did not introduce the deliberate obstacle and motion-qualified tracks stayed zero."
+  ]
+}

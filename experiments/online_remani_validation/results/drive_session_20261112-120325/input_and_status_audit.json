@@ -1,0 +1,178 @@
+{
+  "goal_receipt_ros": 1794456459.9303157,
+  "status_counts": {
+    "before_goal": {
+      "delivery_deadline_exceeded": 122,
+      "command_delivered": 1620,
+      "waiting_explicit_arm_enable_or_normal_status": 12,
+      "collision_snapshot_unavailable": 309,
+      "inputs_expired_before_delivery": 50,
+      "planning_deadline_exceeded": 171,
+      "collision_snapshot_expired_during_plan": 197,
+      "feedback_expired_during_plan": 1,
+      "no_feasible_candidate": 2,
+      "state_feedback_stale": 1,
+      "command_hold_or_braking_rejected_by_latest_state_or_map": 1
+    },
+    "after_goal": {
+      "command_delivered": 205,
+      "collision_snapshot_unavailable": 70,
+      "inputs_expired_before_delivery": 9,
+      "collision_snapshot_expired_during_plan": 17,
+      "waiting_explicit_arm_enable_or_normal_status": 11,
+      "native_reference_cancelled": 1929,
+      "no_feasible_candidate": 3,
+      "command_hold_or_braking_rejected_by_latest_state_or_map": 1,
+      "state_feedback_stale": 2
+    }
+  },
+  "cycle_ms": {
+    "before_goal": {
+      "n": 2486,
+      "median": 69.06,
+      "p95": 105.28,
+      "max": 171.75
+    },
+    "after_goal": {
+      "n": 2247,
+      "median": 0.61,
+      "p95": 40.32,
+      "max": 215.55
+    }
+  },
+  "piper_execution_message_counts": {
+    "before_goal": {
+      "enabled_True": 11299,
+      "command_active_True": 9289,
+      "stop_latched_False": 11299,
+      "feedback_valid_True": 11299,
+      "command_active_False": 2010
+    },
+    "after_goal": {
+      "enabled_True": 10619,
+      "command_active_True": 1221,
+      "stop_latched_False": 10619,
+      "feedback_valid_True": 10619,
+      "command_active_False": 9398
+    }
+  },
+  "motor_enable_message_counts": {
+    "before_goal": {
+      "all_six_enabled": 37815
+    },
+    "after_goal": {
+      "all_six_enabled": 37978
+    }
+  },
+  "dynamic_messages": {
+    "before_goal": {
+      "empty": 2492
+    },
+    "after_goal": {
+      "empty": 2280
+    }
+  },
+  "joint_published_velocity_abs_peak_rad_s": {
+    "before_goal": [
+      0.45202934982396187,
+      0.4655121752681015,
+      0.45118822203602016,
+      1.4401213102025918,
+      0.5728919640794791,
+      1.2897920672828689
+    ],
+    "after_goal": [
+      0.4485049335910745,
+      0.4614463630292363,
+      0.3853990825774228,
+      1.3864609231937954,
+      0.7010046374722969,
+      0.0
+    ]
+  },
+  "joint_position_difference_window_abs_peak_rad_s": {
+    "before_goal": {
+      "50ms": [
+        0.07749624715116883,
+        0.07462685834541223,
+        0.07044133730847925,
+        0.1521609312520166,
+        0.0980861943701021,
+        0.15917038466089606
+      ],
+      "100ms": [
+        0.048029703636144346,
+        0.05004196666409252,
+        0.0457276700115588,
+        0.07626986999952631,
+        0.05515166800881136,
+        0.07958462310989364
+      ]
+    },
+    "after_goal": {
+      "50ms": [
+        0.07142699357609031,
+        0.09014462019163887,
+        0.052006645527650414,
+        0.24153076464901516,
+        0.09703253326635902,
+        0.0
+      ],
+      "100ms": [
+        0.06038585822755291,
+        0.06509711829385112,
+        0.026004252673877338,
+        0.10384050499715847,
+        0.05204564036211143,
+        0.0
+      ]
+    }
+  },
+  "joint_source_dt_ms": {
+    "n": 65777,
+    "median": 5.010366439819336,
+    "p95": 15.012264251708984,
+    "max": 859.992504119873
+  },
+  "joint_source_gaps_gt50ms": 126,
+  "joint_source_gaps_gt150ms": 17,
+  "joint_nonmonotonic_source_stamps": 0,
+  "joint_source_age_at_recorder_receipt_max_ms": 357.8519821166992,
+  "failed_context_map_age": {
+    "before_goal": {
+      "at_plan_ms": {
+        "n": 544,
+        "median": 297.8569269180298,
+        "p95": 341.80474281311035,
+        "max": 349.77197647094727
+      },
+      "at_status_receipt_ms": {
+        "n": 544,
+        "median": 397.8801965713501,
+        "p95": 479.01177406311035,
+        "max": 971.2913036346436
+      }
+    },
+    "after_goal": {
+      "at_plan_ms": {
+        "n": 1960,
+        "median": 252.20882892608643,
+        "p95": 319.22149658203125,
+        "max": 347.5995063781738
+      },
+      "at_status_receipt_ms": {
+        "n": 1960,
+        "median": 254.50420379638672,
+        "p95": 332.35669136047363,
+        "max": 771.7392444610596
+      }
+    }
+  },
+  "caveats": [
+    "counts are recorded messages, not failure duration or hardware event count",
+    "joint velocity is source-position finite difference in existing driver; it is not independent motor tachometry",
+    "50/100ms windows summarize motion over a longer interval, not true peak velocity",
+    "failed_context_map_age includes only failures retaining snapshot_header; successful cycles excluded",
+    "status receipt age is not necessarily the decision instant"
+  ]
+}

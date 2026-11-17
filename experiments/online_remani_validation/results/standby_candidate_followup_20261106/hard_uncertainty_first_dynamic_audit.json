@@ -1,0 +1,545 @@
+{
+  "scope": "Read-only offline first-dynamic-snapshot feasibility audit. Uses the recorded run velocity interface (arm_position_servo=false), current per-candidate braking checks, and no parameter changes. Recorded obstacle truth is comparison only, never a planning input.",
+  "source_run": "experiments/online_remani_validation/results/standby_candidate_followup_20261106/audit_current",
+  "implementation_sha256": {
+    "active_arm_mppi.py": "ad7bc53458f1286be478a92afd82332bc7e7a98edc3545fe6c0ae4b9614e3f4a",
+    "standby_whole_body_mppi.py": "e1e9a646b39204ac70cdfa095314734d042d2c5aad115c2611a78742eb4403a2"
+  },
+  "snapshot": {
+    "stamp": 1004.855,
+    "sequence": 91.0,
+    "elapsed_s": 2.3100000010000485,
+    "shape": [
+      42,
+      42,
+      50
+    ],
+    "dynamic_groups": 1,
+    "dynamic_points": 38,
+    "uncertainty": [
+      0.08,
+      0.25,
+      0.75
+    ],
+    "prediction_limit_s": 2.0
+  },
+  "state": {
+    "csv_t": 2.31,
+    "actual_external_gap_m": 0.46038381371723125,
+    "values": [
+      -0.0006537226711157252,
+      -5.3125057977256e-06,
+      0.005495825442840833,
+      -0.0019800397950932433,
+      -0.025402603513941767,
+      8.230785436731761e-05,
+      1.9196928672003297,
+      -1.045644914396621,
+      0.002957840916893367,
+      0.5211584192830298,
+      0.002515898268506772,
+      -0.007227931919024453,
+      -0.0037920674125691105,
+      0.0022264447039840535,
+      0.0062680090796306785,
+      0.002707174061922618,
+      0.005697042846660711
+    ]
+  },
+  "H_s": 0.8,
+  "canonical_candidates": 21,
+  "feasible_candidates": 0,
+  "all_canonical_rejected_within_H": true,
+  "candidate_results": [
+    {
+      "label": [
+        "reference",
+        "hold"
+      ],
+      "valid": false,
+      "cost": 1.2398794412498597,
+      "min_hard_gap_full_m": -0.1624450277478057,
+      "min_hard_external_gap_H_m": -0.1170986433230469,
+      "min_recorded_truth_gap_H_m": 0.39692191495166074,
+      "checked_duration_s": 0.8500000000000001,
+      "first_hard_violation_s": 0.7000000000000455,
+      "at_first_hard_violation": {
+        "tau_s": 0.7000000000000455,
+        "age_s": 0.6750000010000576,
+        "hard_gap_m": -0.03195925754690068,
+        "raw_dynamic_surface_gap_m": 0.387650118209393,
+        "uncertainty_radius_m": 0.41960937575629365,
+        "recorded_truth_external_gap_m": 0.4048521217869604,
+        "sphere_index": 44,
+        "sphere_part": "fixed_structure",
+        "terminal_arm_delta_deg": [
+          0.002769774254287911,
+          0.010510724525082525,
+          -0.06811587461148037,
+          -0.1315239667955955,
+          0.10167005061063411,
+          -0.1121899807962137
+        ]
+      }
+    },
+    {
+      "label": [
+        "reference",
+        "forward"
+      ],
+      "valid": false,
+      "cost": 1.2767201996145559,
+      "min_hard_gap_full_m": -0.3113792604497947,
+      "min_hard_external_gap_H_m": -0.11859857884423344,
+      "min_recorded_truth_gap_H_m": 0.39739840048444075,
+      "checked_duration_s": 1.0,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "reference",
+        "reverse"
+      ],
+      "valid": false,
+      "cost": 1.206313008087313,
+      "min_hard_gap_full_m": -0.3073138878907171,
+      "min_hard_external_gap_H_m": -0.11406419657325231,
+      "min_recorded_truth_gap_H_m": 0.3981120844853926,
+      "checked_duration_s": 1.0,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "reference",
+        "turn_left"
+      ],
+      "valid": false,
+      "cost": 1.4364793997858902,
+      "min_hard_gap_full_m": -0.3724004414098787,
+      "min_hard_external_gap_H_m": -0.12005398682960425,
+      "min_recorded_truth_gap_H_m": 0.38878074777569893,
+      "checked_duration_s": 1.05,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "reference",
+        "turn_right"
+      ],
+      "valid": false,
+      "cost": 1.0543304051669438,
+      "min_hard_gap_full_m": -0.4685264103615463,
+      "min_hard_external_gap_H_m": -0.11219570900007628,
+      "min_recorded_truth_gap_H_m": 0.4077303384387845,
+      "checked_duration_s": 1.1500000000000001,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "reference",
+        "curve_left"
+      ],
+      "valid": false,
+      "cost": 1.4819198954011659,
+      "min_hard_gap_full_m": -0.42993622995970693,
+      "min_hard_external_gap_H_m": -0.12230377039359233,
+      "min_recorded_truth_gap_H_m": 0.38843487314377767,
+      "checked_duration_s": 1.1,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "reference",
+        "curve_right"
+      ],
+      "valid": false,
+      "cost": 1.106122324385293,
+      "min_hard_gap_full_m": -0.4703478345214508,
+      "min_hard_external_gap_H_m": -0.11374301598878014,
+      "min_recorded_truth_gap_H_m": 0.40697106856119114,
+      "checked_duration_s": 1.1500000000000001,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "current",
+        "hold"
+      ],
+      "valid": false,
+      "cost": 1.240006991531195,
+      "min_hard_gap_full_m": -0.1624450277478057,
+      "min_hard_external_gap_H_m": -0.1170986433230469,
+      "min_recorded_truth_gap_H_m": 0.39691303052021165,
+      "checked_duration_s": 0.8500000000000001,
+      "first_hard_violation_s": 0.7000000000000455,
+      "at_first_hard_violation": {
+        "tau_s": 0.7000000000000455,
+        "age_s": 0.6750000010000576,
+        "hard_gap_m": -0.03195925754690068,
+        "raw_dynamic_surface_gap_m": 0.387650118209393,
+        "uncertainty_radius_m": 0.41960937575629365,
+        "recorded_truth_external_gap_m": 0.4048438219006255,
+        "sphere_index": 44,
+        "sphere_part": "fixed_structure",
+        "terminal_arm_delta_deg": [
+          0.006278190984869529,
+          0.0032937946442270385,
+          -0.0019338927407432998,
+          -0.005444400768806485,
+          -0.002351454880935436,
+          -0.0049484587626204635
+        ]
+      }
+    },
+    {
+      "label": [
+        "current",
+        "forward"
+      ],
+      "valid": false,
+      "cost": 1.276884190634336,
+      "min_hard_gap_full_m": -0.3113792604497947,
+      "min_hard_external_gap_H_m": -0.11859857884423344,
+      "min_recorded_truth_gap_H_m": 0.397390344900174,
+      "checked_duration_s": 1.0,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "current",
+        "reverse"
+      ],
+      "valid": false,
+      "cost": 1.2063862164014665,
+      "min_hard_gap_full_m": -0.307321528024745,
+      "min_hard_external_gap_H_m": -0.11406419657325231,
+      "min_recorded_truth_gap_H_m": 0.3981038279758158,
+      "checked_duration_s": 1.0,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "current",
+        "turn_left"
+      ],
+      "valid": false,
+      "cost": 1.4365578012594853,
+      "min_hard_gap_full_m": -0.372408034423669,
+      "min_hard_external_gap_H_m": -0.12005398682960425,
+      "min_recorded_truth_gap_H_m": 0.38877070554225424,
+      "checked_duration_s": 1.05,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "current",
+        "turn_right"
+      ],
+      "valid": false,
+      "cost": 1.0544887215177317,
+      "min_hard_gap_full_m": -0.4685264103615463,
+      "min_hard_external_gap_H_m": -0.11219570900007628,
+      "min_recorded_truth_gap_H_m": 0.40772120638196596,
+      "checked_duration_s": 1.1500000000000001,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "current",
+        "curve_left"
+      ],
+      "valid": false,
+      "cost": 1.482045197154304,
+      "min_hard_gap_full_m": -0.42994473418426027,
+      "min_hard_external_gap_H_m": -0.12230377039359233,
+      "min_recorded_truth_gap_H_m": 0.38842628603359464,
+      "checked_duration_s": 1.1,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "current",
+        "curve_right"
+      ],
+      "valid": false,
+      "cost": 1.1063003639392428,
+      "min_hard_gap_full_m": -0.4703478345214508,
+      "min_hard_external_gap_H_m": -0.11374301598878014,
+      "min_recorded_truth_gap_H_m": 0.40696095245899244,
+      "checked_duration_s": 1.1500000000000001,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "posture_0",
+        "hold"
+      ],
+      "valid": false,
+      "cost": 1.183999718144747,
+      "min_hard_gap_full_m": -0.6004944416645435,
+      "min_hard_external_gap_H_m": -0.1170986433230469,
+      "min_recorded_truth_gap_H_m": 0.39693193193007137,
+      "checked_duration_s": 1.25,
+      "first_hard_violation_s": 0.7000000000000455,
+      "at_first_hard_violation": {
+        "tau_s": 0.7000000000000455,
+        "age_s": 0.6750000010000576,
+        "hard_gap_m": -0.03195925754690068,
+        "raw_dynamic_surface_gap_m": 0.387650118209393,
+        "uncertainty_radius_m": 0.41960937575629365,
+        "recorded_truth_external_gap_m": 0.40485965861442763,
+        "sphere_index": 44,
+        "sphere_part": "fixed_structure",
+        "terminal_arm_delta_deg": [
+          0.002769774254287911,
+          4.935365132466023,
+          -0.06811587475651366,
+          -0.1315239667955955,
+          -4.961783051806902,
+          -0.1121899807962137
+        ]
+      }
+    },
+    {
+      "label": [
+        "posture_0",
+        "forward"
+      ],
+      "valid": false,
+      "cost": 1.2163523713931048,
+      "min_hard_gap_full_m": -0.5987333742814424,
+      "min_hard_external_gap_H_m": -0.11859857884423344,
+      "min_recorded_truth_gap_H_m": 0.3978052316689058,
+      "checked_duration_s": 1.25,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "posture_0",
+        "reverse"
+      ],
+      "valid": false,
+      "cost": 1.1581470070499715,
+      "min_hard_gap_full_m": -0.6000110051655936,
+      "min_hard_external_gap_H_m": -0.11406419657325231,
+      "min_recorded_truth_gap_H_m": 0.3973927663558102,
+      "checked_duration_s": 1.25,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "posture_0",
+        "turn_left"
+      ],
+      "valid": false,
+      "cost": 1.3772126831813947,
+      "min_hard_gap_full_m": -0.6107653969752691,
+      "min_hard_external_gap_H_m": -0.12005398682960425,
+      "min_recorded_truth_gap_H_m": 0.38784010211480124,
+      "checked_duration_s": 1.25,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "posture_0",
+        "turn_right"
+      ],
+      "valid": false,
+      "cost": 1.0029897528434615,
+      "min_hard_gap_full_m": -0.5870817756367002,
+      "min_hard_external_gap_H_m": -0.11219570900007628,
+      "min_recorded_truth_gap_H_m": 0.40884789516795217,
+      "checked_duration_s": 1.25,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "posture_0",
+        "curve_left"
+      ],
+      "valid": false,
+      "cost": 1.4177551983936314,
+      "min_hard_gap_full_m": -0.6102724324128395,
+      "min_hard_external_gap_H_m": -0.12230377039359233,
+      "min_recorded_truth_gap_H_m": 0.38816283793326367,
+      "checked_duration_s": 1.25,
+      "first_hard_violation_s": 0.7000000000000455
+    },
+    {
+      "label": [
+        "posture_0",
+        "curve_right"
+      ],
+      "valid": false,
+      "cost": 1.0503840336381762,
+      "min_hard_gap_full_m": -0.5889952425640456,
+      "min_hard_external_gap_H_m": -0.11374301598878014,
+      "min_recorded_truth_gap_H_m": 0.40875077035854546,
+      "checked_duration_s": 1.25,
+      "first_hard_violation_s": 0.7000000000000455
+    }
+  ],
+  "nearest_online_diagnostics": {
+    "plan_time": 1004.985,
+    "snapshot_sequence": 92.0,
+    "snapshot_age_s": 0.12999999999999545,
+    "labels": [
+      [
+        "reference",
+        "hold"
+      ],
+      [
+        "reference",
+        "forward"
+      ],
+      [
+        "reference",
+        "reverse"
+      ],
+      [
+        "reference",
+        "turn_left"
+      ],
+      [
+        "reference",
+        "turn_right"
+      ],
+      [
+        "reference",
+        "curve_left"
+      ],
+      [
+        "reference",
+        "curve_right"
+      ],
+      [
+        "current",
+        "hold"
+      ],
+      [
+        "current",
+        "forward"
+      ],
+      [
+        "current",
+        "reverse"
+      ],
+      [
+        "current",
+        "turn_left"
+      ],
+      [
+        "current",
+        "turn_right"
+      ],
+      [
+        "current",
+        "curve_left"
+      ],
+      [
+        "current",
+        "curve_right"
+      ],
+      [
+        "posture_0",
+        "hold"
+      ],
+      [
+        "posture_0",
+        "forward"
+      ],
+      [
+        "posture_0",
+        "reverse"
+      ],
+      [
+        "posture_0",
+        "turn_left"
+      ],
+      [
+        "posture_0",
+        "turn_right"
+      ],
+      [
+        "posture_0",
+        "curve_left"
+      ],
+      [
+        "posture_0",
+        "curve_right"
+      ],
+      [
+        "previous",
+        "previous"
+      ]
+    ],
+    "valid": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "first_violation_s": [
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55,
+      0.55
+    ],
+    "status": "no_feasible_candidate"
+  },
+  "limitations": [
+    "Canonical candidates exclude the unreconstructed cached previous action; nearest online diagnostics are separate.",
+    "An empty finite candidate set does not prove no arbitrary admissible trajectory exists.",
+    "Truth gaps use predicted robot poses versus recorded simulation obstacle geometry, not measured future robot motion.",
+    "The additional fixed-sphere reachability bound concerns the current snapshot uncertainty model and stated speed limits; it is not a statement that the physical foam cylinder cannot be avoided."
+  ],
+  "conclusion": "A terminal objective cannot make a negative hard collision gap pass. Hard-constraint feasibility must be distinguished from the posture-progress objective, which only ranks feasible candidates.",
+  "fixed_structure_reachability_bound": {
+    "scope": "Fixed sphere 44 at H=.8. A loose upper bound ignores acceleration limits and grants max linear/angular speed throughout; nearest-cloud distance is 1-Lipschitz.",
+    "sphere_index": 44,
+    "radial_offset_m": 0.1525338691331333,
+    "forecast_age_s": 0.7750000009999667,
+    "uncertainty_radius_m": 0.49898437583122235,
+    "robust_dynamic_gap_if_base_pose_stays_current_m": -0.11732108889016901,
+    "maximum_possible_sphere_displacement_m": 0.05829308383406792,
+    "upper_bound_robust_gap_over_any_admissible_base_motion_m": -0.05902800505610109,
+    "any_arm_only_motion_can_change_this_sphere": false,
+    "any_velocity_bounded_base_motion_still_infeasible": true
+  }
+}

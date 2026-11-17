@@ -1,0 +1,70 @@
+{
+  "goal_window": {
+    "start": 1794628114.717843,
+    "finish": 1794628144.1312928,
+    "start_local": "2026-11-14T11:48:34.717+08:00",
+    "finish_local": "2026-11-14T11:49:04.131+08:00",
+    "duration_s": 29.41344976425171
+  },
+  "status_counts": {
+    "reference_changed_during_plan": 2,
+    "command_delivered": 212,
+    "inputs_expired_before_delivery": 16,
+    "planning_deadline_exceeded": 2,
+    "delivery_deadline_exceeded": 6,
+    "collision_snapshot_expired_during_plan": 20,
+    "waiting_explicit_arm_enable_or_normal_status": 4,
+    "collision_snapshot_unavailable": 23,
+    "feedback_expired_during_plan": 2,
+    "native_reference_expired_before_delivery": 1
+  },
+  "zero_pulse_association": {
+    "method": "candidate_diagnostics.plan_time + cycle_ms/1000 approximates reject time; reject() publishes zero before diagnostics/status. Bag receipt times for topics may differ. This approximation can be affected by delays before diagnostics capture and subscriber queues.",
+    "within_30ms": 49,
+    "total": 51,
+    "states": {
+      "inputs_expired_before_delivery": 12,
+      "planning_deadline_exceeded": 1,
+      "collision_snapshot_expired_during_plan": 16,
+      "waiting_explicit_arm_enable_or_normal_status": 2,
+      "collision_snapshot_unavailable": 14,
+      "delivery_deadline_exceeded": 3,
+      "feedback_expired_during_plan": 2,
+      "native_reference_expired_before_delivery": 1
+    },
+    "caveat": "One native_reference_expired_before_delivery pulse (90.7 ms) is terminal transition, not sustained tracking interruption. Two larger estimate offsets need timing caution."
+  },
+  "snapshot_input_rejections": {
+    "count": 59,
+    "map_age_gt_350_ms": 54,
+    "dynamic_age_gt_350_ms_with_map_le_350_ms": 3,
+    "snapshot_record_age_does_not_identify_gate": 2,
+    "caveat": "Snapshot diagnostics are current data read after rejection; may differ from exact snapshot checked at failure. Input branch also checks live base/joint stamps."
+  },
+  "nominal_candidate_feasibility": {
+    "delivered_count": 205,
+    "feasible_counts": {
+      "3": 205
+    }
+  },
+  "position_goal": {
+    "goal": [
+      0.6012054681777954,
+      -1.2004902362823486
+    ],
+    "odom_final": [
+      0.5920353578942431,
+      -1.1788913853244583
+    ],
+    "goal_error_m": 0.0234648947432899,
+    "note": "Bag odom sample last before finish, world/odom aligned here as planner feedback; this is approximate, not independent ground truth."
+  },
+  "conclusions": [
+    "Single goal emitted one polynomial trajectory and completed; no repeated replans or abort in this navigation window.",
+    "Main direct command interruption is rejected cycles publishing zero, with 59 snapshot/input age failures compared with 8 planning/delivery deadline failures.",
+    "51 nonzero-zero-nonzero command pulses totaled 9.039 s (one is expected terminal expiry transition); this is command duration, not proof wheels fully stopped for the same duration.",
+    "Nominal accepted commands all had 3 feasible candidates; no no_feasible_candidate, collision_checked_command_rejected, or zero safety limit observed.",
+    "Piper remained enabled and unlatched with feedback_valid; command_active temporarily false shows expired command stream, not motor disable.",
+    "Reference progress slowed with base tracking lag (median scale 0.262), extending a 9.348 s virtual trajectory to 29.413 s goal completion. This is a response to tracking lag, not by itself proof of its initiating cause."
+  ]
+}

@@ -1,0 +1,29 @@
+--- before/src/mm_remani/config/mppi.yaml
++++ after/src/mm_remani/config/mppi.yaml
+@@ -1,10 +1,11 @@
+ # One 10 Hz whole-body sampling controller; original drivers remain the sinks.
+ rate_hz: 10.0
+ deadline_s: 0.095
+-horizon: 8
++# Keep rollout + model braking + maximum source age within the 2 s forecast.
++horizon: 7
+ random_samples: 4
+ base_limits:
+-  vmax: 0.12
++  vmax: 0.20
+   wmax: 0.35
+   accel: 0.25
+   angular_accel: 0.80
+--- before/src/mm_remani/test/test_mppi_standby.py
++++ after/src/mm_remani/test/test_mppi_standby.py
+@@ -71,8 +71,8 @@
+             self.assertEqual(values[0], batch_diagnostics[key][0], key)
+         self.assertIsNone(batch_diagnostics['first_external_violation_s'][0])
+         self.assertAlmostEqual(batch_diagnostics['first_external_violation_s'][1], 1.05)
+-        self.assertAlmostEqual(batch_diagnostics['checked_duration_s'][0], .85)
+-        self.assertAlmostEqual(batch_diagnostics['checked_duration_s'][1], 1.25)
++        self.assertAlmostEqual(batch_diagnostics['checked_duration_s'][0], planner.H*planner.dt+.05)
++        self.assertAlmostEqual(batch_diagnostics['checked_duration_s'][1], planner.H*planner.dt+.45)
+ 
+         moving_alone = planner.evaluate(state, controls[1:], *arguments)
+         for single, together in zip(moving_alone, batch):

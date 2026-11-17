@@ -1,0 +1,121 @@
+{
+  "master_ok": true,
+  "publishers": {
+    "/rosout_agg": [
+      "/rosout"
+    ],
+    "/odom": [
+      "/fastlio_to_odom"
+    ],
+    "/cmd_vel": [
+      "/whole_body_mppi"
+    ],
+    "/mppi/status": [
+      "/whole_body_mppi"
+    ],
+    "/planning/mppi_refresh_request": [
+      "/whole_body_mppi"
+    ],
+    "/joint_states_single": [
+      "/piper_ctrl_single_node"
+    ],
+    "/piper_execution_state": [
+      "/piper_ctrl_single_node"
+    ],
+    "/planning/trajectory": [
+      "/remani_planner_node"
+    ]
+  },
+  "recorder_subscriptions": {
+    "/mppi/status": [
+      "/hardware_startup_readonly_10622_1794312199233",
+      "/remani_latency_capture_70971_1794640362647"
+    ],
+    "/piper_execution_state": [
+      "/hardware_startup_readonly_10622_1794312199233",
+      "/remani_latency_capture_70971_1794640362647",
+      "/whole_body_mppi"
+    ],
+    "/rosout_agg": [
+      "/hardware_startup_readonly_10622_1794312199233",
+      "/remani_latency_capture_70971_1794640362647"
+    ],
+    "/joint_states_single": [
+      "/hardware_startup_readonly_10622_1794312199233",
+      "/remani_latency_capture_70971_1794640362647",
+      "/real_arm_joint_bridge"
+    ],
+    "/cmd_vel": [
+      "/remani_latency_capture_70971_1794640362647",
+      "/real_base_controller"
+    ],
+    "/odom": [
+      "/remani_latency_capture_70971_1794640362647",
+      "/mm_controller_node",
+      "/global_map_publisher",
+      "/whole_body_mppi",
+      "/remani_planner_node"
+    ],
+    "/planning/trajectory": [
+      "/remani_latency_capture_70971_1794640362647",
+      "/mm_controller_node",
+      "/whole_body_mppi"
+    ],
+    "/planning/mppi_refresh_request": [
+      "/remani_latency_capture_70971_1794640362647",
+      "/remani_planner_node"
+    ]
+  },
+  "processes": [
+    {
+      "pid": 70971,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/l/remani_ws/experiments/online_remani_validation/record_latency_session.py",
+        "/home/l/remani_ws/experiments/online_remani_validation/results/fast_refresh_capture_20261114-151241",
+        "--duration",
+        "1200",
+        "--after-goal",
+        "240"
+      ],
+      "rss": "VmRSS:\t  114592 kB"
+    },
+    {
+      "pid": 71279,
+      "argv": [
+        "/home/l/remani_ws/devel/lib/remani_planner/remani_planner_node",
+        "~gripper_cmd:=/mm_controller_node/gripper_cmd",
+        "~gripper_state:=/mm/mani/gripper_state",
+        "~odom_world:=/odom",
+        "~joint_state:=/mm/joint_states",
+        "~planning/trajectory:=planning/trajectory",
+        "~planning/start:=planning/start"
+      ],
+      "exe": "/home/l/remani_ws/devel/lib/remani_planner/remani_planner_node",
+      "sha256": "b8f02e48ce0dd7df558a15469799402fe8b96a47cc773021fda99b0e97b2f7bd",
+      "rss": "VmRSS:\t  392284 kB"
+    },
+    {
+      "pid": 71291,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py",
+        "/joint_states_single:=/mm/joint_states",
+        "__name:=whole_body_mppi",
+        "__log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/whole_body_mppi-7.log"
+      ],
+      "rss": "VmRSS:\t   59852 kB"
+    },
+    {
+      "pid": 71349,
+      "argv": [
+        "python3",
+        "/home/l/remani_ws/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+        "joint_ctrl_single:=/joint_ctrl_single",
+        "__name:=piper_ctrl_single_node",
+        "__log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/piper_ctrl_single_node-21.log"
+      ],
+      "rss": "VmRSS:\t   52500 kB"
+    }
+  ]
+}

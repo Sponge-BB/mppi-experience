@@ -520,6 +520,33 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: true
+    - Class: rviz/Path
+      Enabled: true
+      Topic: /mppi/predicted_base
+      Name: MPPI predicted base
+      Queue Size: 1
+      Buffer Length: 1
+      Color: 220; 40; 220
+      Line Style: Lines
+      Line Width: 0.02
+      Pose Style: None
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /mppi/predicted_arm
+      Name: MPPI predicted arm
+      Namespaces:
+        mppi_arm: true
+      Queue Size: 1
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /mppi/prediction_markers
+      Name: MPPI 3D prediction
+      Namespaces:
+        {}
+      Queue Size: 1
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255

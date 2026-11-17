@@ -1,0 +1,2024 @@
+--- before/src/mm_remani/launch/exp0_real.launch
++++ after/src/mm_remani/launch/exp0_real.launch
+@@ -4,7 +4,7 @@
+ 
+   <!-- Keep the original distributed ROS graph and drivers. MPPI replaces
+        only the two command bridges; mm_controller still supplies progress. -->
+-  <arg name="use_mppi" default="false"/>
++  <arg name="use_mppi" default="true"/>
+   <arg name="use_local_esdf" default="$(arg use_mppi)"/>
+   <param name="/remani_planner_node/mppi/enable" value="$(arg use_mppi)" type="bool"/>
+   <arg name="hardware_enabled" default="true"/>
+@@ -25,15 +25,18 @@
+   <arg name="enable_fastlio_body_cloud" default="false"/>
+   <arg name="enable_heavy_visualization" default="false"/>
+   <arg name="enable_auto_icp_adjust" default="false"/>
+-  <!-- The producer can remain in shadow for A/B tests. Active avoidance is a
+-       separate rollback switch and defaults on for this fast-avoidance build. -->
++  <!-- Standard startup runs MPPI. use_mppi:=false restores the native command
++       bridges and keeps predictive avoidance in shadow for a clear baseline. -->
+   <arg name="enable_dynamic_tracker_shadow" default="true"/>
+-  <arg name="enable_dynamic_avoidance" default="true"/>
++  <arg name="enable_dynamic_avoidance" default="$(arg use_mppi)"/>
+   <arg name="dynamic_points_topic" default="/dynamic_points"/>
+   <arg name="planner_pcd_file" default="$(find mm_remani)/maps/exp0_planner.pcd"/>
+   <arg name="planner_pcd_preprocessed" default="true"/>
+   <arg name="real_lidar_topic" default="/livox/lidar"/>
+   <arg name="real_lidar_frame" default="livox_frame"/>
++  <!-- Reuse FAST-LIO's already deskewed full-pose cloud. The raw bridge is
++       available explicitly as perception_cloud_topic:=/livox/lidar_pcl2. -->
++  <arg name="perception_cloud_topic" default="/cloud_registered"/>
+   <arg name="lidar_offset_x" default="0.28"/>
+   <arg name="lidar_offset_y" default="0.0"/>
+   <arg name="lidar_offset_z" default="0.002"/>
+@@ -60,12 +63,14 @@
+          value="$(arg use_local_esdf)" type="bool"/>
+   <param name="/remani_planner_node/grid_map/esdf_distance_cap"
+          value="0.6" type="double"/>
++  <!-- One geometry-based upstream filter is shared by mapping and tracking. -->
++  <param name="/remani_planner_node/grid_map/self_filter_enable" value="false" type="bool"/>
+ 
+   <!-- Override the shared planner defaults for this real-robot experiment.
+        Qualified moving tracks drive a short-horizon swept planning overlay.
+-       Initial unavailability may fall back to live occupancy/ESDF. Losing a
+-       previously observed track is UNKNOWN and holds zero speed regardless
+-       of that fallback setting; missing points do not certify free space. -->
++       The prediction layer accepts the latest real frame; missing IDs never
++       invalidate unrelated targets or clear the persistent live occupancy.
++       MPPI still rejects genuinely stale enabled perception streams. -->
+   <param name="/remani_planner_node/dynamic_point_flow/enable"
+          value="$(eval arg('enable_dynamic_tracker_shadow') or arg('enable_dynamic_avoidance'))" type="bool"/>
+   <param name="/remani_planner_node/dynamic_point_flow/isolated_worker_enable"
+@@ -131,7 +136,7 @@
+        ========================================================= -->
+   <!-- 1. 雷达数据由下方 nodelet 过滤管线处理后输出到 /velodyne_points，不再需要 raw relay -->
+   
+-  <!-- 2. 雷达 TF 在文件末尾只发布一次 base_link -> real_lidar_frame。 -->
++  <!-- 2. fastlio_to_odom 从已加载外参发布唯一 body -> real_lidar_frame。 -->
+ 
+   <!-- =========================================================
+        单独发布 world 坐标系的变换，将规划器的 world 链接到实车的 map
+@@ -259,7 +264,9 @@
+        启动刚才咱们写的实车轨迹追踪节点 (Planner指令 => Cmd_vel)
+        并赋予速度和参数覆盖
+        ========================================================= -->
+-  <node unless="$(arg use_mppi)" pkg="mm_remani" type="real_base_tracker.py" name="real_base_tracker" output="screen" />
++  <node unless="$(arg use_mppi)" pkg="mm_remani" type="real_base_tracker.py" name="real_base_tracker" output="screen">
++    <param name="execute" value="$(arg hardware_enabled)" type="bool"/>
++  </node>
+   <node if="$(arg use_mppi)" pkg="mm_remani" type="whole_body_mppi.py" name="whole_body_mppi" output="screen">
+     <rosparam file="$(find mm_remani)/config/mppi.yaml" command="load"/>
+     <param name="execute" value="$(arg hardware_enabled)" type="bool"/>
+@@ -311,9 +318,13 @@
+     <arg name="publish_icp_tf" value="false" />
+     <arg name="enable_transform_fusion" value="$(arg enable_transform_fusion)" />
+     <arg name="publish_body_cloud" value="$(arg enable_fastlio_body_cloud)" />
++    <!-- Preserve nearby returns for whole-body avoidance after deskewing. -->
++    <arg name="lidar_blind" value="0.10" />
+     <arg name="lidar_offset_x" value="$(arg lidar_offset_x)" />
+     <arg name="lidar_offset_y" value="$(arg lidar_offset_y)" />
+     <arg name="lidar_offset_z" value="$(arg lidar_offset_z)" />
++    <arg name="publish_lidar_tf" value="true" />
++    <arg name="lidar_frame" value="$(arg real_lidar_frame)" />
+   </include>
+   
+   <!-- =========================================================
+@@ -321,6 +332,7 @@
+        此节点会将规划器的 joint_cmd 包装为您源码中 piper 期待的 joint_ctrl_single
+        ========================================================= -->
+   <node unless="$(arg use_mppi)" pkg="mm_controller" type="joint_cmd_bridge.py" name="joint_cmd_bridge" output="screen">
++    <param name="execute" value="$(arg hardware_enabled)" type="bool"/>
+     <param name="clamp_joint6" value="true" />
+     <param name="joint6_min" value="-0.35" />
+     <param name="joint6_max" value="0.35" />
+@@ -363,7 +375,8 @@
+        ========================================================= -->
+ 
+   <!-- 0x. C++ bridge: retain the scan stamp and keep only the newest frame. -->
+-  <node pkg="mm_remani" type="livox_custom_to_pcl" name="custom_to_pcl" output="log">
++  <node if="$(eval arg('perception_cloud_topic') == '/livox/lidar_pcl2')"
++        pkg="mm_remani" type="livox_custom_to_pcl" name="custom_to_pcl" output="log">
+     <param name="input_topic" value="$(arg real_lidar_topic)" />
+     <param name="output_topic" value="/livox/lidar_pcl2" />
+     <param name="subscriber_queue_size" value="1" />
+@@ -381,8 +394,10 @@
+   <!-- 考虑到雷达原点离地高度可能在 0.15~0.2 米左右，通过限制 z 轴将其下方的点（地面）剔除 -->
+   <!-- 注意：这里的 filter_limit_min 取决于你雷达到地面的距离，一般在 -0.1 到 -0.15 左右属于地面 -->
+   <node pkg="nodelet" type="nodelet" name="passthrough_z" args="load pcl/PassThrough pcl_manager_filter" output="log">
+-    <remap from="~input" to="/livox/lidar_pcl2" />
++    <remap from="~input" to="$(arg perception_cloud_topic)" />
+     <remap from="~output" to="/livox/lidar_no_ground" />
++    <param name="input_frame" value="$(arg real_lidar_frame)" />
++    <param name="output_frame" value="$(arg real_lidar_frame)" />
+     <param name="max_queue_size" value="1" />
+     <param name="filter_field_name" value="z" />
+     <param name="filter_limit_min" value="0.01" /> <!-- 设置最低高度阈值，低于此值认为是地面，此值根据实际偏置调节 -->
+@@ -390,22 +405,16 @@
+     <param name="filter_limit_negative" value="false" /> <!-- false表示保留在[min, max]范围内的点 -->
+   </node>
+ 
+-  <!-- B) CropBox 滤波器：剔除包围自身车体的"矩形盲区"内的点云 -->
+-  <node pkg="nodelet" type="nodelet" name="crop_box_filter" args="load pcl/CropBox pcl_manager_filter" output="log">
++  <!-- B) Reuse native collision geometry and measured joints for self returns.
++       Fixed rectangles must not delete external obstacles near the arm. -->
++  <node pkg="mm_remani" type="velodyne_transformer.py" name="robot_self_filter" output="log">
+     <remap from="~input" to="/livox/lidar_no_ground" />
+     <remap from="~output" to="/velodyne_points" />
+-    <param name="max_queue_size" value="1" />
+-
+-    <!-- 这里的过滤框尺寸表示机器人本体（以及可能造成干扰的近处连杆）在雷达视野内的位置。请根据实车尺寸调整 -->
+-    <param name="min_x" value="-0.8" />  <!-- 雷达后方 -->
+-    <param name="max_x" value="0.05" />   <!-- 雷达前方 -->
+-    <param name="min_y" value="-0.90" />  <!-- 雷达右侧/机械臂自车点 -->
+-    <param name="max_y" value="0.40" />   <!-- 雷达左侧 -->
+-    <param name="min_z" value="-0.01" />  <!-- 机器人的最下方 -->
+-    <param name="max_z" value="0.7" />   <!-- 机器人的最上方 -->
+-
+-    <!-- negative 为 true 代表只剔除设定"框内"的点，保留框外所有点云 -->
+-    <param name="negative" value="true" />
++    <param name="filter_self" value="true" type="bool"/>
++    <param name="target_frame" value="$(arg real_lidar_frame)"/>
++    <env name="PYTHONNOUSERSITE" value="1"/>
++    <env name="OPENBLAS_NUM_THREADS" value="1"/>
++    <env name="OMP_NUM_THREADS" value="1"/>
+   </node>
+ 
+   <!-- Separate process and queue from the planner. It removes static PCD
+@@ -500,8 +509,6 @@
+     <param name="health_degradation_frames" value="3" type="int"/>
+   </node>
+ 
+-  <!-- Real LiDAR has one parent only. Do not attach it through the URDF's
+-       legacy VLP16 frames: doing so made velodyne alternate between two TFs. -->
+-  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_real_lidar_tf"
+-        args="$(arg lidar_offset_x) $(arg lidar_offset_y) $(arg lidar_offset_z) 0 0 0 base_link $(arg real_lidar_frame)" />
++  <!-- fastlio_to_odom publishes the unique body->LiDAR calibrated TF from
++       FAST-LIO's mapping/extrinsic_T/R. No second planar parent is published. -->
+ </launch>
+--- before/src/mm_remani/scripts/whole_body_mppi.py
++++ after/src/mm_remani/scripts/whole_body_mppi.py
+@@ -46,6 +46,15 @@
+     'native_reference_expired', 'native_reference_expired_during_plan',
+     'native_reference_expired_before_delivery',
+ )
++
++# These are reference transport/activation waits, not feedback, collision,
++# driver, or cancellation failures. A new zero-velocity intent may maintain
++# the driver's lease only after the ordinary latest-state/map command checks.
++REFERENCE_WAIT_HOLD_REASONS = frozenset((
++    'waiting_native_reference_after_goal', 'waiting_native_progress',
++    'native_reference_quiet_interval', 'native_reference_not_started',
++    'native_reference_expired',
++))
+ 
+ 
+ def fresh(stamp, now, age=.15):
+@@ -103,6 +112,17 @@
+             or np.any(states[:, 5:11] < kernel.qmin) or np.any(states[:, 5:11] > kernel.qmax)):
+         raise ValueError('command_hold_or_braking_rejected_by_latest_state_or_map')
+     return end
++
++
++def reference_wait_hold(kernel, state):
++    """Fresh braking intent, never a replay of the last commanded arm target.
++
++    The caller must still run checked_first_step using latest feedback/map and
++    all execution-authority/deadline gates. Prediction is for display only.
++    """
++    controls = np.zeros((kernel.H, 8))
++    prediction = kernel.lease_brake_states(state, controls, lease=.30)
++    return controls, prediction
+ 
+ 
+ def startup_plan(kernel, state, target, snapshot, now, preflight=False):
+@@ -454,6 +474,13 @@
+                     preflight=not self.startup_enable_requested and not self.simulation)
+             else:
+                 result, info = self.reference.plan(state, standby_reference, arm_anchor, snapshot, now)
++                revision = info.get('reference_revision', revision)
++                if (result is None and not startup and
++                        info.get('reference_status') in REFERENCE_WAIT_HOLD_REASONS):
++                    wait_reason = info['reference_status']
++                    result = reference_wait_hold(kernel, state)
++                    info = dict(info, mode='reference_wait_hold', feasible=1,
++                                reference_wait_hold=True, hold_reason=wait_reason)
+             elapsed = time.monotonic()-began
+             if self.simulation:
+                 diagnostics.update({key:info[key] for key in (
+@@ -514,10 +541,17 @@
+                     raise ValueError('inputs_expired_before_delivery')
+                 if self.reference.active and not startup:
+                     latest = self.reference.status(delivery_time, float(current[2]))
+-                    if latest['reference_status'] != 'native_reference_ready':
+-                        raise ValueError(latest['reference_status']+'_before_delivery')
+-                    if latest['native_gear_block'] != info['native_gear_block']:
+-                        raise ValueError('native_gear_changed_before_delivery')
++                    if revision != self.reference.revision:
++                        raise ValueError('reference_changed_before_delivery')
++                    if info.get('reference_wait_hold'):
++                        if (latest['reference_status'] not in REFERENCE_WAIT_HOLD_REASONS
++                                and latest['reference_status'] != 'native_reference_ready'):
++                            raise ValueError(latest['reference_status']+'_before_delivery')
++                    else:
++                        if latest['reference_status'] != 'native_reference_ready':
++                            raise ValueError(latest['reference_status']+'_before_delivery')
++                        if latest['native_gear_block'] != info['native_gear_block']:
++                            raise ValueError('native_gear_changed_before_delivery')
+                     # Progress is a tracking clock, not a stop command. Its
+                     # normal slowdown is consumed next cycle; explicit planner
+                     # speed limits were already applied before collision checking.
+@@ -547,8 +581,12 @@
+                     arm.name = list(JOINTS); arm.position = target.tolist()
+                     arm.velocity = first_step[11:17].tolist()
+                     self.arm_pub.publish(arm); self.base_pub.publish(base)
+-                    self.fault_pub.publish(Bool(data=False)); self.sent_command = True
+-                    self.sent_navigation_goal = self.reference.goal_stamp if self.reference.active else None
++                    self.sent_command = True
++                    if not info.get('reference_wait_hold'):
++                        # A validated hold renews actuator authority, but does
++                        # not certify tracking alignment to a recovery curve.
++                        self.fault_pub.publish(Bool(data=False))
++                        self.sent_navigation_goal = self.reference.goal_stamp if self.reference.active else None
+                 startup_ready = False
+                 if native_startup:
+                     if self.execute:
+@@ -569,7 +607,8 @@
+             compact = {k: info[k] for k in ('mode', 'reference_source', 'native_phase',
+                 'native_time_scale', 'feasible', 'min_gap', 'selection', 'arm_motion',
+                 'structured_candidates', 'random_samples', 'nominal_external_min_gap',
+-                'external_min_gap', 'selected_family') if k in info}
++                'external_min_gap', 'selected_family', 'hold_reason', 'pending_start_stamp',
++                'native_phase_source') if k in info}
+             compact.update(state='command_delivered' if self.execute else 'candidate_only',
+                 simulation=self.simulation, arm_enabled=self.arm_enabled, seed=self.seed,
+                 arm_execution_model='position_servo' if kernel.arm_position_servo else 'velocity_legacy',
+--- before/src/mm_remani/scripts/real_base_tracker.py
++++ after/src/mm_remani/scripts/real_base_tracker.py
+@@ -5,14 +5,16 @@
+ import math
+ from geometry_msgs.msg import Twist
+ from nav_msgs.msg import Odometry
++from sensor_msgs.msg import JointState
+ from std_msgs.msg import Bool, Float64, Float64MultiArray
+ 
+ class RealBaseTracker:
+     def __init__(self):
+         rospy.init_node('real_base_tracker', anonymous=True)
++        self.execute = bool(rospy.get_param('~execute', True))
+ 
+         # 1. 发布给实车底盘的速度控制指令
+-        self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
++        self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1) if self.execute else None
+         self.err_pub = rospy.Publisher('/tracking_error', Float64MultiArray, queue_size=10)
+         self.fault_pub = rospy.Publisher('/tracking_fault', Bool, queue_size=1, latch=True)
+         self.safety_speed_limit = None
+@@ -24,12 +26,8 @@
+         #    angular.x = 目标线速度X
+         #    angular.y = 目标线速度Y
+         #    angular.z = 期望角速度 (omega feedforward)
+-        self.cmd_sub = rospy.Subscriber('/mm_controller_node/car_cmd', Twist, self.car_cmd_cb)
+ 
+         # 3. 接收刚才写的实车的实时定位Odometry
+-        self.odom_sub = rospy.Subscriber('/odom', Odometry, self.odom_cb)
+-        self.safety_speed_sub = rospy.Subscriber(
+-            '/planning/safety_speed_limit', Float64, self.safety_speed_limit_cb)
+ 
+         self.current_x = 0.0
+         self.current_y = 0.0
+@@ -37,6 +35,8 @@
+         self.has_odom = False
+         self.odom_receive_stamp = rospy.Time(0)
+         self.odom_header_stamp = rospy.Time(0)
++        self.joint_stamp = rospy.Time(0)
++        self.have_joints = False
+ 
+         self.target_x = 0.0
+         self.target_y = 0.0
+@@ -63,6 +63,7 @@
+         self.odom_timeout = max(0.05, rospy.get_param('~odom_timeout', 0.25))
+         self.odom_header_timeout = max(
+             self.odom_timeout, rospy.get_param('~odom_header_timeout', 0.25))
++        self.joint_timeout = max(0.05, rospy.get_param('~joint_timeout', 0.25))
+         self.tracking_stop_distance = max(
+             0.05, rospy.get_param('~tracking_stop_distance', 0.18))
+         self.tracking_stop_yaw = max(
+@@ -122,6 +123,12 @@
+         self.tracking_fault = False
+         self.tracking_unsafe_count = 0
+         self.tracking_recover_count = 0
++        self.tracking_recover_source = (0.0, 0.0)
++        self.cmd_sub = rospy.Subscriber('/mm_controller_node/car_cmd', Twist, self.car_cmd_cb, queue_size=1)
++        self.odom_sub = rospy.Subscriber('/odom', Odometry, self.odom_cb, queue_size=1)
++        self.joint_sub = rospy.Subscriber('/mm/joint_states', JointState, self.joint_cb, queue_size=1)
++        self.safety_speed_sub = rospy.Subscriber(
++            '/planning/safety_speed_limit', Float64, self.safety_speed_limit_cb, queue_size=1)
+         self.fault_pub.publish(Bool(data=False))
+         rospy.on_shutdown(self.publish_stop)
+ 
+@@ -132,6 +139,20 @@
+         rospy.spin()
+ 
+     def odom_cb(self, msg):
++        if not msg.header.stamp.is_zero() and msg.header.stamp <= self.odom_header_stamp:
++            return
++        q = msg.pose.pose.orientation
++        p, v, w = msg.pose.pose.position, msg.twist.twist.linear, msg.twist.twist.angular
++        values = (p.x, p.y, p.z, q.x, q.y, q.z, q.w, v.x, v.y, v.z, w.x, w.y, w.z)
++        if (not all(math.isfinite(value) for value in values) or
++                abs(sum(value*value for value in (q.x, q.y, q.z, q.w))-1.) > .02 or
++                not self.source_fresh(msg.header.stamp, rospy.Time.now(), self.odom_header_timeout)):
++            self.has_odom = False
++            # A newer invalid sample cannot be undone by an older queued one.
++            if (msg.header.stamp > self.odom_header_stamp and
++                    (msg.header.stamp-rospy.Time.now()).to_sec() <= .05):
++                self.odom_header_stamp = msg.header.stamp
++            return
+         self.current_x = msg.pose.pose.position.x
+         self.current_y = msg.pose.pose.position.y
+         q = msg.pose.pose.orientation
+@@ -142,7 +163,29 @@
+         self.odom_receive_stamp = rospy.Time.now()
+         self.odom_header_stamp = msg.header.stamp
+ 
++    @staticmethod
++    def source_fresh(stamp, now, timeout):
++        return not stamp.is_zero() and -.05 <= (now-stamp).to_sec() < timeout
++
++    def joint_cb(self, msg):
++        if not msg.header.stamp.is_zero() and msg.header.stamp <= self.joint_stamp:
++            return
++        names = tuple('joint%d' % i for i in range(1, 7))
++        valid = (len(msg.name) == len(msg.position) == len(msg.velocity) and
++                 len(set(msg.name)) == len(msg.name) and set(names).issubset(msg.name) and
++                 all(math.isfinite(value) for value in list(msg.position)+list(msg.velocity)) and
++                 self.source_fresh(msg.header.stamp, rospy.Time.now(), self.joint_timeout))
++        self.have_joints = valid
++        if (msg.header.stamp > self.joint_stamp and
++                (msg.header.stamp-rospy.Time.now()).to_sec() <= .05):
++            self.joint_stamp = msg.header.stamp
++
+     def car_cmd_cb(self, msg):
++        if not all(math.isfinite(value) for value in
++                   (msg.linear.x, msg.linear.y, msg.linear.z,
++                    msg.angular.x, msg.angular.y, msg.angular.z)):
++            self.has_target = False
++            return
+         self.target_x = msg.linear.x
+         self.target_y = msg.linear.y
+         self.target_yaw = msg.linear.z
+@@ -161,7 +204,8 @@
+     def publish_stop(self):
+         self.last_cmd = Twist()
+         self.last_control_stamp = rospy.Time.now()
+-        self.cmd_pub.publish(self.last_cmd)
++        if self.execute:
++            self.cmd_pub.publish(self.last_cmd)
+ 
+     def set_tracking_fault(self, active, reason=""):
+         if active == self.tracking_fault:
+@@ -169,6 +213,7 @@
+         self.tracking_fault = active
+         self.tracking_unsafe_count = 0
+         self.tracking_recover_count = 0
++        self.tracking_recover_source = (0.0, 0.0)
+         self.fault_pub.publish(Bool(data=active))
+         if active:
+             rospy.logerr("Tracking safety stop: %s", reason)
+@@ -242,7 +287,18 @@
+         return max(-max_speed, min(max_speed, command))
+ 
+     def control_loop(self, event):
+-        if not self.has_odom or not self.has_target:
++        now = rospy.Time.now()
++        feedback_valid = (self.has_odom and self.have_joints and
++                          self.source_fresh(self.odom_header_stamp, now, self.odom_header_timeout) and
++                          self.source_fresh(self.joint_stamp, now, self.joint_timeout))
++        if not feedback_valid:
++            if self.has_target:
++                self.set_tracking_fault(True, 'execution odom/joint feedback unavailable or stale')
++                self.tracking_recover_count = 0
++                self.tracking_recover_source = (0.0, 0.0)
++            self.publish_stop()
++            return
++        if not self.has_target:
+             self.publish_stop()
+             return
+ 
+@@ -316,7 +372,10 @@
+         if self.tracking_fault:
+             if (dist <= self.tracking_recover_distance and
+                     abs(eyaw) <= self.tracking_recover_yaw):
+-                self.tracking_recover_count += 1
++                source = (self.odom_header_stamp.to_sec(), self.joint_stamp.to_sec())
++                if all(new > old for new, old in zip(source, self.tracking_recover_source)):
++                    self.tracking_recover_count += 1
++                    self.tracking_recover_source = source
+                 if self.tracking_recover_count >= self.tracking_recover_frames:
+                     self.set_tracking_fault(False)
+             else:
+@@ -407,7 +466,8 @@
+         self.last_cmd = cmd
+ 
+         # 下发给底盘驱动节点
+-        self.cmd_pub.publish(cmd)
++        if self.execute:
++            self.cmd_pub.publish(cmd)
+ 
+ if __name__ == '__main__':
+     try:
+--- before/src/mm_remani/scripts/mppi/native_reference_adapter.py
++++ after/src/mm_remani/scripts/mppi/native_reference_adapter.py
+@@ -41,6 +41,7 @@
+         self.planned_revision = -1
+         self.reason = 'standby_no_navigation_goal'
+         self.progress = None
++        self.pending = None
+         self.progress_max_age = .25
+         # ROS /clock and progress are separate transports; one 5 ms clock tick
+         # can arrive after its progress message. Match the feedback skew budget.
+@@ -50,6 +51,7 @@
+         self.native.clear()
+         self.arm_pieces = []
+         self.progress = None
++        self.pending = None
+         self.standby.previous = self.navigation.previous = None
+         self.reason = reason
+         self.revision += 1
+@@ -88,32 +90,67 @@
+     def feed_progress(self, msg, now):
+         """Consume mm_controller's {start, virtual seconds, time scale}."""
+         with self.lock:
+-            if not self.active or not self.native.refs:
++            if not self.active or not (self.native.refs or self.pending is not None):
+                 return 'ignored_without_native_reference'
++            pending = None
+             try:
+                 stamp = float(msg.header.stamp.to_sec())
+                 start, phase, scale = (float(msg.vector.x), float(msg.vector.y), float(msg.vector.z))
+                 if not np.isfinite([now, stamp, start, phase, scale]).all():
+                     raise ValueError('invalid_native_progress')
+-                if abs(start-self.native.start) > 1e-6:
++                if self.pending is not None and abs(start-self.pending['native'].start) <= 1e-6:
++                    pending = self.pending
++                elif abs(start-self.native.start) > 1e-6 or not self.native.refs:
+                     return 'stale_progress'
+-                if self.progress is not None and stamp <= self.progress[0]:
++                previous = pending['progress'] if pending is not None else self.progress
++                if previous is not None and stamp <= previous[0]:
+                     return 'stale_progress'
+                 if not -self.progress_clock_skew <= now-stamp <= self.progress_max_age:
+                     raise ValueError('native_progress_stale')
+                 if phase < 0. or phase > 300. or not 0. <= scale <= 1.:
+                     raise ValueError('invalid_native_progress')
+-                if self.progress is not None and phase+1e-6 < self.progress[1]:
++                if previous is not None and phase+1e-6 < previous[1]:
+                     raise ValueError('native_progress_reversed')
+             except (AttributeError, TypeError, ValueError, OverflowError) as exc:
+-                self.progress = None
+-                self.reason = str(exc)
+-                self.revision += 1
++                if pending is not None:
++                    pending['progress'] = None
++                    pending['reason'] = str(exc)
++                else:
++                    self.progress = None
++                    self.reason = str(exc)
++                    self.revision += 1
+                 return 'invalid'
+             # Ordinary progress arrives at 100 Hz; it is not a new trajectory.
+             # Revisions invalidate plans only on goal/trajectory changes/errors.
+-            self.progress = (stamp, phase, scale)
++            if pending is not None:
++                pending['progress'] = (stamp, phase, scale)
++                pending['reason'] = 'waiting_native_progress'
++                self._activate_pending(now)
++            else:
++                self.progress = (stamp, phase, scale)
+             return 'accepted'
++
++    def _pending_phase_error(self, now):
++        progress = self.pending['progress']
++        if progress is None:
++            return self.pending['reason']
++        if not -self.progress_clock_skew <= now-progress[0] <= self.progress_max_age:
++            return 'native_progress_stale'
++        return None
++
++    def _activate_pending(self, now):
++        """Swap base, joints and progress as one reference at its activation."""
++        pending = self.pending
++        if (pending is None or now < pending['native'].start or
++                now-pending['native'].changed < .03 or self._pending_phase_error(now) is not None):
++            return False
++        self.native, self.arm_pieces, self.progress = (
++            pending['native'], pending['arm_pieces'], pending['progress'])
++        self.pending = None
++        self.standby.previous = self.navigation.previous = None
++        self.reason = 'native_reference_ready'
++        self.revision += 1
++        return True
+ 
+     def _phase(self, now):
+         if self.progress is None:
+@@ -122,7 +159,14 @@
+             return None, None, reason
+         stamp, phase, scale = self.progress
+         if not -self.progress_clock_skew <= now-stamp <= self.progress_max_age:
+-            return None, None, 'native_progress_stale'
++            # mm_controller changes to the future start immediately. Preserve
++            # the old phase only until that activation, backed by fresh progress
++            # from the pending reference; never apply its phase to the old curve.
++            bridge = (now >= stamp and self.pending is not None and
++                      now < self.pending['native'].start and
++                      self._pending_phase_error(now) is None)
++            if not bridge:
++                return None, None, 'native_progress_stale'
+         # Back-project the bounded clock skew rather than advance a future phase.
+         return max(0., phase+scale*(now-stamp)), scale, None
+ 
+@@ -178,15 +222,41 @@
+                         stamp < self.min_start or
+                         (msg.trajectory_id == 1 and stamp <= self.last_start)):
+                     return 'stale_reference'
+-                result = self.native.feed(msg, now)
++                future = msg.trajectory_id == 1 and stamp > now
++                if future:
++                    target = dict(native=NativeReference(), arm_pieces=[], progress=None,
++                                  reason='waiting_native_progress')
++                elif (msg.trajectory_id != 1 and self.pending is not None and
++                      abs(stamp-self.pending['native'].start) <= 1e-6):
++                    target = self.pending
++                else:
++                    target = None
++                    if msg.trajectory_id != 1 and stamp != self.native.start:
++                        return 'stale_reference'
++                native = self.native if target is None else target['native']
++                result = native.feed(msg, now)
+                 if result == 'invalid':
+-                    raise ValueError(self.native.error)
++                    raise ValueError(native.error)
++                pieces = [(p.duration, np.asarray(p.data).reshape((8, 8), order='F')[2:].copy())
++                          for p in msg.trajectory]
++                if native.times[-1][-1] > 300.:
++                    raise ValueError('native_prefix_exceeds_budget')
++                if target is not None:
++                    target['arm_pieces'].extend(pieces)
++                    if len(target['arm_pieces']) > 1000:
++                        raise ValueError('native_prefix_exceeds_budget')
++                    self.pending = target
++                    self.last_start = max(self.last_start, native.start)
++                    # Receiving future pieces does not invalidate an otherwise
++                    # executable old reference. Activation has its own revision.
++                    self._activate_pending(now)
++                    return result
+                 if result == 'replace':
+                     self.arm_pieces = []
+                     self.progress = None
++                    self.pending = None
+                     self.standby.previous = self.navigation.previous = None
+-                self.arm_pieces.extend((p.duration, np.asarray(p.data).reshape((8, 8), order='F')[2:].copy())
+-                                       for p in msg.trajectory)
++                self.arm_pieces.extend(pieces)
+                 if self.native.times[-1][-1] > 300. or len(self.arm_pieces) > 1000:
+                     raise ValueError('native_prefix_exceeds_budget')
+                 self.last_start = self.native.start
+@@ -198,9 +268,14 @@
+             return result
+ 
+     def _reference(self, yaw, now):
++        self._activate_pending(now)
+         reason = self.reason
+         path = None
+-        if self.native.refs:
++        pending_due = self.pending is not None and now >= self.pending['native'].start
++        if pending_due:
++            reason = ('native_reference_quiet_interval' if now-self.pending['native'].changed < .03
++                      else self._pending_phase_error(now))
++        elif self.native.refs:
+             phase, scale, progress_error = self._phase(now)
+             if now < self.native.start:
+                 reason = 'native_reference_not_started'
+@@ -213,13 +288,17 @@
+             else:
+                 path, block, block_end = self._base_reference(phase, scale, yaw)
+                 reason = 'native_reference_ready'
++        elif self.pending is not None:
++            reason = 'native_reference_not_started'
+         diagnostics = dict(reference_source='native_polynomial' if self.active else 'standby',
+             reference_status=reason, source_stamp=self.native.start if self.native.refs else None,
+             goal_stamp=self.goal_stamp, goal_received_stamp=self.goal_received,
+             message_hashes=list(self.native.messages), reference_hash=None,
+             native_prefix_atomic=False, native_prefix_segments=self.native.last_id,
+             fast_to_slow_prefix_enabled=False, native_arm_reference=None,
+-            native_phase=None, native_time_scale=None, native_gear_block=None)
++            native_phase=None, native_time_scale=None, native_gear_block=None,
++            reference_revision=self.revision,
++            pending_start_stamp=self.pending['native'].start if self.pending is not None else None)
+         if path is not None:
+             entire_path = sampled_reference(self.native.refs, yaw)
+             diagnostics['reference_hash'] = fingerprint(np.column_stack((
+@@ -231,6 +310,8 @@
+             diagnostics['native_phase'] = phase
+             diagnostics['native_time_scale'] = scale
+             diagnostics['native_progress_stamp'] = self.progress[0]
++            diagnostics['native_phase_source'] = ('handoff_bridge' if now-self.progress[0] > self.progress_max_age
++                                                  else 'native_progress')
+             diagnostics['native_gear_block'] = block
+             diagnostics['native_gear'] = self.native.gears[block]
+             diagnostics['native_block_end_phase'] = block_end
+@@ -250,8 +331,8 @@
+         began = time.monotonic()
+         with self.plan_lock:
+             with self.lock:
++                path, diagnostics = self._reference(float(state[2]), now)
+                 revision = self.revision
+-                path, diagnostics = self._reference(float(state[2]), now)
+                 if self.planned_revision != revision:
+                     self.standby.previous = self.navigation.previous = None
+                     self.planned_revision = revision
+@@ -268,6 +349,10 @@
+                     diagnostics['reference_status'] = 'reference_changed_during_plan'
+                 elif self.active:
+                     checked_now = self.clock() if self.clock is not None else now+time.monotonic()-began
++                    if self.pending is not None and checked_now >= self.pending['native'].start:
++                        kernel.previous = None
++                        diagnostics['reference_status'] = 'reference_changed_during_plan'
++                        return None, dict(info, **diagnostics)
+                     phase, scale, error = self._phase(checked_now)
+                     if error is not None:
+                         result = None
+--- before/src/mm_remani/scripts/mppi/active_arm_mppi.py
++++ after/src/mm_remani/scripts/mppi/active_arm_mppi.py
+@@ -84,7 +84,7 @@
+ 
+     def fresh(self, now):
+         h = self.header
+-        return bool(h[4] == 1 and h[19] == 1 and
++        return bool(h[4] == 1 and (h[28] == 0 or h[19] == 1) and
+                     -.05 <= now - h[3] <= h[15] and
+                     (h[28] == 0 or -.05 <= now - h[18] <= h[15]))
+ 
+--- before/src/mm_remani/src/dynamic_obstacle_tracker_node.cpp
++++ after/src/mm_remani/src/dynamic_obstacle_tracker_node.cpp
+@@ -148,6 +148,10 @@
+                       tracker_parameters.dynamic_exit_speed, 0.10);
+     private_nh_.param("minimum_dynamic_displacement",
+                       tracker_parameters.minimum_dynamic_displacement, 0.06);
++    // Relate surface evidence to the existing voxel scale rather than adding
++    // another independently tuned launch threshold.
++    tracker_parameters.surface_motion_tolerance =
++        std::max(0.03, 0.5 * voxel_leaf_size_);
+     private_nh_.param("direction_consistency_cosine",
+                       tracker_parameters.direction_consistency_cosine, 0.30);
+     private_nh_.param("minimum_motion_duration",
+@@ -567,7 +571,8 @@
+         // stable centre.
+         cluster.tracking_detection.centroid =
+             estimateStableMotionCenter(
+-                cluster.points, stable_motion_center_parameters_);
++                cluster.points, stable_motion_center_parameters_, nullptr,
++                &cluster.tracking_detection.motion_surface);
+         cluster.tracking_detection.extent = maximum - minimum;
+         cluster.tracking_detection.point_count = indices.indices.size();
+         clusters.push_back(std::move(cluster));
+--- before/src/mm_remani/src/dynamic_obstacle_tracker_core.cpp
++++ after/src/mm_remani/src/dynamic_obstacle_tracker_core.cpp
+@@ -39,15 +39,98 @@
+   return sum / static_cast<double>(coordinates.size() - 2 * trim_count);
+ }
+ 
++std::vector<Eigen::Vector3f> observedSurface(
++    const DynamicDetection &detection)
++{
++  // Matches the node's maximum cluster size. Do not invent motion evidence by
++  // thinning a large stationary surface until its nearest neighbours vanish.
++  constexpr std::size_t maximum_surface_points = 1200;
++  if (detection.motion_surface.size() > maximum_surface_points)
++    return {};
++  std::vector<Eigen::Vector3f> surface;
++  surface.reserve(detection.motion_surface.size());
++  for (const Eigen::Vector3f &point : detection.motion_surface)
++  {
++    if (point.allFinite())
++      surface.push_back(point);
++  }
++  return surface;
++}
++
++bool surfaceSupportsTranslation(
++    const std::vector<Eigen::Vector3f> &previous,
++    const std::vector<Eigen::Vector3f> &current,
++    const Eigen::Vector2d &translation,
++    double tolerance)
++{
++  if (previous.size() < 3 || current.size() < 3)
++    return false;
++
++  const Eigen::Vector3f shift(
++      static_cast<float>(translation.x()),
++      static_cast<float>(translation.y()), 0.0f);
++  const double tolerance_squared = tolerance * tolerance;
++  const auto direction_supports_translation =
++      [tolerance_squared](const std::vector<Eigen::Vector3f> &source,
++                          const std::vector<Eigen::Vector3f> &target,
++                          const Eigen::Vector3f &offset)
++      {
++        // Query at most 64 observed points against the complete bounded
++        // surface. Keeping all target neighbours prevents sampling itself
++        // from turning a changing visible subset into apparent movement.
++        const std::size_t count = std::min<std::size_t>(64, source.size());
++        std::vector<double> stationary_errors;
++        std::vector<double> translated_errors;
++        stationary_errors.reserve(count);
++        translated_errors.reserve(count);
++        for (std::size_t index = 0; index < count; ++index)
++        {
++          const Eigen::Vector3f &point = source[index * source.size() / count];
++          const Eigen::Vector3f translated = point + offset;
++          double stationary = std::numeric_limits<double>::infinity();
++          double moving = std::numeric_limits<double>::infinity();
++          for (const Eigen::Vector3f &neighbour : target)
++          {
++            stationary = std::min(
++                stationary, static_cast<double>((point - neighbour).squaredNorm()));
++            moving = std::min(
++                moving, static_cast<double>((translated - neighbour).squaredNorm()));
++          }
++          stationary_errors.push_back(stationary);
++          translated_errors.push_back(moving);
++        }
++        // The lower median rejects movement confined to a disappearing edge
++        // or an outlier. Both directions must improve: visibility loss alone
++        // can explain a subset of a stationary surface in one direction.
++        const std::size_t median = (count - 1) / 2;
++        std::nth_element(stationary_errors.begin(),
++                         stationary_errors.begin() + median,
++                         stationary_errors.end());
++        std::nth_element(translated_errors.begin(),
++                         translated_errors.begin() + median,
++                         translated_errors.end());
++        const double stationary = stationary_errors[median];
++        const double moving = translated_errors[median];
++        return stationary > tolerance_squared &&
++               moving <= tolerance_squared &&
++               moving < 0.25 * stationary;
++      };
++  return direction_supports_translation(previous, current, shift) &&
++         direction_supports_translation(current, previous, -shift);
++}
++
+ }  // namespace
+ 
+ Eigen::Vector3d estimateStableMotionCenter(
+     const std::vector<Eigen::Vector3f> &complete_cluster_points,
+     const StableMotionCenterParameters &parameters,
+-    bool *used_stable_core)
++    bool *used_stable_core,
++    std::vector<Eigen::Vector3f> *motion_surface)
+ {
+   if (used_stable_core != nullptr)
+     *used_stable_core = false;
++  if (motion_surface != nullptr)
++    motion_surface->clear();
+ 
+   std::vector<Eigen::Vector3f> finite_points;
+   finite_points.reserve(complete_cluster_points.size());
+@@ -93,6 +176,8 @@
+       use_stable_core ? stable_core : finite_points;
+   if (used_stable_core != nullptr)
+     *used_stable_core = use_stable_core;
++  if (motion_surface != nullptr)
++    *motion_surface = motion_points;
+ 
+   Eigen::Vector3d center;
+   for (int axis = 0; axis < 3; ++axis)
+@@ -141,6 +226,8 @@
+                     parameters_.dynamic_exit_speed));
+   parameters_.minimum_dynamic_displacement =
+       std::max(0.0, parameters_.minimum_dynamic_displacement);
++  parameters_.surface_motion_tolerance =
++      std::max(0.01, parameters_.surface_motion_tolerance);
+   parameters_.direction_consistency_cosine = std::max(
+       -1.0, std::min(1.0, parameters_.direction_consistency_cosine));
+   parameters_.minimum_motion_duration =
+@@ -346,11 +433,14 @@
+     if (previous_missed_frames > 0)
+       track.motion_history.clear();
+     track.motion_history.push_back(
+-        MotionSample{detection.centroid, stamp_seconds});
++        MotionSample{detection.centroid, stamp_seconds,
++                     observedSurface(detection)});
+     const double history_cutoff =
+         stamp_seconds - parameters_.motion_history_duration;
+     while (track.motion_history.size() > 2 &&
+            track.motion_history[1].stamp_seconds <= history_cutoff)
++      track.motion_history.pop_front();
++    while (track.motion_history.size() > 64)
+       track.motion_history.pop_front();
+ 
+     double history_duration = 0.0;
+@@ -599,7 +689,13 @@
+                           three_dimensional_speed;
+     };
+ 
+-    if (!track.motion_qualified && coherent_motion)
++    const bool supported_surface_motion =
++        !track.motion_qualified && coherent_motion &&
++        surfaceSupportsTranslation(
++            track.motion_history.front().surface,
++            track.motion_history.back().surface,
++            history_net, parameters_.surface_motion_tolerance);
++    if (!track.motion_qualified && supported_surface_motion)
+     {
+       track.motion_qualified = true;
+       track.ever_motion_qualified = true;
+@@ -611,7 +707,7 @@
+     }
+     else if (!track.motion_qualified)
+     {
+-      track.motion_hit_count = coherent_motion ? valid_step_count : 0;
++      track.motion_hit_count = 0;
+       track.stationary_hit_count = 0;
+     }
+     else
+@@ -702,13 +798,14 @@
+        detection_index < detections.size(); ++detection_index)
+   {
+     if (detection_to_track[detection_index] >= 0 ||
+-        !detections[detection_index].centroid.allFinite())
++        !detections[detection_index].centroid.allFinite() ||
++        next_track_id_ == 0)
+       continue;
+ 
+     Track track;
+     track.id = next_track_id_++;
+-    if (next_track_id_ == 0)
+-      next_track_id_ = 1;
++    // Zero means the uint32 namespace is exhausted. Never recycle an ID in
++    // this process: consumers can still retain the previous object's state.
+     track.position = detections[detection_index].centroid;
+     track.motion_reference_position = track.position;
+     track.extent = detections[detection_index].extent;
+@@ -720,7 +817,8 @@
+     track.hit_count = 1;
+     track.motion_history.push_back(
+         MotionSample{detections[detection_index].centroid,
+-                     stamp_seconds});
++                     stamp_seconds,
++                     observedSurface(detections[detection_index])});
+     tracks_.push_back(track);
+ 
+     TrackedDetection tracked;
+@@ -750,7 +848,8 @@
+   tracks_.clear();
+   if (clear_stationary_background)
+     stationary_background_anchors_.clear();
+-  next_track_id_ = 1;
++  // Map replacement and transient health resets must not alias an identity
++  // already published to downstream consumers.
+   last_stamp_seconds_ = -1.0;
+ }
+ 
+--- before/src/mm_remani/include/mm_remani/dynamic_obstacle_tracker_core.h
++++ after/src/mm_remani/include/mm_remani/dynamic_obstacle_tracker_core.h
+@@ -22,6 +22,11 @@
+   // prevents that topology change from becoming a velocity measurement.
+   Eigen::Vector3d extent = Eigen::Vector3d::Zero();
+   std::size_t point_count = 0;
++  // Observed world-space surface used to verify motion before a track first
++  // enters prediction. A moving centre alone is not physical motion evidence.
++  // For people these are the same stable-core points used for the anchor;
++  // published collision geometry still contains the complete cluster.
++  std::vector<Eigen::Vector3f> motion_surface;
+ };
+ 
+ // Parameters for extracting a stable motion anchor from a complete obstacle
+@@ -42,7 +47,8 @@
+ Eigen::Vector3d estimateStableMotionCenter(
+     const std::vector<Eigen::Vector3f> &complete_cluster_points,
+     const StableMotionCenterParameters &parameters,
+-    bool *used_stable_core = nullptr);
++    bool *used_stable_core = nullptr,
++    std::vector<Eigen::Vector3f> *motion_surface = nullptr);
+ 
+ struct TrackedDetection
+ {
+@@ -84,6 +90,9 @@
+     double dynamic_enter_speed = 0.18;
+     double dynamic_exit_speed = 0.10;
+     double minimum_dynamic_displacement = 0.06;
++    // World-space nearest-surface error below this scale is consistent with
++    // scan sampling noise, not evidence that an obstacle translated.
++    double surface_motion_tolerance = 0.04;
+     double direction_consistency_cosine = 0.30;
+     double minimum_motion_duration = 0.25;
+     double motion_history_duration = 0.60;
+@@ -133,6 +142,7 @@
+   {
+     Eigen::Vector3d position = Eigen::Vector3d::Zero();
+     double stamp_seconds = 0.0;
++    std::vector<Eigen::Vector3f> surface;
+   };
+ 
+   struct Track
+--- before/src/mm_remani_planner/plan_env/include/plan_env/dynamic_point_buffer.h
++++ after/src/mm_remani_planner/plan_env/include/plan_env/dynamic_point_buffer.h
+@@ -6,11 +6,9 @@
+ #include <Eigen/StdVector>
+ 
+ #include <cstdint>
+-#include <functional>
+ #include <memory>
+ #include <mutex>
+ #include <string>
+-#include <unordered_map>
+ #include <vector>
+ 
+ #include <ros/ros.h>
+@@ -49,8 +47,8 @@
+   DynamicPointVector points;
+   bool has_track_ids = false;
+   bool valid = false;
+-  // Also carries the informational no_dynamic_detected/coasting_observation
+-  // states while valid. Neither state certifies unobserved space as free.
++  // An empty, fresh prediction means no qualified motion was detected.
++  // It never clears the independent live occupancy map.
+   std::string invalid_reason;
+ };
+ 
+@@ -59,9 +57,9 @@
+  *
+  * The input PointCloud2 contract is deliberately strict: x/y/z and vx/vy/vz
+  * must be FLOAT32 fields. track_id (UINT32 or non-negative INT32) and
+- * confidence (FLOAT32) are optional. Persistent track_id is required to prove
+- * that later nonempty frames still cover all previously observed tracks;
+- * without it the buffer conservatively declares known geometry lost.
++ * confidence (FLOAT32) are optional. IDs support motion association only;
++ * their disappearance must not invalidate unrelated current predictions.
++ * Real obstacle occupancy is owned and cleared by the LiDAR raycaster.
+  * Accepted observations are transformed to world_frame at the observation
+  * timestamp before being published as an immutable snapshot.
+  */
+@@ -78,16 +76,6 @@
+ 
+   bool enabled() const { return enabled_; }
+   DynamicPointSnapshot getSnapshot(const ros::Time &now) const;
+-
+-  // Called by the serialized mapping writer before its real LiDAR ray
+-  // evidence is discarded. Missing IDs retire only after the old observed
+-  // surface and position margin have been reobserved free. Empty tracker
+-  // messages, elapsed time and occupancy expiry are never clearance evidence.
+-  std::size_t recoverObservedTracks(
+-      const ros::Time &stamp,
+-      const std::function<bool(const Eigen::Vector3d &)> &observed_free,
+-      const std::function<bool(const Eigen::Vector3d &)> &observed_occupied = {},
+-      double map_resolution = 0.05);
+ 
+   /**
+    * Query the minimum distance from query_position to all obstacle points
+@@ -139,8 +127,8 @@
+                                       double velocity_uncertainty,
+                                       double acceleration_bound);
+ 
+-  // Validated observations enter this policy only after the callback's
+-  // monotonic input-time check. Loss never refreshes historical point stamps.
++  // A snapshot contains one real source epoch; never merge or re-stamp old
++  // targets when accepting a newer frame (including a no-motion frame).
+   static DynamicPointSnapshot applyObservation(
+       const DynamicPointSnapshot &previous,
+       const DynamicPointSnapshot &incoming);
+@@ -161,10 +149,8 @@
+   friend class ::DynamicPointBufferTestAccessor;
+   friend class ::GridMapParallelTestAccessor;
+   void pointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg);
+-  // Caller holds mutex_. Every ID retains its own source epoch even while a
+-  // different missing ID prevents publication of the newest observation.
++  // Caller holds mutex_. Only the newest actual observation is retained.
+   void recordObservation(const DynamicPointSnapshot &candidate);
+-  void refreshObservationSnapshot();
+ 
+   bool enabled_ = false;
+   std::string topic_ = "/dynamic_points";
+@@ -186,18 +172,6 @@
+ 
+   mutable std::mutex mutex_;
+   DynamicPointSnapshot latest_snapshot_;
+-  DynamicPointSnapshot latest_observation_;
+-  struct TrackObservation
+-  {
+-    DynamicPointSnapshot observation;
+-    std::vector<ros::Time> free_stamps;
+-  };
+-  // At most 4 * max_points_ historical surface points and 1M proof samples.
+-  // Capacity exhaustion keeps UNKNOWN latched instead of forgetting a track.
+-  std::unordered_map<std::uint32_t, TrackObservation> track_history_;
+-  bool history_overflow_ = false;
+-  double recovery_resolution_ = 0.0;
+-  ros::Time last_recovery_stamp_;
+   ros::Time latest_input_stamp_;
+   bool received_observation_ = false;
+ };
+--- before/src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp
++++ after/src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp
+@@ -4,8 +4,6 @@
+ #include <cmath>
+ #include <cstring>
+ #include <limits>
+-#include <unordered_map>
+-#include <unordered_set>
+ #include <utility>
+ 
+ #include <geometry_msgs/TransformStamped.h>
+@@ -168,7 +166,7 @@
+   if (age > max_age)
+   {
+     snapshot.valid = false;
+-    snapshot.invalid_reason = snapshot.points.empty() ? "stale" : "lost_observation";
++    snapshot.invalid_reason = "stale";
+   }
+   else if (age < -future_stamp_tolerance)
+   {
+@@ -182,255 +180,28 @@
+     const DynamicPointSnapshot &previous,
+     const DynamicPointSnapshot &incoming)
+ {
+-  bool missing_track = false;
+-  if (!previous.points.empty())
+-  {
+-    // A frame has one observation stamp. Do not merge a lost track's old
+-    // surface with new surfaces and silently assign all of them a fresh stamp.
+-    missing_track = incoming.points.empty() || !previous.has_track_ids ||
+-                    !incoming.has_track_ids;
+-    if (!missing_track)
+-    {
+-      std::unordered_set<std::uint32_t> observed_ids;
+-      for (const auto &point : incoming.points)
+-        observed_ids.insert(point.track_id);
+-      for (const auto &point : previous.points)
+-        if (observed_ids.count(point.track_id) == 0)
+-        {
+-          missing_track = true;
+-          break;
+-        }
+-    }
+-  }
+-  if (missing_track)
+-  {
+-    DynamicPointSnapshot held = previous;
+-    if (incoming.points.empty() && held.valid)
+-      held.invalid_reason = "coasting_observation";
+-    else
+-    {
+-      // Partial loss cannot be represented together with fresh tracks in
+-      // schema 3.1. Fail closed immediately rather than hide either obstacle.
+-      held.valid = false;
+-      held.invalid_reason = "lost_observation";
+-    }
+-    return held;
+-  }
++  // Predictions describe current measured motion, not persistent occupancy.
++  // Never keep an old velocity alive solely to recover its track ID.
+   DynamicPointSnapshot accepted = incoming;
+   accepted.sequence = previous.sequence + 1;
+-  accepted.invalid_reason = accepted.points.empty() ? "no_dynamic_detected" : "";
++  if (accepted.valid)
++    accepted.invalid_reason = accepted.points.empty() ? "no_dynamic_detected" : "";
+   return accepted;
+ }
+ 
+ void DynamicPointBuffer::recordObservation(
+     const DynamicPointSnapshot &candidate)
+ {
+-  if (received_observation_ && candidate.stamp < latest_input_stamp_)
++  // Reject invalid source epochs before advancing the monotonic watermark.
++  // One future packet must not poison every subsequent normal observation.
++  if (!candidate.valid || candidate.stamp.isZero() ||
++      !checkSnapshotAge(candidate, candidate.receive_time,
++                        max_age_, future_stamp_tolerance_).valid ||
++      (received_observation_ && candidate.stamp <= latest_input_stamp_))
+     return;
+   latest_input_stamp_ = candidate.stamp;
+-  latest_observation_ = candidate;
+   received_observation_ = true;
+-  if (candidate.has_track_ids && !history_overflow_)
+-  {
+-    std::unordered_map<std::uint32_t, DynamicPointVector> observed;
+-    for (const auto &point : candidate.points)
+-      observed[point.track_id].push_back(point);
+-    std::size_t retained_points = 0;
+-    for (const auto &track : track_history_)
+-      if (!observed.count(track.first))
+-        retained_points += track.second.observation.points.size();
+-    const std::size_t budget = 4u * static_cast<std::size_t>(std::max(1, max_points_));
+-    if (retained_points + candidate.points.size() > budget)
+-      history_overflow_ = true;
+-    else
+-      for (auto &track : observed)
+-      {
+-        auto &history = track_history_[track.first];
+-        history.observation.stamp = candidate.stamp;
+-        history.observation.receive_time = candidate.receive_time;
+-        history.observation.frame_id = candidate.frame_id;
+-        history.observation.has_track_ids = history.observation.valid = true;
+-        history.observation.points = std::move(track.second);
+-        history.free_stamps = std::vector<ros::Time>();
+-      }
+-  }
+-  refreshObservationSnapshot();
+-}
+-
+-void DynamicPointBuffer::refreshObservationSnapshot()
+-{
+-  if (history_overflow_)
+-  {
+-    latest_snapshot_.valid = false;
+-    latest_snapshot_.invalid_reason = "lost_observation";
+-    return;
+-  }
+-  // Preserve the original fail-closed policy for unidentified old geometry.
+-  if (!latest_snapshot_.points.empty() && !latest_snapshot_.has_track_ids)
+-  {
+-    latest_snapshot_ = applyObservation(latest_snapshot_, latest_observation_);
+-    return;
+-  }
+-  std::unordered_set<std::uint32_t> observed_ids;
+-  if (latest_observation_.has_track_ids)
+-    for (const auto &point : latest_observation_.points)
+-      observed_ids.insert(point.track_id);
+-  const TrackObservation *oldest_missing = nullptr;
+-  std::size_t missing_points = 0;
+-  for (const auto &track : track_history_)
+-    if (!observed_ids.count(track.first))
+-    {
+-      missing_points += track.second.observation.points.size();
+-      if (!oldest_missing || track.second.observation.stamp <
+-                                 oldest_missing->observation.stamp)
+-        oldest_missing = &track.second;
+-    }
+-  if (!oldest_missing)
+-  {
+-    DynamicPointSnapshot accepted = latest_observation_;
+-    accepted.sequence = latest_snapshot_.sequence + 1;
+-    accepted.invalid_reason = accepted.points.empty() ? "no_dynamic_detected" : "";
+-    latest_snapshot_ = std::move(accepted);
+-    return;
+-  }
+-
+-  // The public schema has a single timestamp. Expose one real source epoch
+-  // and keep it invalid whenever other missing epochs exist; private history
+-  // retains all IDs, including targets first seen during an earlier loss.
+-  DynamicPointSnapshot held = oldest_missing->observation;
+-  held.points.clear();
+-  for (const auto &track : track_history_)
+-    if (!observed_ids.count(track.first) &&
+-        track.second.observation.stamp == held.stamp)
+-      held.points.insert(held.points.end(), track.second.observation.points.begin(),
+-                         track.second.observation.points.end());
+-  held.sequence = latest_snapshot_.sequence +
+-      (held.stamp != latest_snapshot_.stamp ||
+-       held.points.size() != latest_snapshot_.points.size() ? 1 : 0);
+-  held.valid = latest_snapshot_.valid && latest_observation_.points.empty() &&
+-               held.stamp == latest_snapshot_.stamp &&
+-               missing_points == held.points.size();
+-  held.invalid_reason = held.valid ? "coasting_observation" : "lost_observation";
+-  latest_snapshot_ = std::move(held);
+-}
+-
+-std::size_t DynamicPointBuffer::recoverObservedTracks(
+-    const ros::Time &stamp,
+-    const std::function<bool(const Eigen::Vector3d &)> &observed_free,
+-    const std::function<bool(const Eigen::Vector3d &)> &observed_occupied,
+-    double map_resolution)
+-{
+-  std::lock_guard<std::mutex> lock(mutex_);
+-  if (!enabled_ || !received_observation_ || history_overflow_ || !observed_free ||
+-      stamp.isZero() || stamp <= last_recovery_stamp_ ||
+-      latest_snapshot_.points.empty() || !latest_snapshot_.has_track_ids ||
+-      !latest_observation_.has_track_ids ||
+-      !std::isfinite(map_resolution) || map_resolution <= 0.0 ||
+-      !std::isfinite(position_uncertainty_) || position_uncertainty_ < 0.0)
+-    return 0;
+-
+-  // The mapping queue and tracker process different source epochs. A newer
+-  // tracker frame is not future-dated merely because a valid LiDAR scan is
+-  // still being fused. Transport age belongs to the actual current clock;
+-  // the per-ID check below separately orders ray evidence after observation.
+-  const ros::Time now = ros::Time::now();
+-  const auto current_input = checkSnapshotAge(
+-      latest_observation_, now, max_age_, future_stamp_tolerance_);
+-  if (!current_input.valid)
+-  {
+-    ROS_WARN_THROTTLE(3.0,
+-        "[DynamicPointFlow][recovery] Tracker input unavailable (%s): "
+-        "ray_stamp=%.3f tracker_stamp=%.3f now=%.3f; keep missing tracks.",
+-        current_input.invalid_reason.c_str(), stamp.toSec(),
+-        latest_observation_.stamp.toSec(), now.toSec());
+-    return 0;
+-  }
+-
+-  last_recovery_stamp_ = stamp;
+-  std::unordered_set<std::uint32_t> observed_ids;
+-  for (const auto &point : latest_observation_.points)
+-    observed_ids.insert(point.track_id);
+-
+-  constexpr std::size_t proof_budget = 1000000;
+-  const double requested_intervals = std::ceil(2.0 * position_uncertainty_ / map_resolution);
+-  if (!std::isfinite(requested_intervals) || requested_intervals > 99.0)
+-    return 0;
+-  const std::size_t intervals = static_cast<std::size_t>(requested_intervals);
+-  const std::size_t axis_samples = intervals + 1;
+-  const std::size_t samples_per_point = axis_samples * axis_samples * axis_samples;
+-  std::size_t missing_points = 0;
+-  for (const auto &track : track_history_)
+-    if (!observed_ids.count(track.first))
+-      missing_points += track.second.observation.points.size();
+-  if (missing_points > proof_budget / samples_per_point)
+-    return 0;
+-  if (map_resolution != recovery_resolution_)
+-  {
+-    for (auto &track : track_history_)
+-      track.second.free_stamps = std::vector<ros::Time>();
+-    recovery_resolution_ = map_resolution;
+-  }
+-
+-  std::vector<std::uint32_t> cleared;
+-  for (auto &track : track_history_)
+-  {
+-    auto &history = track.second;
+-    if (observed_ids.count(track.first) || stamp <= history.observation.stamp)
+-      continue;
+-    if (history.free_stamps.size() != history.observation.points.size() * samples_per_point)
+-      history.free_stamps.assign(history.observation.points.size() * samples_per_point, ros::Time(0));
+-    bool track_free = true;
+-    std::size_t free_samples = 0, occupied_samples = 0;
+-    Eigen::Vector3d minimum = history.observation.points.front().position;
+-    Eigen::Vector3d maximum = minimum;
+-    for (std::size_t i = 0; i < history.observation.points.size(); ++i)
+-    {
+-      const auto &point = history.observation.points[i];
+-      minimum = minimum.cwiseMin(point.position);
+-      maximum = maximum.cwiseMax(point.position);
+-      std::size_t sample = 0;
+-      for (std::size_t x = 0; x < axis_samples; ++x)
+-        for (std::size_t y = 0; y < axis_samples; ++y)
+-          for (std::size_t z = 0; z < axis_samples; ++z, ++sample)
+-        {
+-          const double step = intervals > 0 ? 2.0 * position_uncertainty_ / intervals : 0.0;
+-          const Eigen::Vector3d position = point.position +
+-              Eigen::Vector3d(step*x-position_uncertainty_,
+-                              step*y-position_uncertainty_,
+-                              step*z-position_uncertainty_);
+-          ros::Time &free_stamp = history.free_stamps[i * samples_per_point + sample];
+-          const bool occupied = observed_occupied && observed_occupied(position);
+-          occupied_samples += occupied ? 1 : 0;
+-          if (occupied)
+-            free_stamp = ros::Time(0);
+-          else if (observed_free(position))
+-            free_stamp = stamp;
+-          const bool sample_free = free_stamp > history.observation.stamp &&
+-                                   (stamp - free_stamp).toSec() <= max_age_;
+-          free_samples += sample_free ? 1 : 0;
+-          track_free = track_free && sample_free;
+-        }
+-    }
+-    if (track_free)
+-      cleared.push_back(track.first);
+-    else
+-      ROS_WARN_THROTTLE(3.0,
+-          "[DynamicPointFlow][recovery] Missing track=%u age=%.2fs "
+-          "bounds=[%.2f %.2f %.2f]-[%.2f %.2f %.2f], free=%zu/%zu "
+-          "occupied=%zu; ray_age=%.3fs tracker_age=%.3fs. "
+-          "Uncovered samples remain UNKNOWN.",
+-          track.first, (now-history.observation.stamp).toSec(),
+-          minimum.x(), minimum.y(), minimum.z(), maximum.x(), maximum.y(), maximum.z(),
+-          free_samples, history.free_stamps.size(), occupied_samples,
+-          (now-stamp).toSec(), (now-latest_observation_.stamp).toSec());
+-  }
+-  if (cleared.empty())
+-    return 0;
+-  for (const auto id : cleared)
+-    track_history_.erase(id);
+-  ++latest_snapshot_.sequence;
+-  refreshObservationSnapshot();
+-  return cleared.size();
++  latest_snapshot_ = applyObservation(latest_snapshot_, candidate);
+ }
+ 
+ bool DynamicPointBuffer::predictPosition(
+@@ -771,39 +542,19 @@
+   }
+ 
+   std::string observation_state;
+-  double held_age = 0.0;
+   {
+     std::lock_guard<std::mutex> lock(mutex_);
+-    if (received_observation_ && candidate.stamp < latest_input_stamp_)
++    if (received_observation_ && candidate.stamp <= latest_input_stamp_)
+     {
+       ROS_WARN_THROTTLE(1.0, "[DynamicPointFlow] Reject out-of-order observation.");
+       return;
+     }
+     recordObservation(candidate);
+-    if (history_overflow_)
+-      ROS_ERROR_THROTTLE(2.0,
+-          "[DynamicPointFlow] Missing-track history capacity exceeded; "
+-          "retain lost_observation hold instead of forgetting known geometry.");
+     observation_state = checkSnapshotAge(latest_snapshot_, candidate.receive_time,
+                                          max_age_, future_stamp_tolerance_).invalid_reason;
+-    held_age = (candidate.receive_time - latest_snapshot_.stamp).toSec();
+-  }
+-
+-  if (observation_state == "coasting_observation")
+-  {
+-    ROS_WARN_THROTTLE(
+-        1.0,
+-        "[DynamicPointFlow] coasting_observation: retain last observed points and original stamp (age %.3f s); empty frames are not free-space evidence.",
+-        held_age);
+-  }
+-  else if (observation_state == "lost_observation")
+-  {
+-    ROS_WARN_THROTTLE(
+-        1.0,
+-        "[DynamicPointFlow] lost_observation: missing track(s) remain UNKNOWN; prediction invalid (age %.3f s). Empty or partial frames cannot clear the missing geometry.",
+-        held_age);
+-  }
+-  else if (observation_state == "no_dynamic_detected")
++  }
++
++  if (observation_state == "no_dynamic_detected")
+   {
+     ROS_INFO_THROTTLE(5.0,
+         "[DynamicPointFlow] no_dynamic_detected: no qualified motion points; this does not certify sensor blind regions as free.");
+--- before/src/mm_remani_planner/plan_env/src/grid_map.cpp
++++ after/src/mm_remani_planner/plan_env/src/grid_map.cpp
+@@ -316,15 +316,9 @@
+   node_.param("grid_map/global_map_lidar_clear_radius", mp_.global_map_lidar_clear_radius_, 0.0);
+   node_.param("grid_map/global_map_lidar_clear_min_misses", mp_.global_map_lidar_clear_min_misses_, 3);
+   node_.param("grid_map/dynamic_static_match_radius", mp_.dynamic_static_match_radius_, 0.075);
+-  node_.param("grid_map/live_obstacle_expiry_enable",
+-              mp_.live_obstacle_expiry_enable_, true);
+-  node_.param("grid_map/live_obstacle_max_missed_fusions",
+-              mp_.live_obstacle_max_missed_fusions_, 4);
+   if (mp_.global_map_lidar_clear_min_misses_ < 1)
+     mp_.global_map_lidar_clear_min_misses_ = 1;
+   mp_.dynamic_static_match_radius_ = std::max(0.0, mp_.dynamic_static_match_radius_);
+-  mp_.live_obstacle_max_missed_fusions_ =
+-      std::max(1, mp_.live_obstacle_max_missed_fusions_);
+   node_.param("grid_map/self_filter_enable", mp_.self_filter_enable_, false);
+   node_.param("grid_map/self_filter_min_x", mp_.self_filter_min_(0), -0.8);
+   node_.param("grid_map/self_filter_max_x", mp_.self_filter_max_(0), 0.45);
+@@ -443,16 +437,6 @@
+   md_.occupancy_buffer_inflate_ = vector<char>(buffer_size, 0);
+   md_.static_occupancy_ = vector<char>(buffer_size, 0);
+   md_.static_miss_count_ = vector<unsigned char>(buffer_size, 0);
+-  if (mp_.live_obstacle_expiry_enable_)
+-  {
+-    md_.live_occupancy_last_hit_cycle_ =
+-        vector<std::uint32_t>(buffer_size, 0);
+-    md_.live_occupancy_active_ =
+-        vector<unsigned char>(buffer_size, 0);
+-  }
+-  md_.active_live_occupancy_indices_.clear();
+-  md_.live_fusion_cycle_ = 0;
+-  md_.expired_live_occupancy_count_ = 0;
+   md_.global_map_stamp_ = ros::Time(0);
+   md_.global_esdf_pending_ = false;
+   md_.static_map_esdf_pending_ = false;
+@@ -691,10 +675,8 @@
+            (mp_.live_lidar_health_monitor_enable_ &&
+             mp_.live_lidar_health_isolated_worker_) ? "on" : "off",
+            mp_.live_lidar_timeout_, mp_.live_lidar_startup_grace_);
+-  ROS_INFO("[GridMap][LiDAR] live obstacle expiry=%s, "
+-           "max_missed_fusions=%d; static PCD occupancy is never expired.",
+-           mp_.live_obstacle_expiry_enable_ ? "on" : "off",
+-           mp_.live_obstacle_max_missed_fusions_);
++  ROS_INFO("[GridMap][LiDAR] Live occupancy clears only from observed free rays; "
++           "missing returns and track IDs never clear obstacles.");
+   if (isolated_mapping_) {
+     publishReadSnapshot();
+     mapping_thread_ = std::thread([this]() {
+@@ -1361,7 +1343,6 @@
+   Eigen::Vector3d half = Eigen::Vector3d(0.5, 0.5, 0.5);
+   Eigen::Vector3d ray_pt, pt_w;
+   bool processed_projected_point = false;
+-  std::uint32_t current_live_fusion_cycle = 0;
+ 
+   for (int i = 0; i < md_.proj_points_cnt; ++i)
+   {
+@@ -1454,33 +1435,6 @@
+     return;
+   }
+ 
+-  if (live_lidar_observation && mp_.live_obstacle_expiry_enable_)
+-  {
+-    // Count only scans which survive every raycast-level filter. Rejected
+-    // scans must not consume a missed-fusion allowance and thereby age a
+-    // valid obstacle while no replacement observation was fused.
+-    // Wrap is practically unreachable. Rebase tracked cells so unsigned age
+-    // arithmetic still fails safe in a very long-lived process.
+-    if (md_.live_fusion_cycle_ ==
+-        std::numeric_limits<std::uint32_t>::max())
+-    {
+-      for (const int idx : md_.active_live_occupancy_indices_)
+-      {
+-        if (idx >= 0 &&
+-            idx < static_cast<int>(
+-                      md_.live_occupancy_last_hit_cycle_.size()) &&
+-            md_.live_occupancy_active_[idx])
+-          md_.live_occupancy_last_hit_cycle_[idx] = 0;
+-      }
+-      md_.live_fusion_cycle_ = 1;
+-    }
+-    else
+-    {
+-      ++md_.live_fusion_cycle_;
+-    }
+-    current_live_fusion_cycle = md_.live_fusion_cycle_;
+-  }
+-
+   min_x = min(min_x, ray_origin(0));
+   min_y = min(min_y, ray_origin(1));
+   min_z = min(min_z, ray_origin(2));
+@@ -1518,21 +1472,6 @@
+ 
+   md_.local_updated_ = true;
+ 
+-  // update occupancy cached in queue
+-  // Keep all work for this queued observation tied to its captured sensor
+-  // origin. A newer rejected synchronized frame may already have refreshed
+-  // camera_pos_, but must not change the pending valid scan's fusion window.
+-  Eigen::Vector3d local_range_min = ray_origin - mp_.local_update_range_;
+-  Eigen::Vector3d local_range_max = ray_origin + mp_.local_update_range_;
+-
+-  Eigen::Vector3i min_id, max_id;
+-  posToIndex(local_range_min, min_id);
+-  posToIndex(local_range_max, max_id);
+-  boundIndex(min_id);
+-  boundIndex(max_id);
+-
+-  // std::cout << "cache all: " << md_.cache_voxel_.size() << std::endl;
+-
+   int static_clear_step = 0;
+   if (mp_.global_map_lidar_clear_)
+   {
+@@ -1540,48 +1479,8 @@
+   }
+   int cleared_static_voxels = 0;
+ 
+-  // A missing dynamic-track ID is not evidence that its geometry vanished.
+-  // Recover it only from real, newer LiDAR rays through the retained region.
+-  // Read the complete frame's hit/miss counts before the occupancy loop resets
+-  // them: an endpoint hit wins even when other beams traverse the same voxel.
+-  // Depth updates, unstamped scans and expiry of unobserved live voxels must
+-  // never create this evidence.
+-  if (live_lidar_observation && dynamic_point_buffer_.enabled() &&
+-      !md_.pending_lidar_stamp_.isZero() && ros::Time::isValid() &&
+-      liveLidarMessageStampFresh(md_.pending_lidar_stamp_, "track recovery"))
+-  {
+-    const std::size_t recovered_tracks =
+-        dynamic_point_buffer_.recoverObservedTracks(
+-            md_.pending_lidar_stamp_,
+-            [this](const Eigen::Vector3d &position)
+-            {
+-              if (!position.allFinite() || !isInMap(position))
+-                return false;
+-              Eigen::Vector3i index;
+-              posToIndex(position, index);
+-              const int address = toAddress(index);
+-              return !md_.static_occupancy_[address] &&
+-                     md_.count_hit_[address] == 0 &&
+-                     md_.count_hit_and_miss_[address] > 0;
+-            },
+-            [this](const Eigen::Vector3d &position)
+-            {
+-              if (!position.allFinite() || !isInMap(position))
+-                return true;
+-              Eigen::Vector3i index;
+-              posToIndex(position, index);
+-              const int address = toAddress(index);
+-              return md_.static_occupancy_[address] ||
+-                     md_.count_hit_[address] > 0;
+-            }, mp_.resolution_);
+-    if (recovered_tracks > 0)
+-      ROS_INFO_THROTTLE(
+-          1.0,
+-          "[DynamicPointFlow] Retired %zu missing track(s) after newer live "
+-          "LiDAR rays observed their retained regions free.",
+-          recovered_tracks);
+-  }
+-
++  // The prediction layer never owns occupancy. Only this complete frame's
++  // actual hits/free rays can update obstacle geometry.
+   while (!md_.cache_voxel_.empty())
+   {
+ 
+@@ -1589,8 +1488,13 @@
+     int idx_ctns = toAddress(idx);
+     md_.cache_voxel_.pop();
+ 
+-    double log_odds_update =
+-        md_.count_hit_[idx_ctns] >= md_.count_hit_and_miss_[idx_ctns] - md_.count_hit_[idx_ctns] ? mp_.prob_hit_log_ : mp_.prob_miss_log_;
++    // For live LiDAR an actual endpoint wins over other beams through the
++    // same voxel. A visible surface must not be erased by majority voting.
++    const bool occupied = live_lidar_observation
++        ? md_.count_hit_[idx_ctns] > 0
++        : md_.count_hit_[idx_ctns] >=
++              md_.count_hit_and_miss_[idx_ctns] - md_.count_hit_[idx_ctns];
++    const double log_odds_update = occupied ? mp_.prob_hit_log_ : mp_.prob_miss_log_;
+ 
+     md_.count_hit_[idx_ctns] = md_.count_hit_and_miss_[idx_ctns] = 0;
+ 
+@@ -1617,38 +1521,10 @@
+     if (log_odds_update > 0)
+     {
+       md_.occupancy_buffer_[idx_ctns] = mp_.clamp_max_log_;
+-      if (current_live_fusion_cycle > 0 &&
+-          !md_.static_occupancy_[idx_ctns])
+-      {
+-        if (!md_.live_occupancy_active_[idx_ctns])
+-        {
+-          md_.live_occupancy_active_[idx_ctns] = 1;
+-          md_.active_live_occupancy_indices_.push_back(idx_ctns);
+-        }
+-        md_.live_occupancy_last_hit_cycle_[idx_ctns] =
+-            current_live_fusion_cycle;
+-      }
+     }
+     else
+     {
+       md_.occupancy_buffer_[idx_ctns] = mp_.clamp_min_log_;
+-    }
+-  }
+-
+-  if (current_live_fusion_cycle > 0)
+-  {
+-    const std::size_t expired =
+-        expireStaleLiveOccupancy(current_live_fusion_cycle);
+-    if (expired > 0)
+-    {
+-      md_.expired_live_occupancy_count_ += expired;
+-      ROS_INFO_THROTTLE(
+-          1.0,
+-          "[GridMap][LiDAR] Expired %zu stale live obstacle voxels after "
+-          "%d missed fused scans (total=%lu); static PCD unchanged.",
+-          expired, mp_.live_obstacle_max_missed_fusions_,
+-          static_cast<unsigned long>(
+-              md_.expired_live_occupancy_count_));
+     }
+   }
+ 
+@@ -1657,68 +1533,6 @@
+     ROS_INFO_THROTTLE(2.0, "[GridMap] LiDAR cleared %d local static-map voxels from free rays.",
+                       cleared_static_voxels);
+   }
+-}
+-
+-std::size_t GridMap::expireStaleLiveOccupancy(
+-    std::uint32_t current_cycle)
+-{
+-  if (!mp_.live_obstacle_expiry_enable_ || current_cycle == 0 ||
+-      md_.live_occupancy_active_.empty())
+-    return 0;
+-
+-  std::size_t write_index = 0;
+-  std::size_t expired_count = 0;
+-  for (const int idx : md_.active_live_occupancy_indices_)
+-  {
+-    if (idx < 0 ||
+-        idx >= static_cast<int>(md_.occupancy_buffer_.size()) ||
+-        !md_.live_occupancy_active_[idx])
+-      continue;
+-
+-    if (md_.static_occupancy_[idx] ||
+-        md_.occupancy_buffer_[idx] <= mp_.min_occupancy_log_)
+-    {
+-      md_.live_occupancy_active_[idx] = 0;
+-      md_.live_occupancy_last_hit_cycle_[idx] = 0;
+-      continue;
+-    }
+-
+-    const std::uint32_t last_hit_cycle =
+-        md_.live_occupancy_last_hit_cycle_[idx];
+-    const std::uint32_t missed_fusions =
+-        current_cycle >= last_hit_cycle
+-            ? current_cycle - last_hit_cycle
+-            : std::numeric_limits<std::uint32_t>::max();
+-    if (missed_fusions >= static_cast<std::uint32_t>(
+-                              mp_.live_obstacle_max_missed_fusions_))
+-    {
+-      md_.occupancy_buffer_[idx] = mp_.clamp_min_log_;
+-      md_.occupancy_buffer_inflate_[idx] = 0;
+-      md_.live_occupancy_active_[idx] = 0;
+-      md_.live_occupancy_last_hit_cycle_[idx] = 0;
+-
+-      // Expired voxels can lie outside the newest rays. Extend the dirty
+-      // bounds so inflation is rebuilt and the next ESDF generation contains
+-      // the removal as well as the newest hits.
+-      const int yz_size =
+-          mp_.map_voxel_num_.y() * mp_.map_voxel_num_.z();
+-      const int x = idx / yz_size;
+-      const int yz = idx % yz_size;
+-      const int y = yz / mp_.map_voxel_num_.z();
+-      const int z = yz % mp_.map_voxel_num_.z();
+-      const Eigen::Vector3i expired_index(x, y, z);
+-      md_.occupancy_bound_min_ =
+-          md_.occupancy_bound_min_.cwiseMin(expired_index);
+-      md_.occupancy_bound_max_ =
+-          md_.occupancy_bound_max_.cwiseMax(expired_index);
+-      ++expired_count;
+-      continue;
+-    }
+-
+-    md_.active_live_occupancy_indices_[write_index++] = idx;
+-  }
+-  md_.active_live_occupancy_indices_.resize(write_index);
+-  return expired_count;
+ }
+ 
+ Eigen::Vector3d GridMap::closetPointInMap(const Eigen::Vector3d &pt, const Eigen::Vector3d &camera_pt)
+@@ -1750,7 +1564,11 @@
+ void GridMap::clearAndInflateLocalMap()
+ {
+   /*clear outside local*/
+-  const int vec_margin = 5;
++  // A live scan's tighter bounds are not free-space evidence. Zero-width
++  // perimeter strips leave its raw occupancy intact; only actual free rays
++  // may remove it. Keep the original five-cell reset for legacy depth input.
++  // The pending LiDAR generation is consumed only after this function returns.
++  const int vec_margin = hasPendingLidarObservation() ? 0 : 5;
+   // Eigen::Vector3i min_vec_margin = min_vec - Eigen::Vector3i(vec_margin,
+   // vec_margin, vec_margin); Eigen::Vector3i max_vec_margin = max_vec +
+   // Eigen::Vector3i(vec_margin, vec_margin, vec_margin);
+@@ -3769,47 +3587,19 @@
+   if (!liveLidarMessageStampFresh(cloud->header.stamp, "synchronized"))
+     return;
+ 
+-  // Look up cloud_frame → world transform at the exact scan timestamp.
+-  // This is critical during rotation: using a later timestamp would apply
+-  // extra rotation, making point clouds appear to rotate with the robot.
+-  // Two-step fallback: (1) cloud stamp → (2) latest TF → (3) odometry.
++  // Both perception consumers use the scan epoch. A latest/planar fallback
++  // would corrupt deskewed world -> sensor -> world point transformations.
+   try {
+-    geometry_msgs::TransformStamped tf_stamped;
+-    try {
+-      // Best: exact scan timestamp for accurate orientation
+-      tf_stamped = tf_buffer_->lookupTransform("world", cloud->header.frame_id,
+-                                                cloud->header.stamp, ros::Duration(0.02));
+-    } catch (tf2::ExtrapolationException &ex) {
+-      // Cloud stamp slightly ahead of TF data (<1ms) — use latest available
+-      tf_stamped = tf_buffer_->lookupTransform("world", cloud->header.frame_id,
+-                                                ros::Time(0), ros::Duration(0.05));
+-    }
+-    const auto &t = tf_stamped.transform.translation;
+-    const auto &q = tf_stamped.transform.rotation;
+-    md_.camera_pos_(0) = t.x;
+-    md_.camera_pos_(1) = t.y;
+-    md_.camera_pos_(2) = t.z;
+-    md_.camera_r_m_ = Eigen::Quaterniond(q.w, q.x, q.y, q.z).toRotationMatrix();
++    const auto transform = tf_buffer_->lookupTransform(
++        "world", cloud->header.frame_id, cloud->header.stamp, ros::Duration(0.02));
++    const auto &t = transform.transform.translation;
++    const auto &q = transform.transform.rotation;
++    md_.camera_pos_ = Eigen::Vector3d(t.x, t.y, t.z);
++    md_.camera_r_m_ = Eigen::Quaterniond(q.w, q.x, q.y, q.z).normalized().toRotationMatrix();
+   } catch (tf2::TransformException &ex) {
+-    ROS_WARN_THROTTLE(2.0, "[GridMap] TF lookup %s→world failed: %s. Falling back to odom.",
++    ROS_WARN_THROTTLE(2.0, "[GridMap] Exact scan TF %s -> world unavailable: %s; keep the previous map.",
+                       cloud->header.frame_id.c_str(), ex.what());
+-    // Last resort: use the synced odometry
+-    Eigen::Quaterniond body_q = Eigen::Quaterniond(odom->pose.pose.orientation.w,
+-                                                   odom->pose.pose.orientation.x,
+-                                                   odom->pose.pose.orientation.y,
+-                                                   odom->pose.pose.orientation.z);
+-    Eigen::Matrix3d body_r_m = body_q.toRotationMatrix();
+-    Eigen::Matrix4d body2world;
+-    body2world.block<3, 3>(0, 0) = body_r_m;
+-    body2world(0, 3) = odom->pose.pose.position.x;
+-    body2world(1, 3) = odom->pose.pose.position.y;
+-    body2world(2, 3) = odom->pose.pose.position.z;
+-    body2world(3, 3) = 1.0;
+-    Eigen::Matrix4d cam_T = body2world * md_.cam2body_;
+-    md_.camera_pos_(0) = cam_T(0, 3);
+-    md_.camera_pos_(1) = cam_T(1, 3);
+-    md_.camera_pos_(2) = cam_T(2, 3);
+-    md_.camera_r_m_ = cam_T.block<3, 3>(0, 0);
++    return;
+   }
+   Eigen::Vector3d base_pos(odom->pose.pose.position.x,
+                            odom->pose.pose.position.y,
+@@ -3857,7 +3647,7 @@
+ 
+     if (fabs(pt.x) < mp_.local_update_range_(0) && fabs(pt.y) < mp_.local_update_range_(1) &&
+         fabs(pt.z) < mp_.local_update_range_(2)){
+-      if(pt.x > -0.3){  // keep forward points, discard only points behind LiDAR (robot body)
++      {  // Upstream geometry-based self filtering preserves all directions.
+           // ====== 过滤世界坐标系中 z=0.05 以下的地面点云 ======
+           if (pt_world(2) < mp_.ground_height_ + 0.15) continue;
+ 
+--- before/src/mm_remani_planner/plan_env/include/plan_env/grid_map.h
++++ after/src/mm_remani_planner/plan_env/include/plan_env/grid_map.h
+@@ -146,8 +146,6 @@
+   double global_map_lidar_clear_radius_;
+   int global_map_lidar_clear_min_misses_;
+   double dynamic_static_match_radius_;
+-  bool live_obstacle_expiry_enable_;
+-  int live_obstacle_max_missed_fusions_;
+   bool self_filter_enable_;
+   Eigen::Vector3d self_filter_min_, self_filter_max_;
+ 
+@@ -173,15 +171,6 @@
+   std::vector<char> occupancy_buffer_inflate_;
+   std::vector<char> static_occupancy_;
+   std::vector<unsigned char> static_miss_count_;
+-  // Livox sampling does not guarantee that a later free ray traverses the
+-  // exact 5 cm voxel of an earlier endpoint. Track only non-static live hits
+-  // across successfully fused scans so departed obstacles cannot leave
+-  // permanent ghosts and a sensor outage can never erase an obstacle.
+-  std::vector<std::uint32_t> live_occupancy_last_hit_cycle_;
+-  std::vector<unsigned char> live_occupancy_active_;
+-  std::vector<int> active_live_occupancy_indices_;
+-  std::uint32_t live_fusion_cycle_;
+-  std::uint64_t expired_live_occupancy_count_;
+   ros::Time global_map_stamp_;
+   bool global_esdf_pending_;
+   bool static_map_esdf_pending_;
+@@ -556,7 +545,6 @@
+   // main update process
+   void projectDepthImage();
+   void raycastProcess(bool live_lidar_observation = false);
+-  std::size_t expireStaleLiveOccupancy(std::uint32_t current_cycle);
+   void clearAndInflateLocalMap();
+   void clearStaticGlobalMap();
+   int clearStaticOccupancyAround(const Eigen::Vector3i &center, int clear_step);
+--- before/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp
++++ after/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp
+@@ -2740,10 +2740,10 @@
+     if (evaluation.status ==
+         DYNAMIC_POINT_FLOW_EVAL_STATUS::UNAVAILABLE)
+     {
+-      // Losing a previously observed track is UNKNOWN even when other input
+-      // failures may fall back to occupancy. Blind regions are not cleared.
+-      const bool must_hold = dynamic_point_flow_fail_safe_on_unavailable_ ||
+-          evaluation.snapshot.invalid_reason == "lost_observation";
++      // Prediction availability is separate from spatial obstacle occupancy.
++      // Identity changes do not grant a global stop; the live-map trajectory
++      // checks below still own real and retained obstacle geometry.
++      const bool must_hold = dynamic_point_flow_fail_safe_on_unavailable_;
+       const bool release_point_flow_only_guard =
+           !must_hold &&
+           dynamic_point_flow_hazard_active_ &&
+@@ -3049,8 +3049,7 @@
+                 validation_now);
+         if (!latest_snapshot.valid)
+         {
+-          if (dynamic_point_flow_fail_safe_on_unavailable_ ||
+-              latest_snapshot.invalid_reason == "lost_observation")
++          if (dynamic_point_flow_fail_safe_on_unavailable_)
+           {
+             DynamicPointFlowEvaluation unavailable;
+             unavailable.status =
+--- before/src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp
++++ after/src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp
+@@ -200,13 +200,13 @@
+     auto h = cached->header;
+     h[2] = double(++sequence_);
+     h[18] = dynamic.stamp.toSec();
+-    // The existing consumer requires a fresh, valid dynamic observation,
+-    // including fresh no-detection frames, which are not free-space evidence.
+-    // Never invent that stamp.
++    // Dynamic observations are mandatory only when that layer is enabled.
++    // Disabled is not the same as a stale enabled producer. Never invent a
++    // sensor stamp or mark an enabled-but-unhealthy stream as disabled.
+     h[19] = dynamic_enabled_ && dynamic.valid ? 1. : 0.;
+     h[13] = h[19] == 1. ? dynamic.points.size() : 0.;
+     const double cache_age = now.toSec() - h[3];
+-    h[4] = h[4] == 1. && h[19] == 1. && cache_age >= -.05 && cache_age <= max_age_ &&
++    h[4] = h[4] == 1. && (!dynamic_enabled_ || h[19] == 1.) && cache_age >= -.05 && cache_age <= max_age_ &&
+       fresh(h[24], now.toSec()) && fresh(cached->odom_stamp, now.toSec()) ? 1. : 0.;
+     const int subscribers = publisher_.getNumSubscribers();
+     const bool health = h[4] == 1.;
+@@ -276,6 +276,9 @@
+                        const remani_planner::MMConfig::Ptr& model) {
+   bool enabled = false;
+   nh.param("mppi/enable", enabled, false);
++  ROS_INFO("[Execution mode] %s", enabled ?
++      "REMANI + whole-body MPPI; MPPI owns base/arm command topics" :
++      "Native REMANI bridges; MPPI is disabled");
+   static std::shared_ptr<Exporter> exporter;
+   if (enabled && !exporter) exporter = std::make_shared<Exporter>(nh, map, model);
+ }
+--- before/src/mm_controller/src/mm_controller_fsm.cpp
++++ after/src/mm_controller/src/mm_controller_fsm.cpp
+@@ -125,7 +125,14 @@
+ void MMControllerFSM::process(){
+ 	// return;
+ 	ros::Time now_time = ros::Time::now();
+-	if(!state_data.have_car_ || !state_data.have_mani_) return;
++	if(!state_is_received(now_time)){
++		// A feedback failure is not an ordinary reference pause. Do not keep
++		// publishing an old position goal with a new command timestamp.
++		virtual_time_scale_ = 0.0;
++		last_virtual_clock_stamp_ = now_time;
++		ROS_WARN_THROTTLE(1.0, "[MMctrl] Execution feedback unavailable/stale; suppressing commands.");
++		return;
++	}
+ 	syncTrajectoryClock(now_time);
+ 
+ 	static bool is_first_time = true;
+@@ -270,8 +277,9 @@
+ }
+ 
+ bool MMControllerFSM::state_is_received(const ros::Time &now_time){
+-	return (now_time - state_data.odom_rcv_stamp).toSec() < odom_timeout_ &&
+-	       (now_time - state_data.joint_rcv_stamp).toSec() < odom_timeout_;
++	return state_data.have_car_ && state_data.have_mani_ &&
++	       State_Data_t::sourceFresh(state_data.odom_source_stamp, now_time, odom_timeout_) &&
++	       State_Data_t::sourceFresh(state_data.joint_source_stamp, now_time, arm_tracking_joint_timeout_);
+ }
+ 
+ void MMControllerFSM::safetySpeedLimitCallback(const std_msgs::Float64::ConstPtr &msg){
+@@ -349,8 +357,7 @@
+ 	double target_scale = 1.0;
+ 	bool force_freeze = false;
+ 	const bool odom_fresh =
+-		!state_data.odom_rcv_stamp.isZero() &&
+-		(now - state_data.odom_rcv_stamp).toSec() <= odom_timeout_;
++		state_data.have_car_ && State_Data_t::sourceFresh(state_data.odom_source_stamp, now, odom_timeout_);
+ 	if(!odom_fresh){
+ 		force_freeze = true;
+ 		ROS_ERROR_THROTTLE(1.0, "[MMctrl] Odom stale; freezing trajectory clock.");
+@@ -448,8 +455,7 @@
+ 
+ 	const bool joint_fresh =
+ 		state_data.have_mani_ &&
+-		!state_data.joint_rcv_stamp.isZero() &&
+-		(now - state_data.joint_rcv_stamp).toSec() <= arm_tracking_joint_timeout_;
++		State_Data_t::sourceFresh(state_data.joint_source_stamp, now, arm_tracking_joint_timeout_);
+ 	if(!joint_fresh){
+ 		force_freeze = true;
+ 		ROS_ERROR_THROTTLE(1.0, "[MMctrl] Joint state stale; freezing trajectory clock.");
+--- before/src/mm_controller/include/mm_controller/controller_utils.hpp
++++ after/src/mm_controller/include/mm_controller/controller_utils.hpp
+@@ -13,6 +13,9 @@
+ #include <std_msgs/Bool.h>
+ #include <cstdint>
+ #include <deque>
++#include <cmath>
++#include <set>
++#include <algorithm>
+ 
+ #include "traj_utils/poly_traj_utils.hpp"
+ #include "traj_utils/plan_container.hpp"
+@@ -40,6 +43,7 @@
+ 	ros::Time rcv_stamp;
+ 	ros::Time odom_rcv_stamp;
+ 	ros::Time joint_rcv_stamp;
++	ros::Time odom_source_stamp, joint_source_stamp;
+ 	bool have_car_;
+ 	bool have_mani_;
+ 
+@@ -47,6 +51,7 @@
+ 		rcv_stamp = ros::Time(0);
+ 		odom_rcv_stamp = ros::Time(0);
+ 		joint_rcv_stamp = ros::Time(0);
++		odom_source_stamp = joint_source_stamp = ros::Time(0);
+ 		car_q.setIdentity();
+ 		have_car_ = false;
+ 		have_mani_ = false;
+@@ -54,11 +59,35 @@
+ 
+ 	void setParam(int mani_dof){
+ 		mani_dof_ = mani_dof;
+-		joint_p.resize(mani_dof_);
+-		joint_v.resize(mani_dof_);
++		joint_p = Eigen::VectorXd::Zero(mani_dof_);
++		joint_v = Eigen::VectorXd::Zero(mani_dof_);
++	}
++
++	static bool sourceFresh(const ros::Time &stamp, const ros::Time &now, double timeout){
++		const double age = (now - stamp).toSec();
++		return !stamp.isZero() && age >= -0.05 && age < timeout;
+ 	}
+ 	
+ 	void feed_odom(const nav_msgs::Odometry::ConstPtr& pMsg){
++		const ros::Time now = ros::Time::now();
++		if(!odom_source_stamp.isZero() && pMsg->header.stamp <= odom_source_stamp) return;
++		const auto &p = pMsg->pose.pose.position;
++		const auto &q = pMsg->pose.pose.orientation;
++		const auto &v = pMsg->twist.twist.linear;
++		const auto &w = pMsg->twist.twist.angular;
++		const double norm = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
++		if(pMsg->header.stamp.isZero() || (pMsg->header.stamp-now).toSec() > 0.05){
++			have_car_ = false;
++			return;
++		}
++		odom_source_stamp = pMsg->header.stamp;
++		if(!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z) ||
++		   !std::isfinite(norm) || std::fabs(norm-1.0) > 0.02 ||
++		   !std::isfinite(v.x) || !std::isfinite(v.y) || !std::isfinite(v.z) ||
++		   !std::isfinite(w.x) || !std::isfinite(w.y) || !std::isfinite(w.z)){
++			have_car_ = false;
++			return;
++		}
+ 		have_car_ = true;
+ 		odom_msg = *pMsg;
+ 		rcv_stamp = ros::Time::now();
+@@ -86,22 +115,34 @@
+ 	}
+ 
+ 	void feed_joint(const sensor_msgs::JointState::ConstPtr& pMsg){
++		const ros::Time now = ros::Time::now();
++		if(!joint_source_stamp.isZero() && pMsg->header.stamp <= joint_source_stamp) return;
++		if(pMsg->header.stamp.isZero() || (pMsg->header.stamp-now).toSec() > 0.05){
++			have_mani_ = false;
++			return;
++		}
++		joint_source_stamp = pMsg->header.stamp;
++		if(pMsg->name.size() != pMsg->position.size() ||
++		   pMsg->velocity.size() != pMsg->name.size() ||
++		   std::set<std::string>(pMsg->name.begin(), pMsg->name.end()).size() != pMsg->name.size()){
++			have_mani_ = false;
++			return;
++		}
++		Eigen::VectorXd positions(mani_dof_), velocities(mani_dof_);
++		for(int i = 0; i < mani_dof_; ++i){
++			const auto it = std::find(pMsg->name.begin(), pMsg->name.end(), "joint" + std::to_string(i+1));
++			if(it == pMsg->name.end()) { have_mani_ = false; return; }
++			const auto j = std::distance(pMsg->name.begin(), it);
++			positions(i) = pMsg->position[j]; velocities(i) = pMsg->velocity[j];
++		}
++		if(!positions.allFinite() || !velocities.allFinite()) { have_mani_ = false; return; }
+ 		have_mani_ = true;
+ 		joint_state_msg = *pMsg;
+ 		rcv_stamp = ros::Time::now();
+ 		joint_rcv_stamp = rcv_stamp;
+ 
+-		for(int i = 0; i < mani_dof_; ++i){
+-			// FIXME joint_state must be sent in specific order: 
+-			if(i < (int)joint_state_msg.position.size()){
+-				joint_p(i) = joint_state_msg.position[i];
+-			}
+-			if(i < (int)joint_state_msg.velocity.size()){
+-				joint_v(i) = joint_state_msg.velocity[i];
+-			}else{
+-				joint_v(i) = 0.0;
+-			}
+-		}
++		joint_p = positions;
++		joint_v = velocities;
+ 	}
+ };
+ 
+--- before/src/mm_controller/scripts/joint_cmd_bridge.py
++++ after/src/mm_controller/scripts/joint_cmd_bridge.py
+@@ -1,5 +1,6 @@
+ #!/usr/bin/env python3
+ import rospy
++import math
+ from control_msgs.msg import JointTrajectoryControllerState
+ from sensor_msgs.msg import JointState
+ from std_msgs.msg import Bool
+@@ -7,8 +8,9 @@
+ class JointBridge:
+     def __init__(self):
+         rospy.init_node('joint_cmd_bridge')
++        self.execute = bool(rospy.get_param('~execute', True))
+         # 发布给 piper 的底层关节控制话题
+-        self.pub = rospy.Publisher('/joint_ctrl_single', JointState, queue_size=10)
++        self.pub = rospy.Publisher('/joint_ctrl_single', JointState, queue_size=1) if self.execute else None
+         self.gripper_val = 0.0
+         self._last_pub = rospy.Time(0)
+         # 限制指令发送频率 ≤ 5Hz，防止 Piper SDK CAN 发送缓冲区溢出
+@@ -16,9 +18,11 @@
+         self.clamp_joint6 = rospy.get_param('~clamp_joint6', True)
+         self.joint6_min = rospy.get_param('~joint6_min', -0.35)
+         self.joint6_max = rospy.get_param('~joint6_max', 0.35)
++        self.command_timeout = max(.05, float(rospy.get_param('~command_timeout', .25)))
++        self._last_source_stamp = rospy.Time(0)
+ 
+         # 订阅 mm_controller 输出的关节轨迹和夹爪状态
+-        rospy.Subscriber('/mm_controller_node/joint_cmd', JointTrajectoryControllerState, self.joint_cb)
++        rospy.Subscriber('/mm_controller_node/joint_cmd', JointTrajectoryControllerState, self.joint_cb, queue_size=1)
+         rospy.Subscriber('/mm_controller_node/gripper_cmd', Bool, self.gripper_cb)
+ 
+     def gripper_cb(self, msg):
+@@ -27,9 +31,18 @@
+ 
+     def joint_cb(self, msg):
+         now = rospy.Time.now()
++        if (not self.execute or msg.header.stamp.is_zero() or
++                msg.header.stamp <= self._last_source_stamp or
++                not -.05 <= (now-msg.header.stamp).to_sec() < self.command_timeout or
++                tuple(msg.joint_names) != tuple('joint%d' % i for i in range(1, 7)) or
++                len(msg.desired.positions) != 6 or len(msg.desired.velocities) != 6 or
++                not all(math.isfinite(value) for value in
++                        list(msg.desired.positions)+list(msg.desired.velocities))):
++            return
+         if now - self._last_pub < self._min_interval:
+             return  # 限速，丢掉多余的指令
+         self._last_pub = now
++        self._last_source_stamp = msg.header.stamp
+ 
+         pub_msg = JointState()
+         pub_msg.header = msg.header

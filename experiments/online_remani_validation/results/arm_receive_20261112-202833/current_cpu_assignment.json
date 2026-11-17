@@ -1,0 +1,90 @@
+{
+  "wall": 1794486888.0471468,
+  "cpu_online": "0-5",
+  "loadavg": "9.82 6.19 4.51 6/1083 182979",
+  "cgroups": {
+    "cpu/user.slice/cpu.cfs_quota_us": "-1",
+    "cpu/user.slice/cpu.cfs_period_us": "100000",
+    "cpu/user.slice/cpu.stat": "nr_periods 0\nnr_throttled 0\nthrottled_time 0",
+    "cpu/cpu.cfs_quota_us": "-1",
+    "cpu/cpu.cfs_period_us": "100000",
+    "cpu/cpu.stat": "nr_periods 0\nnr_throttled 0\nthrottled_time 0",
+    "cpu,cpuacct/user.slice/cpu.cfs_quota_us": "-1",
+    "cpu,cpuacct/user.slice/cpu.cfs_period_us": "100000",
+    "cpu,cpuacct/user.slice/cpu.stat": "nr_periods 0\nnr_throttled 0\nthrottled_time 0"
+  },
+  "processes": [
+    {
+      "pid": 176720,
+      "argv": "/usr/bin/python3 /tmp/remani_arm_receive_capture.py ",
+      "details": {
+        "VmRSS": "12952 kB",
+        "Threads": "2",
+        "Cpus_allowed_list": "0-5"
+      }
+    },
+    {
+      "pid": 176767,
+      "argv": "/opt/ros/noetic/lib/rosbag/record --buffsize 8 --chunksize 256 --quiet -O /home/l/remani_ws/experiments/online_remani_validation/results/arm_receive_20261112-202833/feedback.bag --duration 600 --min-space 1G /joint_state",
+      "details": {
+        "VmRSS": "23684 kB",
+        "Threads": "16",
+        "Cpus_allowed_list": "0-5"
+      }
+    },
+    {
+      "pid": 177110,
+      "argv": "/home/l/remani_ws/devel/lib/remani_planner/remani_planner_node ~gripper_cmd:=/mm_controller_node/gripper_cmd ~gripper_state:=/mm/mani/gripper_state ~odom_world:=/odom ~joint_state:=/mm/joint_states ~planning/trajectory:=",
+      "details": {
+        "VmRSS": "569392 kB",
+        "Threads": "14",
+        "Cpus_allowed_list": "0-5"
+      }
+    },
+    {
+      "pid": 177123,
+      "argv": "/usr/bin/python3 /home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py /joint_states_single:=/mm/joint_states __name:=whole_body_mppi __log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/whole_body_mppi-7.lo",
+      "details": {
+        "VmRSS": "77072 kB",
+        "Threads": "30",
+        "Cpus_allowed_list": "0-5"
+      }
+    },
+    {
+      "pid": 177183,
+      "argv": "python3 /home/l/remani_ws/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py joint_ctrl_single:=/joint_ctrl_single __name:=piper_ctrl_single_node __log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/piper_",
+      "details": {
+        "VmRSS": "52476 kB",
+        "Threads": "19",
+        "Cpus_allowed_list": "0-5"
+      }
+    },
+    {
+      "pid": 177198,
+      "argv": "/usr/bin/python3 /home/l/remani_ws/src/mm_remani/scripts/velodyne_transformer.py ~input:=/livox/lidar_no_ground ~output:=/velodyne_points ~mapping_output:=/velodyne_points_mapping __name:=robot_self_filter __log:=/home/l",
+      "details": {
+        "VmRSS": "52552 kB",
+        "Threads": "21",
+        "Cpus_allowed_list": "0-5"
+      }
+    },
+    {
+      "pid": 177209,
+      "argv": "/home/l/remani_ws/devel/lib/mm_remani/dynamic_obstacle_tracker_node __name:=dynamic_obstacle_tracker __log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/dynamic_obstacle_tracker-25.log ",
+      "details": {
+        "VmRSS": "45840 kB",
+        "Threads": "6",
+        "Cpus_allowed_list": "0-5"
+      }
+    },
+    {
+      "pid": 180039,
+      "argv": "/usr/bin/python3 /tmp/remani_can_passive_fixed.py ",
+      "details": {
+        "VmRSS": "10648 kB",
+        "Threads": "1",
+        "Cpus_allowed_list": "0-5"
+      }
+    }
+  ]
+}

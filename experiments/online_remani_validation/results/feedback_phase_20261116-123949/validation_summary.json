@@ -1,0 +1,94 @@
+{
+  "purpose": "慢层独立接收最新反馈，未知执行相位时等待且不消耗重规划预算，避免使用错误墙钟相位判断碰撞和到达",
+  "offline_passed": true,
+  "hardware_validation": false,
+  "tests_on_byte_identical_final_sources": true,
+  "phase_test": {
+    "exit_code": 0,
+    "peak_group_rss_kib": 409792,
+    "minimum_available_kib": 2592304,
+    "guard_stop": null,
+    "log": "/tmp/remani_feedback_phase_stage/phase_test.log",
+    "command": [
+      "/usr/bin/python3",
+      "/tmp/remani_feedback_phase_stage/modified/src/mm_remani/test/test_fsm_feedback_phase.py",
+      "-v"
+    ],
+    "environment": "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1",
+    "behaviour_cases": 15,
+    "unittest_methods": 2,
+    "assertion_mode": "require throws; independent of NDEBUG"
+  },
+  "refresh_test": {
+    "exit_code": 0,
+    "peak_group_rss_kib": 231752,
+    "minimum_available_kib": 2785340,
+    "guard_stop": null,
+    "log": "/tmp/remani_feedback_phase_stage/refresh_test.log",
+    "command": [
+      "/usr/bin/python3",
+      "/tmp/remani_feedback_phase_stage/run_refresh_test.py"
+    ],
+    "environment": "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1",
+    "cpp_behaviour_cases": 8,
+    "unittest_methods": 10
+  },
+  "build": {
+    "command": [
+      "nice",
+      "-n",
+      "15",
+      "cmake",
+      "--build",
+      "/tmp/remani_moving_handoff_build_20261116_gc",
+      "--parallel",
+      "1",
+      "--target",
+      "remani_planner_node"
+    ],
+    "exit_code": 0,
+    "elapsed_s": 71.43909474700013,
+    "peak_build_group_rss_mib": 1290.5234375,
+    "lowest_available_mib": 1658.91796875,
+    "stop_reason": null,
+    "jobs": 1,
+    "clean_build": false,
+    "incremental_from_verified_version": "20261116-123923-moving-handoff",
+    "build_dir": "/tmp/remani_moving_handoff_build_20261116_gc",
+    "runtime_destination_untouched": true
+  },
+  "deployment": {
+    "hardware_started": false,
+    "host_process_check": {
+      "pid1": "systemd",
+      "active": []
+    },
+    "source_sha256": {
+      "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "384bf9f266ac0a3f656f39a2687f8cc7904acde9e4181fdb428835bef4f71259",
+      "src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h": "5207a33e2abdb78f6f8fcf525c59ba524169630ba8d0c4cb4571fe765ab4ca69",
+      "src/mm_remani/test/test_mppi_refresh_event.py": "07476afcb60b1203cc43a970edb0b42e1eaa8394a12f1cc08889d65c80d934d0",
+      "src/mm_remani/test/test_fsm_feedback_phase.py": "03073beed7efffc0de1867174806d8d8748b231f0d381d58c864ffcc19814b42"
+    },
+    "deployed": {
+      "devel/lib/remani_planner/remani_planner_node": {
+        "stage": "/tmp/remani_moving_handoff_devel_20261116_gc/lib/remani_planner/remani_planner_node",
+        "sha256": "b52804dc694dfa962a18f3be18b962a532f0a32a03b99f520980004185ec83aa",
+        "stage_sha256": "b52804dc694dfa962a18f3be18b962a532f0a32a03b99f520980004185ec83aa",
+        "before_sha256": "798a458b0210cf4c14cb210f44701a25db57dc18b8c58aee02f92fb168e5aaef",
+        "mode": 509
+      }
+    },
+    "link_check_passed": true,
+    "rpath": [
+      " 0x000000000000001d (RUNPATH)            Library runpath: [/home/l/remani_ws/devel/lib:/opt/ros/noetic/lib]"
+    ],
+    "atomic_replace": true,
+    "only_planner_binary_replaced": true
+  },
+  "known_issues": [
+    "原始关节反馈与执行状态的同步间隙根因仍未定位；未修改驱动或反馈时限",
+    "本轮不修复地图停车丢目标入口，留下一独立版本",
+    "新鲜执行进度不证明实际 MPPI 运动完全遵循冻结交接预测，需实车验证"
+  ],
+  "hardware_commands_sent": false
+}

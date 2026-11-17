@@ -1,0 +1,120 @@
+{
+  "master": "http://127.0.0.1:11471",
+  "passed": true,
+  "graph_nodes": [
+    "/remani_latency_capture_39933_1794632042613",
+    "/remani_planner_node",
+    "/rosout"
+  ],
+  "graph_publishers": {
+    "/rosout_agg": [
+      "/rosout",
+      "/remani_planner_node"
+    ],
+    "/mppi/status": [
+      "/remani_planner_node"
+    ],
+    "/move_base_simple/goal": [
+      "/remani_planner_node"
+    ]
+  },
+  "bag_counts": {
+    "/move_base_simple/goal": 1,
+    "/mppi/status": 79,
+    "/rosout_agg": 100
+  },
+  "bag_messages": 180,
+  "ready_seen": true,
+  "logger_reset_reenabled": true,
+  "logger_calls": [
+    {
+      "at": 6476.08951435,
+      "name": "ros.plan_env.latency",
+      "level": "DEBUG"
+    },
+    {
+      "at": 6476.09357805,
+      "name": "ros.remani_planner.latency",
+      "level": "DEBUG"
+    },
+    {
+      "at": 6478.109397638,
+      "name": "ros.plan_env.latency",
+      "level": "DEBUG"
+    },
+    {
+      "at": 6478.113648481,
+      "name": "ros.remani_planner.latency",
+      "level": "DEBUG"
+    },
+    {
+      "at": 6480.143794927,
+      "name": "ros.plan_env.latency",
+      "level": "INFO"
+    },
+    {
+      "at": 6480.148082475,
+      "name": "ros.remani_planner.latency",
+      "level": "INFO"
+    }
+  ],
+  "final_levels": {
+    "ros.plan_env.latency": "INFO",
+    "ros.remani_planner.latency": "INFO"
+  },
+  "recorder_status": {
+    "pid": 39933,
+    "phase": "closed",
+    "elapsed_s": 4.28,
+    "counts": {
+      "/rosout_agg": 100,
+      "/mppi/status": 79,
+      "/move_base_simple/goal": 1
+    },
+    "evidence": {
+      "map_trace": true,
+      "export_trace": true,
+      "mppi_gate": true
+    },
+    "reason": "navigation_window_complete",
+    "payload_bytes": 19715,
+    "first_goal": 6478.156455768,
+    "logger_levels": {
+      "ros.plan_env.latency": "INFO",
+      "ros.remani_planner.latency": "INFO"
+    },
+    "logger_rpc": {
+      "unavailable": false,
+      "error": "",
+      "restoration": {
+        "ros.plan_env.latency": "confirmed",
+        "ros.remani_planner.latency": "confirmed"
+      }
+    },
+    "topics": [
+      "/mppi/status",
+      "/cmd_vel",
+      "/odom",
+      "/move_base_simple/goal",
+      "/planning/trajectory",
+      "/planning/finish",
+      "/planning/safety_speed_limit",
+      "/piper_execution_state",
+      "/tracking_fault",
+      "/rosout_agg",
+      "/joint_states_single",
+      "/mm/joint_states",
+      "/mm_controller_node/trajectory_progress"
+    ],
+    "duration_limit_s": 20.0,
+    "after_goal_limit_s": 1.5,
+    "payload_limit_mib": 2.0,
+    "control_publications": false
+  },
+  "capture": "/home/l/remani_ws/experiments/online_remani_validation/results/latency_evidence_20261114-124413/recorder_smoke_capture_125400",
+  "publications": "Only synthetic logs/status/goal on loopback isolated graph",
+  "process_exit_codes": [
+    0,
+    0
+  ]
+}

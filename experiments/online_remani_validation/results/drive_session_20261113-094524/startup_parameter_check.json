@@ -1,0 +1,84 @@
+{
+  "wall": 1794534661.7915967,
+  "parameters": {
+    "/passthrough_z": {
+      "code": 1,
+      "value": {
+        "filter_field_name": "z",
+        "filter_limit_max": 3.0,
+        "filter_limit_min": 0.01,
+        "filter_limit_negative": false,
+        "input_frame": "livox_frame",
+        "keep_organized": false,
+        "max_queue_size": 1,
+        "output_frame": "livox_frame"
+      }
+    },
+    "/robot_self_filter": {
+      "code": 1,
+      "value": {
+        "filter_self": true,
+        "target_frame": "livox_frame",
+        "mapping_sparse": true
+      }
+    },
+    "/whole_body_mppi": {
+      "code": 1,
+      "value": {
+        "rate_hz": 10.0,
+        "deadline_s": 0.095,
+        "horizon": 5,
+        "random_samples": 4,
+        "base_limits": {
+          "vmax": 0.25,
+          "wmax": 0.35,
+          "accel": 0.25,
+          "angular_accel": 0.8,
+          "track": 0.37,
+          "wheel_v": 0.25,
+          "wheel_a": 0.2975
+        },
+        "arm_velocity": [
+          0.15,
+          0.15,
+          0.15,
+          0.15,
+          0.15,
+          0.15
+        ],
+        "arm_acceleration": [
+          0.35,
+          0.35,
+          0.35,
+          0.35,
+          0.35,
+          0.35
+        ],
+        "postures": [
+          [
+            0.0,
+            2.4434609528,
+            -1.0471975512,
+            0.0,
+            0.2617993878,
+            0.0
+          ]
+        ],
+        "execute": true,
+        "native_arm_startup": true
+      }
+    },
+    "/dynamic_obstacle_tracker/maximum_world_z": {
+      "code": 1,
+      "value": 1.7
+    },
+    "/remani_planner_node/grid_map/local_update_range_z": {
+      "code": 1,
+      "value": 3.0
+    },
+    "/remani_planner_node/grid_map/map_size_z": {
+      "code": 1,
+      "value": 3.0
+    }
+  }
+}

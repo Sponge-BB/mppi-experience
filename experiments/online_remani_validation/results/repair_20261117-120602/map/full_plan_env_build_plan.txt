@@ -1,0 +1,22 @@
+完整 plan_env 干净构建方案（预先准备；随后已执行，结果见 validation_summary.json；未由本 agent 部署）
+
+必要性：float32_scratch 改 ESDFWorker 成员布局，并给 ESDFResult 增加诊断字段。grid_map.cpp 分配 ESDFWorker 并构造 ESDFResult，必须随同全库重新编译。不能将新 esdf_worker.o 与旧 grid_map.o 链接。当前公开 GridMap 中 worker 是 unique_ptr，外层 GridMap 布局未因此变化；仍须整库与全部消费者测试验证，而不是凭此假定兼容。
+
+准备：先由根代理保存当前运行基线。创建此前不存在的独立 source/build/devel 目录，复制当前完整 plan_env 包到 source（包含未跟踪文件、全部 include/src/test/CMake/package），用此目录 float32_scratch/esdf_worker.cpp 与 include/plan_env/esdf_worker.h 替换对应源码。保留全份 source 清单/SHA256/权限/链接目标；配置前后校验。不得用本轮历史 baseline/grid_map 代替当前源码。此操作应在候选决定采用之后进行。
+
+构建目录示例：本实验 map/full_plan_env_source、map/full_plan_env_build、map/full_plan_env_devel。这三个目录在准备此方案时尚未创建；随后已按方案新建并完成构建。
+compile_launcher.sh 内容：
+#!/bin/sh
+exec "$@" -g0 --param=ggc-min-expand=5 --param=ggc-min-heapsize=16384
+
+以完整绝对路径替换 STAGED_SOURCE、CLEAN_BUILD、STAGED_DEVEL、LAUNCHER 后，配置命令：
+cmake -S STAGED_SOURCE -B CLEAN_BUILD -DCATKIN_DEVEL_PREFIX=STAGED_DEVEL '-DCMAKE_PREFIX_PATH=/home/l/remani_ws/devel;/opt/ros/noetic' -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_ENABLE_TESTING=ON -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON '-DCMAKE_INSTALL_RPATH=/home/l/remani_ws/devel/lib;/opt/ros/noetic/lib' -DCMAKE_CXX_COMPILER_LAUNCHER=LAUNCHER
+构建命令：
+nice -n 15 cmake --build CLEAN_BUILD --parallel 1 --target plan_env test_esdf_worker test_grid_map_parallel test_dynamic_point_buffer
+此 target 实际重编 dynamic_point_buffer.cpp、esdf_worker.cpp、grid_map.cpp、raycast.cpp 四个源文件；不能从旧 build 拷任何 .o。
+
+资源：历史 dense_edt_20261114-192539/map_build_result.json 记录同类单进程干净整库构建峰值 1115.7 MiB、265.6 秒；本轮 worker 候选编译限 600 MiB 不能被描述为整库构建已通过。整库阶段需根代理安排足够内存及独占编译时隙、设置明确监控上限。资源不足时停止而非移除测试或复用旧对象。历史 build_dense_edt.py 仅可复用监控思路，不读取旧 /tmp version.json 直接运行，也不沿用旧对象。
+
+验证：用 staged library（LD_LIBRARY_PATH 先放 STAGED_DEVEL/lib）运行新生成三个测试目标；grid_map/dynamic tests 若需 ROS master，使用独立 loopback master、独立 ROS_HOME/LOG_DIR，禁止连实车 master。新增 float guard 边界测试 test_float32_scratch.cpp 也需保留运行。确认 ldd/readelf 指向 staged library，检查所有 ESDF/grid_map/patch/取消/代际/ABI 相关测试。所有输出哈希与版本一同记录。
+
+部署前：将生产 esdf_worker 源/头与完整新 libplan_env.so 纳入同一版本，再由根代理执行已授权部署步骤。不得仅安装 esdf .o，不得直接 cmake install 覆盖生产其他目录，不可把离线通过标作实车验证通过。随后完整构建与离线测试已执行，99 项全部通过；部署仍由根代理统一处理，未由本 agent 执行。

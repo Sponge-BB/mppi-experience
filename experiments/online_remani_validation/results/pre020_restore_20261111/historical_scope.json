@@ -1,0 +1,158 @@
+{
+  "evidence_path": "/home/l/.codex/sessions/2026/11/09/rollout-2026-11-09T20-12-49-01a1c039-b29a-77f2-9c9b-6c73ad059301.jsonl",
+  "evidence_line": 144,
+  "evidence_timestamp": "2026-11-10T01:18:51.166Z",
+  "target": "src/mm_remani/test/test_mppi_standby.py",
+  "reconstructed_path": "/tmp/pre020_test_mppi_standby.py",
+  "historical_sha256_available": false,
+  "reconstructed_sha256": "e1b2d82fbaaa8c7fa58d81079c2b3e42a4f03f8c195940ca7c09769f6e10b5dd",
+  "size": 6021,
+  "source_evidence": "Full nl-numbered source lines 1..121 from actual command output. Hash freshly computed; no contemporaneous hash exists.",
+  "baseline_archive": "rollback/20261110-204057-arm-startup-unresolved/source.tar.gz",
+  "baseline_sha256": "1d76e4f072516e25795e63b3a3da2bac83435cfe5c21da9ab58215724a07feda",
+  "difference": "--- pre020\n+++ 204057\n@@ -71,8 +71,8 @@\n             self.assertEqual(values[0], batch_diagnostics[key][0], key)\n         self.assertIsNone(batch_diagnostics['first_external_violation_s'][0])\n         self.assertAlmostEqual(batch_diagnostics['first_external_violation_s'][1], 1.05)\n-        self.assertAlmostEqual(batch_diagnostics['checked_duration_s'][0], .85)\n-        self.assertAlmostEqual(batch_diagnostics['checked_duration_s'][1], 1.25)\n+        self.assertAlmostEqual(batch_diagnostics['checked_duration_s'][0], planner.H*planner.dt+.05)\n+        self.assertAlmostEqual(batch_diagnostics['checked_duration_s'][1], planner.H*planner.dt+.45)\n \n         moving_alone = planner.evaluate(state, controls[1:], *arguments)\n         for single, together in zip(moving_alone, batch):\n",
+  "full_source_deployment_baseline": "rollback/20261110-204057-arm-startup-unresolved",
+  "restore_mapping": [
+    {
+      "target": "src/mm_remani/config/mppi.yaml",
+      "restore_from": "experiments/online_remani_validation/results/navigation_rear_20261110/before/mppi.yaml",
+      "sha256": "83bc3db50e9c4b2e39def80dbcd2d788283a85758a61d645b9832595fb7bf37f",
+      "historical_sha256_available": true,
+      "mode": 436
+    },
+    {
+      "target": "src/mm_remani/scripts/whole_body_mppi.py",
+      "restore_from": "experiments/online_remani_validation/results/navigation_rear_20261110/before/whole_body_mppi.py",
+      "sha256": "0800b21e9146c0632a385b65521d85a13f7a080a2c2b242c574e5386d46806f0",
+      "historical_sha256_available": true,
+      "mode": 509
+    },
+    {
+      "target": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+      "restore_from": "experiments/online_remani_validation/results/navigation_rear_20261110/before/active_arm_mppi.py",
+      "sha256": "829633fcfd9cd6ebc3a8bc7c66cdb55a9dc5b2a1454fd43b2611497deeb0b21a",
+      "historical_sha256_available": true,
+      "mode": 436
+    },
+    {
+      "target": "src/mm_remani/scripts/mppi/native_reference_adapter.py",
+      "restore_from": "experiments/online_remani_validation/results/navigation_rear_20261110/before/native_reference_adapter.py",
+      "sha256": "01859364dde415be76925042769eaa8c20a28d2660b1b842963de90bec5a25a8",
+      "historical_sha256_available": true,
+      "mode": 436
+    },
+    {
+      "target": "src/mm_remani_planner/plan_env/src/esdf_worker.cpp",
+      "restore_from": "experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/before/esdf_worker.cpp",
+      "sha256": "5ff84114030c9149962425c7b99218ffa36cec4a46b85fb485e44e36148011a4",
+      "historical_sha256_available": true,
+      "mode": 436
+    },
+    {
+      "target": "devel/lib/libplan_env.so",
+      "restore_from": "experiments/online_remani_validation/results/navigation_rear_20261110/before/libplan_env.so",
+      "sha256": "70d8f68810af26124567357d9aaccfbf2cfe6fdab6a64fc2d1422882c835d5e9",
+      "historical_sha256_available": true,
+      "mode": 509
+    },
+    {
+      "target": "src/mm_remani/test/test_mppi_native_phase.py",
+      "restore_from": "experiments/online_remani_validation/results/navigation_rear_20261110/before/test_mppi_native_phase.py",
+      "sha256": "8d8fd446fc1e207e5e85e7136a8f1c7a4f3c94ab3c87bb0823f30d1cade615e9",
+      "historical_sha256_available": false,
+      "mode": 436
+    },
+    {
+      "target": "src/mm_remani_planner/plan_env/test/test_esdf_worker.cpp",
+      "restore_from": "experiments/online_remani_validation/results/navigation_rear_20261110/esdf_all_axes/before/test_esdf_worker.cpp",
+      "sha256": "32a85a56cb03068dc2cfbd097108d690240da9b405aa48acca77140e5b7f4491",
+      "historical_sha256_available": false,
+      "mode": 436
+    },
+    {
+      "target": "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+      "restore_from": "experiments/online_remani_validation/results/arm_startup_abnormal_20261110/before/piper_ctrl_single_node.py",
+      "sha256": "8c11814f639a78543fa0e6e33c37c5d1922bf431452d96c35be57fb894a02fc5",
+      "historical_sha256_available": true,
+      "mode": 493
+    },
+    {
+      "target": "src/mm_remani/test/test_piper_feedback_command.py",
+      "restore_from": "experiments/online_remani_validation/results/arm_startup_abnormal_20261110/before/test_piper_feedback_command.py",
+      "sha256": "d8a88fe1fdd5876f4f3b1bbbe649f4146832bafd5aaa36023d21aa0a8cac693c",
+      "historical_sha256_available": false,
+      "mode": 436
+    },
+    {
+      "target": "src/mm_remani/test/test_mppi_standby.py",
+      "restore_from": "/tmp/pre020_test_mppi_standby.py",
+      "sha256": "e1b2d82fbaaa8c7fa58d81079c2b3e42a4f03f8c195940ca7c09769f6e10b5dd",
+      "historical_sha256_available": false,
+      "mode": 436
+    }
+  ],
+  "added_in_1938_round_remove": [
+    "src/mm_remani/test/test_mppi_reverse_gear.py",
+    "src/mm_remani/test/test_mppi_rejection_diagnostics.py"
+  ],
+  "notes": [
+    "Current complete 204057 baseline plus these reverse changes reconstruct known source/deployed program state before 19:38 round. It is not a contemporaneous complete snapshot; historical folder membership outside recorded change set cannot be independently proven.",
+    "Separate later complete source/devel snapshot replacement handles all files added after20:40 and removes later tests.",
+    "FAST_LIO/Log/*.txt are runtime-generated files changed20:11; no historical old copies retained. They do not change executable code and must not be represented as exact runtime-data rollback.",
+    "No historical record proves source deletes between19:38 and20:40; audit scope is known recorded changes and preserved tar member mtimes.",
+    "Do not restore build cache; devel/lib/libplan_env.so restored from original archived library, planner binary from204057; this excludes later23:45planner fixes.",
+    "Code restore does not reset firmware or controller persistent parameters."
+  ],
+  "source_archive_members_changed_1938_to2040": [
+    {
+      "path": "src/NEXTE_Sentry_Nav/sentry_slam/FAST_LIO/Log/dbg.txt",
+      "mtime": "2026-11-10T20:11:26.588315+08:00",
+      "mode": 436,
+      "size": 0
+    },
+    {
+      "path": "src/NEXTE_Sentry_Nav/sentry_slam/FAST_LIO/Log/imu.txt",
+      "mtime": "2026-11-10T20:11:26.956328+08:00",
+      "mode": 436,
+      "size": 0
+    },
+    {
+      "path": "src/NEXTE_Sentry_Nav/sentry_slam/FAST_LIO/Log/mat_out.txt",
+      "mtime": "2026-11-10T20:11:26.588315+08:00",
+      "mode": 436,
+      "size": 0
+    },
+    {
+      "path": "src/NEXTE_Sentry_Nav/sentry_slam/FAST_LIO/Log/mat_pre.txt",
+      "mtime": "2026-11-10T20:11:39.448775+08:00",
+      "mode": 436,
+      "size": 31705
+    },
+    {
+      "path": "src/NEXTE_Sentry_Nav/sentry_slam/FAST_LIO/Log/pos_log.txt",
+      "mtime": "2026-11-10T20:11:26.588315+08:00",
+      "mode": 436,
+      "size": 0
+    },
+    {
+      "path": "src/mm_remani/test/test_piper_feedback_command.py",
+      "mtime": "2026-11-10T19:59:58.367975+08:00",
+      "mode": 436,
+      "size": 49887
+    },
+    {
+      "path": "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+      "mtime": "2026-11-10T20:00:37.809424+08:00",
+      "mode": 493,
+      "size": 58982
+    }
+  ],
+  "devel_archive_members_changed_during_1938_round": [
+    {
+      "path": "devel/lib/libplan_env.so",
+      "mtime": "2026-11-10T19:37:23.664513+08:00",
+      "mode": 509,
+      "size": 1562952
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+新导航复现（capture_live.bag）与latency_probe分段分析
+运行代码未修改，未连ROS控制，旧报告未覆盖。
+
+关键边界：唯一新目标源时间1794555787.631175（15:43:07.631），
+planning/finish=True接收时间1794555819.907058（15:43:39.907）。
+导航32.275883秒。约90秒probe前52.3秒、后约4.3秒是standby；
+本文所有“导航”指标均按上述32.28秒切片，不能引用整段probe混合统计。
+finish没有header；收到finish不等于另行验证定位误差已达某个阈值。
+
+一、确有350ms地图拒绝对应反复清零
+导航窗口291条MPPI状态：144 delivered（2条reference_wait_hold零，142条nominal非零），
+81 snapshot_unavailable、39 snapshot_expired_during_plan、9 inputs_expired_before_delivery，
+9 execution_ready不足、2 state_stale、5 native_reference_cancelled、1 planning+1 delivery超预算。
+三类snapshot/input拒绝129条，其中125条报告map_age>350ms。
+command_delivered周期median41.83ms、P95 64.69ms、max83.04ms。
+cmd_vel接收序列零保持20.356秒、非零11.759秒，零/非零切换127次。
+
+用probe中唯一field_version对应h3，加拒绝日志map_age重建拒绝判定源时刻：
+125条中1条在新目标前已经判定，status延后收到；其余124条源判定确在导航期间，
+124/124均落入实际零cmd保持区间（到达时间20ms容差），58条位于零段起点±30ms。
+这避免了先前直接以status到达时间推断积压的错误；cmd_vel无header，这仍是时间
+对应证据，不是下位机接收/执行ACK。
+
+二、750ms与原生碰撞停轨必须分开
+导航/probe期间均无LiDAR750ms超时、无Depth Lost。机械臂1362条执行状态全有效使能未锁停。
+但有另一项真实停车：
+  源时间15:43:23.590原生FSM：live occupancy collision type=0，前方0.01m/0.05s；
+  已小于0.15m停车阈值，故停再重规划；
+  15:43:23.604控制器Abort；23.689 KinoAstar起点car-obstacle不free，
+  车体采样点[0.18,-0.08,0.10] dist0.15<safe0.16；
+  新轨迹ADD源时间15:43:24.398289；speedlimit接收23.596944值0，24.453464值-1，
+  显式速度限制为零约0.85652秒。
+附近motion_qualified=0、point-flow overlay=0points，故日志的“dynamic”是原生实时占据
+碰撞分支，不能当作已经识别某个运动目标。全袋tracking_fault 1417条、导航142条均无True。
+这次Abort不是tracking_fault或750ms丢流引起。
+
+三、导航期源链证据
+注册云/去地云各323帧；源间隔median99.965ms、P95 101.331ms、max107.009ms，
+均无>150ms源缺口。mapping按源窗口293帧，有13个>150ms源间隔，最长700.826ms。
+因此缺口在去地之后的自滤波链，不是本轮雷达/去地上游断流。
+/joint_states_single最大源间隔265.111ms、6个>150ms缺口；
+/mm/joint_states最大319.983ms，同6处缺口，恢复后通常再增加约50ms。
+自滤波导航警告10条：5次插值gap>50ms、4次等待扫描时刻反馈超时、1次反馈stale。
+日志有节流，不能直接当作总丢云数。
+
+新fusion首次可见年龄n156：median200.25ms、P95 271.29ms、max313.04ms；
+新map提交间隔median198.25ms、P95 271.27ms、max680.34ms。
+按每个新fusion的首包：h17-h3 median178.85ms、P95 233.76ms、max262.94ms；
+recv-h17 median19.31ms、P95 51.25ms、max79.49ms。
+h3是占据提交时间、h17是ESDF复制获取时间，均非原始雷达源时间。
+另有moving crop导致同fusion不同ESDF cache version，故“first full cache version”的
+独立统计样本176，不能与上述156个新fusion样本混为同一集合。
+644个snapshot包中valid83.07%，100包收到时map_age>350ms。
+
+导航内host采样30.609秒：CPU busy78.70%；单核百分比planner135.87、MPPI35.32、
+piper46.75、recorder11.30；swap-in29pages、swap-out0、major fault1912。
+CPU忙和缺口同时出现不单独证明某一进程造成缺口。
+
+主要文件：recovery_live_stutter_analysis.json、latency_probe_navigation_split.json、
+live_map_reject_zero_correspondence.json、live_native_collision_stop_event.json、
+live_tracking_fault_counts.json、recovery_live_runtime_logs.jsonl。
+源戳与无header接收时刻的边界均在JSON caveat中注明。

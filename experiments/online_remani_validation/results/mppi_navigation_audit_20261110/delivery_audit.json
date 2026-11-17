@@ -1,0 +1,40 @@
+{
+  "scope": "Offline review of MPPI command capture, delivery gate, Piper health/command lease and base UART; no ROS nodes, CAN calls or motion commands.",
+  "confirmed_defect": {
+    "source": "src/mm_remani/scripts/whole_body_mppi.py",
+    "problem": "A cycle-start timestamp was used after lock acquisition to validate newer callback samples. Scheduler/lock delays beyond 5 ms could make fresh feedback look future-dated, forcing a zero command; genuinely expired state could also enter an avoidable solve.",
+    "reproduction": {
+      "cycle_time": 100.0,
+      "clock_after_lock_wait": 100.02,
+      "fresh_source_stamp": 100.01,
+      "before": "state_feedback_stale / waiting_explicit_arm_enable_or_normal_status",
+      "after": "capture and command delivery succeed with original command stamp 100.0"
+    },
+    "fix": "Read ROS current time inside capture lock, execution-authority lock and native handoff observation lock; preserve source command stamp, deadline, freshness thresholds and original arm startup command flow.",
+    "before_test_result": "6 tests: 1 passed, 4 failed, 1 error",
+    "after_test_result": "9 tests passed including native handoff observation clock",
+    "related_regression": "13 execution gate/delivery tests and 30 startup tests passed",
+    "hardware_causation_limit": "Deterministic software defect; existing recording does not identify which real stops were caused by this race.",
+    "native_gate_regression": "Two of three additional tests failed before the one-line native observation clock correction; genuine future joints rejected before and after. Native startup sends no commands and remains incomplete until normal handoff."
+  },
+  "recorded_evidence": {
+    "source": "experiments/online_remani_validation/results/navigation_stutter_20261110/after_restart_analysis.json",
+    "scope": "Earlier 17:18 run at 0.05 m/s, not current 0.20 m/s revision",
+    "moving_to_zero_transitions": 43,
+    "collision_snapshot_unavailable": 22,
+    "collision_snapshot_expired_during_plan": 8,
+    "inputs_expired_before_delivery": 13,
+    "actual_health_or_geometry_failure": "Do not suppress these stops or prolong source validity to hide symptoms."
+  },
+  "reviewed_unchanged": [
+    "reject sends zero base command immediately. This explains visible stop/go, but allowing stale-map motion is not a valid repair.",
+    "Piper execution health is already independent of last command lease, while healthy idle retains bounded target. No further arm driver change justified by this audit.",
+    "base_control uses separate short-timeout RX and fixed 50 Hz TX with 0.30 s watchdog; no reproducible transport defect found in available evidence.",
+    "Delivery retains latest geometry + braking checks and final feedback/health/deadline checks."
+  ],
+  "files_changed": [
+    "src/mm_remani/scripts/whole_body_mppi.py",
+    "src/mm_remani/test/test_mppi_capture_clock.py",
+    "src/mm_remani/test/test_mppi_startup.py"
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "offline_passed": true,
+  "hardware_validation": false,
+  "purpose": "修复MPPI末端关节收敛、到点重检及完成姿态竞态；解除可选待机恢复与导航完成绑定",
+  "changes": [
+    "最终参考过期且底盘已到容差内时，允许不超过0.30rad捕获范围的关节小步收敛；每目标增量不超过0.02rad；底盘平移为零，保留有界朝向修正",
+    "使用原8秒终端窗口；实际位置0.15m/朝向0.15rad/关节0.12rad验收容差不变；超时仍未到达须反馈重规划",
+    "仅GOAL_FEEDBACK来源的同目标GEN重试可以重新检查实际已到达；普通规划、预设目标、保护停车不走捷径",
+    "use_mppi=true时关闭可选到点后整机待机恢复规划；use_mppi=false原设置保留",
+    "finish清除参考和保持姿态原子执行；求解前后沿用采集时版本，防止旧anchor命令交付"
+  ],
+  "python_tests": {
+    "reported_by": "/root/premature_reference_cancel",
+    "tool_output_chunk": "f36ec9",
+    "command": "source devel/setup.bash; PYTHONNOUSERSITE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=\"$PYTHONPATH:/home/l/remani_ws/src/mm_remani/test\" /usr/bin/python3 -m unittest test_mppi_terminal_yaw test_mppi_native_phase test_mppi_execution_gate test_mppi_reference_wait test_mppi_deadline_priority test_mppi_startup test_mppi_collision",
+    "cwd": "/home/l/remani_ws",
+    "exit_code": 0,
+    "test_methods": 134,
+    "elapsed_s": 1.81,
+    "process_elapsed_s": 2.695680974,
+    "output_tail": "Ran 134 tests in 1.810s\n\nOK",
+    "scope": "offline tests; no ROS master or devices",
+    "files_sha256": {
+      "src/mm_remani/scripts/mppi/native_reference_adapter.py": "a4524536d0104b0fc1dab8489e622312923f70cff653043248ea2d1f349afaa5",
+      "src/mm_remani/scripts/whole_body_mppi.py": "9183d5c36b4b47a3eac2dd5b463a8eec01bed55d829f908be601f9498cedc574",
+      "src/mm_remani/test/test_mppi_terminal_yaw.py": "c51ceaa4e2508a9558f70695f18f156038697f38b0fb47c52402639a6034eb07"
+    }
+  },
+  "cpp_tests": {
+    "recorded_at": "2026-11-13T23:41:36",
+    "baseline": "20261113-233324-before-terminal-settle",
+    "scope": "C++ terminal helpers and extracted GEN prefix; offline only; no main-package build or robot actions",
+    "cwd": "/home/l/remani_ws/src/mm_remani/test",
+    "reproduce_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MALLOC_ARENA_MAX=2 /usr/bin/python3 -m unittest -v test_goal_terminal test_perception_recovery",
+    "measurement": "Actual final run used unittest.TextTestRunner with resource.getrusage(SELF/CHILDREN) to measure RSS; same module load and tests as reproduce_command.",
+    "result": "PASS",
+    "unittest_methods": 4,
+    "terminal_cpp_scenarios": [
+      "bounded_settle",
+      "capture_envelope",
+      "source_validity",
+      "stop_owners",
+      "late_arrival_recheck",
+      "recheck_scope_and_timeout"
+    ],
+    "existing_perception_cpp_scenarios": 15,
+    "elapsed_s": 4.83,
+    "parent_peak_rss_mib": 17.16,
+    "child_peak_rss_mib": 167.76,
+    "files_sha256": {
+      "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp": "f46590e5e013c8d1bd366aac292ff5b05203df2e08cca11d08337ed8ad9af041",
+      "src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h": "d3fd226c5423bb56d9d9f860e7057513591afbf5591f889da7988d78ba373c86",
+      "src/mm_remani/test/test_goal_terminal.py": "72f24983a6e3c8691bd3c1e3148d4c73cb6fa7c3ed34b465520a65249f93cfd0",
+      "src/mm_remani/test/test_perception_recovery.py": "f6aa8b023bd2bc45d458835ab40d9c1abf11246e5eb25f70a83f224e06b6e69a"
+    },
+    "final_output": "Ran 4 tests in 4.830s; OK; parent_peak_mib=17.16 child_peak_mib=167.76"
+  },
+  "launch": [
+    {
+      "use_mppi": "true",
+      "params": {
+        "/remani_planner_node/mppi/enable": true,
+        "/remani_planner_node/fsm/manual_restore_standby_after_goal": false,
+        "/remani_planner_node/fsm/manual_target_end_arm_standby": false,
+        "/remani_planner_node/fsm/goal_position_tolerance": 0.15,
+        "/remani_planner_node/fsm/goal_yaw_alignment_timeout": 8.0
+      }
+    },
+    {
+      "use_mppi": "false",
+      "params": {
+        "/remani_planner_node/mppi/enable": false,
+        "/remani_planner_node/fsm/manual_restore_standby_after_goal": true,
+        "/remani_planner_node/fsm/manual_target_end_arm_standby": false,
+        "/remani_planner_node/fsm/goal_position_tolerance": 0.15,
+        "/remani_planner_node/fsm/goal_yaw_alignment_timeout": 8.0
+      }
+    }
+  ],
+  "deployment": {
+    "clean_binary": "/tmp/remani_terminal_devel_20261113-233324/lib/remani_planner/remani_planner_node",
+    "deployed_binary": "/home/l/remani_ws/devel/lib/remani_planner/remani_planner_node",
+    "before_sha256": "dec203511eed1ebbc6079dd624ee89dcd9e2c1b52eea974a5637b99eb1879cbc",
+    "after_sha256": "f335f295e4876f3cf54fecb63f085cb4bd5661677fbb8dade94f8c0bfea7be88",
+    "mode": 509,
+    "host_processes_clear": true,
+    "source_hashes_match_tests": true,
+    "rpath": [
+      " 0x000000000000001d (RUNPATH)            Library runpath: [/home/l/remani_ws/devel/lib:/opt/ros/noetic/lib]"
+    ],
+    "link_resolution": "ldd -r PASS",
+    "build_result": {
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cmake",
+        "--build",
+        "/tmp/remani_terminal_build_20261113-233324",
+        "--parallel",
+        "1",
+        "--target",
+        "remani_planner_node"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 215.18115208199015,
+      "peak_build_group_rss_mib": 1370.37109375,
+      "lowest_available_mib": 2029.94140625,
+      "stop_reason": null,
+      "jobs": 1,
+      "clean_build": true,
+      "build_dir": "/tmp/remani_terminal_build_20261113-233324",
+      "runtime_destination_untouched": true
+    },
+    "executed_robot_or_ros": false
+  },
+  "preserved": [
+    "时效/碰撞/制动包络/执行反馈门",
+    "SDK、机械臂驱动、速度限制、点云/地图安全规则"
+  ],
+  "known_issues": [
+    "尚未实车验证末端收敛和转向效果",
+    "本轮未修复或放宽近碰撤轨；已有数据不足以认定近处实时占据为误报",
+    "动态点本次窗口为零及快到慢前缀未接通属于后续待验证事项，不宣称动态绕行已解决"
+  ],
+  "no_hardware_commands": true
+}

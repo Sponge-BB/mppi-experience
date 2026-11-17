@@ -1,0 +1,83 @@
+{
+  "scope": "Stationary raw-LiDAR visibility check. No avoidance execution or obstacle identity ground truth.",
+  "frame": "standby_feedback_02_livox_frame",
+  "baseline_stamp": 1793929961.7446313,
+  "after_stamps": [
+    1793930092.844648,
+    1793930092.9447646,
+    1793930093.0446577
+  ],
+  "baseline_frames": 1,
+  "after_frames": 3,
+  "after_span_s": 0.20000982284545898,
+  "selection": "Near-front planar cluster found after placement; ROI x=(.38,.52), y=(-.28,.13), z=(-.08,.60) m in sensor coordinates.",
+  "baseline_roi_points": 0,
+  "after_roi_points_per_frame": [
+    241,
+    229,
+    237
+  ],
+  "target_xyz_min_m": [
+    0.41600000858306885,
+    -0.2240000069141388,
+    -0.03099999949336052
+  ],
+  "target_xyz_max_m": [
+    0.46399998664855957,
+    0.07599999755620956,
+    0.5070000290870667
+  ],
+  "target_xyz_median_m": [
+    0.43700000643730164,
+    -0.07100000232458115,
+    0.06800000369548798
+  ],
+  "height_counts": {
+    "raw_z_under_0_2_m": 662,
+    "raw_z_0_2_to_0_4_m": 26,
+    "raw_z_above_0_4_m": 19
+  },
+  "model_arm_raw_z_envelope_m": [
+    0.529,
+    0.79948
+  ],
+  "model_arm_raw_z_note": "Previous geometry audit and current baseline q; assumes unvalidated configured sensor height .117 m and zero rotation.",
+  "conclusion": "User-confirmed 0.90 m foam pillar produces a near-front surface, but even 20 original CustomMsg frames have no points above raw z=.60 m in its ROI. Highest target return ~.508 m relative to LiDAR. This supports incomplete upper-target visibility; the raw-to-PCL confidence filter does not explain missing upper points in this check. Next compare with pillar 0.7-0.8 m from sensor while robot stays stationary.",
+  "limitations": [
+    "One baseline frame vs three after frames; no static-scene ground truth or long-term stability test.",
+    "No return does not establish free space; upper target may be outside observable rays.",
+    "Configured sensor-to-base extrinsic and collision geometry remain unvalidated.",
+    "User reports approximate 0.90 m target height; sensor mount height and physical pitch remain unmeasured."
+  ],
+  "hardware_motion_commands_sent_in_this_check": false,
+  "user_reported_target": {
+    "shape": "square foam pillar",
+    "top_height_above_ground_m": 0.9,
+    "range_description": "40-something cm, consistent with reported point-cloud position",
+    "source": "user reply on 2026-11-06; approximate manual report"
+  },
+  "followup_raw_check": {
+    "frames": 20,
+    "source": "front_target_raw_tag_check_20261106.json",
+    "max_target_raw_z_before_filter_m": 0.5080000162124634,
+    "points_above_raw_z_0_6_before_filter": 0
+  },
+  "height_geometry_estimate": {
+    "assumed_sensor_ground_height_m": 0.117,
+    "reported_pillar_top_ground_height_m": 0.9,
+    "nominal_pillar_top_sensor_z_m": 0.783,
+    "observed_front_surface_xy_range_m": 0.4427301728550836,
+    "estimated_top_elevation_deg": 60.51496378716178,
+    "observed_cloud_max_elevation_reference_deg": 52.5,
+    "min_range_to_fit_reference_angle_m": 0.600817031587526,
+    "next_stationary_target_distance_m": [
+      0.7,
+      0.8
+    ],
+    "next_expected_top_elevation_deg": [
+      48.203367242738,
+      44.384718376524425
+    ],
+    "caution": "Geometry estimate only. Observed angle is not a validated hardware-FOV specification. No inferred free-space or execution readiness."
+  }
+}

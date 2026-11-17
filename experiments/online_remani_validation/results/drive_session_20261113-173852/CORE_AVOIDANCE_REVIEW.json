@@ -1,0 +1,117 @@
+{
+  "scope": "Read-only source and existing small artifacts; no ROS motion, runtime edits, large cloud reads or additional obstacle provenance work.",
+  "case": "experiments/online_remani_validation/results/drive_session_20261113-173852",
+  "runtime_version": "20261113-172845-map-latency",
+  "runtime_modified": false,
+  "answer_to_was_mppi_never_allowed_to_try": {
+    "first_g2_event": "For the first raw observation1683, the recorded complete ESDF acquisition was already after the slow stop/ABORT. Before that MPPI repeatedly delivered nominal with old-complete-map external clearance~0.18m>0.12m intervention threshold. Thus there is no observed overlap of this new observation and a still-valid native reference for sampled avoidance before the first stop.",
+    "not_global_claim": "Do not extend this to all cycles: after replacement native trajectories, three whole_body_fallback evaluations occurred17:46:01.609,01.694,04.434 and failed at t0. Other G4 episodes include perception timeouts and one planning deadline. No successful sampled-avoidance delivery appears in G2/G4.",
+    "source_time_limit": "Nominal String status and abort messages without headers use receiver times. Map h17 is exporter acquisition ROS time; stop logs use header source time. A nominal status received53.366 after ABORT reception53.352 cannot by itself prove stale command execution after cancellation; callback/transport receipt order is not actuator execution order."
+  },
+  "core_points": [
+    {
+      "id": 1,
+      "title": "新占据先触发慢层参考保护，MPPI看到对应完整地图时参考已撤销；实车未接通快层前缀交接",
+      "classification": "Confirmed coordination/function gap for the requested dynamic avoidance behavior; the emergency cancellation itself is not proven erroneous.",
+      "evidence": [
+        {
+          "time": "17:45:53.254 receipt",
+          "event": "Last pre-stop nominal status: external_min_gap0.1820869m, v0.02508m/s,w0.35rad/s; previous nominal gaps0.18–0.20m. Intervention only if nominal invalid or external gap<0.12m."
+        },
+        {
+          "time": "17:45:53.350106 source",
+          "event": "Raw-live collision latches required ESDF seq1683; future native trajectory sample0.05s ahead reports xy path distance0.00m."
+        },
+        {
+          "time": "17:45:53.351644 source /53.352320 receipt",
+          "event": "Slow layer takes raw-distance emergency branch and publishes ACTION_ABORT; speed limit0 received53.355."
+        },
+        {
+          "time": "17:45:53.372588 source",
+          "event": "Required seq1683, currently ESDF seq1682. Raw occupancy is newer than completed ESDF."
+        },
+        {
+          "time": "17:45:53.457691 exporter source /53.471500 receipt",
+          "event": "First recorded Complete seq1683: h17 ESDF acquisition after stop by106ms; receiver sees it after ABORT by119ms. Fusion stamp h3=53.295949 is original observation commit, not export availability."
+        },
+        {
+          "time": "17:45:53.599097 source",
+          "event": "MPPI rejects native_reference_cancelled. Adapter clear removes reference; active plan with no path returns before kernel."
+        }
+      ],
+      "actual_vs_reference": {
+        "confirmed_trigger": "future_scan of native reference, not actual_state hard-collision branch. PolyTrajOptimizer reads traj.getPos(t)/getCarAngle(t), then MMConfig checks raw live occupancy with physical sphere radius+one voxel.",
+        "actual_check": "Actual-state branch uses measured feedback pose and ESDF surface gap<0.01m; no actual-hard-collision log observed in this first window. Its ESDF does not yet contain the newest raw observation1683, so absence of that log cannot certify actual clearance against1683.",
+        "missing": "No same-generation raw query for both actual pose and the offending reference pose was recorded. Reference/actual yaw discrepancy may affect which body spheres intersect; cannot conclude it was merely a reference-deviation false stop, nor confirmed current physical collision."
+      },
+      "deployed_cooperation_boundary": {
+        "confirmed": "fast_to_slow_prefix_enabled=False; MPPI publishes cmd_vel, joint command, enable/fault/status/visualization, with no approved-prefix publisher. FSM subscribes measured odom/joints, trajectory progress and tracking_fault; no MPPI prefix/candidate handoff subscriber. The slow collision scan continues to inspect native reference.",
+        "not_proven": "No approved avoidance maneuver was observed before this first stop, so it is false to describe this event as slow layer discarding an already-approved MPPI detour."
+      },
+      "source_locations": [
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1216",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1360",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1472",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1709",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:3278",
+        "src/mm_remani_planner/traj_opt/src/poly_traj_optimizer.cpp:500",
+        "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp:133",
+        "src/mm_remani/scripts/mppi/native_reference_adapter.py:221",
+        "src/mm_remani/scripts/mppi/native_reference_adapter.py:306",
+        "src/mm_remani/scripts/mppi/native_reference_adapter.py:383",
+        "src/mm_remani/scripts/mppi/active_arm_mppi.py:536",
+        "src/mm_remani/scripts/whole_body_mppi.py:280",
+        "src/mm_remani/scripts/whole_body_mppi.py:613"
+      ],
+      "minimal_fix_boundary": "Preserve current actual hard-collision, immediate-risk, input-validity and cancellation guards. Distinguish a future/reference-only planning warning from actual unavoidable collision before introducing a bounded MPPI chance. That chance must see the newest collision generation and validate its actual swept prefix; do not simply ignore ACTION_ABORT, extend TTL, or keep following a stale reference. Prefix handoff is an explicit missing feature, not evidence for wholesale two-layer redesign.",
+      "turning_caveat": "Raw distance accumulates base xy displacement only; pure yaw contributes0, so15cm linear stop criterion is conservative for turn-only motions. This is a policy mismatch to review with rotational swept-body risk; observed first TTC0.05s prevents declaring the stop unnecessary from the xy metric alone."
+    },
+    {
+      "id": 2,
+      "title": "G2动态预测为空，不等于实时占据为空；尚未证明tracker识别错误",
+      "classification": "Correct separation of sensing products; no demonstrated tracker bug. The word dynamic in raw collision logs is misleading if interpreted as confirmed moving person.",
+      "evidence": [
+        "G2 has454 dynamic_points messages, all empty. Runtime tracker log17:45:52.933:3confirmed clusters, motion_qualified0, nonmoving_confirmed3, publish=yes.",
+        "getDynamicObstacleDistance checks occupied live voxels that do not match nearby prior-static voxels; it does not require a tracked moving object or point-flow velocity.",
+        "Raw-live layer and Complete ESDF remain safety sources when qualified dynamic point flow is empty. Therefore454empty messages do not justify ignoring live collisions.",
+        "The nearest low live cell from later failures is not traced to person/self return with certainty; that uncertainty is retained and no further provenance work is included."
+      ],
+      "source_locations": [
+        "src/mm_remani_planner/plan_env/src/grid_map.cpp:4368",
+        "src/mm_remani_planner/plan_env/src/grid_map.cpp:4411",
+        "src/mm_remani_planner/mm_config/src/mm_config.cpp:895",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1444"
+      ],
+      "minimal_fix_boundary": "Clarify logs/diagnostics as live occupancy collision versus motion-qualified predicted collision. Change tracker qualification only with corresponding source evidence; do not force arbitrary residual or static clusters into motion prediction to make avoidance appear active."
+    },
+    {
+      "id": 3,
+      "title": "初始状态进入5cm规划带时，全候选t0拒绝是正确执行当前规则，但系统缺少恢复闭环",
+      "classification": "The candidate rejection is not a solver bug. The deployment has an unresolved policy/recovery gap: FSM tolerates measured pose outside1cm hard-stop threshold while MPPI requires the entire candidate including t0 outside5cm planning clearance.",
+      "evidence": [
+        "17:46:01.609,01.694,04.434 actually attempted whole_body_fallback; structured and random candidates failed, first external violation time0.0s. Therefore it is inaccurate to claim MPPI never sampled anywhere in G2.",
+        "Matched map/body geometry shows physical-model surface clearance31.6–39.3mm but planning gap-10.7 to-18.4mm at initial state. Arm clearance438–542mm and configuration gap+3mm.",
+        "MPPI adds resolution0.05m to47fixed sphere radii; evaluate prepends states[:,0], then requires every checked gap>=0. Any candidate shares that same invalid starting sample, so larger sampling cannot resolve it.",
+        "Perception-stop episodes in G4 are independent safety reactions: five DepthLost stops with intervening recoveries, plus one raw-live near-collision stop. They should not be diagnosed as this t0 problem or continuous map outage."
+      ],
+      "source_locations": [
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1366",
+        "src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:1381",
+        "src/mm_remani/scripts/mppi/active_arm_mppi.py:124",
+        "src/mm_remani/scripts/mppi/active_arm_mppi.py:435",
+        "src/mm_remani/scripts/mppi/active_arm_mppi.py:452",
+        "src/mm_remani/scripts/mppi/active_arm_mppi.py:577",
+        "src/mm_remani/scripts/whole_body_mppi.py:481"
+      ],
+      "minimal_fix_boundary": "Keep ordinary candidates strictly validated. Explicitly choose and validate how to handle a physically clear but planning-margin-violating initial state; this requires a bounded recovery policy or an intentional safe hold with a recoverable planner path. Do not merely omit t0, remove5cm clearance, increase samples, or auto-clear tracking fault. Existing evidence proves the dead end under current criteria, not that a safe escape exists."
+    }
+  ],
+  "artifacts_used": [
+    "dynamic_stop_small_topics.jsonl",
+    "snapshot_headers.jsonl",
+    "runtime_logs/hai_navigation_logs.jsonl",
+    "no_candidate_same_field_audit.json",
+    "DYNAMIC_STOP_AUDIT.json"
+  ],
+  "verification_status": "Offline source/evidence audit only. No production repair or new real-robot validation claimed."
+}

@@ -1,6 +1,21 @@
 #include <gtest/gtest.h>
+#include <initializer_list>
 
 #include <plan_env/dynamic_point_buffer.h>
+
+class DynamicPointBufferTestAccessor
+{
+public:
+  static void feed(plan_env::DynamicPointBuffer &buffer,
+                   const plan_env::DynamicPointSnapshot &incoming)
+  {
+    ros::Time::setNow(incoming.receive_time);
+    buffer.enabled_ = true;
+    buffer.recordObservation(incoming);
+  }
+
+
+};
 
 namespace
 {
@@ -10,6 +25,24 @@ ros::Time timeFromSec(double seconds)
   ros::Time time;
   time.fromSec(seconds);
   return time;
+}
+
+plan_env::DynamicPointSnapshot observation(
+    double stamp, std::initializer_list<std::uint32_t> ids)
+{
+  plan_env::DynamicPointSnapshot value;
+  value.stamp = value.receive_time = timeFromSec(stamp);
+  value.frame_id = "world";
+  value.valid = value.has_track_ids = true;
+  for (const auto id : ids)
+  {
+    plan_env::DynamicPoint point;
+    point.track_id = id;
+    point.position = Eigen::Vector3d(id, 0.0, 1.0);
+    point.velocity = Eigen::Vector3d(0.1, 0.0, 0.0);
+    value.points.push_back(point);
+  }
+  return value;
 }
 
 TEST(DynamicPointBuffer, ConstantVelocityPredictionUsesObservationTime)
@@ -71,13 +104,15 @@ TEST(DynamicPointBuffer, DistanceQueryIsConservative)
   EXPECT_NEAR(distance, 1.57, 1e-12);
 }
 
-TEST(DynamicPointBuffer, EmptyAcceptedObservationMeansClear)
+TEST(DynamicPointBuffer, InitialEmptyMeansNoDynamicDetectionNotFreeSpace)
 {
   plan_env::DynamicPointBuffer buffer;
-  plan_env::DynamicPointSnapshot snapshot;
-  snapshot.valid = true;
-  snapshot.stamp = timeFromSec(10.0);
+  const auto snapshot = plan_env::DynamicPointBuffer::applyObservation(
+      plan_env::DynamicPointSnapshot(), observation(10.0, {}));
+  ASSERT_TRUE(snapshot.valid);
+  EXPECT_EQ(snapshot.invalid_reason, "no_dynamic_detected");
 
+  // A neutral contribution from the dynamic layer is not a free-space proof.
   double distance = 0.0;
   ASSERT_TRUE(buffer.getPredictedDistance(
       snapshot, Eigen::Vector3d::Zero(), timeFromSec(10.5), 3.0, distance));
@@ -160,30 +195,101 @@ TEST(DynamicPointBuffer, EmptyPredictedPositionsStillEnforcePredictionHorizon)
   EXPECT_TRUE(positions.empty());
 }
 
-TEST(DynamicPointBuffer, EmptyDetectorFramesRequireDebouncedClear)
+TEST(DynamicPointBuffer, FreshNoMotionFrameReplacesPredictionWithoutRestampingOldTargets)
 {
-  EXPECT_FALSE(
-      plan_env::DynamicPointBuffer::emptyObservationConfirmed(1, 3));
-  EXPECT_FALSE(
-      plan_env::DynamicPointBuffer::emptyObservationConfirmed(2, 3));
-  EXPECT_TRUE(
-      plan_env::DynamicPointBuffer::emptyObservationConfirmed(3, 3));
+  const auto old = observation(10., {1});
+  const auto current = plan_env::DynamicPointBuffer::applyObservation(
+      old, observation(10.1, {}));
+  ASSERT_TRUE(current.valid);
+  EXPECT_TRUE(current.points.empty());
+  EXPECT_EQ("no_dynamic_detected", current.invalid_reason);
+  EXPECT_EQ(timeFromSec(10.1), current.stamp);
+  EXPECT_EQ(timeFromSec(10.), old.stamp);
+  EXPECT_EQ(1u, old.points.size());
 }
 
-TEST(DynamicPointBuffer, UnconfirmedEmptyFramesRetainOnlyValidHistory)
+TEST(DynamicPointBuffer, PartialIdentityLossDoesNotInvalidateFreshRemainingPredictions)
 {
-  EXPECT_TRUE(
-      plan_env::DynamicPointBuffer::shouldRetainLastValidSnapshot(
-          1, 3, true));
-  EXPECT_TRUE(
-      plan_env::DynamicPointBuffer::shouldRetainLastValidSnapshot(
-          2, 3, true));
-  EXPECT_FALSE(
-      plan_env::DynamicPointBuffer::shouldRetainLastValidSnapshot(
-          3, 3, true));
-  EXPECT_FALSE(
-      plan_env::DynamicPointBuffer::shouldRetainLastValidSnapshot(
-          1, 3, false));
+  const auto old = observation(10., {1, 2});
+  const auto current = plan_env::DynamicPointBuffer::applyObservation(
+      old, observation(10.1, {2, 3}));
+  ASSERT_TRUE(current.valid);
+  ASSERT_EQ(2u, current.points.size());
+  EXPECT_EQ(2u, current.points.front().track_id);
+  EXPECT_EQ(3u, current.points.back().track_id);
+  EXPECT_EQ(timeFromSec(10.1), current.stamp);
+}
+
+TEST(DynamicPointBuffer, PredictionDoesNotRequirePersistentTrackIdentity)
+{
+  auto current = observation(10.1, {0});
+  current.has_track_ids = false;
+  const auto accepted = plan_env::DynamicPointBuffer::applyObservation(
+      observation(10., {1}), current);
+  EXPECT_TRUE(accepted.valid);
+  EXPECT_FALSE(accepted.has_track_ids);
+  EXPECT_EQ(current.stamp, accepted.stamp);
+}
+
+TEST(DynamicPointBuffer, RepeatedIdChangesCannotExhaustHistoricalRecoveryState)
+{
+  plan_env::DynamicPointBuffer buffer;
+  for (std::uint32_t i = 1; i <= 1000; ++i)
+  {
+    const double stamp = 10. + .1*i;
+    DynamicPointBufferTestAccessor::feed(buffer, observation(stamp, {i}));
+    const auto current = buffer.getSnapshot(timeFromSec(stamp));
+    ASSERT_TRUE(current.valid);
+    ASSERT_EQ(1u, current.points.size());
+    EXPECT_EQ(i, current.points.front().track_id);
+    EXPECT_EQ(i, current.sequence);
+  }
+}
+
+TEST(DynamicPointBuffer, StaleAndFutureStreamsRemainUnavailableEvenWhenEmpty)
+{
+  for (const auto ids : {std::initializer_list<std::uint32_t>{},
+                        std::initializer_list<std::uint32_t>{1u}})
+  {
+    plan_env::DynamicPointBuffer buffer;
+    DynamicPointBufferTestAccessor::feed(buffer, observation(10., ids));
+    const auto stale = buffer.getSnapshot(timeFromSec(10.4));
+    EXPECT_FALSE(stale.valid);
+    EXPECT_EQ("stale", stale.invalid_reason);
+    const auto future = buffer.getSnapshot(timeFromSec(9.8));
+    EXPECT_FALSE(future.valid);
+    EXPECT_EQ("future_stamp", future.invalid_reason);
+  }
+}
+
+TEST(DynamicPointBuffer, OlderObservationCannotReplaceNewerRealSourceEpoch)
+{
+  plan_env::DynamicPointBuffer buffer;
+  DynamicPointBufferTestAccessor::feed(buffer, observation(10.2, {2}));
+  DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {1}));
+  const auto current = buffer.getSnapshot(timeFromSec(10.2));
+  ASSERT_TRUE(current.valid);
+  ASSERT_EQ(1u, current.points.size());
+  EXPECT_EQ(2u, current.points.front().track_id);
+  EXPECT_EQ(timeFromSec(10.2), current.stamp);
+  EXPECT_EQ(1u, current.sequence);
+}
+
+TEST(DynamicPointBuffer, FutureOrDuplicatePacketCannotPoisonFollowingValidInput)
+{
+  plan_env::DynamicPointBuffer buffer;
+  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
+  auto future = observation(90., {9});
+  future.receive_time = timeFromSec(10.1);
+  DynamicPointBufferTestAccessor::feed(buffer, future);
+  EXPECT_EQ(timeFromSec(10.), buffer.getSnapshot(timeFromSec(10.1)).stamp);
+  DynamicPointBufferTestAccessor::feed(buffer, observation(10.2, {2}));
+  DynamicPointBufferTestAccessor::feed(buffer, observation(10.2, {9}));
+  const auto current = buffer.getSnapshot(timeFromSec(10.2));
+  ASSERT_TRUE(current.valid);
+  ASSERT_EQ(1u, current.points.size());
+  EXPECT_EQ(2u, current.points.front().track_id);
+  EXPECT_EQ(2u, current.sequence);
 }
 
 }  // namespace
@@ -191,5 +297,6 @@ TEST(DynamicPointBuffer, UnconfirmedEmptyFramesRetainOnlyValidHistory)
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
+  ros::Time::init();
   return RUN_ALL_TESTS();
 }

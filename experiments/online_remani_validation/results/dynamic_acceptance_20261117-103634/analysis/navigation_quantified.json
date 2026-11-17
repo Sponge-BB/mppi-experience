@@ -1,0 +1,1845 @@
+{
+  "goal1_full": {
+    "start": "10:38:21.607",
+    "end": "10:39:15.939",
+    "duration_s": 54.332,
+    "mppi_cycles": 527,
+    "states": {
+      "command_delivered": 276,
+      "planning_deadline_exceeded": 10,
+      "collision_snapshot_expired_during_plan": 60,
+      "delivery_deadline_exceeded": 20,
+      "collision_snapshot_unavailable": 93,
+      "inputs_expired_before_delivery": 27,
+      "waiting_explicit_arm_enable_or_normal_status": 9,
+      "state_feedback_stale": 2,
+      "native_reference_cancelled": 28,
+      "reference_changed_during_plan": 2
+    },
+    "rejected_pct": 47.63,
+    "feasible_candidate_but_rejected_count": 117,
+    "rejection_bad_flag_combinations": {
+      "('map_age_ok', 'snapshot_valid')": 48,
+      "('map_age_ok',)": 123,
+      "('base_fresh',)": 3,
+      "('dynamic_age_ok', 'snapshot_valid', 'dynamic_valid')": 4,
+      "('map_age_ok', 'base_fresh')": 1,
+      "('map_age_ok', 'dynamic_age_ok', 'snapshot_valid', 'dynamic_valid')": 1
+    },
+    "rejection_bad_flags": {
+      "map_age_ok": 173,
+      "snapshot_valid": 53,
+      "base_fresh": 4,
+      "dynamic_age_ok": 5,
+      "dynamic_valid": 5
+    },
+    "modes": {
+      "reference_wait_hold": 8,
+      "nominal": 385,
+      "unknown": 132,
+      "whole_body_fallback": 2
+    },
+    "delivered_modes": {
+      "reference_wait_hold": 8,
+      "nominal": 268
+    },
+    "timings": {
+      "planning_elapsed_ms": {
+        "n": 423,
+        "p50": 37.354,
+        "p95": 75.915,
+        "max": 138.615
+      },
+      "first_step_check_ms": {
+        "n": 323,
+        "p50": 11.598,
+        "p95": 35.104,
+        "max": 57.715
+      },
+      "delivery_elapsed_ms": {
+        "n": 296,
+        "p50": 57.368,
+        "p95": 99.74,
+        "max": 133.719
+      },
+      "delivery_lock_wait_ms": {
+        "n": 383,
+        "p50": 0.002,
+        "p95": 0.004,
+        "max": 0.741
+      },
+      "delivery_lock_hold_ms": {
+        "n": 383,
+        "p50": 16.246,
+        "p95": 42.921,
+        "max": 77.916
+      },
+      "cycle_ms": {
+        "n": 527,
+        "p50": 48.41,
+        "p95": 102.018,
+        "max": 138.87
+      },
+      "capture_map_age_ms": {
+        "n": 518,
+        "p50": 287.18,
+        "p95": 416.651,
+        "max": 641.798
+      },
+      "snapshot_decode_ms": {
+        "n": 518,
+        "p50": 0.359,
+        "p95": 4.804,
+        "max": 36.745
+      },
+      "delivered_base_v": {
+        "n": 276,
+        "p50": -0.029,
+        "p95": 0.171,
+        "max": 0.22
+      },
+      "delivered_base_w": {
+        "n": 276,
+        "p50": 0.089,
+        "p95": 0.35,
+        "max": 0.35
+      }
+    },
+    "cmd_count": 528,
+    "zero_command_count": 259,
+    "zero_time_s": 30.809,
+    "zero_runs_s": {
+      "n": 120,
+      "p50": 0.161,
+      "p95": 0.816,
+      "max": 1.777
+    },
+    "moving_to_zero_transitions": 119,
+    "nearby_rejection_for_transition": {
+      "unmatched": 17,
+      "planning_deadline_exceeded": 5,
+      "collision_snapshot_expired_during_plan": 33,
+      "delivery_deadline_exceeded": 15,
+      "inputs_expired_before_delivery": 16,
+      "collision_snapshot_unavailable": 29,
+      "waiting_explicit_arm_enable_or_normal_status": 2,
+      "native_reference_cancelled": 2
+    },
+    "examples": [
+      {
+        "time": "10:38:24.396",
+        "from_v": 0.06178755888584359,
+        "from_w": -0.35,
+        "state": "planning_deadline_exceeded",
+        "receipt_dt_ms": 14.341,
+        "cycle_ms": 99.55,
+        "checked": {
+          "base_age_ms": 97.16,
+          "base_fresh": true,
+          "joint_age_ms": 8.484,
+          "joint_fresh": true,
+          "map_age_ms": 251.842,
+          "dynamic_age_ms": 97.16,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:25.101",
+        "from_v": 0.16708146783813538,
+        "from_w": -0.009134861134921353,
+        "state": "planning_deadline_exceeded",
+        "receipt_dt_ms": 47.994,
+        "cycle_ms": 101.36,
+        "checked": {
+          "base_age_ms": 95.899,
+          "base_fresh": true,
+          "joint_age_ms": 14.65,
+          "joint_fresh": true,
+          "map_age_ms": 305.816,
+          "dynamic_age_ms": 198.916,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:25.254",
+        "from_v": 0.17451244288284856,
+        "from_w": 0.09009637598820466,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 34.307,
+        "cycle_ms": 56.6,
+        "checked": {
+          "base_age_ms": 53.233,
+          "base_fresh": true,
+          "joint_age_ms": 19.973,
+          "joint_fresh": true,
+          "map_age_ms": 401.951,
+          "dynamic_age_ms": 251.302,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:25.511",
+        "from_v": 0.19631203803861383,
+        "from_w": 0.1358967757391367,
+        "state": "delivery_deadline_exceeded",
+        "receipt_dt_ms": 68.626,
+        "cycle_ms": 113.96,
+        "checked": {
+          "base_age_ms": 106.537,
+          "base_fresh": true,
+          "joint_age_ms": 41.964,
+          "joint_fresh": true,
+          "map_age_ms": 251.113,
+          "dynamic_age_ms": 206.55,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:26.133",
+        "from_v": 0.21373643769005493,
+        "from_w": 0.19601925572943274,
+        "state": "delivery_deadline_exceeded",
+        "receipt_dt_ms": 14.212,
+        "cycle_ms": 134.48,
+        "checked": {
+          "base_age_ms": 128.298,
+          "base_fresh": true,
+          "joint_age_ms": 49.037,
+          "joint_fresh": true,
+          "map_age_ms": 199.407,
+          "dynamic_age_ms": 128.298,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:26.413",
+        "from_v": 0.21564357157176722,
+        "from_w": 0.18571042393639345,
+        "state": "delivery_deadline_exceeded",
+        "receipt_dt_ms": 31.683,
+        "cycle_ms": 108.73,
+        "checked": {
+          "base_age_ms": 109.688,
+          "base_fresh": true,
+          "joint_age_ms": 21.384,
+          "joint_fresh": true,
+          "map_age_ms": 300.837,
+          "dynamic_age_ms": 210.669,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:26.863",
+        "from_v": 0.20548035105938867,
+        "from_w": 0.24064675103033153,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 54.822,
+        "cycle_ms": 26.57,
+        "checked": {
+          "base_age_ms": 62.625,
+          "base_fresh": true,
+          "joint_age_ms": 23.369,
+          "joint_fresh": true,
+          "map_age_ms": 364.349,
+          "dynamic_age_ms": 162.546,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:27.348",
+        "from_v": 0.17943494172760033,
+        "from_w": 0.2493873425973128,
+        "state": "inputs_expired_before_delivery",
+        "receipt_dt_ms": 58.283,
+        "cycle_ms": 52.74,
+        "checked": {
+          "base_age_ms": 143.725,
+          "base_fresh": true,
+          "joint_age_ms": 39.912,
+          "joint_fresh": true,
+          "map_age_ms": 354.534,
+          "dynamic_age_ms": 143.725,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:27.731",
+        "from_v": 0.17579847512357985,
+        "from_w": 0.25257874745980613,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 15.963,
+        "cycle_ms": 29.2,
+        "checked": {
+          "base_age_ms": 129.958,
+          "base_fresh": true,
+          "joint_age_ms": 16.243,
+          "joint_fresh": true,
+          "map_age_ms": 369.877,
+          "dynamic_age_ms": 129.958,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:28.131",
+        "from_v": 0.1704090790125781,
+        "from_w": 0.2413117276735105,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 11.658,
+        "cycle_ms": 34.46,
+        "checked": {
+          "base_age_ms": 31.214,
+          "base_fresh": true,
+          "joint_age_ms": 7.294,
+          "joint_fresh": true,
+          "map_age_ms": 356.905,
+          "dynamic_age_ms": 131.635,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:28.757",
+        "from_v": 0.161204418717482,
+        "from_w": 0.22877989235300658,
+        "state": "inputs_expired_before_delivery",
+        "receipt_dt_ms": 31.045,
+        "cycle_ms": 60.56,
+        "checked": {
+          "base_age_ms": 56.796,
+          "base_fresh": true,
+          "joint_age_ms": 22.786,
+          "joint_fresh": true,
+          "map_age_ms": 358.543,
+          "dynamic_age_ms": 157.174,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:29.269",
+        "from_v": 0.09156297280653085,
+        "from_w": 0.05000485562247592,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 24.633,
+        "cycle_ms": 69.42,
+        "checked": {
+          "base_age_ms": 66.519,
+          "base_fresh": true,
+          "joint_age_ms": 20.89,
+          "joint_fresh": true,
+          "map_age_ms": 354.419,
+          "dynamic_age_ms": 66.519,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:29.961",
+        "from_v": 0.06187846275822237,
+        "from_w": 0.0190573548252849,
+        "state": "inputs_expired_before_delivery",
+        "receipt_dt_ms": 8.47,
+        "cycle_ms": 63.53,
+        "checked": {
+          "base_age_ms": 152.693,
+          "base_fresh": false,
+          "joint_age_ms": 48.578,
+          "joint_fresh": true,
+          "map_age_ms": 246.667,
+          "dynamic_age_ms": 251.847,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:30.512",
+        "from_v": 0.06769396826701882,
+        "from_w": 0.03183813791194432,
+        "state": "delivery_deadline_exceeded",
+        "receipt_dt_ms": 58.315,
+        "cycle_ms": 113.9,
+        "checked": {
+          "base_age_ms": 105.813,
+          "base_fresh": true,
+          "joint_age_ms": 41.567,
+          "joint_fresh": true,
+          "map_age_ms": 252.786,
+          "dynamic_age_ms": 205.873,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:30.830",
+        "from_v": 0.10977487690948606,
+        "from_w": 0.16099176038384003,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 6.413,
+        "cycle_ms": 32.43,
+        "checked": {
+          "base_age_ms": 29.634,
+          "base_fresh": true,
+          "joint_age_ms": 15.824,
+          "joint_fresh": true,
+          "map_age_ms": 369.753,
+          "dynamic_age_ms": 120.204,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:38:31.055",
+        "from_v": 0.14792011621768628,
+        "from_w": 0.2708501422379011,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 53.754,
+        "cycle_ms": 57.9,
+        "checked": {
+          "base_age_ms": 53.934,
+          "base_fresh": true,
+          "joint_age_ms": 6.46,
+          "joint_fresh": true,
+          "map_age_ms": 395.709,
+          "dynamic_age_ms": 255.264,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      }
+    ],
+    "trajectory_messages": 8,
+    "trajectory_cancels": 3,
+    "max_dynamic_output_points": 0,
+    "nonempty_dynamic_point_frames": 0,
+    "last_position_error_m": 0.027693763477589898,
+    "odom_end": {
+      "t": 1794883155.9159124,
+      "source_t": 1794883155.8991551,
+      "x": 0.4992324119402201,
+      "y": -1.6544128700520182,
+      "yaw": 1.5833578353077518,
+      "vx": -0.0893099242402467,
+      "vy": -0.010330198810211967,
+      "w": -0.14158965754998298
+    }
+  },
+  "goal2_start20s": {
+    "start": "10:41:11.600",
+    "end": "10:41:31.600",
+    "duration_s": 20.0,
+    "mppi_cycles": 179,
+    "states": {
+      "command_delivered": 51,
+      "inputs_expired_before_delivery": 7,
+      "waiting_explicit_arm_enable_or_normal_status": 12,
+      "state_feedback_stale": 1,
+      "collision_snapshot_unavailable": 88,
+      "collision_snapshot_expired_during_plan": 20
+    },
+    "rejected_pct": 71.51,
+    "feasible_candidate_but_rejected_count": 29,
+    "rejection_bad_flag_combinations": {
+      "('map_age_ok',)": 42,
+      "('map_age_ok', 'dynamic_age_ok', 'snapshot_valid', 'dynamic_valid')": 3,
+      "('map_age_ok', 'snapshot_valid')": 65,
+      "('dynamic_age_ok', 'snapshot_valid', 'dynamic_valid')": 4,
+      "('base_fresh',)": 1
+    },
+    "rejection_bad_flags": {
+      "map_age_ok": 110,
+      "dynamic_age_ok": 7,
+      "snapshot_valid": 72,
+      "dynamic_valid": 7,
+      "base_fresh": 1
+    },
+    "modes": {
+      "reference_wait_hold": 2,
+      "unknown": 99,
+      "nominal": 78
+    },
+    "delivered_modes": {
+      "reference_wait_hold": 1,
+      "nominal": 50
+    },
+    "timings": {
+      "planning_elapsed_ms": {
+        "n": 80,
+        "p50": 27.083,
+        "p95": 60.417,
+        "max": 74.391
+      },
+      "first_step_check_ms": {
+        "n": 60,
+        "p50": 9.318,
+        "p95": 20.196,
+        "max": 52.687
+      },
+      "delivery_elapsed_ms": {
+        "n": 53,
+        "p50": 42.252,
+        "p95": 75.046,
+        "max": 89.878
+      },
+      "delivery_lock_wait_ms": {
+        "n": 80,
+        "p50": 0.002,
+        "p95": 0.002,
+        "max": 0.004
+      },
+      "delivery_lock_hold_ms": {
+        "n": 80,
+        "p50": 12.178,
+        "p95": 31.627,
+        "max": 59.005
+      },
+      "cycle_ms": {
+        "n": 179,
+        "p50": 1.46,
+        "p95": 69.704,
+        "max": 99.82
+      },
+      "capture_map_age_ms": {
+        "n": 169,
+        "p50": 351.471,
+        "p95": 518.762,
+        "max": 826.435
+      },
+      "snapshot_decode_ms": {
+        "n": 169,
+        "p50": 0.338,
+        "p95": 3.949,
+        "max": 9.919
+      },
+      "delivered_base_v": {
+        "n": 51,
+        "p50": 0.112,
+        "p95": 0.184,
+        "max": 0.248
+      },
+      "delivered_base_w": {
+        "n": 51,
+        "p50": -0.0,
+        "p95": 0.013,
+        "max": 0.019
+      }
+    },
+    "cmd_count": 184,
+    "zero_command_count": 134,
+    "zero_time_s": 16.912,
+    "zero_runs_s": {
+      "n": 47,
+      "p50": 0.235,
+      "p95": 1.025,
+      "max": 1.354
+    },
+    "moving_to_zero_transitions": 46,
+    "nearby_rejection_for_transition": {
+      "unmatched": 13,
+      "collision_snapshot_expired_during_plan": 12,
+      "collision_snapshot_unavailable": 18,
+      "waiting_explicit_arm_enable_or_normal_status": 2,
+      "inputs_expired_before_delivery": 1
+    },
+    "examples": [
+      {
+        "time": "10:41:16.208",
+        "from_v": 0.16903435464777908,
+        "from_w": 0.0060386275354388135,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 74.63,
+        "cycle_ms": 18.71,
+        "checked": {
+          "base_age_ms": 107.609,
+          "base_fresh": true,
+          "joint_age_ms": 13.731,
+          "joint_fresh": true,
+          "map_age_ms": 358.198,
+          "dynamic_age_ms": 107.609,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:16.490",
+        "from_v": 0.16214957223777882,
+        "from_w": 0.01771606257445118,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": -60.804,
+        "cycle_ms": 0.46,
+        "checked": {
+          "base_age_ms": 93.505,
+          "base_fresh": true,
+          "joint_age_ms": 5.406,
+          "joint_fresh": true,
+          "map_age_ms": 440.093,
+          "dynamic_age_ms": 93.505,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:16.822",
+        "from_v": 0.16277683976464052,
+        "from_w": 0.006537952101264162,
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "receipt_dt_ms": 11.246,
+        "cycle_ms": 33.73,
+        "checked": {
+          "base_age_ms": 114.501,
+          "base_fresh": true,
+          "joint_age_ms": 90.371,
+          "joint_fresh": true,
+          "map_age_ms": 237.067,
+          "dynamic_age_ms": 114.501,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:17.144",
+        "from_v": 0.15937743427895157,
+        "from_w": -0.007648799564014694,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 71.095,
+        "cycle_ms": 50.52,
+        "checked": {
+          "base_age_ms": 38.257,
+          "base_fresh": true,
+          "joint_age_ms": 44.095,
+          "joint_fresh": true,
+          "map_age_ms": 359.786,
+          "dynamic_age_ms": 138.166,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:19.105",
+        "from_v": 0.13654723978556516,
+        "from_w": -0.007696878155783349,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 79.658,
+        "cycle_ms": 41.32,
+        "checked": {
+          "base_age_ms": 105.133,
+          "base_fresh": true,
+          "joint_age_ms": 5.938,
+          "joint_fresh": true,
+          "map_age_ms": 379.73,
+          "dynamic_age_ms": 205.195,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:19.504",
+        "from_v": 0.11910705424719381,
+        "from_w": 0.008929978865694644,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": -58.629,
+        "cycle_ms": 30.03,
+        "checked": {
+          "base_age_ms": 91.179,
+          "base_fresh": true,
+          "joint_age_ms": 7.077,
+          "joint_fresh": true,
+          "map_age_ms": 360.836,
+          "dynamic_age_ms": 191.268,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:20.133",
+        "from_v": 0.11843987781078945,
+        "from_w": 0.009606642291104884,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 71.249,
+        "cycle_ms": 29.63,
+        "checked": {
+          "base_age_ms": 30.783,
+          "base_fresh": true,
+          "joint_age_ms": 16.696,
+          "joint_fresh": true,
+          "map_age_ms": 368.035,
+          "dynamic_age_ms": 130.875,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:20.615",
+        "from_v": 0.11603482006156185,
+        "from_w": 0.0046853777411310915,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": -44.288,
+        "cycle_ms": 0.89,
+        "checked": {
+          "base_age_ms": 75.956,
+          "base_fresh": true,
+          "joint_age_ms": 11.983,
+          "joint_fresh": true,
+          "map_age_ms": 355.325,
+          "dynamic_age_ms": 175.665,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:21.122",
+        "from_v": 0.09807167201385775,
+        "from_w": 0.002069504922899057,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": -42.605,
+        "cycle_ms": 0.51,
+        "checked": {
+          "base_age_ms": 74.045,
+          "base_fresh": true,
+          "joint_age_ms": 10.712,
+          "joint_fresh": true,
+          "map_age_ms": 371.985,
+          "dynamic_age_ms": 175.6,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:21.576",
+        "from_v": 0.10369601819447113,
+        "from_w": -0.004875937423479204,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 16.232,
+        "cycle_ms": 0.41,
+        "checked": {
+          "base_age_ms": 75.988,
+          "base_fresh": true,
+          "joint_age_ms": 5.771,
+          "joint_fresh": true,
+          "map_age_ms": 368.589,
+          "dynamic_age_ms": 75.988,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:21.875",
+        "from_v": 0.09609244758385363,
+        "from_w": 0.007954058994913105,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 47.508,
+        "cycle_ms": 0.41,
+        "checked": {
+          "base_age_ms": 74.963,
+          "base_fresh": true,
+          "joint_age_ms": 5.714,
+          "joint_fresh": true,
+          "map_age_ms": 353.12,
+          "dynamic_age_ms": 176.197,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:22.275",
+        "from_v": 0.09031011505930106,
+        "from_w": 0.010148763765515767,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 48.002,
+        "cycle_ms": 0.41,
+        "checked": {
+          "base_age_ms": 74.841,
+          "base_fresh": true,
+          "joint_age_ms": 5.683,
+          "joint_fresh": true,
+          "map_age_ms": 365.567,
+          "dynamic_age_ms": 74.841,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:22.776",
+        "from_v": 0.0862167302834816,
+        "from_w": -0.0036737555642252675,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 21.183,
+        "cycle_ms": 1.34,
+        "checked": {
+          "base_age_ms": 75.484,
+          "base_fresh": true,
+          "joint_age_ms": 16.294,
+          "joint_fresh": true,
+          "map_age_ms": 412.31,
+          "dynamic_age_ms": 176.116,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:23.075",
+        "from_v": 0.08387890250327347,
+        "from_w": -0.007185856851609174,
+        "state": "inputs_expired_before_delivery",
+        "receipt_dt_ms": 59.081,
+        "cycle_ms": 99.82,
+        "checked": {
+          "base_age_ms": 161.388,
+          "base_fresh": false,
+          "joint_age_ms": 71.396,
+          "joint_fresh": true,
+          "map_age_ms": 294.948,
+          "dynamic_age_ms": 161.388,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:23.376",
+        "from_v": 0.06655308360853736,
+        "from_w": -0.008149932062317155,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 52.505,
+        "cycle_ms": 0.42,
+        "checked": {
+          "base_age_ms": 74.951,
+          "base_fresh": true,
+          "joint_age_ms": 10.724,
+          "joint_fresh": true,
+          "map_age_ms": 412.57,
+          "dynamic_age_ms": 174.757,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:23.893",
+        "from_v": 0.0709660137107729,
+        "from_w": 0.005832387638848857,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 53.445,
+        "cycle_ms": 18.71,
+        "checked": {
+          "base_age_ms": 92.232,
+          "base_fresh": true,
+          "joint_age_ms": 9.047,
+          "joint_fresh": true,
+          "map_age_ms": 360.484,
+          "dynamic_age_ms": 92.232,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      }
+    ],
+    "trajectory_messages": 1,
+    "trajectory_cancels": 0,
+    "max_dynamic_output_points": 0,
+    "nonempty_dynamic_point_frames": 0,
+    "last_position_error_m": 3.1000972908279327,
+    "odom_end": {
+      "t": 1794883291.6200883,
+      "source_t": 1794883291.5995357,
+      "x": 0.5118681686600892,
+      "y": -1.367463698151843,
+      "yaw": 1.5718956727938735,
+      "vx": 0.023920222406064437,
+      "vy": 0.005419545366216518,
+      "w": 0.0060351163689194845
+    }
+  },
+  "goal2_before_first_lidar_stop": {
+    "start": "10:41:11.600",
+    "end": "10:41:35.489",
+    "duration_s": 23.89,
+    "mppi_cycles": 211,
+    "states": {
+      "command_delivered": 61,
+      "inputs_expired_before_delivery": 9,
+      "waiting_explicit_arm_enable_or_normal_status": 13,
+      "state_feedback_stale": 1,
+      "collision_snapshot_unavailable": 105,
+      "collision_snapshot_expired_during_plan": 22
+    },
+    "rejected_pct": 71.09,
+    "feasible_candidate_but_rejected_count": 33,
+    "rejection_bad_flag_combinations": {
+      "('map_age_ok',)": 51,
+      "('map_age_ok', 'dynamic_age_ok', 'snapshot_valid', 'dynamic_valid')": 3,
+      "('map_age_ok', 'snapshot_valid')": 77,
+      "('dynamic_age_ok', 'snapshot_valid', 'dynamic_valid')": 4,
+      "('base_fresh',)": 1
+    },
+    "rejection_bad_flags": {
+      "map_age_ok": 131,
+      "dynamic_age_ok": 7,
+      "snapshot_valid": 84,
+      "dynamic_valid": 7,
+      "base_fresh": 1
+    },
+    "modes": {
+      "reference_wait_hold": 2,
+      "unknown": 117,
+      "nominal": 92
+    },
+    "delivered_modes": {
+      "reference_wait_hold": 1,
+      "nominal": 60
+    },
+    "timings": {
+      "planning_elapsed_ms": {
+        "n": 94,
+        "p50": 27.8,
+        "p95": 60.576,
+        "max": 74.391
+      },
+      "first_step_check_ms": {
+        "n": 72,
+        "p50": 8.823,
+        "p95": 19.942,
+        "max": 52.687
+      },
+      "delivery_elapsed_ms": {
+        "n": 63,
+        "p50": 42.284,
+        "p95": 77.569,
+        "max": 89.878
+      },
+      "delivery_lock_wait_ms": {
+        "n": 94,
+        "p50": 0.002,
+        "p95": 0.002,
+        "max": 0.004
+      },
+      "delivery_lock_hold_ms": {
+        "n": 94,
+        "p50": 12.178,
+        "p95": 31.532,
+        "max": 59.005
+      },
+      "cycle_ms": {
+        "n": 211,
+        "p50": 1.34,
+        "p95": 71.575,
+        "max": 99.82
+      },
+      "capture_map_age_ms": {
+        "n": 200,
+        "p50": 353.376,
+        "p95": 513.215,
+        "max": 826.435
+      },
+      "snapshot_decode_ms": {
+        "n": 200,
+        "p50": 0.339,
+        "p95": 4.747,
+        "max": 14.487
+      },
+      "delivered_base_v": {
+        "n": 61,
+        "p50": 0.096,
+        "p95": 0.18,
+        "max": 0.248
+      },
+      "delivered_base_w": {
+        "n": 61,
+        "p50": 0.0,
+        "p95": 0.013,
+        "max": 0.019
+      }
+    },
+    "cmd_count": 216,
+    "zero_command_count": 156,
+    "zero_time_s": 20.245,
+    "zero_runs_s": {
+      "n": 58,
+      "p50": 0.235,
+      "p95": 0.986,
+      "max": 1.354
+    },
+    "moving_to_zero_transitions": 57,
+    "nearby_rejection_for_transition": {
+      "unmatched": 15,
+      "collision_snapshot_expired_during_plan": 14,
+      "collision_snapshot_unavailable": 24,
+      "waiting_explicit_arm_enable_or_normal_status": 3,
+      "inputs_expired_before_delivery": 1
+    },
+    "examples": [
+      {
+        "time": "10:41:16.208",
+        "from_v": 0.16903435464777908,
+        "from_w": 0.0060386275354388135,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 74.63,
+        "cycle_ms": 18.71,
+        "checked": {
+          "base_age_ms": 107.609,
+          "base_fresh": true,
+          "joint_age_ms": 13.731,
+          "joint_fresh": true,
+          "map_age_ms": 358.198,
+          "dynamic_age_ms": 107.609,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:16.490",
+        "from_v": 0.16214957223777882,
+        "from_w": 0.01771606257445118,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": -60.804,
+        "cycle_ms": 0.46,
+        "checked": {
+          "base_age_ms": 93.505,
+          "base_fresh": true,
+          "joint_age_ms": 5.406,
+          "joint_fresh": true,
+          "map_age_ms": 440.093,
+          "dynamic_age_ms": 93.505,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:16.822",
+        "from_v": 0.16277683976464052,
+        "from_w": 0.006537952101264162,
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "receipt_dt_ms": 11.246,
+        "cycle_ms": 33.73,
+        "checked": {
+          "base_age_ms": 114.501,
+          "base_fresh": true,
+          "joint_age_ms": 90.371,
+          "joint_fresh": true,
+          "map_age_ms": 237.067,
+          "dynamic_age_ms": 114.501,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:17.144",
+        "from_v": 0.15937743427895157,
+        "from_w": -0.007648799564014694,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 71.095,
+        "cycle_ms": 50.52,
+        "checked": {
+          "base_age_ms": 38.257,
+          "base_fresh": true,
+          "joint_age_ms": 44.095,
+          "joint_fresh": true,
+          "map_age_ms": 359.786,
+          "dynamic_age_ms": 138.166,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:19.105",
+        "from_v": 0.13654723978556516,
+        "from_w": -0.007696878155783349,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 79.658,
+        "cycle_ms": 41.32,
+        "checked": {
+          "base_age_ms": 105.133,
+          "base_fresh": true,
+          "joint_age_ms": 5.938,
+          "joint_fresh": true,
+          "map_age_ms": 379.73,
+          "dynamic_age_ms": 205.195,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:19.504",
+        "from_v": 0.11910705424719381,
+        "from_w": 0.008929978865694644,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": -58.629,
+        "cycle_ms": 30.03,
+        "checked": {
+          "base_age_ms": 91.179,
+          "base_fresh": true,
+          "joint_age_ms": 7.077,
+          "joint_fresh": true,
+          "map_age_ms": 360.836,
+          "dynamic_age_ms": 191.268,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:20.133",
+        "from_v": 0.11843987781078945,
+        "from_w": 0.009606642291104884,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 71.249,
+        "cycle_ms": 29.63,
+        "checked": {
+          "base_age_ms": 30.783,
+          "base_fresh": true,
+          "joint_age_ms": 16.696,
+          "joint_fresh": true,
+          "map_age_ms": 368.035,
+          "dynamic_age_ms": 130.875,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:20.615",
+        "from_v": 0.11603482006156185,
+        "from_w": 0.0046853777411310915,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": -44.288,
+        "cycle_ms": 0.89,
+        "checked": {
+          "base_age_ms": 75.956,
+          "base_fresh": true,
+          "joint_age_ms": 11.983,
+          "joint_fresh": true,
+          "map_age_ms": 355.325,
+          "dynamic_age_ms": 175.665,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:21.122",
+        "from_v": 0.09807167201385775,
+        "from_w": 0.002069504922899057,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": -42.605,
+        "cycle_ms": 0.51,
+        "checked": {
+          "base_age_ms": 74.045,
+          "base_fresh": true,
+          "joint_age_ms": 10.712,
+          "joint_fresh": true,
+          "map_age_ms": 371.985,
+          "dynamic_age_ms": 175.6,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:21.576",
+        "from_v": 0.10369601819447113,
+        "from_w": -0.004875937423479204,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 16.232,
+        "cycle_ms": 0.41,
+        "checked": {
+          "base_age_ms": 75.988,
+          "base_fresh": true,
+          "joint_age_ms": 5.771,
+          "joint_fresh": true,
+          "map_age_ms": 368.589,
+          "dynamic_age_ms": 75.988,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:21.875",
+        "from_v": 0.09609244758385363,
+        "from_w": 0.007954058994913105,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 47.508,
+        "cycle_ms": 0.41,
+        "checked": {
+          "base_age_ms": 74.963,
+          "base_fresh": true,
+          "joint_age_ms": 5.714,
+          "joint_fresh": true,
+          "map_age_ms": 353.12,
+          "dynamic_age_ms": 176.197,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:22.275",
+        "from_v": 0.09031011505930106,
+        "from_w": 0.010148763765515767,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 48.002,
+        "cycle_ms": 0.41,
+        "checked": {
+          "base_age_ms": 74.841,
+          "base_fresh": true,
+          "joint_age_ms": 5.683,
+          "joint_fresh": true,
+          "map_age_ms": 365.567,
+          "dynamic_age_ms": 74.841,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:22.776",
+        "from_v": 0.0862167302834816,
+        "from_w": -0.0036737555642252675,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 21.183,
+        "cycle_ms": 1.34,
+        "checked": {
+          "base_age_ms": 75.484,
+          "base_fresh": true,
+          "joint_age_ms": 16.294,
+          "joint_fresh": true,
+          "map_age_ms": 412.31,
+          "dynamic_age_ms": 176.116,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:23.075",
+        "from_v": 0.08387890250327347,
+        "from_w": -0.007185856851609174,
+        "state": "inputs_expired_before_delivery",
+        "receipt_dt_ms": 59.081,
+        "cycle_ms": 99.82,
+        "checked": {
+          "base_age_ms": 161.388,
+          "base_fresh": false,
+          "joint_age_ms": 71.396,
+          "joint_fresh": true,
+          "map_age_ms": 294.948,
+          "dynamic_age_ms": 161.388,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:23.376",
+        "from_v": 0.06655308360853736,
+        "from_w": -0.008149932062317155,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 52.505,
+        "cycle_ms": 0.42,
+        "checked": {
+          "base_age_ms": 74.951,
+          "base_fresh": true,
+          "joint_age_ms": 10.724,
+          "joint_fresh": true,
+          "map_age_ms": 412.57,
+          "dynamic_age_ms": 174.757,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:23.893",
+        "from_v": 0.0709660137107729,
+        "from_w": 0.005832387638848857,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 53.445,
+        "cycle_ms": 18.71,
+        "checked": {
+          "base_age_ms": 92.232,
+          "base_fresh": true,
+          "joint_age_ms": 9.047,
+          "joint_fresh": true,
+          "map_age_ms": 360.484,
+          "dynamic_age_ms": 92.232,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      }
+    ],
+    "trajectory_messages": 1,
+    "trajectory_cancels": 0,
+    "max_dynamic_output_points": 0,
+    "nonempty_dynamic_point_frames": 0,
+    "last_position_error_m": 3.064915639074002,
+    "odom_end": {
+      "t": 1794883295.4135923,
+      "source_t": 1794883295.3994079,
+      "x": 0.5072085546162458,
+      "y": -1.3323268886031685,
+      "yaw": 1.5652562495699225,
+      "vx": -0.005269001831057079,
+      "vy": -0.008270805011624326,
+      "w": 0.000721145747612464
+    }
+  },
+  "goal2_full_test": {
+    "start": "10:41:11.600",
+    "end": "10:45:17.319",
+    "duration_s": 245.719,
+    "mppi_cycles": 1939,
+    "states": {
+      "command_delivered": 479,
+      "inputs_expired_before_delivery": 79,
+      "waiting_explicit_arm_enable_or_normal_status": 39,
+      "state_feedback_stale": 7,
+      "collision_snapshot_unavailable": 454,
+      "collision_snapshot_expired_during_plan": 144,
+      "native_reference_cancelled": 669,
+      "delivery_deadline_exceeded": 28,
+      "planning_deadline_exceeded": 37,
+      "feedback_expired_during_plan": 1,
+      "reference_changed_during_plan": 2
+    },
+    "rejected_pct": 75.3,
+    "feasible_candidate_but_rejected_count": 298,
+    "rejection_bad_flag_combinations": {
+      "('map_age_ok',)": 373,
+      "('map_age_ok', 'dynamic_age_ok', 'snapshot_valid', 'dynamic_valid')": 8,
+      "('map_age_ok', 'snapshot_valid')": 275,
+      "('dynamic_age_ok', 'snapshot_valid', 'dynamic_valid')": 10,
+      "('base_fresh',)": 5,
+      "('dynamic_age_ok',)": 3,
+      "('map_age_ok', 'dynamic_age_ok')": 3
+    },
+    "rejection_bad_flags": {
+      "map_age_ok": 659,
+      "dynamic_age_ok": 24,
+      "snapshot_valid": 293,
+      "dynamic_valid": 18,
+      "base_fresh": 5
+    },
+    "modes": {
+      "reference_wait_hold": 8,
+      "unknown": 1162,
+      "nominal": 569,
+      "arm_only": 200
+    },
+    "delivered_modes": {
+      "reference_wait_hold": 6,
+      "nominal": 390,
+      "arm_only": 83
+    },
+    "timings": {
+      "planning_elapsed_ms": {
+        "n": 1446,
+        "p50": 18.929,
+        "p95": 76.702,
+        "max": 158.118
+      },
+      "first_step_check_ms": {
+        "n": 593,
+        "p50": 10.027,
+        "p95": 23.619,
+        "max": 52.687
+      },
+      "delivery_elapsed_ms": {
+        "n": 514,
+        "p50": 51.382,
+        "p95": 96.718,
+        "max": 111.926
+      },
+      "delivery_lock_wait_ms": {
+        "n": 738,
+        "p50": 0.002,
+        "p95": 0.003,
+        "max": 1.441
+      },
+      "delivery_lock_hold_ms": {
+        "n": 738,
+        "p50": 13.449,
+        "p95": 31.014,
+        "max": 59.005
+      },
+      "cycle_ms": {
+        "n": 1939,
+        "p50": 1.25,
+        "p95": 89.106,
+        "max": 158.4
+      },
+      "capture_map_age_ms": {
+        "n": 1907,
+        "p50": 288.748,
+        "p95": 452.833,
+        "max": 2560.264
+      },
+      "snapshot_decode_ms": {
+        "n": 1907,
+        "p50": 0.352,
+        "p95": 3.699,
+        "max": 24.969
+      },
+      "delivered_base_v": {
+        "n": 479,
+        "p50": 0.104,
+        "p95": 0.195,
+        "max": 0.248
+      },
+      "delivered_base_w": {
+        "n": 479,
+        "p50": 0.0,
+        "p95": 0.35,
+        "max": 0.35
+      }
+    },
+    "cmd_count": 1960,
+    "zero_command_count": 1488,
+    "zero_time_s": 210.065,
+    "zero_runs_s": {
+      "n": 315,
+      "p50": 0.175,
+      "p95": 1.508,
+      "max": 66.684
+    },
+    "moving_to_zero_transitions": 309,
+    "nearby_rejection_for_transition": {
+      "unmatched": 58,
+      "collision_snapshot_expired_during_plan": 72,
+      "collision_snapshot_unavailable": 129,
+      "waiting_explicit_arm_enable_or_normal_status": 6,
+      "inputs_expired_before_delivery": 20,
+      "delivery_deadline_exceeded": 9,
+      "planning_deadline_exceeded": 12,
+      "feedback_expired_during_plan": 1,
+      "native_reference_cancelled": 1,
+      "reference_changed_during_plan": 1
+    },
+    "examples": [
+      {
+        "time": "10:41:16.208",
+        "from_v": 0.16903435464777908,
+        "from_w": 0.0060386275354388135,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 74.63,
+        "cycle_ms": 18.71,
+        "checked": {
+          "base_age_ms": 107.609,
+          "base_fresh": true,
+          "joint_age_ms": 13.731,
+          "joint_fresh": true,
+          "map_age_ms": 358.198,
+          "dynamic_age_ms": 107.609,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:16.490",
+        "from_v": 0.16214957223777882,
+        "from_w": 0.01771606257445118,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": -60.804,
+        "cycle_ms": 0.46,
+        "checked": {
+          "base_age_ms": 93.505,
+          "base_fresh": true,
+          "joint_age_ms": 5.406,
+          "joint_fresh": true,
+          "map_age_ms": 440.093,
+          "dynamic_age_ms": 93.505,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:16.822",
+        "from_v": 0.16277683976464052,
+        "from_w": 0.006537952101264162,
+        "state": "waiting_explicit_arm_enable_or_normal_status",
+        "receipt_dt_ms": 11.246,
+        "cycle_ms": 33.73,
+        "checked": {
+          "base_age_ms": 114.501,
+          "base_fresh": true,
+          "joint_age_ms": 90.371,
+          "joint_fresh": true,
+          "map_age_ms": 237.067,
+          "dynamic_age_ms": 114.501,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:17.144",
+        "from_v": 0.15937743427895157,
+        "from_w": -0.007648799564014694,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 71.095,
+        "cycle_ms": 50.52,
+        "checked": {
+          "base_age_ms": 38.257,
+          "base_fresh": true,
+          "joint_age_ms": 44.095,
+          "joint_fresh": true,
+          "map_age_ms": 359.786,
+          "dynamic_age_ms": 138.166,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:19.105",
+        "from_v": 0.13654723978556516,
+        "from_w": -0.007696878155783349,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 79.658,
+        "cycle_ms": 41.32,
+        "checked": {
+          "base_age_ms": 105.133,
+          "base_fresh": true,
+          "joint_age_ms": 5.938,
+          "joint_fresh": true,
+          "map_age_ms": 379.73,
+          "dynamic_age_ms": 205.195,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:19.504",
+        "from_v": 0.11910705424719381,
+        "from_w": 0.008929978865694644,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": -58.629,
+        "cycle_ms": 30.03,
+        "checked": {
+          "base_age_ms": 91.179,
+          "base_fresh": true,
+          "joint_age_ms": 7.077,
+          "joint_fresh": true,
+          "map_age_ms": 360.836,
+          "dynamic_age_ms": 191.268,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:20.133",
+        "from_v": 0.11843987781078945,
+        "from_w": 0.009606642291104884,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 71.249,
+        "cycle_ms": 29.63,
+        "checked": {
+          "base_age_ms": 30.783,
+          "base_fresh": true,
+          "joint_age_ms": 16.696,
+          "joint_fresh": true,
+          "map_age_ms": 368.035,
+          "dynamic_age_ms": 130.875,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:20.615",
+        "from_v": 0.11603482006156185,
+        "from_w": 0.0046853777411310915,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": -44.288,
+        "cycle_ms": 0.89,
+        "checked": {
+          "base_age_ms": 75.956,
+          "base_fresh": true,
+          "joint_age_ms": 11.983,
+          "joint_fresh": true,
+          "map_age_ms": 355.325,
+          "dynamic_age_ms": 175.665,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:21.122",
+        "from_v": 0.09807167201385775,
+        "from_w": 0.002069504922899057,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": -42.605,
+        "cycle_ms": 0.51,
+        "checked": {
+          "base_age_ms": 74.045,
+          "base_fresh": true,
+          "joint_age_ms": 10.712,
+          "joint_fresh": true,
+          "map_age_ms": 371.985,
+          "dynamic_age_ms": 175.6,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:21.576",
+        "from_v": 0.10369601819447113,
+        "from_w": -0.004875937423479204,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 16.232,
+        "cycle_ms": 0.41,
+        "checked": {
+          "base_age_ms": 75.988,
+          "base_fresh": true,
+          "joint_age_ms": 5.771,
+          "joint_fresh": true,
+          "map_age_ms": 368.589,
+          "dynamic_age_ms": 75.988,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:21.875",
+        "from_v": 0.09609244758385363,
+        "from_w": 0.007954058994913105,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 47.508,
+        "cycle_ms": 0.41,
+        "checked": {
+          "base_age_ms": 74.963,
+          "base_fresh": true,
+          "joint_age_ms": 5.714,
+          "joint_fresh": true,
+          "map_age_ms": 353.12,
+          "dynamic_age_ms": 176.197,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:22.275",
+        "from_v": 0.09031011505930106,
+        "from_w": 0.010148763765515767,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 48.002,
+        "cycle_ms": 0.41,
+        "checked": {
+          "base_age_ms": 74.841,
+          "base_fresh": true,
+          "joint_age_ms": 5.683,
+          "joint_fresh": true,
+          "map_age_ms": 365.567,
+          "dynamic_age_ms": 74.841,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:22.776",
+        "from_v": 0.0862167302834816,
+        "from_w": -0.0036737555642252675,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 21.183,
+        "cycle_ms": 1.34,
+        "checked": {
+          "base_age_ms": 75.484,
+          "base_fresh": true,
+          "joint_age_ms": 16.294,
+          "joint_fresh": true,
+          "map_age_ms": 412.31,
+          "dynamic_age_ms": 176.116,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:23.075",
+        "from_v": 0.08387890250327347,
+        "from_w": -0.007185856851609174,
+        "state": "inputs_expired_before_delivery",
+        "receipt_dt_ms": 59.081,
+        "cycle_ms": 99.82,
+        "checked": {
+          "base_age_ms": 161.388,
+          "base_fresh": false,
+          "joint_age_ms": 71.396,
+          "joint_fresh": true,
+          "map_age_ms": 294.948,
+          "dynamic_age_ms": 161.388,
+          "map_age_ok": true,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:23.376",
+        "from_v": 0.06655308360853736,
+        "from_w": -0.008149932062317155,
+        "state": "collision_snapshot_unavailable",
+        "receipt_dt_ms": 52.505,
+        "cycle_ms": 0.42,
+        "checked": {
+          "base_age_ms": 74.951,
+          "base_fresh": true,
+          "joint_age_ms": 10.724,
+          "joint_fresh": true,
+          "map_age_ms": 412.57,
+          "dynamic_age_ms": 174.757,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": false,
+          "dynamic_valid": true
+        }
+      },
+      {
+        "time": "10:41:23.893",
+        "from_v": 0.0709660137107729,
+        "from_w": 0.005832387638848857,
+        "state": "collision_snapshot_expired_during_plan",
+        "receipt_dt_ms": 53.445,
+        "cycle_ms": 18.71,
+        "checked": {
+          "base_age_ms": 92.232,
+          "base_fresh": true,
+          "joint_age_ms": 9.047,
+          "joint_fresh": true,
+          "map_age_ms": 360.484,
+          "dynamic_age_ms": 92.232,
+          "map_age_ok": false,
+          "dynamic_age_ok": true,
+          "snapshot_valid": true,
+          "dynamic_valid": true
+        }
+      }
+    ],
+    "trajectory_messages": 40,
+    "trajectory_cancels": 19,
+    "max_dynamic_output_points": 0,
+    "nonempty_dynamic_point_frames": 0,
+    "last_position_error_m": 0.17478928825807533,
+    "odom_end": {
+      "t": 1794883517.3120155,
+      "source_t": 1794883517.2993703,
+      "x": 0.4564429554397892,
+      "y": 1.5590904248971404,
+      "yaw": 1.5336274268198617,
+      "vx": -0.0014269605205432575,
+      "vy": 0.0033358659067029527,
+      "w": 0.00714874812662032
+    }
+  }
+}

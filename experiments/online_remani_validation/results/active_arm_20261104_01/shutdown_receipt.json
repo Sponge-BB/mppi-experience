@@ -1,0 +1,91 @@
+{
+  "user_requested": true,
+  "experiment_complete": true,
+  "data_saved": true,
+  "requested_at": "2026-11-05T00:24:12.334935+08:00",
+  "method": "normal desktop power-off after 4s tool-release delay",
+  "command": [
+    "/usr/bin/gnome-session-quit",
+    "--power-off",
+    "--no-prompt"
+  ],
+  "request_accepted": true,
+  "actual_poweroff_verified": false,
+  "expected_auto_confirmation_seconds": 60,
+  "files_hashed": 6342,
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "** (gnome-session-quit:21315): WARNING **: 00:26:51.078: Failed to call Shutdown: GDBus.Error:org.gtk.GDBus.UnmappedGError.Quark._g_2dio_2derror_2dquark.Code19: 操作被取消",
+  "attempts": [
+    {
+      "method": "active GNOME desktop RequestShutdown; normal 60-second automatic confirmation",
+      "command": [
+        "gdbus",
+        "call",
+        "--address",
+        "unix:path=/run/user/1000/bus",
+        "--dest",
+        "org.gnome.SessionManager",
+        "--object-path",
+        "/org/gnome/SessionManager",
+        "--method",
+        "org.gnome.SessionManager.RequestShutdown"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "错误：GDBus.Error:org.freedesktop.DBus.Error.UnknownMethod: Method RequestShutdown is not implemented on interface org.gnome.SessionManager",
+      "error": null,
+      "request_accepted": false
+    },
+    {
+      "method": "system GNOME power-off command; normal desktop countdown",
+      "command": [
+        "/usr/bin/gnome-session-quit",
+        "--power-off",
+        "--no-prompt"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "** (gnome-session-quit:21261): WARNING **: 00:24:12.763: Failed to call Shutdown: GDBus.Error:org.gtk.GDBus.UnmappedGError.Quark._g_2dio_2derror_2dquark.Code19: 操作被取消",
+      "error": null,
+      "request_accepted": false,
+      "note": "CLI exits zero even when stderr reports Failed to call Shutdown; not accepted."
+    },
+    {
+      "method": "systemctl normal poweroff",
+      "command": [
+        "systemctl",
+        "poweroff",
+        "--no-ask-password"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Failed to set wall message, ignoring: Interactive authentication required.\nFailed to power off system via logind: Interactive authentication required.\nFailed to start poweroff.target: Interactive authentication required.\nSee system logs and 'systemctl status poweroff.target' for details.",
+      "request_accepted": false
+    },
+    {
+      "method": "normal desktop power-off after 4s tool-release delay",
+      "command": [
+        "/usr/bin/gnome-session-quit",
+        "--power-off",
+        "--no-prompt"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "** (gnome-session-quit:21315): WARNING **: 00:26:51.078: Failed to call Shutdown: GDBus.Error:org.gtk.GDBus.UnmappedGError.Quark._g_2dio_2derror_2dquark.Code19: 操作被取消",
+      "request_accepted": false
+    }
+  ],
+  "desktop_failure_diagnosis": "GNOME end-session dialog ModalDialog.GrabError: Cannot grab pointer and keyboard; countdown did not start. No evidence of user cancellation.",
+  "normal_shutdown_cleanup_attempt": {
+    "method": "normal GNOME Shutdown with registered preference cleanup client",
+    "original_prompt_user_value": null,
+    "prompt_restored": true,
+    "request_accepted": true,
+    "events": [
+      "QueryEndSession",
+      "EndSession"
+    ],
+    "dbus_shutdown_reply": "success"
+  }
+}

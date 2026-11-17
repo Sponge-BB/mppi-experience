@@ -1,0 +1,716 @@
+--- a/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp
++++ b/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp
+@@ -336,13 +336,15 @@
+       ROS_WARN("[DynamicPointFlow][active] Experimental predictive avoidance is ACTIVE. Existing occupancy/ESDF safety remains enabled.");
+     }
+     /* callback */
++    feedback_node_.reset(new ros::NodeHandle(nh));
++    feedback_node_->setCallbackQueue(&feedback_callback_queue_);
+     exec_timer_ = nh.createTimer(ros::Duration(0.01), &REMANIReplanFSM::execFSMCallback, this);
+     safety_timer_ = nh.createTimer(ros::Duration(0.01), &REMANIReplanFSM::checkCollisionCallback, this);
+ 
+-    odom_sub_ = nh.subscribe("odom_world", 1, &REMANIReplanFSM::mmCarOdomCallback, this);
+-    joint_state_sub_ = nh.subscribe("joint_state", 1, &REMANIReplanFSM::mmManiOdomCallback, this);
++    odom_sub_ = feedback_node_->subscribe("odom_world", 1, &REMANIReplanFSM::mmCarOdomCallback, this);
++    joint_state_sub_ = feedback_node_->subscribe("joint_state", 1, &REMANIReplanFSM::mmManiOdomCallback, this);
+     gripper_state_sub_ = nh.subscribe("gripper_state", 1, &REMANIReplanFSM::gripperCallback, this);
+-    trajectory_progress_sub_ = nh.subscribe(
++    trajectory_progress_sub_ = feedback_node_->subscribe(
+         "/mm_controller_node/trajectory_progress", 1,
+         &REMANIReplanFSM::trajectoryProgressCallback, this);
+     tracking_fault_sub_ = nh.subscribe(
+@@ -596,6 +598,7 @@
+ 
+   void REMANIReplanFSM::execFSMCallback(const ros::TimerEvent &e)
+   {
++    drainFeedbackCallbacks();
+     GridMap::ReadScope map_read(*planner_manager_->grid_map_);
+     exec_timer_.stop(); // To avoid blockage
+ 
+@@ -715,6 +718,18 @@
+       // Do not allow retry timing, point-flow ownership, or A* selection to
+       // bypass a raw occupancy generation that has not reached the ESDF yet.
+       if (!waitForRequiredESDF("REPLAN_TRAJ"))
++        goto force_return;
++
++      // A missing execution clock is waiting, not a failed native solve.
++      // Gate before consuming either ordinary or dynamic retry accounting.
++      // A genuine zero-speed guard instead replans from measured stopped state.
++      const bool guarded_zero_speed = dynamic_safety_speed_limit_active_ &&
++          std::isfinite(current_safety_speed_limit_) &&
++          current_safety_speed_limit_ <= 1e-3;
++      if (!guarded_zero_speed &&
++          !waitForControllerProgress(
++              planner_manager_->traj_container_.singul_traj_data,
++              ros::Time::now()))
+         goto force_return;
+ 
+       if (dynamic_replan_retry_pending_) {
+@@ -813,6 +828,8 @@
+       /* determine if need to replan */
+       SingulTrajData *info = &planner_manager_->traj_container_.singul_traj_data;
+       const ros::Time now = ros::Time::now();
++      if (!waitForControllerProgress(*info, now))
++        goto force_return;
+       double t_cur = getCurrentTrajectoryTime(*info, now);
+       const bool trajectory_finished = t_cur >= info->duration - 1e-2;
+       bool need_to_plan_next = trajectory_finished;
+@@ -1032,6 +1049,9 @@
+             last_published_trajectory_.start_time, mppi_consumed_goal_, mppi_consumed_episode_))
+       return false;
+ 
++    // Waiting for the execution clock must not consume this optional event.
++    if (!waitForControllerProgress(last_published_trajectory_, now))
++      return false;
+     // One attempt per avoidance episode, even across reference replacements.
+     // A failed optional refresh must not enter the ordinary 20-attempt loop.
+     mppi_consumed_goal_ = mppi_refresh_request_.goal();
+@@ -1067,6 +1087,15 @@
+   void REMANIReplanFSM::trajectoryProgressCallback(
+       const geometry_msgs::Vector3Stamped::ConstPtr &msg)
+   {
++    // Validate the source values before clamping: std::max/min can turn a
++    // NaN phase/scale into a seemingly valid zero-valued progress packet.
++    if (!std::isfinite(msg->vector.x) || !std::isfinite(msg->vector.y) ||
++        !std::isfinite(msg->vector.z) || msg->vector.y < 0.0 ||
++        msg->vector.y > 300.0 || msg->vector.z < 0.0 || msg->vector.z > 1.0)
++    {
++      have_controller_progress_ = false;
++      return;
++    }
+     controller_trajectory_start_time_ = msg->vector.x;
+     controller_trajectory_time_ = std::max(0.0, msg->vector.y);
+     controller_trajectory_scale_ =
+@@ -1117,36 +1146,91 @@
+     }
+   }
+ 
++  void REMANIReplanFSM::drainFeedbackCallbacks()
++  {
++    // Only odometry, arm feedback and controller progress are on this queue.
++    // No planning/safety timers, goals, services or recursive FSM callbacks.
++    feedback_callback_queue_.callAvailable(ros::WallDuration(0.0));
++  }
++
++  bool REMANIReplanFSM::currentTrajectoryPhase(
++      const SingulTrajData &traj, const ros::Time &now,
++      double &phase, double &scale) const
++  {
++    phase = 0.0;
++    scale = 0.0;
++    // A published future reference is still pending; an early phase packet
++    // must not make the slow layer advance that candidate before activation.
++    if (mppi_terminal_control_ && now.toSec() < traj.start_time)
++      return false;
++    const bool matching_progress =
++        have_controller_progress_ &&
++        std::isfinite(controller_trajectory_start_time_) &&
++        std::isfinite(controller_trajectory_time_) &&
++        std::isfinite(controller_trajectory_scale_) &&
++        controller_trajectory_time_ >= 0.0 &&
++        controller_trajectory_scale_ >= 0.0 &&
++        controller_trajectory_scale_ <= 1.0 &&
++        std::fabs(controller_trajectory_start_time_ - traj.start_time) < 1e-3 &&
++        !controller_progress_stamp_.isZero();
++    if (matching_progress)
++    {
++      const double age = (now - controller_progress_stamp_).toSec();
++      // Match native_reference_adapter.py's strict MPPI source clock skew;
++      // native mode keeps its historical 50 ms tolerance and age clamp.
++      const double clock_skew = mppi_terminal_control_ ? 0.005 + 1e-8 : 0.05;
++      if (std::isfinite(age) && age >= -clock_skew &&
++          age <= controller_progress_timeout_)
++      {
++        phase = std::max(0.0, std::min(
++            traj.duration, controller_trajectory_time_ +
++            (mppi_terminal_control_ ? age : std::max(0.0, age)) *
++                controller_trajectory_scale_));
++        scale = controller_trajectory_scale_;
++        return true;
++      }
++      // A non-authoritative held value is useful for diagnostics only. Callers
++      // must check readiness before phase-dependent decisions or moving splices.
++      phase = std::max(0.0, std::min(traj.duration, controller_trajectory_time_));
++    }
++    if (mppi_terminal_control_)
++      return false;
++
++    // Native execution without the MPPI controller-clock contract retains its
++    // original wall-clock behavior, including first-reference startup.
++    phase = std::max(0.0, std::min(traj.duration, now.toSec() - traj.start_time));
++    scale = 1.0;
++    return true;
++  }
++
++  bool REMANIReplanFSM::waitForControllerProgress(
++      const SingulTrajData &traj, const ros::Time &now) const
++  {
++    double phase, scale;
++    if (currentTrajectoryPhase(traj, now, phase, scale))
++      return true;
++    ROS_WARN_THROTTLE(
++        1.0, "[FSM] Waiting for fresh matching controller progress "
++        "(reference=%.9f received=%.9f age=%.3fs); retain goal and reference.",
++        traj.start_time, controller_trajectory_start_time_,
++        (now - controller_progress_stamp_).toSec());
++    return false;
++  }
++
+   double REMANIReplanFSM::getCurrentTrajectoryTime(
+       const SingulTrajData &traj, const ros::Time &now) const
+   {
+-    const bool progress_matches =
+-        have_controller_progress_ &&
+-        std::fabs(controller_trajectory_start_time_ - traj.start_time) < 1e-3 &&
+-        !controller_progress_stamp_.isZero();
+-    if (progress_matches) {
+-      const double age = std::max(0.0, (now - controller_progress_stamp_).toSec());
+-      if (age <= controller_progress_timeout_) {
+-        return std::max(
+-            0.0, std::min(
+-                traj.duration,
+-                controller_trajectory_time_ + age * controller_trajectory_scale_));
+-      }
+-    }
+-
+-    return std::max(
+-        0.0, std::min(traj.duration, now.toSec() - traj.start_time));
++    double phase, scale;
++    currentTrajectoryPhase(traj, now, phase, scale);
++    return phase;
+   }
+ 
+   double REMANIReplanFSM::getCurrentTrajectoryScale(
+       const SingulTrajData &traj, const ros::Time &now) const
+   {
+-    const bool progress_matches =
+-        have_controller_progress_ &&
+-        std::fabs(controller_trajectory_start_time_ - traj.start_time) < 1e-3 &&
+-        !controller_progress_stamp_.isZero() &&
+-        (now - controller_progress_stamp_).toSec() <= controller_progress_timeout_;
+-    return progress_matches ? controller_trajectory_scale_ : 1.0;
++    double phase, scale;
++    currentTrajectoryPhase(traj, now, phase, scale);
++    return scale;
+   }
+ 
+   void REMANIReplanFSM::publishSafetySpeedLimit(double speed_limit)
+@@ -1391,6 +1475,7 @@
+   }
+ 
+   void REMANIReplanFSM::checkCollisionCallback(const ros::TimerEvent &e){
++    drainFeedbackCallbacks();
+     GridMap::ReadScope map_read(*planner_manager_->grid_map_);
+     SingulTrajData *info = &planner_manager_->traj_container_.singul_traj_data;
+     auto map = planner_manager_->grid_map_;
+@@ -1443,6 +1528,10 @@
+       return;
+     }
+     /* ---------- check trajectory ---------- */
++    // Sensor-health handling above remains independent of execution progress.
++    // Unknown phase cannot certify a raw-map distance/TTC or a goal arrival.
++    if (!waitForControllerProgress(*info, now))
++      return;
+     constexpr double time_step = 0.01;
+     double t_cur = getCurrentTrajectoryTime(*info, now);
+     Eigen::VectorXd p_cur = info->getPos(t_cur);
+@@ -2620,6 +2709,7 @@
+                                           bool allow_random_retry,
+                                           double optimization_wall_time,
+                                           bool dynamic_repair){
++    drainFeedbackCallbacks();
+     SingulTrajData *info = &planner_manager_->traj_container_.singul_traj_data;
+     const bool guarded_dynamic_stop_handoff =
+         dynamic_safety_speed_limit_active_ &&
+@@ -2646,6 +2736,8 @@
+     else
+     {
+     const ros::Time now = ros::Time::now();
++    if (!waitForControllerProgress(*info, now))
++      return false;
+     const double t_now = getCurrentTrajectoryTime(*info, now);
+     const double current_time_scale =
+         getCurrentTrajectoryScale(*info, now);
+@@ -3423,6 +3515,18 @@
+         (have_new_target_ || flag_use_poly_init),
+         flag_randomPolyTraj, have_local_traj_, init_time, opt_time,
+         /*wait_for_start=*/!moving_mppi_handoff);
++    // Solve-time traffic is already queued on the three-feedback inbox. Adopt
++    // it before acceptance; it never changes an unpublished candidate/goal.
++    drainFeedbackCallbacks();
++    // A matching clock used before solve is not evidence of its validity now.
++    // Keep the previously published reference if the actual execution clock
++    // disappeared or changed while this moving handoff was being optimized.
++    if (handoff != nullptr &&
++        !waitForControllerProgress(handoff->executing, ros::Time::now()))
++    {
++      ROS_WARN("[FSM] Rejecting moving MPPI handoff: execution progress expired or changed during solve; retain old reference.");
++      return finish_failed_planning_attempt();
++    }
+     have_new_target_ = false;
+ 
+     if (plan_success){
+--- a/src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h
++++ b/src/mm_remani_planner/plan_manage/include/plan_manage/remani_replan_fsm.h
+@@ -10,6 +10,8 @@
+ #include <nav_msgs/Path.h>
+ #include <sensor_msgs/Imu.h>
+ #include <ros/ros.h>
++#include <ros/callback_queue.h>
++#include <memory>
+ #include <ros/package.h>
+ #include <std_msgs/Empty.h>
+ #include <std_msgs/Bool.h>
+@@ -224,6 +226,10 @@
+     bool try_plan_after_emergency_;
+ 
+     /* ROS utils */
++    // Pumped only on the existing FSM thread, never by an AsyncSpinner. Keep
++    // this queue alive until its subscriptions/NodeHandle have been destroyed.
++    ros::CallbackQueue feedback_callback_queue_;
++    std::unique_ptr<ros::NodeHandle> feedback_node_;
+     ros::NodeHandle node_;
+     ros::Timer exec_timer_, safety_timer_;
+     ros::Subscriber waypoint_sub_, odom_sub_, joint_state_sub_, gripper_state_sub_, trigger_sub_, assignment_sub_;
+@@ -359,6 +365,11 @@
+                              bool capture_planning_boundary = false);
+     bool hasUnmetRequiredESDF() const;
+     void resetDynamicReplanEvent(bool preserve_esdf_requirement = false);
++    void drainFeedbackCallbacks();
++    bool currentTrajectoryPhase(const SingulTrajData &traj, const ros::Time &now,
++                                double &phase, double &scale) const;
++    bool waitForControllerProgress(const SingulTrajData &traj,
++                                   const ros::Time &now) const;
+     double getCurrentTrajectoryTime(const SingulTrajData &traj, const ros::Time &now) const;
+     double getCurrentTrajectoryScale(const SingulTrajData &traj, const ros::Time &now) const;
+     bool validateStaticTrajectory(const SingulTrajData &traj, int &coll_type) const;
+--- a/src/mm_remani/test/test_mppi_refresh_event.py
++++ b/src/mm_remani/test/test_mppi_refresh_event.py
+@@ -234,6 +234,12 @@
+   void mppiRefreshCallback(const std_msgs::Float64MultiArray::ConstPtr&);
+   bool tryMppiRefresh();
+   bool restoreProductionTrajectory();
++  bool progress_ready=true;
++  // Controllable solver boundary: real source-time/clock/queue behavior is
++  // exercised separately by test_fsm_feedback_phase.py's extracted methods.
++  bool waitForControllerProgress(const SingulTrajData&,const ros::Time&) const {
++    return progress_ready;
++  }
+   bool planFromLocalTraj(bool poly,bool random,double budget,bool dynamic){
+     if(poly || random || !dynamic || budget!=.6)
+       throw std::runtime_error("not one bounded warm dynamic attempt");
+@@ -315,6 +321,15 @@
+       if(owner==12)g.have_new_target_=true;
+       require(!g.tryMppiRefresh() && g.attempts==0 && g.mppi_consumed_episode_==0.,"guard allowed optional update or consumed episode");
+     }
++  }else if(name=="unknown_progress_keeps_episode_pending"){
++    f.progress_ready=false;
++    require(!f.tryMppiRefresh() && f.attempts==0 && f.deliveries==0 &&
++        f.mppi_consumed_episode_==0. && f.mppi_consumed_goal_==0. &&
++        f.mppi_refresh_attempt_.isZero() && f.have_target_,
++        "unknown progress consumed the optional event or cooldown");
++    f.progress_ready=true;
++    require(f.tryMppiRefresh() && f.attempts==1 && f.deliveries==1,
++        "fresh matching progress could not reuse the unconsumed event");
+   }else if(name=="identity_sources_schema"){
+     for(int field:{1,2,3,4,5,6,7}){
+       REMANIReplanFSM g;request(g);g.mppi_refresh_request_.data[field]-=1.;
+@@ -367,7 +382,8 @@
+     def test_production_fsm_attempt_rollback_and_stop_owners(self):
+         for case in ('success_duplicate_reference_restart','failure_restores_metadata_and_trajectory',
+                      'positive_limit_preserved_success_and_failure','independent_stop_survives_failure',
+-                     'owners_and_readiness_block','identity_sources_schema','cooldown_pending_expiry'):
++                     'owners_and_readiness_block','identity_sources_schema','cooldown_pending_expiry',
++                     'unknown_progress_keeps_episode_pending'):
+             with self.subTest(case=case):
+                 result = subprocess.run([str(self.binary),case],capture_output=True,text=True,timeout=5)
+                 self.assertEqual(result.returncode,0,result.stderr)
+--- /dev/null
++++ b/src/mm_remani/test/test_fsm_feedback_phase.py
+@@ -0,0 +1,386 @@
++"""Exercise extracted production FSM phase logic and a real ROS callback queue.
++
++This does not launch a ROS master, nodes or hardware. The solver/trajectory and
++TF math boundaries are small fixtures; the queue and all tested FSM methods are
++the production implementations. Assertions use require(), not C assert/NDEBUG.
++Use --emit-harness FILE to inspect the generated translation unit without g++.
++"""
++from pathlib import Path
++import hashlib
++import json
++import os
++import shlex
++import shutil
++import subprocess
++import sys
++import tempfile
++import unittest
++
++
++ROOT = Path(__file__).resolve().parents[3]
++SOURCE = Path(os.environ.get(
++    'FSM_FEEDBACK_SOURCE',
++    str(ROOT / 'src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp')))
++
++
++def function(source, signature):
++    begin = source.index(signature)
++    opening = source.index('{', begin)
++    level = 1
++    end = opening + 1
++    while level:
++        if source[end] == '{':
++            level += 1
++        elif source[end] == '}':
++            level -= 1
++        end += 1
++    return source[begin:end]
++
++
++PREAMBLE = r'''
++#include <ros/ros.h>
++#include <ros/callback_queue.h>
++#include <geometry_msgs/Vector3Stamped.h>
++#include <nav_msgs/Odometry.h>
++#include <sensor_msgs/JointState.h>
++#include <Eigen/Core>
++#include <Eigen/Geometry>
++#include <boost/make_shared.hpp>
++#include <algorithm>
++#include <cmath>
++#include <functional>
++#include <iostream>
++#include <limits>
++#include <memory>
++#include <stdexcept>
++#include <string>
++
++namespace tf {
++// A pure math boundary, unrelated to source-time/queue behavior under test.
++double getYaw(const geometry_msgs::Quaternion& q) {
++  return std::atan2(2.*(q.w*q.z+q.x*q.y),1.-2.*(q.y*q.y+q.z*q.z));
++}
++}
++struct SingulTrajData { double start_time=100.; double duration=20.; };
++struct MovingHandoff { SingulTrajData executing; };
++struct Planner {
++  struct {SingulTrajData singul_traj_data;} traj_container_;
++};
++class REMANIReplanFSM {
++public:
++  bool mppi_terminal_control_=true;
++  bool have_controller_progress_=false;
++  double controller_trajectory_start_time_=0.;
++  double controller_trajectory_time_=0.;
++  double controller_trajectory_scale_=0.;
++  double controller_progress_timeout_=.3;
++  ros::Time controller_progress_stamp_;
++  ros::CallbackQueue feedback_callback_queue_;
++  int mobile_base_dim_=2, manipulator_dim_=6;
++  double mobile_base_non_singul_vel_=.01;
++  Eigen::VectorXd mm_state_pos_=Eigen::VectorXd::Zero(8);
++  Eigen::VectorXd mm_state_vel_=Eigen::VectorXd::Zero(8);
++  Eigen::VectorXd mm_state_acc_=Eigen::VectorXd::Zero(8);
++  Eigen::VectorXd default_arm_config_=Eigen::VectorXd::Zero(6);
++  Eigen::Quaterniond mm_car_orient_=Eigen::Quaterniond::Identity();
++  double mm_car_yaw_=0., mm_car_yaw_rate_=0.;
++  int mm_car_singul_=0;
++  ros::Time perception_odom_stamp_, perception_joint_stamp_;
++  bool have_odom_=false, has_default_arm_=true, default_arm_from_config_=true;
++  bool have_target_=true, have_new_target_=true, restored_old_reference_=false;
++  bool dynamic_safety_speed_limit_active_=false, esdf_ready_=true;
++  double current_safety_speed_limit_=.2;
++  int ordinary_budget_=17, dynamic_budget_=2, generation_=45;
++  std::shared_ptr<Planner> planner_manager_=std::make_shared<Planner>();
++  bool waitForRequiredESDF(const char*)const{return esdf_ready_;}
++  void drainFeedbackCallbacks();
++  bool currentTrajectoryPhase(const SingulTrajData&,const ros::Time&,
++                              double&,double&) const;
++  bool waitForControllerProgress(const SingulTrajData&,const ros::Time&) const;
++  double getCurrentTrajectoryTime(const SingulTrajData&,const ros::Time&) const;
++  double getCurrentTrajectoryScale(const SingulTrajData&,const ros::Time&) const;
++  void trajectoryProgressCallback(const geometry_msgs::Vector3Stamped::ConstPtr&);
++  void mmCarOdomCallback(const nav_msgs::OdometryConstPtr&);
++  void mmManiOdomCallback(const sensor_msgs::JointStateConstPtr&);
++  bool postSolve(const MovingHandoff* handoff);
++  bool replanEntry();
++};
++'''
++
++
++CASES = r'''
++void require(bool value,const char* detail) {
++  if(!value)throw std::runtime_error(detail);
++}
++bool close(double a,double b){return std::fabs(a-b)<1e-8;}
++ros::Time stamp(double value){ros::Time t;t.fromSec(value);return t;}
++void packet(REMANIReplanFSM& f,double reference,double phase,double scale,
++            double source_stamp) {
++  auto p=boost::make_shared<geometry_msgs::Vector3Stamped>();
++  p->header.stamp=stamp(source_stamp);
++  p->vector.x=reference;p->vector.y=phase;p->vector.z=scale;
++  f.trajectoryProgressCallback(p);
++}
++class FeedbackCall: public ros::CallbackInterface {
++  std::function<void()> body_;
++public:
++  explicit FeedbackCall(std::function<void()> body):body_(std::move(body)){}
++  CallResult call() override {body_();return Success;}
++};
++void enqueue(REMANIReplanFSM& f,std::function<void()> body) {
++  f.feedback_callback_queue_.addCallback(
++      boost::make_shared<FeedbackCall>(std::move(body)));
++}
++void run(const std::string& name) {
++  REMANIReplanFSM f;
++  SingulTrajData traj;
++  const ros::Time now=stamp(108.);
++  ros::Time::setNow(now);
++  double phase=-1.,scale=-1.;
++  if(name=="stale_never_becomes_wall_clock") {
++    packet(f,100.,6.242451821,.4,107.5);
++    require(!f.currentTrajectoryPhase(traj,now,phase,scale),"stale progress valid");
++    require(close(phase,6.242451821)&&scale==0.,"stale progress advanced to wall time");
++    require(!f.waitForControllerProgress(traj,now),"stale progress passed decision gate");
++    require(f.have_target_&&f.have_new_target_,"wait deleted accepted target");
++    require(close(f.getCurrentTrajectoryTime(traj,now),phase)&&
++            f.getCurrentTrajectoryScale(traj,now)==0.,"wrappers restored wall-clock permission");
++  } else if(name=="fresh_slow_and_zero_scale") {
++    packet(f,100.,2.,.4,107.8);
++    require(f.currentTrajectoryPhase(traj,now,phase,scale)&&close(phase,2.08)&&
++        close(scale,.4),"slow scale not respected");
++    packet(f,100.,2.,0.,107.8);
++    require(f.currentTrajectoryPhase(traj,now,phase,scale)&&phase==2.&&scale==0.,
++        "zero scale advanced despite fresh stopped controller clock");
++  } else if(name=="first_reference_waits_for_progress") {
++    require(!f.currentTrajectoryPhase(traj,now,phase,scale)&&phase==0.&&scale==0.,
++        "first missing progress became wall-clock completion");
++    require(!f.waitForControllerProgress(traj,now)&&f.have_target_,
++        "first missing progress passed or deleted target");
++    packet(f,100.,.01,.5,108.);
++    require(f.currentTrajectoryPhase(traj,now,phase,scale)&&close(phase,.01),
++        "first valid progress failed to resume readiness");
++  } else if(name=="clock_skew_matches_mppi_adapter") {
++    packet(f,100.,2.,.4,108.003);
++    require(f.currentTrajectoryPhase(traj,now,phase,scale)&&close(phase,1.9988),
++        "permitted future source time did not back-project like MPPI adapter");
++    packet(f,100.,2.,.4,108.006);
++    require(!f.currentTrajectoryPhase(traj,now,phase,scale),"future source outside tolerance passed");
++  } else if(name=="mismatched_reference_waits") {
++    packet(f,100.002,2.,.4,108.);
++    require(!f.currentTrajectoryPhase(traj,now,phase,scale)&&phase==0.&&scale==0.,
++        "different reference reused controller phase or wall clock");
++    packet(f,100.,2.,.4,108.);
++    require(f.currentTrajectoryPhase(traj,now,phase,scale),"matching reference did not recover");
++  } else if(name=="nonfinite_packet_cannot_be_clamped_valid") {
++    for(int field=0;field<3;++field)for(int kind=0;kind<2;++kind) {
++      packet(f,100.,2.,.4,108.);
++      double values[3]={100.,2.,.4};
++      values[field]=kind?std::numeric_limits<double>::infinity():
++                         std::numeric_limits<double>::quiet_NaN();
++      packet(f,values[0],values[1],values[2],108.);
++      require(!f.have_controller_progress_&&
++          !f.currentTrajectoryPhase(traj,now,phase,scale),
++          "nonfinite raw progress became valid after clamp");
++    }
++    for(const auto& bad: {std::pair<double,double>{-.001,.4},
++        {300.001,.4},{2.,-.001},{2.,1.001}}) {
++      packet(f,100.,bad.first,bad.second,108.);
++      require(!f.have_controller_progress_&&
++          !f.currentTrajectoryPhase(traj,now,phase,scale),
++          "out-of-range raw progress became valid after clamp");
++    }
++  } else if(name=="future_reference_stays_pending") {
++    traj.start_time=108.1;
++    packet(f,108.1,.02,.4,108.);
++    require(!f.currentTrajectoryPhase(traj,now,phase,scale)&&phase==0.&&scale==0.,
++        "unactivated future reference advanced");
++    require(f.currentTrajectoryPhase(traj,stamp(108.1),phase,scale)&&close(phase,.06),
++        "activated matching reference still pending");
++  } else if(name=="native_compatibility") {
++    f.mppi_terminal_control_=false;
++    require(f.currentTrajectoryPhase(traj,now,phase,scale)&&phase==8.&&scale==1.,
++        "native first-reference wall clock changed");
++    packet(f,100.,2.,.4,107.5);
++    require(f.currentTrajectoryPhase(traj,now,phase,scale)&&phase==8.&&scale==1.,
++        "native expired-progress compatibility changed");
++    packet(f,101.,2.,.4,108.);
++    require(f.currentTrajectoryPhase(traj,now,phase,scale)&&phase==8.&&scale==1.,
++        "native mismatched-progress compatibility changed");
++    packet(f,100.,2.,.4,108.03);
++    require(f.currentTrajectoryPhase(traj,now,phase,scale)&&phase==2.&&close(scale,.4),
++        "native negative-age handling changed");
++  } else if(name=="real_queue_adopts_progress_odom_and_joints") {
++    packet(f,100.,6.24,.4,107.5);
++    require(!f.currentTrajectoryPhase(traj,now,phase,scale),"fixture not stale");
++    enqueue(f,[&](){packet(f,100.,6.28,.2,107.99);});
++    auto odom=boost::make_shared<nav_msgs::Odometry>();
++    odom->header.stamp=stamp(107.98);odom->pose.pose.position.x=1.2;
++    odom->pose.pose.position.y=-.3;odom->pose.pose.orientation.w=1.;
++    odom->twist.twist.linear.x=.1;
++    enqueue(f,[&](){f.mmCarOdomCallback(odom);});
++    auto joints=boost::make_shared<sensor_msgs::JointState>();
++    joints->header.stamp=stamp(107.99);
++    joints->position={.1,.2,.3,.4,.5,.6};joints->velocity={0.,0.,0.,0.,0.,0.};
++    enqueue(f,[&](){f.mmManiOdomCallback(joints);});
++    require(f.mm_state_pos_(0)==0.&&!f.feedback_callback_queue_.isEmpty(),
++        "queue did not retain unread source feedback");
++    f.drainFeedbackCallbacks();
++    require(f.currentTrajectoryPhase(traj,now,phase,scale)&&close(phase,6.282)&&
++        close(scale,.2),"decision did not use drained controller progress");
++    require(close(f.mm_state_pos_(0),1.2)&&close(f.mm_state_pos_(1),-.3)&&
++        close(f.mm_state_pos_(7),.6)&&f.perception_odom_stamp_==stamp(107.98)&&
++        f.perception_joint_stamp_==stamp(107.99)&&f.feedback_callback_queue_.isEmpty(),
++        "source odom/joint feedback not adopted before decision");
++    require(f.have_target_&&f.have_new_target_,"feedback queue changed target/plan metadata");
++  } else if(name=="postsolve_expired_progress_restores_old_reference") {
++    MovingHandoff handoff;packet(f,100.,6.24,.4,107.5);
++    require(!f.postSolve(&handoff)&&f.restored_old_reference_&&f.have_target_&&
++        f.have_new_target_,"expired post-solve handoff accepted or deleted target");
++  } else if(name=="postsolve_wrong_reference_restores_old_reference") {
++    MovingHandoff handoff;packet(f,101.,6.24,.4,108.);
++    require(!f.postSolve(&handoff)&&f.restored_old_reference_&&f.have_target_,
++        "different post-solve reference accepted frozen old context");
++  } else if(name=="postsolve_uses_drained_matching_feedback") {
++    MovingHandoff handoff;packet(f,100.,6.24,.4,107.5);
++    enqueue(f,[&](){packet(f,100.,6.28,.2,108.);});
++    require(f.postSolve(&handoff)&&!f.restored_old_reference_&&!f.have_new_target_&&
++        f.currentTrajectoryPhase(handoff.executing,now,phase,scale)&&close(phase,6.28),
++        "post-solve acceptance used pre-solve stale inbox");
++  } else if(name=="unknown_replan_preserves_all_budgets_and_goal") {
++    packet(f,100.,6.24,.4,107.5);
++    for(int n=0;n<40;++n)require(!f.replanEntry(),"unknown progress entered local solve");
++    require(f.ordinary_budget_==17&&f.dynamic_budget_==2&&f.generation_==45&&
++        f.have_target_&&f.have_new_target_,
++        "waiting consumed retry budget/generation or accepted goal");
++  } else if(name=="fresh_replan_is_allowed") {
++    packet(f,100.,6.28,.2,108.);
++    require(f.replanEntry()&&f.ordinary_budget_==18&&f.dynamic_budget_==3&&
++        f.generation_==46&&f.have_target_,"fresh clock failed to permit a local attempt");
++  } else if(name=="guarded_stopped_replan_bypasses_progress") {
++    f.dynamic_safety_speed_limit_active_=true;f.current_safety_speed_limit_=0.;
++    require(!f.currentTrajectoryPhase(traj,now,phase,scale),"fixture unexpectedly ready");
++    require(f.replanEntry()&&f.have_target_,"true stopped guard blocked measured-state recovery");
++    REMANIReplanFSM positive;positive.dynamic_safety_speed_limit_active_=true;
++    positive.current_safety_speed_limit_=.08;
++    require(!positive.replanEntry(),"positive slowdown bypassed unknown phase");
++    REMANIReplanFSM native;native.mppi_terminal_control_=false;
++    require(native.replanEntry(),"native local-replan compatibility changed");
++  } else throw std::runtime_error("unknown case");
++}
++int main(int argc,char** argv) {
++  try {ros::Time::init();require(argc==2,"case required");run(argv[1]);
++       std::cout<<"PASS "<<argv[1]<<'\n';}
++  catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}
++}
++'''
++
++
++CASE_NAMES = (
++    'stale_never_becomes_wall_clock', 'fresh_slow_and_zero_scale',
++    'first_reference_waits_for_progress', 'clock_skew_matches_mppi_adapter',
++    'mismatched_reference_waits', 'nonfinite_packet_cannot_be_clamped_valid',
++    'future_reference_stays_pending', 'native_compatibility',
++    'real_queue_adopts_progress_odom_and_joints',
++    'postsolve_expired_progress_restores_old_reference',
++    'postsolve_wrong_reference_restores_old_reference',
++    'postsolve_uses_drained_matching_feedback',
++    'unknown_replan_preserves_all_budgets_and_goal',
++    'fresh_replan_is_allowed', 'guarded_stopped_replan_bypasses_progress',
++)
++
++
++def harness(source):
++    signatures = (
++        'void REMANIReplanFSM::drainFeedbackCallbacks()',
++        'bool REMANIReplanFSM::currentTrajectoryPhase(',
++        'bool REMANIReplanFSM::waitForControllerProgress(',
++        'double REMANIReplanFSM::getCurrentTrajectoryTime(',
++        'double REMANIReplanFSM::getCurrentTrajectoryScale(',
++        'void REMANIReplanFSM::trajectoryProgressCallback(',
++        'void REMANIReplanFSM::mmCarOdomCallback(',
++        'void REMANIReplanFSM::mmManiOdomCallback(',
++    )
++    rebound = function(source, 'bool REMANIReplanFSM::callReboundReplan(')
++    # Exercise the actual post-manager-return fragment, including drain order
++    # and rollback branch; solver internals are intentionally outside this test.
++    begin = rebound.index('    // Solve-time traffic is already queued')
++    end = rebound.index('    have_new_target_ = false;', begin)
++    end += len('    have_new_target_ = false;')
++    post_solve = ('''bool REMANIReplanFSM::postSolve(const MovingHandoff* handoff){
++      auto finish_failed_planning_attempt=[&](){
++        restored_old_reference_=true;return false;
++      };
++''' + rebound[begin:end] + '\nreturn true;\n}\n')
++    execution = function(source, 'void REMANIReplanFSM::execFSMCallback(')
++    branch = execution.index('    case REPLAN_TRAJ:')
++    opening = execution.index('{', branch)
++    branch_end = execution.index('      if (dynamic_replan_retry_pending_)', opening)
++    # The accounting is a fake downstream boundary. The preceding ESDF and
++    # progress/stopped-guard entry is extracted verbatim from the real case.
++    replan_entry = ('''bool REMANIReplanFSM::replanEntry(){
++      {
++''' + execution[opening+1:branch_end] + '''
++        ++ordinary_budget_;++dynamic_budget_;++generation_;return true;
++      }
++    force_return:return false;
++    }
++''')
++    return (PREAMBLE + '\n'.join(function(source, item) for item in signatures)
++            + '\n' + post_solve + replan_entry + CASES)
++
++
++class FSMFeedbackPhaseTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        if not shutil.which('g++'):
++            raise RuntimeError('g++ required for extracted production C++ tests')
++        cls.source = SOURCE.read_text()
++        cls.temporary = tempfile.TemporaryDirectory(prefix='remani-feedback-phase-')
++        cls.addClassCleanup(cls.temporary.cleanup)
++        folder = Path(cls.temporary.name)
++        cls.binary = folder / 'phase'
++        cpp = folder / 'phase.cpp'
++        cpp.write_text(harness(cls.source))
++        available_kib = next(int(line.split()[1]) for line in
++            Path('/proc/meminfo').read_text().splitlines()
++            if line.startswith('MemAvailable:'))
++        if available_kib < 1536 * 1024:
++            raise RuntimeError('Refusing compiler: MemAvailable below 1.5 GiB')
++        flags = subprocess.run(['pkg-config', '--cflags', '--libs', 'roscpp'],
++            capture_output=True, text=True, check=True).stdout
++        result = subprocess.run(
++            ['g++', '-std=c++14', '-O0', '-g0', '-DEIGEN_DONT_VECTORIZE',
++             '-I/usr/include/eigen3', str(cpp), '-o', str(cls.binary)]
++             + shlex.split(flags), capture_output=True, text=True, timeout=90,
++            env=dict(os.environ, OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1'))
++        if result.returncode:
++            raise AssertionError('FSM phase harness compile failed:\n'+result.stderr)
++
++    def test_phase_and_real_callback_queue_behaviour(self):
++        for case in CASE_NAMES:
++            with self.subTest(case=case):
++                result = subprocess.run([str(self.binary), case],
++                    capture_output=True, text=True, timeout=5)
++                self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
++
++    def test_only_feedback_subscribers_move_to_queue(self):
++        # Supplemental routing checks; behavioral cases above use the actual
++        # queue and extracted production callbacks rather than token assertions.
++        self.assertEqual(self.source.count('feedback_node_->subscribe('), 3)
++        for name in ('execFSMCallback', 'checkCollisionCallback', 'planFromLocalTraj'):
++            body = function(self.source, 'REMANIReplanFSM::'+name+'(')
++            self.assertTrue(body[body.index('{')+1:].lstrip().startswith(
++                'drainFeedbackCallbacks();'), name)
++
++
++if __name__ == '__main__':
++    if len(sys.argv) == 3 and sys.argv[1] == '--emit-harness':
++        output = Path(sys.argv[2])
++        output.write_text(harness(SOURCE.read_text()))
++        print(json.dumps({'source': str(SOURCE),
++            'source_sha256': hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
++            'harness': str(output), 'behaviour_cases': len(CASE_NAMES),
++            'compiler_invoked': False}))
++    else:
++        unittest.main()

@@ -1,0 +1,145 @@
+{
+  "scope": "Read-only 5s host sampling at 18:12:45-50 after user-authorized shutdown; robot nodes absent. NOT usable as running workload baseline.",
+  "samples": [
+    {
+      "wall": "2026-11-14T18:12:45.307491",
+      "monotonic": 25598.569198505,
+      "loadavg": "6.77 8.71 6.58 4/878 201424",
+      "cpu": [
+        2589453,
+        158462,
+        702506,
+        11440491,
+        46982,
+        148249,
+        156068,
+        0,
+        0,
+        0
+      ],
+      "vmstat": {
+        "pgmajfault": 606083,
+        "pswpin": 237792,
+        "pswpout": 683901,
+        "oom_kill": 0,
+        "pgscan_direct": 189635,
+        "pgscan_kswapd": 14337937,
+        "pgsteal_kswapd": 8042560
+      },
+      "meminfo": {
+        "MemTotal": "7630044 kB",
+        "MemAvailable": "3505988 kB",
+        "SwapTotal": "3815016 kB",
+        "SwapFree": "2411112 kB",
+        "Dirty": "3620 kB",
+        "Writeback": "0 kB"
+      },
+      "pressure": {
+        "cpu": {
+          "error": "[Errno 2] No such file or directory: '/proc/pressure/cpu'"
+        },
+        "memory": {
+          "error": "[Errno 2] No such file or directory: '/proc/pressure/memory'"
+        },
+        "io": {
+          "error": "[Errno 2] No such file or directory: '/proc/pressure/io'"
+        }
+      },
+      "nodes": []
+    },
+    {
+      "wall": "2026-11-14T18:12:50.333194",
+      "monotonic": 25603.594919946,
+      "loadavg": "6.39 8.60 6.56 2/876 201425",
+      "cpu": [
+        2589914,
+        158462,
+        702649,
+        11442877,
+        46988,
+        148255,
+        156073,
+        0,
+        0,
+        0
+      ],
+      "vmstat": {
+        "pgmajfault": 607720,
+        "pswpin": 237813,
+        "pswpout": 683901,
+        "oom_kill": 0,
+        "pgscan_direct": 189635,
+        "pgscan_kswapd": 14337937,
+        "pgsteal_kswapd": 8042560
+      },
+      "meminfo": {
+        "MemTotal": "7630044 kB",
+        "MemAvailable": "3193088 kB",
+        "SwapTotal": "3815016 kB",
+        "SwapFree": "2411112 kB",
+        "Dirty": "8064 kB",
+        "Writeback": "0 kB"
+      },
+      "pressure": {
+        "cpu": {
+          "error": "[Errno 2] No such file or directory: '/proc/pressure/cpu'"
+        },
+        "memory": {
+          "error": "[Errno 2] No such file or directory: '/proc/pressure/memory'"
+        },
+        "io": {
+          "error": "[Errno 2] No such file or directory: '/proc/pressure/io'"
+        }
+      },
+      "nodes": []
+    }
+  ],
+  "cpu_interval": {
+    "busy_percent": 20.452278017958097,
+    "iowait_percent": 0.19953441968739608,
+    "all_jiffy_deltas": [
+      461,
+      0,
+      143,
+      2386,
+      6,
+      6,
+      5,
+      0,
+      0,
+      0
+    ]
+  },
+  "kernel_query": {
+    "returncode": 0,
+    "stderr": "",
+    "line_count": 30,
+    "first_lines": [
+      "-- Logs begin at Thu 1970-01-01 08:01:17 CST, end at Sat 2026-11-14 18:12:47 CST. --",
+      "2026-11-14T17:23:28+0800 ubuntu kernel: r8168: eth0: link down"
+    ],
+    "last_lines": [
+      "2026-11-14T18:05:17+0800 ubuntu kernel: ptrace attach of \"/usr/bin/python3 /home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py /joint_states_single:=/mm/joint_states __name:=whole_body_mppi __log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/whole_body_mppi-7.log\"[181133] was attempted by \"python3 -\"[191637]",
+      "2026-11-14T18:05:17+0800 ubuntu kernel: ptrace attach of \"/usr/bin/python3 /home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py /joint_states_single:=/mm/joint_states __name:=whole_body_mppi __log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/whole_body_mppi-7.log\"[181135] was attempted by \"python3 -\"[191637]"
+    ],
+    "matching_errors": []
+  },
+  "limits": [
+    "Post-recording resource sample cannot prove pressure during recording.",
+    "No per-cycle controlled on/off comparison; no claim that recorder has zero impact."
+  ],
+  "conclusions": [
+    "No kernel OOM/I/O/blocking signature found in requested 17:20-18:12 window; oom_kill counter is zero at later sample.",
+    "Robot target nodes were absent in both samples. CPU/memory/iowait figures are shutdown/after-shutdown figures and cannot exclude recording overhead.",
+    "PSI files unavailable on this kernel. No time-aligned per-process CPU/memory/I/O trace captured before/after heavy recording."
+  ],
+  "vmstat_delta": {
+    "pgmajfault": 1637,
+    "pswpin": 21,
+    "pswpout": 0,
+    "oom_kill": 0,
+    "pgscan_direct": 0,
+    "pgscan_kswapd": 0,
+    "pgsteal_kswapd": 0
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "change": "Read the current supplied clock after acquiring both planning/reference locks; use it for reference sampling and collision prediction. Preserve caller time without a clock and existing post-solve validation.",
+  "preserved": [
+    "250 ms maximum progress age",
+    "5 ms future-clock tolerance",
+    "original progress source stamps",
+    "WholeBodyNode original command stamps",
+    "real clock rollback rejection",
+    "all collision checks"
+  ],
+  "backup": "experiments/online_remani_validation/results/navigation_stutter_20261110/before_phase_clock",
+  "validation": {
+    "suite": "test_mppi_native_phase.py",
+    "passed": 27,
+    "elapsed_test_seconds": 0.095,
+    "test_log": "phase_clock_tests.txt",
+    "ROS_CAN_or_motion_commands_sent": false
+  },
+  "live_validation": "Not yet loaded into the already running ROS process; requires the user-controlled program restart.",
+  "file_sha256": {
+    "src/mm_remani/scripts/mppi/native_reference_adapter.py": "a8d03bb1845cf210c3d888aa3d93b27f83bcd16fcb7907462cac3bfed4363c49",
+    "src/mm_remani/test/test_mppi_native_phase.py": "8d8fd446fc1e207e5e85e7136a8f1c7a4f3c94ab3c87bb0823f30d1cade615e9"
+  }
+}

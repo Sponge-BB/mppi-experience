@@ -1,0 +1,541 @@
+{
+  "audit_date": "2026-11-06",
+  "scope": "只读代码与已有单帧审计核查；只新建本 JSON。未启动 ROS、硬件或 benchmark，未修改算法或参数。",
+  "conclusions": [
+    "当前 .08/.25/.75 是实车 launch 人工固定配置，非 MPPI 新引入参数；没有在检查的配置、跟踪器、预测器或报告中发现实测误差分布/协方差/标定数据生成这些数值的证据。",
+    "单位一致：位置 m、速度 m/s、加速度 m/s^2；时间是查询绝对 ROS 时间减动态点云原始观测时间，含观测年龄与未来预测步。",
+    "没有发现同一动态预测不确定度在 C++ 导出与 Python 碰撞查询中被重复相加。搜索 overlay 不是导出的 ESDF；Python 使用原始动态点和完整未截断的不确定度。",
+    "三维各向同性半径是当前明确实现的假设。不能把水平运动的不确定度自动解释成经过标定的竖直不确定度；当前对高位水平移动障碍同样向下膨胀，可能使固定车体部件先不可行。",
+    "短窗终端姿态代价只能排序可行候选，不能消除已有单帧中固定结构碰撞硬约束为空的问题。"
+  ],
+  "parameter_provenance": {
+    "effective_real_profile": {
+      "position_uncertainty_m": 0.08,
+      "velocity_uncertainty_m_per_s": 0.25,
+      "acceleration_bound_m_per_s2": 0.75,
+      "sources": [
+        {
+          "path": "src/mm_remani/launch/exp0_real.launch",
+          "lines": [
+            55,
+            95,
+            97,
+            99
+          ]
+        }
+      ]
+    },
+    "cpp_fallback_profile": {
+      "position_uncertainty_m": 0.03,
+      "velocity_uncertainty_m_per_s": 0.15,
+      "acceleration_bound_m_per_s2": 0.5,
+      "sources": [
+        {
+          "path": "src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp",
+          "lines": [
+            106,
+            107,
+            108
+          ]
+        },
+        {
+          "path": "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp",
+          "lines": [
+            220,
+            221,
+            222
+          ]
+        }
+      ]
+    },
+    "historical_evidence": {
+      "description": "仓库根目录 20260916 分析报告已列出同组实车参数，并描述当时过大的 overlay；报告里的实测指膨胀结果/时延，不是位置/速度/加速度误差标定。历史报告所说统一全时域最大膨胀已经与当前分片有上限搜索引导实现不同，不能当成当前 bug。",
+      "sources": [
+        {
+          "path": "dynamic_avoidance_test_analysis_20260916.md",
+          "lines": [
+            63,
+            65,
+            67,
+            68,
+            69,
+            72,
+            76,
+            77
+          ]
+        },
+        {
+          "path": "dynamic_avoidance_test_analysis_20260917.md",
+          "lines": [
+            68,
+            70
+          ]
+        },
+        {
+          "path": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+          "lines": [
+            2555,
+            2558,
+            2567
+          ]
+        }
+      ]
+    },
+    "simulation_inheritance": {
+      "description": "run_standby_sim 从 exp0_real.launch 解析参数，再统一乘 uncertainty_scale；scale=1 继承本组值，scale=0 仅诊断，不构成新标定。",
+      "sources": [
+        {
+          "path": "src/mm_remani/scripts/run_standby_sim.py",
+          "lines": [
+            35,
+            38,
+            42,
+            64,
+            66
+          ]
+        }
+      ]
+    },
+    "calibration_status": "在上述限定代码链和现有报告中未找到这些固定值来自统计拟合、概率置信区间或真实硬件误差标定的证据；这不证明仓库之外没有历史测量。",
+    "tracker_confidence_is_not_covariance": {
+      "description": "confidence 由关联残差质量与命中成熟度组成，仅被 min_confidence 门限筛选；点消息无协方差字段，预测半径不随 confidence 或 track id 改变。回归中的 time_position_covariance 用于拟合速度斜率，不是预测误差协方差。",
+      "sources": [
+        {
+          "path": "src/mm_remani/src/dynamic_obstacle_tracker_core.cpp",
+          "lines": [
+            421,
+            434,
+            651,
+            657,
+            660
+          ]
+        },
+        {
+          "path": "src/mm_remani/src/dynamic_obstacle_tracker_node.cpp",
+          "lines": [
+            769,
+            776
+          ]
+        },
+        {
+          "path": "src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp",
+          "lines": [
+            484
+          ]
+        },
+        {
+          "path": "src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp",
+          "lines": [
+            233
+          ]
+        }
+      ]
+    }
+  },
+  "formula_and_units": {
+    "position_prediction": "p_hat(t) = p_observed + v_observed * dt",
+    "radius": "r(dt) = position_uncertainty + velocity_uncertainty*max(0,dt) + 0.5*acceleration_bound*max(0,dt)^2",
+    "dynamic_clearance": "min_j ||robot_sphere_center - p_hat_j(t)||_2 - r(dt) - robot_sphere_hard_radius",
+    "interpretation": "加性有界误差包络。代码没有 sigma/标准差、置信概率或各轴 covariance 语义；若把输入当作各轴独立误差界，直接当三维范数界没有相同保证。",
+    "units": {
+      "position_uncertainty": "m",
+      "velocity_uncertainty": "m/s",
+      "acceleration_bound": "m/s^2",
+      "dt": "s"
+    },
+    "sources": [
+      {
+        "path": "src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp",
+        "lines": [
+          180,
+          187,
+          191,
+          198,
+          199,
+          200,
+          237
+        ]
+      },
+      {
+        "path": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+        "lines": [
+          95,
+          100,
+          102,
+          103,
+          108
+        ]
+      }
+    ],
+    "radius_examples_m": [
+      {
+        "dt_s": 0,
+        "radius_m": 0.08
+      },
+      {
+        "dt_s": 0.3,
+        "radius_m": 0.18875
+      },
+      {
+        "dt_s": 0.5,
+        "radius_m": 0.29875
+      },
+      {
+        "dt_s": 0.7,
+        "radius_m": 0.43875
+      },
+      {
+        "dt_s": 0.8,
+        "radius_m": 0.52
+      },
+      {
+        "dt_s": 1.0,
+        "radius_m": 0.705
+      },
+      {
+        "dt_s": 1.2,
+        "radius_m": 0.92
+      },
+      {
+        "dt_s": 2.0,
+        "radius_m": 2.08
+      }
+    ],
+    "horizon_0_8s_with_observation_age": [
+      {
+        "observation_age_s": 0,
+        "total_dt_s": 0.8,
+        "radius_m": 0.52
+      },
+      {
+        "observation_age_s": 0.1,
+        "total_dt_s": 0.9,
+        "radius_m": 0.60875
+      },
+      {
+        "observation_age_s": 0.35,
+        "total_dt_s": 1.15,
+        "radius_m": 0.8634375
+      }
+    ]
+  },
+  "time_basis": {
+    "observation_stamp_preserved": "tracker 发布源点云 header.stamp；DynamicPointBuffer 候选 stamp 保留 msg.header.stamp；export header[18] 继续保留该时间。receive_time、cache acquisition header[3] 和 ESDF copy header[17] 均未替代预测基准。",
+    "raw_points_not_preadvanced": "tracker 发布原 cluster surface points 配估计 velocity；buffer 仅 world 变换；exporter 原样写点和速度。消费者只前推一次。",
+    "prediction": "standby rollout 的 query_time = plan_now + sample_index*dt/2；query age=query_time-header[18]。未发现先加 age 后又重复累加 age。发布前复检用发布时当前 ROS 时间和最新快照重新计算。",
+    "max_age_s": 0.35,
+    "max_prediction_time_from_observation_s": 2.0,
+    "sources": [
+      {
+        "path": "src/mm_remani/src/dynamic_obstacle_tracker_node.cpp",
+        "lines": [
+          644,
+          747,
+          748,
+          756,
+          763
+        ]
+      },
+      {
+        "path": "src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp",
+        "lines": [
+          158,
+          164,
+          180,
+          443,
+          444,
+          445,
+          493,
+          494
+        ]
+      },
+      {
+        "path": "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp",
+        "lines": [
+          84,
+          88,
+          156,
+          161,
+          182,
+          200,
+          201
+        ]
+      },
+      {
+        "path": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+        "lines": [
+          77,
+          80,
+          81,
+          95,
+          97,
+          100
+        ]
+      },
+      {
+        "path": "src/mm_remani/scripts/mppi/standby_whole_body_mppi.py",
+        "lines": [
+          169,
+          172
+        ]
+      },
+      {
+        "path": "src/mm_remani/scripts/whole_body_mppi.py",
+        "lines": [
+          73,
+          85,
+          87,
+          281,
+          333
+        ]
+      }
+    ],
+    "minor_cpp_python_difference": {
+      "description": "C++ getSnapshot 允许观测最多超前 0.05 s，但 predictPosition 仅允许负 dt 1e-6 s；Python query 接受负 dt 至 -0.05 s 并钳到 0。此前单帧 h3 比 h18 早 0.025 s，Python当前步可接受；此差异不是大半径或重复膨胀的来源，但两端未来时间处理并不严格相同。",
+      "sources": [
+        {
+          "path": "src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp",
+          "lines": [
+            101,
+            164,
+            181,
+            182,
+            186
+          ]
+        },
+        {
+          "path": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+          "lines": [
+            97,
+            100,
+            102
+          ]
+        }
+      ]
+    },
+    "empty_cloud_difference": "C++ getPredictedDistance 对空有效观测也验证 2 s 预测时域；Python 仅存在 dynamic groups 时检查 age 上界。当前关注的有障碍首帧含 38 点，不受这个差异影响。"
+  },
+  "duplication_and_extra_margins": {
+    "cpp_direct_dynamic_query": "三维欧氏距离减完整 r(dt) 一次。",
+    "planner_search_overlay": {
+      "description": "每个时间片半径 = min(r(observation_age+ahead) + extra 0.03 m + 0.5*最大障碍速度*切片时间间隔, cap 0.30 m)。这是 swept search guide。完整最终动态检查仍用未截断模型。",
+      "sources": [
+        {
+          "path": "src/mm_remani/launch/exp0_real.launch",
+          "lines": [
+            111,
+            113,
+            115,
+            117
+          ]
+        },
+        {
+          "path": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+          "lines": [
+            2530,
+            2555,
+            2558,
+            2561,
+            2562,
+            2567,
+            2593,
+            2642,
+            2652
+          ]
+        }
+      ]
+    },
+    "exported_esdf": "Exporter 调 getDistance(integer index)，只读 distance_buffer_all_，不是 getPlanningDistance，也不导出 swept overlay 球。原 ESDF 可能含当前 live occupancy，与动态预测取 min 是障碍集合并集，不是把同一 r 再减一次。",
+    "esdf_sources": [
+      {
+        "path": "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp",
+        "lines": [
+          149,
+          155
+        ]
+      },
+      {
+        "path": "src/mm_remani_planner/plan_env/include/plan_env/grid_map.h",
+        "lines": [
+          918,
+          921
+        ]
+      },
+      {
+        "path": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+        "lines": [
+          3724,
+          3840,
+          4094,
+          4097,
+          4099,
+          4101
+        ]
+      }
+    ],
+    "python_dynamic_query": "decode 用原 xyz 创建 KDTree；query 对未膨胀点只减 header 中的 r 一次，再与 ESDF 取 min。没有继承 overlay 0.03 或 cap 0.30。",
+    "python_sources": [
+      {
+        "path": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+        "lines": [
+          54,
+          68,
+          73,
+          74,
+          100,
+          102,
+          103
+        ]
+      }
+    ],
+    "fixed_structure_voxel_margin": "Exporter body 中固定结构 hard radius 已加 1 voxel；Python decode 跳过该 body 几何，模型从 mm/fixed_collision_spheres 读取物理球，再在 query 前 47 个球只加 1 voxel。因此不是对 exporter 已膨胀 body 再加 voxel。",
+    "fixed_structure_sources": [
+      {
+        "path": "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp",
+        "lines": [
+          98,
+          100
+        ]
+      },
+      {
+        "path": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+        "lines": [
+          54,
+          68,
+          106,
+          107
+        ]
+      },
+      {
+        "path": "src/mm_remani/scripts/mppi/active_arm_model.py",
+        "lines": [
+          239,
+          242,
+          293
+        ]
+      }
+    ],
+    "soft_margin": "query 中额外 0.08 m 只进入 soft cost，不进入 hard gap；不能与位置不确定度 0.08 m 混为同一项重复膨胀。",
+    "soft_margin_sources": [
+      {
+        "path": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+        "lines": [
+          108,
+          109
+        ]
+      }
+    ],
+    "ordinary_map_inflation": "real_speed.yaml 当前 obstacles_inflation=0、global_map_obstacles_inflation=0。地图离散化与固定球 native voxel margin 独立于动态不确定度，不是该 r(dt) 的重复应用。",
+    "ordinary_map_inflation_sources": [
+      {
+        "path": "src/mm_remani/config/real_speed.yaml",
+        "lines": [
+          121,
+          123
+        ]
+      },
+      {
+        "path": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+        "lines": [
+          1658,
+          1661,
+          1688,
+          1690
+        ]
+      }
+    ]
+  },
+  "isotropy": {
+    "implemented_model": "所有动态点共用同一个三维球形误差半径；xyz 欧氏范数，无速度方向条件、无水平/竖直区分、无分 track 估计。",
+    "is_it_a_bug": "若设计意图确为三维误差范数上界，实现一致；若这些数值仅代表地面目标水平运动误差，则同样用于竖直方向缺乏依据。现有代码不能证明后一种标定假设，因此应称模型过保守/待验证，不能直接认定数学错误。",
+    "observed_effect": "上一轮高位障碍单帧中，首先使固定结构球 44 不可行；不一定先撞机械臂。该球不随关节收臂运动改变。",
+    "next_minimal_evidence": "先记录动态点/障碍轨迹预测残差，按预测时距统计水平和竖直位置、速度残差及可解释的加速度上界；只有证据支持时才分方向包络，并保留未建模运动的合理界。不要直接将竖直项或全部不确定度设零作为实车参数。",
+    "sources": [
+      {
+        "path": "src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp",
+        "lines": [
+          237
+        ]
+      },
+      {
+        "path": "src/mm_remani/scripts/mppi/active_arm_mppi.py",
+        "lines": [
+          100,
+          101,
+          102,
+          103
+        ]
+      }
+    ]
+  },
+  "existing_first_snapshot_evidence": {
+    "source_artifact": "experiments/online_remani_validation/results/standby_candidate_followup_20261106/hard_uncertainty_first_dynamic_audit.json",
+    "source_run": "experiments/online_remani_validation/results/standby_candidate_followup_20261106/audit_current",
+    "snapshot": {
+      "stamp": 1004.855,
+      "sequence": 91.0,
+      "elapsed_s": 2.3100000010000485,
+      "shape": [
+        42,
+        42,
+        50
+      ],
+      "dynamic_groups": 1,
+      "dynamic_points": 38,
+      "uncertainty": [
+        0.08,
+        0.25,
+        0.75
+      ],
+      "prediction_limit_s": 2.0
+    },
+    "source_scope": "Read-only offline first-dynamic-snapshot feasibility audit. Uses the recorded run velocity interface (arm_position_servo=false), current per-candidate braking checks, and no parameter changes. Recorded obstacle truth is comparison only, never a planning input.",
+    "first_hold_violation": {
+      "tau_s": 0.7000000000000455,
+      "age_s": 0.6750000010000576,
+      "hard_gap_m": -0.03195925754690068,
+      "raw_dynamic_surface_gap_m": 0.387650118209393,
+      "uncertainty_radius_m": 0.41960937575629365,
+      "recorded_truth_external_gap_m": 0.4048521217869604,
+      "sphere_index": 44,
+      "sphere_part": "fixed_structure",
+      "terminal_arm_delta_deg": [
+        0.002769774254287911,
+        0.010510724525082525,
+        -0.06811587461148037,
+        -0.1315239667955955,
+        0.10167005061063411,
+        -0.1121899807962137
+      ]
+    },
+    "canonical_candidates": 21,
+    "feasible_candidates": 0,
+    "fixed_structure_reachability_bound": {
+      "scope": "Fixed sphere 44 at H=.8. A loose upper bound ignores acceleration limits and grants max linear/angular speed throughout; nearest-cloud distance is 1-Lipschitz.",
+      "sphere_index": 44,
+      "radial_offset_m": 0.1525338691331333,
+      "forecast_age_s": 0.7750000009999667,
+      "uncertainty_radius_m": 0.49898437583122235,
+      "robust_dynamic_gap_if_base_pose_stays_current_m": -0.11732108889016901,
+      "maximum_possible_sphere_displacement_m": 0.05829308383406792,
+      "upper_bound_robust_gap_over_any_admissible_base_motion_m": -0.05902800505610109,
+      "any_arm_only_motion_can_change_this_sphere": false,
+      "any_velocity_bounded_base_motion_still_infeasible": true
+    },
+    "interpretation": "这些是此前离线记录的结果，本次没有重算或当作新闭环验证。负 robust gap 表示当前误差模型拒绝，不等于实物已碰撞。",
+    "limitations": [
+      "Canonical candidates exclude the unreconstructed cached previous action; nearest online diagnostics are separate.",
+      "An empty finite candidate set does not prove no arbitrary admissible trajectory exists.",
+      "Truth gaps use predicted robot poses versus recorded simulation obstacle geometry, not measured future robot motion.",
+      "The additional fixed-sphere reachability bound concerns the current snapshot uncertainty model and stated speed limits; it is not a statement that the physical foam cylinder cannot be avoided."
+    ]
+  },
+  "recommended_next_step": "将硬约束模型依据和短窗动作价值分开处理。先核查/标定预测误差包络；代价改进仅在非空可行集上评价持续收臂收益。保留全部碰撞采样、最终时间对齐重检与截止要求。",
+  "not_done": [
+    "没有修改配置或碰撞公式",
+    "没有网络/ROS/硬件运行",
+    "没有新增闭环试验",
+    "没有声称参数经过实测标定",
+    "没有扫描大规模 experiments runtime"
+  ]
+}

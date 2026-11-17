@@ -1,0 +1,152 @@
+{
+  "window": "2026-11-10 10:27:00 to 10:35:56 Asia/Shanghai",
+  "meaning": "reason-change log entries, not cycle counts/failure rates",
+  "counts": {
+    "waiting_native_arm_startup": 1,
+    "waiting_collision_snapshot": 1,
+    "collision_snapshot_unavailable": 377,
+    "collision_snapshot_expired_during_plan": 257,
+    "planning_deadline_exceeded": 480,
+    "waiting_explicit_arm_enable_or_normal_status": 478,
+    "delivery_deadline_exceeded": 288,
+    "inputs_expired_before_delivery": 108,
+    "state_feedback_stale": 4,
+    "arm_target_exceeds_current_feedback_lead": 5,
+    "command_hold_or_braking_rejected_by_latest_state_or_map": 27,
+    "no_feasible_candidate": 103,
+    "arm_stop_latched": 1
+  },
+  "cycle_ms": {
+    "waiting_native_arm_startup": {
+      "min": 1.44,
+      "max": 1.44,
+      "median": 1.44
+    },
+    "waiting_collision_snapshot": {
+      "min": 0.29,
+      "max": 0.29,
+      "median": 0.29
+    },
+    "collision_snapshot_unavailable": {
+      "min": 0.09,
+      "max": 32.47,
+      "median": 0.26
+    },
+    "collision_snapshot_expired_during_plan": {
+      "min": 51.42,
+      "max": 92.52,
+      "median": 69.85
+    },
+    "planning_deadline_exceeded": {
+      "min": 95.25,
+      "max": 150.99,
+      "median": 103.99
+    },
+    "waiting_explicit_arm_enable_or_normal_status": {
+      "min": 0.06,
+      "max": 95.64,
+      "median": 0.19
+    },
+    "delivery_deadline_exceeded": {
+      "min": 95.3,
+      "max": 129.71,
+      "median": 98.66
+    },
+    "inputs_expired_before_delivery": {
+      "min": 62.63,
+      "max": 116.75,
+      "median": 85.9
+    },
+    "state_feedback_stale": {
+      "min": 0.12,
+      "max": 0.34,
+      "median": 0.26
+    },
+    "arm_target_exceeds_current_feedback_lead": {
+      "min": 72.1,
+      "max": 88.17,
+      "median": 84.42
+    },
+    "command_hold_or_braking_rejected_by_latest_state_or_map": {
+      "min": 67.25,
+      "max": 101.33,
+      "median": 87.95
+    },
+    "no_feasible_candidate": {
+      "min": 45.34,
+      "max": 104.19,
+      "median": 67.99
+    },
+    "arm_stop_latched": {
+      "min": 0.2,
+      "max": 0.2,
+      "median": 0.2
+    }
+  },
+  "examples": [
+    [
+      "waiting_native_arm_startup",
+      "[rosout][WARNING] 2026-11-10 10:27:13,340: MPPI command rejected: waiting_native_arm_startup (cycle=1.44 ms; snapshot={})"
+    ],
+    [
+      "waiting_collision_snapshot",
+      "[rosout][WARNING] 2026-11-10 10:27:16,339: MPPI command rejected: waiting_collision_snapshot (cycle=0.29 ms; snapshot={})"
+    ],
+    [
+      "collision_snapshot_unavailable",
+      "[rosout][WARNING] 2026-11-10 10:27:20,173: MPPI command rejected: collision_snapshot_unavailable (cycle=32.47 ms; snapshot={'valid': True, 'map_age_ms': 254.03, 'dynamic_age_ms': 150.84, 'cached_joint_age_ms': 151.82, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3})"
+    ],
+    [
+      "collision_snapshot_expired_during_plan",
+      "[rosout][WARNING] 2026-11-10 10:27:20,301: MPPI command rejected: collision_snapshot_expired_during_plan (cycle=61.88 ms; snapshot={'valid': False, 'map_age_ms': 382.4, 'dynamic_age_ms': 79.35, 'cached_joint_age_ms': 70.18, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3})"
+    ],
+    [
+      "collision_snapshot_unavailable",
+      "[rosout][WARNING] 2026-11-10 10:27:20,340: MPPI command rejected: collision_snapshot_unavailable (cycle=0.33 ms; snapshot={'valid': False, 'map_age_ms': 420.91, 'dynamic_age_ms': 117.86, 'cached_joint_age_ms': 108.69, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 3})"
+    ],
+    [
+      "planning_deadline_exceeded",
+      "[rosout][WARNING] 2026-11-10 10:27:21,048: MPPI command rejected: planning_deadline_exceeded (cycle=108.28 ms; snapshot={})"
+    ],
+    [
+      "waiting_explicit_arm_enable_or_normal_status",
+      "[rosout][WARNING] 2026-11-10 10:27:21,179: MPPI command rejected: waiting_explicit_arm_enable_or_normal_status (cycle=66.04 ms; snapshot={})"
+    ],
+    [
+      "planning_deadline_exceeded",
+      "[rosout][WARNING] 2026-11-10 10:27:21,359: MPPI command rejected: planning_deadline_exceeded (cycle=120.00 ms; snapshot={})"
+    ],
+    [
+      "delivery_deadline_exceeded",
+      "[rosout][WARNING] 2026-11-10 10:27:21,936: MPPI command rejected: delivery_deadline_exceeded (cycle=97.32 ms; snapshot={})"
+    ],
+    [
+      "planning_deadline_exceeded",
+      "[rosout][WARNING] 2026-11-10 10:27:22,084: MPPI command rejected: planning_deadline_exceeded (cycle=103.90 ms; snapshot={})"
+    ],
+    [
+      "inputs_expired_before_delivery",
+      "[rosout][WARNING] 2026-11-10 10:27:26,125: MPPI command rejected: inputs_expired_before_delivery (cycle=73.86 ms; snapshot={'valid': True, 'map_age_ms': 363.78, 'dynamic_age_ms': 102.93, 'cached_joint_age_ms': 118.68, 'dynamic_valid': True, 'ground_valid': True, 'self_collision_valid': True, 'field_version': 40})"
+    ],
+    [
+      "state_feedback_stale",
+      "[rosout][WARNING] 2026-11-10 10:27:27,808: MPPI command rejected: state_feedback_stale (cycle=0.12 ms; snapshot={})"
+    ],
+    [
+      "arm_target_exceeds_current_feedback_lead",
+      "[rosout][WARNING] 2026-11-10 10:28:12,578: MPPI command rejected: arm_target_exceeds_current_feedback_lead (cycle=84.42 ms; snapshot={})"
+    ],
+    [
+      "command_hold_or_braking_rejected_by_latest_state_or_map",
+      "[rosout][WARNING] 2026-11-10 10:31:03,895: MPPI command rejected: command_hold_or_braking_rejected_by_latest_state_or_map (cycle=96.96 ms; snapshot={})"
+    ],
+    [
+      "no_feasible_candidate",
+      "[rosout][WARNING] 2026-11-10 10:31:37,249: MPPI command rejected: no_feasible_candidate (cycle=75.50 ms; snapshot={})"
+    ],
+    [
+      "arm_stop_latched",
+      "[rosout][WARNING] 2026-11-10 10:35:55,878: MPPI command rejected: arm_stop_latched (cycle=0.20 ms; snapshot={})"
+    ]
+  ]
+}

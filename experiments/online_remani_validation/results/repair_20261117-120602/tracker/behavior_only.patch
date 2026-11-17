@@ -1,0 +1,23 @@
+--- a/dynamic_obstacle_tracker_core.cpp
++++ b/dynamic_obstacle_tracker_core.cpp
+@@ -86,6 +86,8 @@
+                           const Eigen::Vector3f &offset,
+                           SurfaceDirectionDiagnostic *evidence)
+       {
++        // Qualification tests planar motion, matching the XY history/shift.
++        // Height sampling may change; retain all original XYZ collision points.
+         // Query at most 64 observed points against the complete bounded
+         // surface. Keeping all target neighbours prevents sampling itself
+         // from turning a changing visible subset into apparent movement.
+@@ -103,9 +105,9 @@
+           for (const Eigen::Vector3f &neighbour : target)
+           {
+             stationary = std::min(
+-                stationary, static_cast<double>((point - neighbour).squaredNorm()));
++                stationary, static_cast<double>((point - neighbour).head<2>().squaredNorm()));
+             moving = std::min(
+-                moving, static_cast<double>((translated - neighbour).squaredNorm()));
++                moving, static_cast<double>((translated - neighbour).head<2>().squaredNorm()));
+           }
+           stationary_errors.push_back(stationary);
+           translated_errors.push_back(moving);

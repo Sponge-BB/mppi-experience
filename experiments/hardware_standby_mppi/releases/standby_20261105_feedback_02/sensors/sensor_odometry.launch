@@ -1,0 +1,30 @@
+<launch>
+  <!-- Existing raw sensor topics are inputs; this never starts a second driver. -->
+  <group ns="/standby_trial_20261105_feedback_02/sensors">
+    <rosparam command="load" file="$(dirname)/config/fastlio_mid360.yaml" />
+    <node pkg="standby_hardware_trial" type="feedback02_fastlio_mapping" name="fastlio_mapping" required="true" output="screen">
+      <remap from="/Odometry" to="/standby_trial_20261105_feedback_02/sensors/odometry_raw" />
+      <remap from="/cloud_registered" to="/standby_trial_20261105_feedback_02/sensors/cloud_registered" />
+      <remap from="/cloud_registered_body" to="/standby_trial_20261105_feedback_02/sensors/cloud_registered_body" />
+      <remap from="/cloud_effected" to="/standby_trial_20261105_feedback_02/sensors/cloud_effected" />
+      <remap from="/Laser_map" to="/standby_trial_20261105_feedback_02/sensors/local_laser_map" />
+      <remap from="/path" to="/standby_trial_20261105_feedback_02/sensors/path" />
+    </node>
+    <node pkg="standby_hardware_trial" type="feedback02_fastlio_to_odom.py" name="base_odometry_bridge" required="true" output="screen">
+      <remap from="/Odometry" to="/standby_trial_20261105_feedback_02/sensors/odometry_raw" />
+      <remap from="/odom" to="/standby_trial_20261105_feedback_02/sensors/odom" />
+      <param name="planar_base_link" value="true" type="bool" />
+      <param name="base_z" value="0.115" type="double" />
+      <param name="lidar_offset_x" value="0.28" type="double" />
+      <param name="lidar_offset_y" value="0" type="double" />
+      <param name="lidar_offset_z" value="0.002" type="double" />
+      <param name="twist_filter_alpha" value="0.35" type="double" />
+      <param name="max_derived_linear_speed" value="1.0" type="double" />
+      <param name="max_derived_angular_speed" value="3.0" type="double" />
+    </node>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="camera_to_odom"
+          args="0 0 0 0 0 0 standby_feedback_02_camera_init standby_feedback_02_odom" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_lidar"
+          args="0.28 0 0.002 0 0 0 standby_feedback_02_base_link standby_feedback_02_livox_frame" />
+  </group>
+</launch>

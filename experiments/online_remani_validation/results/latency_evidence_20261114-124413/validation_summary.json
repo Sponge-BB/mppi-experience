@@ -1,0 +1,149 @@
+{
+  "purpose": "补齐同代地图、MPPI实际拒绝输入和锁等待时序证据；本轮不调整控制策略或超时阈值",
+  "offline_passed": true,
+  "hardware_validation": false,
+  "hardware_motion_commands_sent": false,
+  "python": {
+    "tests_run": 206,
+    "skipped": 1,
+    "result": "OK",
+    "final_gate_recheck": {
+      "tests_run": 29,
+      "result": "OK"
+    }
+  },
+  "cpp": {
+    "tests_passed": 96,
+    "isolated_ros_master": "127.0.0.1:11472",
+    "records": [
+      {
+        "test": "test_esdf_worker",
+        "exit_code": 0,
+        "elapsed_s": 0.9662953500001095,
+        "peak_rss_mib": 160.296875,
+        "lowest_available_mib": 3096.734375,
+        "stop_reason": null
+      },
+      {
+        "test": "test_grid_map_parallel",
+        "exit_code": 0,
+        "elapsed_s": 19.920549180000307,
+        "peak_rss_mib": 237.5859375,
+        "lowest_available_mib": 3105.42578125,
+        "stop_reason": null
+      },
+      {
+        "test": "test_dynamic_point_buffer",
+        "exit_code": 0,
+        "elapsed_s": 0.2575310750007702,
+        "peak_rss_mib": 84.9765625,
+        "lowest_available_mib": 3291.296875,
+        "stop_reason": null
+      }
+    ]
+  },
+  "recorder_smoke": {
+    "passed": true,
+    "isolated_ros_master": "127.0.0.1:11471",
+    "bag_messages": 180,
+    "readiness_and_logger_restore_verified": true
+  },
+  "builds": {
+    "map_build": {
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cmake",
+        "--build",
+        "/tmp/remani_latency_build_20261114-124413",
+        "--parallel",
+        "1",
+        "--target",
+        "plan_env",
+        "test_esdf_worker",
+        "test_grid_map_parallel",
+        "test_dynamic_point_buffer"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 147.86612217600032,
+      "peak_build_group_rss_mib": 1651.0703125,
+      "lowest_available_mib": 1749.90625,
+      "stop_reason": null,
+      "jobs": 1,
+      "clean_build": true,
+      "build_dir": "/tmp/remani_latency_build_20261114-124413",
+      "runtime_destination_untouched": true
+    },
+    "planner_build": {
+      "command": [
+        "nice",
+        "-n",
+        "15",
+        "cmake",
+        "--build",
+        "/tmp/remani_latency_planner_build_20261114-124413",
+        "--parallel",
+        "1",
+        "--target",
+        "remani_planner_node"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 152.46320416099934,
+      "peak_build_group_rss_mib": 1685.64453125,
+      "lowest_available_mib": 1709.22265625,
+      "stop_reason": null,
+      "jobs": 1,
+      "clean_build": true,
+      "build_dir": "/tmp/remani_latency_planner_build_20261114-124413",
+      "runtime_destination_untouched": true
+    }
+  },
+  "deployment": {
+    "hardware_started": false,
+    "host_process_check": [],
+    "source_sha256": {
+      "src/mm_remani_planner/plan_env/src/esdf_worker.cpp": "94843e6cbd2fb88a17f4f548b06827ca6b71d539173cc55abd25e735937cadc7",
+      "src/mm_remani_planner/plan_env/include/plan_env/esdf_worker.h": "54735aedf55f1f824c8d4eb2a08792fe3fbef386a9379403770632562cb31263",
+      "src/mm_remani_planner/plan_env/src/grid_map.cpp": "4d50a3862e68612345cb4b2c5dd57ef57a12aec0d52be8ff16a5387e10b3d378",
+      "src/mm_remani_planner/plan_env/include/plan_env/grid_map.h": "c474929e9de92f9fe4331f085e66c4319e8b41536b67a17566c4016007c74f2c",
+      "src/mm_remani_planner/plan_env/test/test_esdf_worker.cpp": "c6f31c982cf8347e2c7605eb27a718240794fd4fb4a47104181e1e20e9538e7f",
+      "src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp": "2d7e1539ec7f49f31d07b8e20c98b6b6a32c0330acde6795e2838072511a1e96",
+      "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp": "f29c8ac59337534fe33ac2e3376e9e8a38b4286993444a38f65f76c6c3f5e67a",
+      "src/mm_remani/scripts/whole_body_mppi.py": "8f033565ff8245996d75f05682f68317c5730c5dcff930181e20cfd074fa0767",
+      "src/mm_remani/test/test_mppi_latency_evidence.py": "2eb43901e3baf840e5ddccca5d8330239ee9c9a3dea9b54fedd36f91a99d6dae",
+      "experiments/online_remani_validation/record_latency_session.py": "8f170278e51f4497facd24cba91964f04c54844c0f99ab5ac789509f6403e1bc"
+    },
+    "deployed": {
+      "devel/lib/libplan_env.so": {
+        "stage": "/tmp/remani_latency_devel_20261114-124413/lib/libplan_env.so",
+        "sha256": "5bb40ffc6c41c5e619bb22d403584c26b44b4a465ce40e1735292c3396ccec81",
+        "stage_sha256": "5bb40ffc6c41c5e619bb22d403584c26b44b4a465ce40e1735292c3396ccec81",
+        "mode": 509
+      },
+      "devel/lib/remani_planner/remani_planner_node": {
+        "stage": "/tmp/remani_latency_planner_devel_20261114-124413/lib/remani_planner/remani_planner_node",
+        "sha256": "68d8d459d3e428dab81031e5dcf7959338f96510fa3f143ef245f44edc098b97",
+        "stage_sha256": "68d8d459d3e428dab81031e5dcf7959338f96510fa3f143ef245f44edc098b97",
+        "mode": 509
+      }
+    },
+    "link_check_passed": true
+  },
+  "known_limits": [
+    "仅诊断准备完成，尚未获得本版本实车时序数据，不能称卡顿已解决或实车验证通过。",
+    "分段计时、状态字段与临时DEBUG日志有额外开销；实车记录时需结合数据量评价。",
+    "本轮记录小消息和同代标量时序，不保存完整ESDF任务输入；不能用该bag宣称完整地图计算重放。",
+    "现有OpenCV 4.2/4.5混合动态依赖仍存在，旧版本同样存在；本轮未改外部依赖。",
+    "初次含调试符号的地图编译超过本次1800MiB自设上限后，仅终止自有编译组；后续单任务编译通过，未终止VSCode或其他进程。",
+    "记录器正常退出会恢复临时logger级别；RPC异常时明确记录未确认恢复，不作成功假定。"
+  ],
+  "unchanged_scope": [
+    "控制阈值",
+    "机器人驱动",
+    "ROS话题消息定义",
+    "地图更新算法",
+    "实际碰撞策略",
+    "操作系统与固件"
+  ]
+}

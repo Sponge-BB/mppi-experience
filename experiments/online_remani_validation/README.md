@@ -1,6 +1,12 @@
 # 当前 REMANI 完整在线闭环算法验证
 
-这是本机隔离 ROS 数值闭环，不是 Gazebo，也不是实车试验。固定机械臂，只比较底盘局部控制。
+本目录汇集本机隔离 ROS 数值闭环，不是 Gazebo 或实车试验；各批次的机械臂自由度、源码范围和结论以对应报告为准。
+
+[2026-11-07 主工程连续性、驱动反馈与雷达视场回归](results/hardware_core_followup_20261107/report/实验报告.txt)：
+修正慢层时间缩放下降导致快层候选反复作废，驱动按 CAN 源更新时间检查 ArmStatus，并加入 MID360 几何视场与圆柱遮挡仿真。
+空场到达；完整点云和受限视场两组动态实验均碰撞，尚未实现可靠的实车机械臂避障。
+[视场数据图](results/hardware_core_followup_20261107/report/sensor_visibility.png)、
+[动态实验 GIF](results/hardware_core_followup_20261107/report/comparison.gif)。
 
 [2026-10-22 目标选择×MPPI初值反馈实验](results/collab_factorial_20261022/README.md)：
 48次新在线、96次冻结配对求解、2个终点占据负例，保留3个关键GIF。

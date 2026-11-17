@@ -1,0 +1,67 @@
+{
+  "state": "OFFLINE_VERIFIED_HARDWARE_PENDING",
+  "unit_tests": {
+    "run": 32,
+    "passed": 32,
+    "log": "unit_tests.log"
+  },
+  "python_compile": "passed",
+  "replay": {
+    "bag": "/home/l/remani_ws/experiments/online_remani_validation/results/collision_capture_20261112-093943/capture.bag",
+    "frames": 139,
+    "grid": {
+      "origin": [
+        -7.5,
+        -5.0,
+        0.0
+      ],
+      "size": [
+        15.0,
+        10.0,
+        3.0
+      ],
+      "resolution": 0.05,
+      "max_ray_length": 4.5
+    },
+    "mean_original_points": 1951.68345323741,
+    "mean_mapping_points": 1769.294964028777,
+    "mean_payload_ratio": 0.27201075228545896,
+    "extra_branch_ms": {
+      "median": 0.9052790010173339,
+      "p95": 0.9383903001435101,
+      "max": 1.2025690011796542
+    },
+    "passed": {
+      "metadata_equal": 139,
+      "measured_xyz_equal": 139,
+      "all_endpoint_cells_equal": 139,
+      "native_first_beams_equal": 139,
+      "native_hit_cells_equal": 139,
+      "native_update_bounds_equal": 139
+    },
+    "peak_rss_mib": 107.8828125,
+    "limits": [
+      "Closed bag with original grid parameters, not a live robot test.",
+      "Timing excludes existing TF/world work, kept_world collection/concatenation, the first target-XYZ read, and live ROS transport.",
+      "Matching ray inputs does not reduce the ESDF region or prove lower end-to-end latency."
+    ]
+  },
+  "source_sha256": {
+    "src/mm_remani/scripts/velodyne_transformer.py": "48a9ed895610ab68aa2ec961400903d3e74f4a320afb088cb92616b2aca638bb",
+    "src/mm_remani/launch/exp0_real.launch": "bc6b14a348db7091a21eeffee4f97127c483b47e3208f76d90a0ec9d203438bf",
+    "src/mm_remani/launch/run_planner_gazebo.launch": "31d0848570057142ed1da98357c201da67f55e42907061b6ffa64849290eda37",
+    "src/mm_remani/test/test_mapping_cloud_sparse.py": "336180cde8e15454ba5df97da9fbcbef297760ff6f5bbc3bb4d5393abfabd976",
+    "experiments/online_remani_validation/check_mapping_cloud_sparse.py": "3d6d12660b54bb3efec1cbabff2e942517b50861b894a38abe84436c6e808a7d"
+  },
+  "known_limits": [
+    "No live ROS or actuator commands were sent.",
+    "End-to-end latency and real robot obstacle avoidance still require hardware verification.",
+    "The native ESDF geometry/update range is preserved, so ESDF computation volume is not reduced."
+  ],
+  "root_review": {
+    "passed": true,
+    "projection_boundary_test": "invalid first sensor endpoint must not delete valid later endpoint in same world voxel",
+    "target_frame_test": "original source frame saved before shared-header transform; use target sensor origin",
+    "notes": "Only timing-description text updated after successful replay, no replay logic changed."
+  }
+}

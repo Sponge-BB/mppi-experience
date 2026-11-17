@@ -1,0 +1,62 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Name: Ground grid
+      Enabled: true
+      Cell Size: 0.25
+      Plane: XY
+      Reference Frame: odom
+    - Class: rviz/MarkerArray
+      Name: Measured model and shadow suggestions
+      Enabled: true
+      Marker Topic: /standby_trial_20261105_01/markers
+      Queue Size: 1
+    - Class: rviz/PointCloud2
+      Name: Actual raw cloud (optional)
+      Enabled: false
+      Topic: /livox/lidar_pcl2
+      Queue Size: 1
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: AxisColor
+      Position Transformer: XYZ
+    - Class: rviz/PointCloud2
+      Name: Actual filtered cloud (optional)
+      Enabled: false
+      Topic: /velodyne_points
+      Queue Size: 1
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: AxisColor
+      Position Transformer: XYZ
+  Enabled: true
+  Global Options:
+    Background Color: 35; 38; 45
+    Fixed Frame: odom
+    Frame Rate: 15
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 3
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0.65
+      Pitch: 0.35
+      Yaw: 0.8
+Window Geometry:
+  Width: 1200
+  Height: 850

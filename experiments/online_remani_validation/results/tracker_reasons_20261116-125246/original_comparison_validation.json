@@ -1,0 +1,109 @@
+{
+  "status": "passed",
+  "scope": "original vs candidate core; same driver compiled with original header; no ROS/PCL or hardware",
+  "results": [
+    {
+      "name": "base_core",
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-O0",
+        "-g0",
+        "--param=ggc-min-expand=5",
+        "--param=ggc-min-heapsize=16384",
+        "-I/tmp/remani_tracker_diag_stage/original/src/mm_remani/include",
+        "-I/usr/include/eigen3",
+        "-c",
+        "/tmp/remani_tracker_diag_stage/original/src/mm_remani/src/dynamic_obstacle_tracker_core.cpp",
+        "-o",
+        "/tmp/remani_tracker_diag_stage/standalone_build/base_core.o"
+      ],
+      "returncode": 0,
+      "guard": null,
+      "peak_process_group_rss_MiB": 213.3,
+      "elapsed_s": 11.56,
+      "log": "/tmp/remani_tracker_diag_stage/standalone_build/base_core.log"
+    },
+    {
+      "name": "compare_fixture",
+      "command": [
+        "/usr/bin/c++",
+        "-std=c++14",
+        "-O0",
+        "-g0",
+        "--param=ggc-min-expand=5",
+        "--param=ggc-min-heapsize=16384",
+        "-I/tmp/remani_tracker_diag_stage/original/src/mm_remani/include",
+        "-I/usr/include/eigen3",
+        "-c",
+        "/tmp/remani_tracker_diag_stage/compare_original_fixture.cpp",
+        "-o",
+        "/tmp/remani_tracker_diag_stage/standalone_build/fixture.o"
+      ],
+      "returncode": 0,
+      "guard": null,
+      "peak_process_group_rss_MiB": 163.6,
+      "elapsed_s": 5.376,
+      "log": "/tmp/remani_tracker_diag_stage/standalone_build/compare_fixture.log"
+    },
+    {
+      "name": "base_link",
+      "command": [
+        "/usr/bin/c++",
+        "/tmp/remani_tracker_diag_stage/standalone_build/fixture.o",
+        "/tmp/remani_tracker_diag_stage/standalone_build/base_core.o",
+        "-o",
+        "/tmp/remani_tracker_diag_stage/standalone_build/baseline_fixture"
+      ],
+      "returncode": 0,
+      "guard": null,
+      "peak_process_group_rss_MiB": 22.14,
+      "elapsed_s": 0.307,
+      "log": "/tmp/remani_tracker_diag_stage/standalone_build/base_link.log"
+    },
+    {
+      "name": "candidate_link",
+      "command": [
+        "/usr/bin/c++",
+        "/tmp/remani_tracker_diag_stage/standalone_build/fixture.o",
+        "/tmp/remani_tracker_diag_stage/standalone_build/core.o",
+        "-o",
+        "/tmp/remani_tracker_diag_stage/standalone_build/candidate_fixture"
+      ],
+      "returncode": 0,
+      "guard": null,
+      "peak_process_group_rss_MiB": 24.87,
+      "elapsed_s": 0.307,
+      "log": "/tmp/remani_tracker_diag_stage/standalone_build/candidate_link.log"
+    },
+    {
+      "name": "baseline_output",
+      "command": [
+        "/tmp/remani_tracker_diag_stage/standalone_build/baseline_fixture"
+      ],
+      "returncode": 0,
+      "guard": null,
+      "peak_process_group_rss_MiB": 1.3,
+      "elapsed_s": 0.506,
+      "log": "/tmp/remani_tracker_diag_stage/standalone_build/baseline_output.log"
+    },
+    {
+      "name": "candidate_output",
+      "command": [
+        "/tmp/remani_tracker_diag_stage/standalone_build/candidate_fixture"
+      ],
+      "returncode": 0,
+      "guard": null,
+      "peak_process_group_rss_MiB": 1.3,
+      "elapsed_s": 0.507,
+      "log": "/tmp/remani_tracker_diag_stage/standalone_build/candidate_output.log"
+    }
+  ],
+  "comparison": {
+    "byte_identical": true,
+    "bytes_per_output": 61418,
+    "lines_per_output": 547,
+    "baseline_sha256": "964760f38cec5165854af8f42f30587dc612a4b16d1c5a4850b7af111dbc7ae9",
+    "candidate_sha256": "964760f38cec5165854af8f42f30587dc612a4b16d1c5a4850b7af111dbc7ae9"
+  }
+}

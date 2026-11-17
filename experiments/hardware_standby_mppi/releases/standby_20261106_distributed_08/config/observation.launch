@@ -1,0 +1,21 @@
+<launch>
+  <arg name="duration" default="100"/>
+  <arg name="record_gateway" default="false"/>
+  <!-- A single supervisor reuses the original nodes without four redundant
+       roslaunch processes. No controller or actuator driver is included. -->
+  <include file="$(dirname)/../../standby_20261105_feedback_02/sensors/raw_sensors.launch"/>
+  <include file="$(dirname)/../../standby_20261105_feedback_02/sensors/sensor_odometry.launch"/>
+  <include file="$(dirname)/native_planner.launch">
+    <arg name="map_size_x" value="6.0"/>
+    <arg name="map_size_y" value="6.0"/>
+    <arg name="map_size_z" value="2.5"/>
+  </include>
+  <include file="$(dirname)/stationary_perception.launch"/>
+  <group ns="/standby_trial_20261106_distributed_08">
+    <node pkg="standby_distributed_trial" type="receive_only_feedback" name="piper_can_receive_only" args="--interface can0 --duration $(arg duration)" output="log" required="true"/>
+    <node pkg="standby_distributed_trial" type="distributed_shadow" name="distributed_shadow" output="log" required="true">
+      <param name="log_dir" value="$(env STANDBY_DISTRIBUTED_RUN)"/>
+      <param name="record_gateway" value="$(arg record_gateway)" type="bool"/>
+    </node>
+  </group>
+</launch>

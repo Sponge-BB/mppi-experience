@@ -1,0 +1,24 @@
+{
+  "source_sha256": "69f8c4d68bca86a10ab7274a55d55a4b3002bf92596cb356c1396ca822dc800c",
+  "all_phase_getters": {
+    "execFSMCallback": "time at line 821; checked line 819",
+    "checkCollisionCallback": "time at line 1524; checked line 1521 after independent depth guard",
+    "planFromLocalTraj": "time/scale lines 2729/2731; checked line 2727, only non-stopped branch"
+  },
+  "extra_readiness": "tryMppiRefresh checks last published reference before consuming event; callReboundReplan checks frozen executing reference after drain before acceptance",
+  "goal_and_recovery_functions_unchanged": {
+    "recoverPerceptionStop": true,
+    "beginTransientObstacleRecovery": true,
+    "finishManualGoal": true,
+    "finishNewTrajectory": true,
+    "waypointCallback": true
+  },
+  "guarded_stop_recovery": "planFromLocal zero-speed guard uses measured state without phase query. Perception recovery calls planFromGlobal with null handoff; post-solve freshness check is handoff!=nullptr only. Two-phase candidate/source-stamped feedback checks unchanged.",
+  "open_issue": {
+    "confirmed": true,
+    "branch": "execFSMCallback case REPLAN_TRAJ",
+    "cause": "planFromLocalTraj returning false for missing phase still consumes ordinary failure or dynamic retry budget; 20 ordinary false returns force WAIT_TARGET and new global generation even though no actual solve ran",
+    "minimum_fix": "Readiness gate before REPLAN local-attempt accounting; bypass true zero-speed dynamic guard, preserve perception stopped recovery. goto force_return without mutating failure/retry/generation counters."
+  },
+  "no_compilation_or_production_edits_during_review": true
+}

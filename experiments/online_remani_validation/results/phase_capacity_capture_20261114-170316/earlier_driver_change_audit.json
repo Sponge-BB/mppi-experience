@@ -1,0 +1,31 @@
+{
+  "original_git_baseline": "f138ec8",
+  "original_has_send_failure_latch": false,
+  "current_additions": [
+    {
+      "path": "src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+      "lines": [
+        185,
+        191,
+        201
+      ],
+      "change": "force bus.send wait to 5ms and convert SDK non-success enum into RuntimeError"
+    },
+    {
+      "lines": [
+        708,
+        753,
+        757,
+        887,
+        890
+      ],
+      "change": "catch startup watchdog or command send error and latch stop; later sends blocked; no automatic re-enable"
+    }
+  ],
+  "known_before_this_round": "Already in 20261110-204057-arm-startup-unresolved and earlier 20261110 diagnostic snapshots; exact introduction time not established by that checkpoint.",
+  "five_ms_semantics": "Installed python-can defaults None to zero poll; therefore the 5ms wrapper is not proof that the original wait was shortened. SDK suppresses underlying exception and returns generic SEND_MESSAGE_FAILED.",
+  "can_activation_script_unchanged_vs_git": true,
+  "tx_queue_10_preexisted": true,
+  "confirmed_causality": "Added send-failure latch explains why startup is abandoned after failure; it does not establish the cause of the persistent kernel/adapter TX stall.",
+  "boundary": "No runtime source/config/interface/motion changes were performed for this audit."
+}

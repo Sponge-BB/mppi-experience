@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <numeric>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
@@ -58,26 +59,137 @@ bool compactVoxelCount(const Eigen::Vector3i &min_index,
   return true;
 }
 
+struct PatchRegion
+{
+  Eigen::Vector3i changed_min, changed_max;
+  Eigen::Vector3i write_min, write_max;
+  Eigen::Vector3i input_min, input_max;
+  std::size_t voxel_count = 0;
+  std::vector<std::size_t> members;
+};
+
+struct ChangeBounds
+{
+  Eigen::Vector3i minimum = Eigen::Vector3i::Zero();
+  Eigen::Vector3i maximum = Eigen::Vector3i::Zero();
+  std::size_t count = 0;
+
+  void include(const Eigen::Vector3i &cell)
+  {
+    if (count++ == 0)
+      minimum = maximum = cell;
+    else
+    {
+      minimum = minimum.cwiseMin(cell);
+      maximum = maximum.cwiseMax(cell);
+    }
+  }
+
+  void include(const ChangeBounds &other)
+  {
+    if (other.count == 0) return;
+    if (count == 0)
+      *this = other;
+    else
+    {
+      minimum = minimum.cwiseMin(other.minimum);
+      maximum = maximum.cwiseMax(other.maximum);
+      count += other.count;
+    }
+  }
+};
+
+Eigen::Vector3i expandedBound(const Eigen::Vector3i &bound, int padding,
+                              const Eigen::Vector3i &limit, bool lower)
+{
+  Eigen::Vector3i result;
+  for (int axis = 0; axis < 3; ++axis)
+  {
+    const std::int64_t expanded = static_cast<std::int64_t>(bound(axis)) +
+        (lower ? -static_cast<std::int64_t>(padding) : padding);
+    result(axis) = static_cast<int>(lower
+        ? std::max(expanded, static_cast<std::int64_t>(limit(axis)))
+        : std::min(expanded, static_cast<std::int64_t>(limit(axis))));
+  }
+  return result;
+}
+
+void setRegionGeometry(PatchRegion *region, const plan_env::ESDFJob &job,
+                       int radius)
+{
+  region->write_min = expandedBound(region->changed_min, radius, job.min_index, true);
+  region->write_max = expandedBound(region->changed_max, radius, job.max_index, false);
+  region->input_min = expandedBound(region->write_min, radius, job.min_index, true);
+  region->input_max = expandedBound(region->write_max, radius, job.max_index, false);
+  Eigen::Vector3i size;
+  if (!compactVoxelCount(region->input_min, region->input_max,
+                         &size, &region->voxel_count))
+    throw std::invalid_argument("invalid ESDF patch bounds");
+}
+
+// Binary EDT intermediates are integer squared distances. Float storage is
+// exact only after computeDense proves the ROI's maximum squared distance
+// is <= 2^24. The no-seed sentinel is translated without changing its meaning.
+inline double loadSquared(double value) { return value; }
+inline double loadSquared(float value)
+{
+  return value == std::numeric_limits<float>::infinity()
+      ? std::numeric_limits<double>::max() : static_cast<double>(value);
+}
+inline void storeSquared(double &target, double value) { target = value; }
+inline void storeSquared(float &target, double value)
+{
+  target = value == std::numeric_limits<double>::max()
+      ? std::numeric_limits<float>::infinity() : static_cast<float>(value);
+}
+
 template <typename GetValue, typename SetValue>
 void fillDistanceTransform(int length,
                            int coordinate_offset,
                            const GetValue &get_value,
                            const SetValue &set_value)
 {
-  // These buffers are private to each persistent worker thread and are reused
-  // for every grid line handled by that thread.
+  // Gather each strided y/x line once. Envelope construction and evaluation
+  // then read contiguous scratch instead of repeatedly revisiting the grid.
+  // Scratch is axis-sized and private to each persistent worker thread.
+  thread_local std::vector<double> values;
   thread_local std::vector<int> sites;
   thread_local std::vector<double> boundaries;
+  values.resize(static_cast<std::size_t>(length));
+  bool constant = true;
+  for (int local_q = 0; local_q < length; ++local_q)
+  {
+    values[static_cast<std::size_t>(local_q)] = get_value(local_q);
+    if (local_q > 0 && values[static_cast<std::size_t>(local_q)] != values[0])
+      constant = false;
+  }
+  // min_i((q-i)^2 + c) == c, including the no-seed MAX sentinel. This is
+  // common for planar/empty lines and needs no parabola envelope.
+  if (constant)
+  {
+    for (int local_q = 0; local_q < length; ++local_q)
+      set_value(local_q, values[0]);
+    return;
+  }
   sites.resize(static_cast<std::size_t>(length));
   boundaries.resize(static_cast<std::size_t>(length) + 1U);
 
-  int k = 0;
-  sites[0] = 0;
-  boundaries[0] = -std::numeric_limits<double>::max();
-  boundaries[1] = std::numeric_limits<double>::max();
-
-  for (int local_q = 1; local_q < length; ++local_q)
+  const double maximum = std::numeric_limits<double>::max();
+  int k = -1;
+  for (int local_q = 0; local_q < length; ++local_q)
   {
+    // MAX marks a line without a seed after an earlier axis. Such a site
+    // cannot minimize the result when any finite-distance site is present.
+    if (values[static_cast<std::size_t>(local_q)] == maximum)
+      continue;
+    if (k < 0)
+    {
+      k = 0;
+      sites[0] = local_q;
+      boundaries[0] = -maximum;
+      boundaries[1] = maximum;
+      continue;
+    }
     ++k;
     double intersection = 0.0;
     const int q = coordinate_offset + local_q;
@@ -87,16 +199,15 @@ void fillDistanceTransform(int length,
       --k;
       const int site = coordinate_offset + sites[static_cast<std::size_t>(k)];
       intersection =
-          ((get_value(local_q) + q * q) -
-           (get_value(sites[static_cast<std::size_t>(k)]) + site * site)) /
+          ((values[static_cast<std::size_t>(local_q)] + q * q) -
+           (values[static_cast<std::size_t>(sites[static_cast<std::size_t>(k)])] + site * site)) /
           (2 * q - 2 * site);
     } while (intersection <= boundaries[static_cast<std::size_t>(k)]);
 
     ++k;
     sites[static_cast<std::size_t>(k)] = local_q;
     boundaries[static_cast<std::size_t>(k)] = intersection;
-    boundaries[static_cast<std::size_t>(k + 1)] =
-        std::numeric_limits<double>::max();
+    boundaries[static_cast<std::size_t>(k + 1)] = maximum;
   }
 
   k = 0;
@@ -108,8 +219,36 @@ void fillDistanceTransform(int length,
     const int delta =
         local_q - sites[static_cast<std::size_t>(k)];
     const double value =
-        delta * delta + get_value(sites[static_cast<std::size_t>(k)]);
+        delta * delta + values[static_cast<std::size_t>(sites[static_cast<std::size_t>(k)])];
     set_value(local_q, value);
+  }
+}
+
+template <typename IsSeed, typename GetValue, typename SetValue>
+void fillBinaryDistanceTransform(int length, const IsSeed &is_seed,
+                                 const GetValue &get_value,
+                                 const SetValue &set_value)
+{
+  // The first axis has only zero-cost seeds and MAX elsewhere. Its nearest
+  // seed is either the nearest one on the left or the nearest one on the
+  // right; no parabola envelope is needed. Reuse the output as forward-pass
+  // storage. Local coordinate differences are invariant to the global offset.
+  const double maximum = std::numeric_limits<double>::max();
+  int previous = -1;
+  for (int coordinate = 0; coordinate < length; ++coordinate)
+  {
+    if (is_seed(coordinate)) previous = coordinate;
+    const double delta = static_cast<double>(coordinate) - previous;
+    set_value(coordinate, previous >= 0 ? delta * delta : maximum);
+  }
+  int next = -1;
+  for (int coordinate = length - 1; coordinate >= 0; --coordinate)
+  {
+    if (is_seed(coordinate)) next = coordinate;
+    if (next < 0) continue;
+    const double delta = static_cast<double>(next) - coordinate;
+    const double value = delta * delta;
+    if (value < get_value(coordinate)) set_value(coordinate, value);
   }
 }
 
@@ -190,6 +329,21 @@ bool ESDFWorker::validateJob(const ESDFJob &job, std::string *reason)
     *reason = stream.str();
     return false;
   }
+  if (!std::isfinite(job.distance_cap) || job.distance_cap < 0.0 ||
+      (job.distance_cap > 0.0 &&
+       std::ceil(job.distance_cap / job.resolution) + 1.0 >
+           static_cast<double>(std::numeric_limits<int>::max())))
+  {
+    *reason = "ESDF distance cap must be finite, nonnegative and fit grid indices";
+    return false;
+  }
+  for (const Eigen::Vector3i &cell : job.changed_cells)
+    if ((cell.array() < job.min_index.array()).any() ||
+        (cell.array() > job.max_index.array()).any())
+    {
+      *reason = "changed ESDF cell outside immutable occupancy snapshot";
+      return false;
+    }
   return true;
 }
 
@@ -420,6 +574,8 @@ void ESDFWorker::coordinatorLoop()
                   currentExceptionMessage());
     }
     const ros::SteadyTime compute_end = ros::SteadyTime::now();
+    result.compute_started_steady = compute_start;
+    result.compute_completed_steady = compute_end;
     result.compute_ms =
         std::max(0.0, (compute_end - compute_start).toSec() * 1e3);
     active_job_epoch_.store(std::numeric_limits<std::uint64_t>::max(),
@@ -599,6 +755,199 @@ bool ESDFWorker::parallelFor(
 
 bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
 {
+  result->patches.clear();
+  result->distance_all.clear();
+  result->computed_voxels = 0;
+  result->prepare_ms = result->partition_ms = result->near_free_ms = 0.0;
+  result->negative_apply_ms = 0.0;
+  result->positive_ms.fill(0.0);
+  result->negative_ms.fill(0.0);
+  result->negative_fallback_count = 0;
+  result->exact_float_scratch_count = 0;
+  if (job.distance_cap <= 0.0 || job.changed_cells.empty())
+    return computeDense(job, result);
+
+  const ros::SteadyTime partition_start = job.trace_timing
+      ? ros::SteadyTime::now() : ros::SteadyTime();
+  const int radius = static_cast<int>(
+      std::ceil(job.distance_cap / job.resolution)) + 1;
+  PatchRegion root;
+  root.changed_min = job.max_index;
+  root.changed_max = job.min_index;
+  root.members.resize(job.changed_cells.size());
+  std::iota(root.members.begin(), root.members.end(), std::size_t(0));
+  for (std::size_t index = 0; index < job.changed_cells.size(); ++index)
+  {
+    if ((index & 4095U) == 0U && computationCancelled()) return false;
+    root.changed_min = root.changed_min.cwiseMin(job.changed_cells[index]);
+    root.changed_max = root.changed_max.cwiseMax(job.changed_cells[index]);
+  }
+  setRegionGeometry(&root, job, radius);
+  std::vector<PatchRegion> regions;
+  regions.push_back(std::move(root));
+
+  // Split only when the additional halos still save at least 15% of a
+  // region's actual EDT work. This bounds both duplicate halo work and the
+  // number of result patches without introducing a second scheduler.
+  while (regions.size() < 8U)
+  {
+    if (computationCancelled()) return false;
+    std::size_t best_region = regions.size(), best_gain = 0;
+    int best_axis = 0, best_midpoint = 0;
+    PatchRegion best_left, best_right;
+    for (std::size_t index = 0; index < regions.size(); ++index)
+    {
+      const PatchRegion &region = regions[index];
+      if (region.members.size() < 2U) continue;
+      for (int axis = 0; axis < 3; ++axis)
+      {
+        const int span = region.changed_max(axis) - region.changed_min(axis);
+        if (span <= 0) continue;
+        // Coordinate bins let every occupied cut be considered without
+        // rescanning all members per cut. Scratch storage is one axis long;
+        // no occupancy/distance grid is copied while choosing a partition.
+        std::vector<ChangeBounds> bins(static_cast<std::size_t>(span) + 1U);
+        for (std::size_t member_index = 0; member_index < region.members.size(); ++member_index)
+        {
+          if ((member_index & 4095U) == 0U && computationCancelled()) return false;
+          const Eigen::Vector3i &cell = job.changed_cells[region.members[member_index]];
+          bins[static_cast<std::size_t>(cell(axis) - region.changed_min(axis))].include(cell);
+        }
+        std::vector<ChangeBounds> suffix(bins.size() + 1U);
+        for (std::size_t coordinate = bins.size(); coordinate > 0; --coordinate)
+        {
+          if ((coordinate & 4095U) == 0U && computationCancelled()) return false;
+          suffix[coordinate - 1U] = suffix[coordinate];
+          suffix[coordinate - 1U].include(bins[coordinate - 1U]);
+        }
+        ChangeBounds prefix;
+        for (std::size_t coordinate = 0; coordinate + 1U < bins.size(); ++coordinate)
+        {
+          if ((coordinate & 4095U) == 0U && computationCancelled()) return false;
+          prefix.include(bins[coordinate]);
+          if (bins[coordinate].count == 0 || suffix[coordinate + 1U].count == 0)
+            continue;
+          PatchRegion left, right;
+          left.changed_min = prefix.minimum; left.changed_max = prefix.maximum;
+          right.changed_min = suffix[coordinate + 1U].minimum;
+          right.changed_max = suffix[coordinate + 1U].maximum;
+          setRegionGeometry(&left, job, radius);
+          setRegionGeometry(&right, job, radius);
+          const double child_work = static_cast<double>(left.voxel_count) +
+                                    static_cast<double>(right.voxel_count);
+          if (child_work > .85 * static_cast<double>(region.voxel_count)) continue;
+          const std::size_t gain = region.voxel_count - left.voxel_count - right.voxel_count;
+          if (gain > best_gain)
+          {
+            best_region = index; best_gain = gain;
+            best_axis = axis;
+            best_midpoint = region.changed_min(axis) + static_cast<int>(coordinate);
+            best_left = std::move(left); best_right = std::move(right);
+          }
+        }
+      }
+    }
+    if (best_region == regions.size()) break;
+    for (std::size_t member : regions[best_region].members)
+      (job.changed_cells[member](best_axis) <= best_midpoint
+          ? best_left.members : best_right.members).push_back(member);
+    regions[best_region] = std::move(best_left);
+    regions.push_back(std::move(best_right));
+  }
+
+  std::size_t computed = 0;
+  for (const PatchRegion &region : regions)
+  {
+    if (region.voxel_count > std::numeric_limits<std::size_t>::max() - computed)
+    {
+      if (job.trace_timing)
+        result->partition_ms = (ros::SteadyTime::now() - partition_start).toSec() * 1e3;
+      return computeDense(job, result);
+    }
+    computed += region.voxel_count;
+  }
+  if (job.trace_timing)
+    result->partition_ms = (ros::SteadyTime::now() - partition_start).toSec() * 1e3;
+  if (regions.size() < 2U ||
+      static_cast<double>(computed) > .85 * static_cast<double>(job.occupancy.size()))
+    return computeDense(job, result);
+
+  const Eigen::Vector3i parent_size = job.max_index - job.min_index + Eigen::Vector3i::Ones();
+  std::vector<ESDFPatch> patches;
+  patches.reserve(regions.size());
+  for (const PatchRegion &region : regions)
+  {
+    if (computationCancelled()) return false;
+    ESDFJob local;
+    local.request_id = job.request_id; local.map_epoch = job.map_epoch;
+    local.observation_seq = job.observation_seq;
+    local.min_index = region.input_min; local.max_index = region.input_max;
+    local.resolution = job.resolution; local.captured_steady = job.captured_steady;
+    local.trace_timing = job.trace_timing;
+    const Eigen::Vector3i input_size = region.input_max - region.input_min + Eigen::Vector3i::Ones();
+    local.occupancy.resize(region.voxel_count);
+    for (int x = 0; x < input_size.x(); ++x)
+      for (int y = 0; y < input_size.y(); ++y)
+      {
+        if ((y & 63) == 0 && computationCancelled()) return false;
+        const std::size_t source =
+            (static_cast<std::size_t>(x + region.input_min.x() - job.min_index.x()) * parent_size.y() +
+             y + region.input_min.y() - job.min_index.y()) * parent_size.z() +
+            region.input_min.z() - job.min_index.z();
+        const std::size_t destination = (static_cast<std::size_t>(x) * input_size.y() + y) * input_size.z();
+        std::copy_n(job.occupancy.begin() + source, input_size.z(), local.occupancy.begin() + destination);
+      }
+    ESDFResult dense;
+    if (!computeDense(local, &dense)) return false;
+    result->prepare_ms += dense.prepare_ms;
+    result->near_free_ms += dense.near_free_ms;
+    result->negative_apply_ms += dense.negative_apply_ms;
+    result->negative_fallback_count += dense.negative_fallback_count;
+    result->exact_float_scratch_count += dense.exact_float_scratch_count;
+    for (std::size_t axis = 0; axis < 3; ++axis)
+    {
+      result->positive_ms[axis] += dense.positive_ms[axis];
+      result->negative_ms[axis] += dense.negative_ms[axis];
+    }
+    ESDFPatch patch;
+    patch.min_index = region.write_min; patch.max_index = region.write_max;
+    const Eigen::Vector3i output_size = region.write_max - region.write_min + Eigen::Vector3i::Ones();
+    patch.distance_all.resize(static_cast<std::size_t>(output_size.x()) * output_size.y() * output_size.z());
+    for (int x = 0; x < output_size.x(); ++x)
+      for (int y = 0; y < output_size.y(); ++y)
+      {
+        if ((y & 63) == 0 && computationCancelled()) return false;
+        const std::size_t source =
+            (static_cast<std::size_t>(x + region.write_min.x() - region.input_min.x()) * input_size.y() +
+             y + region.write_min.y() - region.input_min.y()) * input_size.z() +
+            region.write_min.z() - region.input_min.z();
+        const std::size_t destination = (static_cast<std::size_t>(x) * output_size.y() + y) * output_size.z();
+        std::copy_n(dense.distance_all.begin() + source, output_size.z(), patch.distance_all.begin() + destination);
+      }
+    patches.push_back(std::move(patch));
+  }
+  if (computationCancelled()) return false;
+  // Publish one complete batch only. No partially computed leaf is visible to
+  // the coordinator, and the parent generation/source time remain unchanged.
+  result->request_id = job.request_id; result->map_epoch = job.map_epoch;
+  result->observation_seq = job.observation_seq;
+  result->min_index = job.min_index; result->max_index = job.max_index;
+  result->captured_steady = job.captured_steady;
+  result->computed_voxels = computed;
+  result->patches = std::move(patches);
+  return true;
+}
+
+bool ESDFWorker::computeDense(const ESDFJob &job, ESDFResult *result)
+{
+  ros::SteadyTime phase_start = job.trace_timing
+      ? ros::SteadyTime::now() : ros::SteadyTime();
+  const auto finish_phase = [&](double &elapsed_ms) {
+    if (!job.trace_timing) return;
+    const ros::SteadyTime now = ros::SteadyTime::now();
+    elapsed_ms += (now - phase_start).toSec() * 1e3;
+    phase_start = now;
+  };
   Eigen::Vector3i size;
   std::size_t voxel_count = 0;
   if (!compactVoxelCount(
@@ -611,6 +960,8 @@ bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
   result->min_index = job.min_index;
   result->max_index = job.max_index;
   result->captured_steady = job.captured_steady;
+  result->patches.clear();
+  result->computed_voxels = voxel_count;
 
   // A replacement can be accepted between dequeue and compute().  Check
   // before touching the large distance buffers so a superseded request does
@@ -619,9 +970,35 @@ bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
     return false;
 
   result->distance_all.assign(voxel_count, 10000.0);
-  tmp_buffer1_.resize(voxel_count);
-  tmp_buffer2_.resize(voxel_count);
+  // Check the integer range without overflowing even for rejected large
+  // dimensions. Every finite partial-axis distance is bounded by this sum.
+  std::uint64_t squared_bound = 0;
+  bool use_exact_float = true;
+  for (int axis = 0; axis < 3; ++axis)
+  {
+    const std::uint64_t extent = static_cast<std::uint64_t>(size[axis] - 1);
+    if (extent > 4096) { use_exact_float = false; break; }
+    squared_bound += extent * extent;
+  }
+  use_exact_float = use_exact_float && squared_bound <= (std::uint64_t{1} << 24);
+  if (use_exact_float)
+  {
+    // Keep only the selected two full-size buffers allocated across jobs.
+    if (tmp_buffer1_.capacity() != 0) std::vector<double>().swap(tmp_buffer1_);
+    if (tmp_buffer2_.capacity() != 0) std::vector<double>().swap(tmp_buffer2_);
+    compact_buffer1_.resize(voxel_count);
+    compact_buffer2_.resize(voxel_count);
+    ++result->exact_float_scratch_count;
+  }
+  else
+  {
+    if (compact_buffer1_.capacity() != 0) std::vector<float>().swap(compact_buffer1_);
+    if (compact_buffer2_.capacity() != 0) std::vector<float>().swap(compact_buffer2_);
+    tmp_buffer1_.resize(voxel_count);
+    tmp_buffer2_.resize(voxel_count);
+  }
 
+  const auto compute_with_scratch = [&](auto &scratch1, auto &scratch2) {
   if (computationCancelled())
     return false;
 
@@ -637,8 +1014,7 @@ bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
     return std::max(1, parallel_voxel_threshold_ /
                            std::max(1, line_length));
   };
-
-  const double maximum = std::numeric_limits<double>::max();
+  finish_phase(result->prepare_ms);
 
   // Positive distance: z, y, then x transforms.
   if (!parallelFor(
@@ -647,16 +1023,16 @@ bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
           [&](std::size_t line) {
             const int x = static_cast<int>(line / static_cast<std::size_t>(ny));
             const int y = static_cast<int>(line % static_cast<std::size_t>(ny));
-            fillDistanceTransform(
-                nz, job.min_index.z(),
-                [&](int z) {
-                  return job.occupancy[address(x, y, z)] == 1 ? 0.0 : maximum;
-                },
+            fillBinaryDistanceTransform(
+                nz,
+                [&](int z) { return job.occupancy[address(x, y, z)] == 1; },
+                [&](int z) { return loadSquared(scratch1[address(x, y, z)]); },
                 [&](int z, double value) {
-                  tmp_buffer1_[address(x, y, z)] = value;
+                  storeSquared(scratch1[address(x, y, z)], value);
                 });
           }))
     return false;
+  finish_phase(result->positive_ms[0]);
 
   if (!parallelFor(
           static_cast<std::size_t>(nx) * static_cast<std::size_t>(nz),
@@ -666,12 +1042,13 @@ bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
             const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
             fillDistanceTransform(
                 ny, job.min_index.y(),
-                [&](int y) { return tmp_buffer1_[address(x, y, z)]; },
+                [&](int y) { return loadSquared(scratch1[address(x, y, z)]); },
                 [&](int y, double value) {
-                  tmp_buffer2_[address(x, y, z)] = value;
+                  storeSquared(scratch2[address(x, y, z)], value);
                 });
           }))
     return false;
+  finish_phase(result->positive_ms[1]);
 
   if (!parallelFor(
           static_cast<std::size_t>(ny) * static_cast<std::size_t>(nz),
@@ -681,14 +1058,77 @@ bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
             const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
             fillDistanceTransform(
                 nx, job.min_index.x(),
-                [&](int x) { return tmp_buffer2_[address(x, y, z)]; },
+                [&](int x) { return loadSquared(scratch2[address(x, y, z)]); },
                 [&](int x, double value) {
                   result->distance_all[address(x, y, z)] =
                       job.resolution * std::sqrt(value);
                 });
           }))
     return false;
+  finish_phase(result->positive_ms[2]);
 
+  // All integer offsets within radius two, ordered by squared distance.
+  // Scratch holds exact candidates; a single unresolved occupied cell sends
+  // the whole job through the original negative EDT before results change.
+  static const int near_free[][4] = {
+      {-1,0,0,1}, {1,0,0,1}, {0,-1,0,1}, {0,1,0,1}, {0,0,-1,1}, {0,0,1,1},
+      {-1,-1,0,2}, {-1,1,0,2}, {1,-1,0,2}, {1,1,0,2},
+      {-1,0,-1,2}, {-1,0,1,2}, {1,0,-1,2}, {1,0,1,2},
+      {0,-1,-1,2}, {0,-1,1,2}, {0,1,-1,2}, {0,1,1,2},
+      {-1,-1,-1,3}, {-1,-1,1,3}, {-1,1,-1,3}, {-1,1,1,3},
+      {1,-1,-1,3}, {1,-1,1,3}, {1,1,-1,3}, {1,1,1,3},
+      {-2,0,0,4}, {2,0,0,4}, {0,-2,0,4}, {0,2,0,4}, {0,0,-2,4}, {0,0,2,4}};
+  std::atomic<bool> unresolved(false);
+  if (!parallelFor(static_cast<std::size_t>(nx) * ny, lineThreshold(nz),
+          [&](std::size_t line) {
+            if (unresolved.load(std::memory_order_relaxed)) return;
+            const int x = static_cast<int>(line / ny), y = static_cast<int>(line % ny);
+            for (int z = 0; z < nz; ++z)
+            {
+              const std::size_t index = address(x, y, z);
+              if (job.occupancy[index] == 0) continue;
+              bool found = false;
+              if (job.occupancy[index] == 1)
+                for (const auto &offset : near_free)
+                {
+                  const int sx = x + offset[0], sy = y + offset[1], sz = z + offset[2];
+                  if (sx < 0 || sy < 0 || sz < 0 || sx >= nx || sy >= ny || sz >= nz)
+                    continue;  // Outside this immutable ROI is not free space.
+                  if (job.occupancy[address(sx, sy, sz)] == 0)
+                  {
+                    scratch1[index] = offset[3];
+                    found = true;
+                    break;
+                  }
+                }
+              if (!found)
+              {
+                unresolved.store(true, std::memory_order_relaxed);
+                return;
+              }
+            }
+          }))
+    return false;
+  finish_phase(result->near_free_ms);
+  if (!unresolved.load(std::memory_order_relaxed))
+  {
+    if (!parallelFor(static_cast<std::size_t>(nx) * ny, lineThreshold(nz),
+            [&](std::size_t line) {
+              for (int z = 0; z < nz; ++z)
+              {
+                const std::size_t index = line * nz + z;
+                if (job.occupancy[index] != 1) continue;
+                const double negative_distance = job.resolution * std::sqrt(loadSquared(scratch1[index]));
+                if (negative_distance > 0.0)
+                  result->distance_all[index] += -negative_distance + job.resolution;
+              }
+            }))
+      return false;
+    finish_phase(result->negative_apply_ms);
+    return !computationCancelled();
+  }
+
+  ++result->negative_fallback_count;
   // Negative distance.  The original implementation materializes an inverse
   // occupancy byte grid; reading the inverse predicate directly is equivalent
   // and avoids another full-size allocation and pass.
@@ -698,16 +1138,16 @@ bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
           [&](std::size_t line) {
             const int x = static_cast<int>(line / static_cast<std::size_t>(ny));
             const int y = static_cast<int>(line % static_cast<std::size_t>(ny));
-            fillDistanceTransform(
-                nz, job.min_index.z(),
-                [&](int z) {
-                  return job.occupancy[address(x, y, z)] == 0 ? 0.0 : maximum;
-                },
+            fillBinaryDistanceTransform(
+                nz,
+                [&](int z) { return job.occupancy[address(x, y, z)] == 0; },
+                [&](int z) { return loadSquared(scratch1[address(x, y, z)]); },
                 [&](int z, double value) {
-                  tmp_buffer1_[address(x, y, z)] = value;
+                  storeSquared(scratch1[address(x, y, z)], value);
                 });
           }))
     return false;
+  finish_phase(result->negative_ms[0]);
 
   if (!parallelFor(
           static_cast<std::size_t>(nx) * static_cast<std::size_t>(nz),
@@ -717,12 +1157,13 @@ bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
             const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
             fillDistanceTransform(
                 ny, job.min_index.y(),
-                [&](int y) { return tmp_buffer1_[address(x, y, z)]; },
+                [&](int y) { return loadSquared(scratch1[address(x, y, z)]); },
                 [&](int y, double value) {
-                  tmp_buffer2_[address(x, y, z)] = value;
+                  storeSquared(scratch2[address(x, y, z)], value);
                 });
           }))
     return false;
+  finish_phase(result->negative_ms[1]);
 
   if (!parallelFor(
           static_cast<std::size_t>(ny) * static_cast<std::size_t>(nz),
@@ -732,7 +1173,7 @@ bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
             const int z = static_cast<int>(line % static_cast<std::size_t>(nz));
             fillDistanceTransform(
                 nx, job.min_index.x(),
-                [&](int x) { return tmp_buffer2_[address(x, y, z)]; },
+                [&](int x) { return loadSquared(scratch2[address(x, y, z)]); },
                 [&](int x, double value) {
                   const double negative_distance =
                       job.resolution * std::sqrt(value);
@@ -745,8 +1186,13 @@ bool ESDFWorker::compute(const ESDFJob &job, ESDFResult *result)
                 });
           }))
     return false;
+  finish_phase(result->negative_ms[2]);
 
   return !computationCancelled();
+  };
+  return use_exact_float
+      ? compute_with_scratch(compact_buffer1_, compact_buffer2_)
+      : compute_with_scratch(tmp_buffer1_, tmp_buffer2_);
 }
 
 }  // namespace plan_env

@@ -1,0 +1,94 @@
+{
+  "scope": "Read-only source and saved-log review; no ROS/CAN/hardware commands, no source or timing/TTL changes.",
+  "conclusions": [
+    "No stale-metadata bug found in the unchanged-occupancy path: a real coherent fusion updates last_occ_update_time; identical occupancy advances the ESDF observation sequence; Complete snapshots receive the new fusion metadata while reusing immutable distance values.",
+    "Exporter header[3] is set from the pinned Complete fusion time on every sample. Only distance storage/header[17] are reused when the distance version is unchanged.",
+    "Independent 50ms sample/output timers can add phase waiting. A repeated one-period delay is a plausible mechanism, not proven by the available logs; no timer change is justified from this review alone.",
+    "The current pipeline log cannot decompose total fusion-to-MPPI delay. No TTL increase or replacement of source timestamps with current publication time is proposed."
+  ],
+  "source_evidence": [
+    {
+      "file": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "line": 2071,
+      "fact": "Real coherent occupancy fusion records last_occ_update_time."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "line": 2205,
+      "fact": "Unchanged binary occupancy advances esdf_observation_seq and reuses distances."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "line": 190,
+      "fact": "ReadSnapshot copies observation/esdf/fusion metadata every publication; shared distance values depend on distance revision."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp",
+      "line": 100,
+      "fact": "header[3] uses the pinned map fusion source time."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp",
+      "line": 163,
+      "fact": "Distance reuse does not suppress header[3] metadata refresh."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp",
+      "line": 253,
+      "fact": "50ms sample timer shares the serialized map queue; 50ms output timer uses its existing separate queue/spinner."
+    },
+    {
+      "file": "src/mm_remani_planner/plan_env/src/grid_map.cpp",
+      "line": 2445,
+      "fact": "Pipeline result age is measured before commit and after worker result receipt; it excludes commit, immutable read-snapshot publication, exporter and receiver costs."
+    }
+  ],
+  "saved_log_source": "experiments/online_remani_validation/results/startup_listen_20261110_161434/events.jsonl",
+  "recent_pipeline_windows": [
+    {
+      "stamp": 1794299663.1267326,
+      "window_s": 5.03,
+      "occupancy_avg_ms": 14.64,
+      "worker_avg_ms": 97.16,
+      "worker_max_ms": 126.02,
+      "commit_avg_ms": 10.51,
+      "job_snapshot_avg_ms": 2.56,
+      "result_age_ms": 150.64,
+      "commits": 32,
+      "rejects": 0,
+      "worker_faults": 0
+    },
+    {
+      "stamp": 1794299668.1364903,
+      "window_s": 5.01,
+      "occupancy_avg_ms": 14.22,
+      "worker_avg_ms": 96.3,
+      "worker_max_ms": 129.28,
+      "commit_avg_ms": 9.81,
+      "job_snapshot_avg_ms": 2.19,
+      "result_age_ms": 109.46,
+      "commits": 32,
+      "rejects": 0,
+      "worker_faults": 0
+    },
+    {
+      "stamp": 1794299673.1365602,
+      "window_s": 5.0,
+      "occupancy_avg_ms": 14.35,
+      "worker_avg_ms": 97.78,
+      "worker_max_ms": 150.91,
+      "commit_avg_ms": 9.98,
+      "job_snapshot_avg_ms": 2.13,
+      "result_age_ms": 113.59,
+      "commits": 33,
+      "rejects": 0,
+      "worker_faults": 0
+    }
+  ],
+  "limits": [
+    "The three rows are rolling summary windows, not per-generation synchronized traces.",
+    "snapshot_avg in pipeline means occupancy-job capture, not exported ESDF copy or network delay.",
+    "header[17] is field-copy acquisition, not a send timestamp; reception minus header[17] combines several stages.",
+    "Source-copy publication, exporter sample/send and receiver decode timing are not individually recorded here."
+  ]
+}

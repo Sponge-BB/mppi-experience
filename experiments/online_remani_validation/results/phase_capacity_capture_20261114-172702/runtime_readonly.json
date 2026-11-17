@@ -1,0 +1,87 @@
+{
+  "parameters": {
+    "/mm_controller_node/controller/use_mppi_execution_limits": [
+      1,
+      "Parameter [/mm_controller_node/controller/use_mppi_execution_limits]",
+      true
+    ],
+    "/mm_controller_node/controller/yaw_hold_speed": [
+      1,
+      "Parameter [/mm_controller_node/controller/yaw_hold_speed]",
+      0.04
+    ],
+    "/whole_body_mppi/base_limits": [
+      1,
+      "Parameter [/whole_body_mppi/base_limits]",
+      {
+        "vmax": 0.25,
+        "wmax": 0.35,
+        "accel": 0.25,
+        "angular_accel": 0.8,
+        "track": 0.37,
+        "wheel_v": 0.25,
+        "wheel_a": 0.2975
+      }
+    ],
+    "/piper_ctrl_single_node/can_port": [
+      1,
+      "Parameter [/piper_ctrl_single_node/can_port]",
+      "can1"
+    ],
+    "/piper_ctrl_single_node/native_startup_to_standby": [
+      1,
+      "Parameter [/piper_ctrl_single_node/native_startup_to_standby]",
+      true
+    ],
+    "/use_sim_time": [
+      1,
+      "Parameter [/use_sim_time]",
+      false
+    ]
+  },
+  "processes": [
+    {
+      "pid": 161803,
+      "argv": [
+        "/home/l/remani_ws/devel/lib/mm_controller/mm_controller_node",
+        "~odom:=/odom",
+        "~joint_states:=/mm/joint_states",
+        "~joint_cmd:=/mm_controller_node/joint_cmd",
+        "~planning/trajectory:=planning/trajectory",
+        "~planning/start:=planning/start",
+        "~planning/finish:=planning/finish",
+        "__name:=mm_controller_node",
+        "__log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/mm_controller_node-3.log"
+      ],
+      "exe_target": "/home/l/remani_ws/devel/lib/mm_controller/mm_controller_node",
+      "running_exe_sha256": "ad52bec45c40c0c21c6be0f73685554550f637c32ae9d51029f2b03c68a54fd8",
+      "controller_library": [
+        "ffffb131d000-ffffb134b000 r-xp 00000000 103:01 9744627                   /home/l/remani_ws/devel/lib/libcontroller_utils.so",
+        "ffffb134b000-ffffb135b000 ---p 0002e000 103:01 9744627                   /home/l/remani_ws/devel/lib/libcontroller_utils.so",
+        "ffffb135b000-ffffb135c000 r--p 0002e000 103:01 9744627                   /home/l/remani_ws/devel/lib/libcontroller_utils.so",
+        "ffffb135c000-ffffb135d000 rw-p 0002f000 103:01 9744627                   /home/l/remani_ws/devel/lib/libcontroller_utils.so"
+      ]
+    },
+    {
+      "pid": 161814,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py",
+        "/joint_states_single:=/mm/joint_states",
+        "__name:=whole_body_mppi",
+        "__log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/whole_body_mppi-7.log"
+      ]
+    },
+    {
+      "pid": 161870,
+      "argv": [
+        "python3",
+        "/home/l/remani_ws/src/piper_ros/src/piper/scripts/piper_ctrl_single_node.py",
+        "joint_ctrl_single:=/joint_ctrl_single",
+        "__name:=piper_ctrl_single_node",
+        "__log:=/home/l/.ros/log/799bbf5c-dca4-11f1-8cf7-9f0c8dbdf35b/piper_ctrl_single_node-21.log"
+      ]
+    }
+  ],
+  "control_publications": false
+}

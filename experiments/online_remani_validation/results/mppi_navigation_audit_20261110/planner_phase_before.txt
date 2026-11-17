@@ -1,0 +1,172 @@
+test_exact_expiry_boundary_and_duration_clamping (__main__.PlannerVirtualProgressTests) ... FAIL
+test_expired_matching_progress_cannot_complete_or_advance_handoff (__main__.PlannerVirtualProgressTests) ... FAIL
+test_fresh_virtual_phase_does_not_follow_elapsed_wall_time (__main__.PlannerVirtualProgressTests) ... ok
+test_future_progress_does_not_authorize_forward_extrapolation (__main__.PlannerVirtualProgressTests) ... test_long_gap_and_paused_reference_hold_reported_phase (__main__.PlannerVirtualProgressTests) ... test_missing_or_different_trajectory_preserves_legacy_wall_clock (__main__.PlannerVirtualProgressTests) ... ok
+test_new_matching_feedback_resumes_without_trajectory_replacement (__main__.PlannerVirtualProgressTests) ... FAIL
+
+======================================================================
+FAIL: test_exact_expiry_boundary_and_duration_clamping (__main__.PlannerVirtualProgressTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 113, in test_exact_expiry_boundary_and_duration_clamping
+    self.assertEqual(self.evaluate(stamp=99.499), {'phase': .4, 'scale': 0.})
+AssertionError: {'phase': 5, 'scale': 1} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 5, 'scale': 1}
+?           ^           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?           ^^^           ^^^
+
+
+======================================================================
+FAIL: test_expired_matching_progress_cannot_complete_or_advance_handoff (__main__.PlannerVirtualProgressTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 88, in test_expired_matching_progress_cannot_complete_or_advance_handoff
+    self.assertEqual(result, {'phase': .4, 'scale': 0.})
+AssertionError: {'phase': 5, 'scale': 1} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 5, 'scale': 1}
+?           ^           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?           ^^^           ^^^
+
+
+======================================================================
+FAIL: test_future_progress_does_not_authorize_forward_extrapolation (__main__.PlannerVirtualProgressTests) (stamp=100.006)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 107, in test_future_progress_does_not_authorize_forward_extrapolation
+    self.assertEqual(self.evaluate(stamp=stamp), {'phase': .4, 'scale': 0.})
+AssertionError: {'phase': 0.4, 'scale': 0.5} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 0.4, 'scale': 0.5}
+?                           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?                           ^
+
+
+======================================================================
+FAIL: test_future_progress_does_not_authorize_forward_extrapolation (__main__.PlannerVirtualProgressTests) (stamp=100.05)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 107, in test_future_progress_does_not_authorize_forward_extrapolation
+    self.assertEqual(self.evaluate(stamp=stamp), {'phase': .4, 'scale': 0.})
+AssertionError: {'phase': 0.4, 'scale': 0.5} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 0.4, 'scale': 0.5}
+?                           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?                           ^
+
+
+======================================================================
+FAIL: test_future_progress_does_not_authorize_forward_extrapolation (__main__.PlannerVirtualProgressTests) (stamp=101.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 107, in test_future_progress_does_not_authorize_forward_extrapolation
+    self.assertEqual(self.evaluate(stamp=stamp), {'phase': .4, 'scale': 0.})
+AssertionError: {'phase': 0.4, 'scale': 0.5} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 0.4, 'scale': 0.5}
+?                           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?                           ^
+
+
+======================================================================
+FAIL: test_long_gap_and_paused_reference_hold_reported_phase (__main__.PlannerVirtualProgressTests) (now=100.0, scale=0.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 96, in test_long_gap_and_paused_reference_hold_reported_phase
+    self.assertEqual(self.evaluate(now=now, stamp=99.4, scale=scale),
+AssertionError: {'phase': 5, 'scale': 1} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 5, 'scale': 1}
+?           ^           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?           ^^^           ^^^
+
+
+======================================================================
+FAIL: test_long_gap_and_paused_reference_hold_reported_phase (__main__.PlannerVirtualProgressTests) (now=100.0, scale=0.5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 96, in test_long_gap_and_paused_reference_hold_reported_phase
+    self.assertEqual(self.evaluate(now=now, stamp=99.4, scale=scale),
+AssertionError: {'phase': 5, 'scale': 1} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 5, 'scale': 1}
+?           ^           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?           ^^^           ^^^
+
+
+======================================================================
+FAIL: test_long_gap_and_paused_reference_hold_reported_phase (__main__.PlannerVirtualProgressTests) (now=100.0, scale=1.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 96, in test_long_gap_and_paused_reference_hold_reported_phase
+    self.assertEqual(self.evaluate(now=now, stamp=99.4, scale=scale),
+AssertionError: {'phase': 5, 'scale': 1} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 5, 'scale': 1}
+?           ^           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?           ^^^           ^^^
+
+
+======================================================================
+FAIL: test_long_gap_and_paused_reference_hold_reported_phase (__main__.PlannerVirtualProgressTests) (now=1000.0, scale=0.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 96, in test_long_gap_and_paused_reference_hold_reported_phase
+    self.assertEqual(self.evaluate(now=now, stamp=99.4, scale=scale),
+AssertionError: {'phase': 5, 'scale': 1} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 5, 'scale': 1}
+?           ^           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?           ^^^           ^^^
+
+
+======================================================================
+FAIL: test_long_gap_and_paused_reference_hold_reported_phase (__main__.PlannerVirtualProgressTests) (now=1000.0, scale=0.5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 96, in test_long_gap_and_paused_reference_hold_reported_phase
+    self.assertEqual(self.evaluate(now=now, stamp=99.4, scale=scale),
+AssertionError: {'phase': 5, 'scale': 1} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 5, 'scale': 1}
+?           ^           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?           ^^^           ^^^
+
+
+======================================================================
+FAIL: test_long_gap_and_paused_reference_hold_reported_phase (__main__.PlannerVirtualProgressTests) (now=1000.0, scale=1.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 96, in test_long_gap_and_paused_reference_hold_reported_phase
+    self.assertEqual(self.evaluate(now=now, stamp=99.4, scale=scale),
+AssertionError: {'phase': 5, 'scale': 1} != {'phase': 0.4, 'scale': 0.0}
+- {'phase': 5, 'scale': 1}
+?           ^           ^
+
++ {'phase': 0.4, 'scale': 0.0}
+?           ^^^           ^^^
+
+
+======================================================================
+FAIL: test_new_matching_feedback_resumes_without_trajectory_replacement (__main__.PlannerVirtualProgressTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "src/mm_remani/test/test_planner_virtual_progress.py", line 100, in test_new_matching_feedback_resumes_without_trajectory_replacement
+    self.assertEqual(self.evaluate(stamp=99.4)['scale'], 0.)
+AssertionError: 1 != 0.0
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.642s
+
+FAILED (failures=12)

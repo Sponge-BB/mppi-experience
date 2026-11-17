@@ -1,0 +1,10 @@
+float32 scratch 精确性边界（候选仅改变暂存类型）
+
+1. 输入 occupancy 的每个轴 EDT 以 0/无源 MAX 为站点代价。对合法有限值，第一轴是整数 delta^2，第二轴是两个轴平方和，第三轴是三个轴平方和；此前完整双精度算法的有限中间值因此都是整数。
+2. ROI 的所有有限部分轴平方和 <= B = (nx-1)^2+(ny-1)^2+(nz-1)^2。仅 B <= 2^24 时启用本机 IEEE float32 暂存；0..2^24 的所有整数均可精确表示。最大轴 extent >4096 直接拒绝该路径，避免 guard 求和溢出。220.8 万格 fixture (200,184,60) 的 B=76571。
+3. 无源不转换为有限数：写入时 double MAX 映射为 float +inf，读取时 +inf 恢复为原 double MAX。常量行/no-seed 检查读到的值与旧算法完全相同。
+4. fillDistanceTransform 的 values/sites/boundaries、交点公式与 coordinate_offset 未改，所有 scratch getter 在进入算法前恢复 double；最终 sqrt 与 result 也仍为 double。读到的每一项与原 double scratch 相同，故逐轴 envelope/最终值相同。Near-free 的整数1/2/3/4也精确存储；其 sqrt 显式读回 double。
+5. 若 B 超界，保留原 double 两份 buffer；选择类型在整个任务开始时完成，内层无类型分支。切换类型才释放另一类型容量，通常任务复用同一对 buffer。没有改变分区、halo、cap、输入/提交代际、时间戳、碰撞阈值。
+6. 验证包含恰好2^24、略超2^24、长Y/Z、正负原点、空/满/no-seed、厚障碍/边界、patch覆盖及取消/最新代际；离线 A/B 22帧×6轮共118,218,240个格/候选逐值相同。完整库阶段使用同一源码并重新构建整个 plan_env。
+
+此证明依赖目前算法的二进制0/MAX种子与整数格距；以后若引入非整数权重/种子代价，不可沿用该存储 guard。当前测试环境 float 为 IEEE 二进制32位；未将本结论扩展到异构浮点平台或超出原算法整数坐标合法范围的输入。

@@ -1,0 +1,29 @@
+<launch>
+  <!-- OFF by default. This file has not been launched against the robot. -->
+  <arg name="connect_transport" default="false" />
+  <arg name="allow_motion" default="false" />
+  <arg name="can_port" default="can1" />
+  <group ns="/standby_trial_20261105_integration_04/arm">
+    <node pkg="standby_piper_control_trial" type="piper_reused_driver"
+          name="piper_reused_driver" output="screen" required="true">
+      <param name="connect_transport" value="$(arg connect_transport)" />
+      <param name="allow_motion" value="$(arg allow_motion)" />
+      <param name="can_port" value="$(arg can_port)" />
+      <param name="auto_enable" value="false" />
+      <param name="auto_reenable_on_drop" value="false" />
+      <param name="fixed_vel" value="5" />
+      <remap from="joint_ctrl_single" to="/standby_trial_20261105_integration_04/arm/joint_ctrl_single" />
+      <remap from="command_lease" to="/standby_trial_20261105_integration_04/arm/command_lease" />
+      <remap from="enable_flag" to="/standby_trial_20261105_integration_04/arm/enable_flag" />
+      <remap from="enable_srv" to="/standby_trial_20261105_integration_04/arm/enable_srv" />
+      <remap from="stop_srv" to="/standby_trial_20261105_integration_04/arm/stop_srv" />
+      <remap from="verified_feedback" to="/standby_trial_20261105_feedback_02/sensors/joint_states" />
+      <remap from="joint_states_single" to="/standby_trial_20261105_integration_04/arm/sdk_feedback_unvalidated" />
+      <remap from="arm_status" to="/standby_trial_20261105_integration_04/arm/arm_status" />
+      <remap from="end_pose" to="/standby_trial_20261105_integration_04/arm/end_pose" />
+      <remap from="end_pose_euler" to="/standby_trial_20261105_integration_04/arm/end_pose_euler" />
+      <remap from="piper_motor_enable_states" to="/standby_trial_20261105_integration_04/arm/motor_enable_states" />
+      <remap from="gate_status" to="/standby_trial_20261105_integration_04/arm/gate_status" />
+    </node>
+  </group>
+</launch>

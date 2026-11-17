@@ -1,0 +1,47 @@
+{
+  "ordinary_cases": 100,
+  "ordinary_max_abs_difference": 0.0,
+  "frozen_recovery_cases": 150,
+  "frozen_recovery_passed": 150,
+  "frozen_recovery_failures": [],
+  "frozen_recovery_max_s": 24.1,
+  "batch_max_abs_difference": 0.0,
+  "scope": "Independent production guide/plant numeric checks; no obstacle geometry, ROS or hardware; exact polynomial and recorded interruption integration separately validated.",
+  "runtime_sha256": {
+    "/home/l/remani_ws/src/mm_remani/scripts/mppi/active_arm_mppi.py": "e5ac13e9387138c0464607996ae362297925a6b2abca34bcf0a51f65d38b303d",
+    "/home/l/remani_ws/src/mm_remani/scripts/mppi/native_reference.py": "1bdd107857b42f24cdc59004d4860040d5bda4bfbb058f603624d374d1a11455",
+    "/home/l/remani_ws/src/mm_remani/scripts/mppi/native_reference_adapter.py": "7e6685aaee4d3a32c624636ad4712372f8b0bd4d44811e594daeee1ac6f11d6a",
+    "/home/l/remani_ws/src/mm_remani/scripts/whole_body_mppi.py": "87813ae8097c1d92ea71b05d43489fdafe557aa87ac60e812c17bf7d0e4b5e28"
+  },
+  "source_review": {
+    "blocking_findings": [],
+    "changed_kernel_methods": [
+      "__init__",
+      "_tracking_state",
+      "_native_base_guide",
+      "_base_guide",
+      "guide",
+      "proposals",
+      "evaluate",
+      "plan"
+    ],
+    "physically_authoritative_methods_AST_unchanged": {
+      "_advance_base": true,
+      "advance": true,
+      "_advance_position_arm": true,
+      "position_target": true,
+      "configuration_gap": true,
+      "lease_brake": true,
+      "lease_brake_states": true,
+      "position_lease_brake_states": true,
+      "advance_position_brake": true
+    },
+    "native_boundary_semantics": "adapter selection and delivery now side=left, matching C++ t>duration rule; exact boundary remains previous gear",
+    "reference_identity": "goal,start,epoch,revision,gear block/gear; excludes phase and scale",
+    "native_objective": "exact H+1 XY,yaw,v,omega from same polynomial phase; no spatial lookahead in native guide; native rollout costs use same-phase pose",
+    "stationary_lateral_recovery": "geometric capture only, hysteresis at existing resume distance; measured/candidate mode state separated",
+    "no_new_safety_thresholds": true,
+    "low_speed_heading": "rawspeed>same yaw_hold_speed(.04 default) defines tangent; rawspeed threshold independent of scaled speed",
+    "hardware_validation": false
+  }
+}

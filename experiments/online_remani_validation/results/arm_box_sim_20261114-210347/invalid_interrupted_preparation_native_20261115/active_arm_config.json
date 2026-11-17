@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "created": "2026-11-15T05:02:03.298545+00:00",
+  "group": "B_active",
+  "enabled": true,
+  "coupled": false,
+  "seed": 11,
+  "duration": 45.0,
+  "profile": false,
+  "profile_timings_are_not_benchmark": false,
+  "q_start": [
+    0.0,
+    1.9198621771937625,
+    -1.0471975511965976,
+    0.0,
+    0.5235987755982988,
+    0.0
+  ],
+  "postures": [
+    [
+      0.0,
+      2.443460952792061,
+      -1.0471975511965976,
+      0.0,
+      0.2617993877991494,
+      0.0
+    ]
+  ],
+  "goal": [
+    3.4,
+    0.0
+  ],
+  "arm_limits": {
+    "lower": [
+      -2.618,
+      -0.05,
+      -2.697,
+      -1.832,
+      -1.25,
+      -3.14
+    ],
+    "upper": [
+      2.618,
+      3.14,
+      0.05,
+      1.832,
+      1.25,
+      3.14
+    ],
+    "velocity": [
+      0.45,
+      0.45,
+      0.45,
+      0.45,
+      0.45,
+      0.45
+    ],
+    "acceleration": [
+      0.9,
+      0.9,
+      0.9,
+      0.9,
+      0.9,
+      0.9
+    ]
+  },
+  "urdf_path": "/home/l/remani_ws/src/my_description/robot/mm.urdf",
+  "parameters_path": "/home/l/remani_ws/experiments/online_remani_validation/results/arm_box_sim_20261114-210347/native/parameters.yaml",
+  "scene_definition": {
+    "schema": "arm_box_scene_v1",
+    "scene": "arm_box_sudden_ahead",
+    "name": "\u884c\u9a76\u4e2d\u673a\u68b0\u81c2\u524d\u65b9\u4e00\u7c73\u7a81\u7136\u51fa\u73b0\u957f\u65b9\u4f53",
+    "time_origin": "measured motion anchor",
+    "appearance_s": 2.0,
+    "persistent": true,
+    "goal": [
+      3.4,
+      0.0
+    ],
+    "arena": [
+      -1.5,
+      4.5,
+      -2.0,
+      2.0
+    ],
+    "q_start": [
+      0.0,
+      1.9198621771937625,
+      -1.0471975511965976,
+      0.0,
+      0.5235987755982988,
+      0.0
+    ],
+    "q_retract": [
+      0.0,
+      2.443460952792061,
+      -1.0471975511965976,
+      0.0,
+      0.2617993877991494,
+      0.0
+    ],
+    "q_retract_role": "geometric feasibility witness; never an online motion command",
+    "box": {
+      "id": 1,
+      "center": [
+        null,
+        null,
+        1.175
+      ],
+      "size": [
+        0.3,
+        0.4,
+        0.25
+      ]
+    },
+    "front_gap_m": 1.0,
+    "placement": "current arm forward physical surface + 1 m along world x",
+    "input_contract": "Only synthetic measured cloud enters planner/controller",
+    "scope": "native numerical ROS plant; free base and arm; no hardware"
+  },
+  "horizon": 20,
+  "random_samples": 6,
+  "rate_hz": 10.0,
+  "deadline_s": 0.2,
+  "geometry": "native DH 47 fixed +20 moving spheres; URDF limits; not mesh equivalence",
+  "actuator": "atomic base and six joint velocity command; 250ms lease; common stop",
+  "predictor": "bounded lagged base and acceleration-limited joints; 50ms collision samples",
+  "slow_joint_acceleration_boundary": "explicit zero approximation; effort never used as acceleration"
+}

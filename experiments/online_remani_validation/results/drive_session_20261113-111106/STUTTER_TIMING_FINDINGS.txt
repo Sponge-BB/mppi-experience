@@ -1,0 +1,62 @@
+本次实车离线时序分析（只读运行数据；未修改任何运行代码）
+
+范围：2026-11-13 11:14:09.317470 发布目标，至11:15:37.629176袋结束。
+注意：本文件不表示到达目标。用户报告未到目标便停下。
+
+一、可直接证实的走走停停
+首30.682530秒，即11:14:09.317470至11:14:40.000：
+  MPPI状态290条：
+    command_delivered 117（其中reference_wait_hold 4，nominal 113）；
+    collision_snapshot_unavailable 102；
+    collision_snapshot_expired_during_plan 29；
+    inputs_expired_before_delivery 24；
+    waiting_explicit_arm_enable_or_normal_status 12；
+    native_reference_cancelled 4；
+    reference_changed_during_plan 1；state_feedback_stale 1。
+  三类snapshot/input拒绝共155/290=53.45%。
+  零/非零cmd_vel切换170次。按收到指令的零阶保持积分：
+    非零指令维持8.131294秒；零指令维持22.412949秒。
+  正常交付周期median 41.63ms，最大85.55ms；这段没有planning_deadline_exceeded。
+  因此这段卡顿以输入/地图年龄拒绝导致的反复主动清零为主，不能笼统称为MPPI求解超预算。
+  snapshot_unavailable 102条中95条map_age>350ms；
+  snapshot_expired_during_plan 29条中27条>350ms；
+  inputs_expired_before_delivery 24条中22条>350ms。
+  其余拒绝不可凭此判为同一原因。
+
+二、地图年龄与处理时序
+同一首30.68秒内原始snapshot头610条，497条valid，113条invalid。
+146次新地图提交间隔median199.073ms，P95 284.078ms，max606.170ms。
+每个新提交第一次被记录时的age：median199.265ms，P95 263.211ms，max371.171ms。
+ESDF复制获取时刻h17减占据提交时刻h3：median178.717ms，P95 230.125ms。
+这里h3是占据提交时刻，h17是ESDF复制获取时刻，均不是原始雷达点云源时间。
+5秒pipeline日志例11:14:10.768：occ平均35.78ms，ESDF平均116.06ms、max208.03ms。
+日志例11:14:35.867：occ平均34.50ms，ESDF平均131.58ms、max241.20ms。
+
+三、重要排除：不能根据status到达时刻断言MPPI解码积压
+初步将status记录时刻与原始snapshot记录时刻比较，可见47/102次旧版本。
+但reject先计算map_age，再logwarn，再发布status；status本身有延迟。
+所有1376个field_version均唯一对应一个h3；用h3+map_age重建reject记录采样时刻：
+  unavailable分支采样到status被记录：median14.813ms，P95 131.180ms，max353.737ms。
+  predelivery分支：median16.931ms，P95 171.201ms，max562.028ms。
+  修正后仅9/102次在reject采样前原始记录器已经收到更新有效版本，
+  提前量只有0.597至13.419ms，不能证明显著解码积压。
+stutter_snapshot_check_time_reconstruction.json为修正后的分析。
+stutter_status_vs_raw_snapshots.json与stutter_newer_raw_before_rejection.json仅为初筛，
+不能将它们用于确定的积压/解码归因。
+
+四、最后停车
+最后实际非零cmd_vel：11:15:00.034217，v=0.0543865m/s，w=0.0145763rad/s。
+11:15:00.086136起至袋结束11:15:37.629176一直零，37.543040秒。
+该段零cmd192条。按接收时刻近邻初筛关联：native_reference_cancelled 109，
+collision_snapshot_unavailable 64，其余少量或未配对。
+近邻关联不是周期编号，不能用于一一严格因果计数。
+需要慢层日志进一步解释取消来源；不能把长停全部解释成地图过期，也不能称到达目标。
+
+五、机械臂
+目标后3850条execution_state全部enabled=True/feedback_valid=True/stop_latched=False。
+驱动日志源时间11:14:31.824254短暂motor_fresh=False，
+11:14:31.911818恢复，差87.564ms，没有锁停。
+此次已看到300ms机制容忍短时反馈过期，卡顿没有机械臂锁停证据。
+
+脚本analyze_stutter_timing.py峰值RSS约110.95MiB，仅反序列化小topic。
+每次零指令的严格上游原因仍需周期ID或发布源时刻，不能用跨topic到达近邻替代。

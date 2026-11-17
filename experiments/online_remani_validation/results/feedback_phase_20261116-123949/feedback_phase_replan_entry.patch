@@ -1,0 +1,120 @@
+--- a/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp
++++ b/src/mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp
+@@ -720,6 +720,18 @@
+       if (!waitForRequiredESDF("REPLAN_TRAJ"))
+         goto force_return;
+ 
++      // A missing execution clock is waiting, not a failed native solve.
++      // Gate before consuming either ordinary or dynamic retry accounting.
++      // A genuine zero-speed guard instead replans from measured stopped state.
++      const bool guarded_zero_speed = dynamic_safety_speed_limit_active_ &&
++          std::isfinite(current_safety_speed_limit_) &&
++          current_safety_speed_limit_ <= 1e-3;
++      if (!guarded_zero_speed &&
++          !waitForControllerProgress(
++              planner_manager_->traj_container_.singul_traj_data,
++              ros::Time::now()))
++        goto force_return;
++
+       if (dynamic_replan_retry_pending_) {
+         const ros::Time retry_now = ros::Time::now();
+         if (retry_now < next_dynamic_replan_retry_time_)
+--- a/src/mm_remani/test/test_fsm_feedback_phase.py
++++ b/src/mm_remani/test/test_fsm_feedback_phase.py
+@@ -51,6 +51,7 @@
+ #include <functional>
+ #include <iostream>
+ #include <limits>
++#include <memory>
+ #include <stdexcept>
+ #include <string>
+ 
+@@ -62,6 +63,9 @@
+ }
+ struct SingulTrajData { double start_time=100.; double duration=20.; };
+ struct MovingHandoff { SingulTrajData executing; };
++struct Planner {
++  struct {SingulTrajData singul_traj_data;} traj_container_;
++};
+ class REMANIReplanFSM {
+ public:
+   bool mppi_terminal_control_=true;
+@@ -84,6 +88,11 @@
+   ros::Time perception_odom_stamp_, perception_joint_stamp_;
+   bool have_odom_=false, has_default_arm_=true, default_arm_from_config_=true;
+   bool have_target_=true, have_new_target_=true, restored_old_reference_=false;
++  bool dynamic_safety_speed_limit_active_=false, esdf_ready_=true;
++  double current_safety_speed_limit_=.2;
++  int ordinary_budget_=17, dynamic_budget_=2, generation_=45;
++  std::shared_ptr<Planner> planner_manager_=std::make_shared<Planner>();
++  bool waitForRequiredESDF(const char*)const{return esdf_ready_;}
+   void drainFeedbackCallbacks();
+   bool currentTrajectoryPhase(const SingulTrajData&,const ros::Time&,
+                               double&,double&) const;
+@@ -94,6 +103,7 @@
+   void mmCarOdomCallback(const nav_msgs::OdometryConstPtr&);
+   void mmManiOdomCallback(const sensor_msgs::JointStateConstPtr&);
+   bool postSolve(const MovingHandoff* handoff);
++  bool replanEntry();
+ };
+ '''
+ 
+@@ -237,6 +247,25 @@
+     require(f.postSolve(&handoff)&&!f.restored_old_reference_&&!f.have_new_target_&&
+         f.currentTrajectoryPhase(handoff.executing,now,phase,scale)&&close(phase,6.28),
+         "post-solve acceptance used pre-solve stale inbox");
++  } else if(name=="unknown_replan_preserves_all_budgets_and_goal") {
++    packet(f,100.,6.24,.4,107.5);
++    for(int n=0;n<40;++n)require(!f.replanEntry(),"unknown progress entered local solve");
++    require(f.ordinary_budget_==17&&f.dynamic_budget_==2&&f.generation_==45&&
++        f.have_target_&&f.have_new_target_,
++        "waiting consumed retry budget/generation or accepted goal");
++  } else if(name=="fresh_replan_is_allowed") {
++    packet(f,100.,6.28,.2,108.);
++    require(f.replanEntry()&&f.ordinary_budget_==18&&f.dynamic_budget_==3&&
++        f.generation_==46&&f.have_target_,"fresh clock failed to permit a local attempt");
++  } else if(name=="guarded_stopped_replan_bypasses_progress") {
++    f.dynamic_safety_speed_limit_active_=true;f.current_safety_speed_limit_=0.;
++    require(!f.currentTrajectoryPhase(traj,now,phase,scale),"fixture unexpectedly ready");
++    require(f.replanEntry()&&f.have_target_,"true stopped guard blocked measured-state recovery");
++    REMANIReplanFSM positive;positive.dynamic_safety_speed_limit_active_=true;
++    positive.current_safety_speed_limit_=.08;
++    require(!positive.replanEntry(),"positive slowdown bypassed unknown phase");
++    REMANIReplanFSM native;native.mppi_terminal_control_=false;
++    require(native.replanEntry(),"native local-replan compatibility changed");
+   } else throw std::runtime_error("unknown case");
+ }
+ int main(int argc,char** argv) {
+@@ -256,6 +285,8 @@
+     'postsolve_expired_progress_restores_old_reference',
+     'postsolve_wrong_reference_restores_old_reference',
+     'postsolve_uses_drained_matching_feedback',
++    'unknown_replan_preserves_all_budgets_and_goal',
++    'fresh_replan_is_allowed', 'guarded_stopped_replan_bypasses_progress',
+ )
+ 
+ 
+@@ -281,8 +312,22 @@
+         restored_old_reference_=true;return false;
+       };
+ ''' + rebound[begin:end] + '\nreturn true;\n}\n')
++    execution = function(source, 'void REMANIReplanFSM::execFSMCallback(')
++    branch = execution.index('    case REPLAN_TRAJ:')
++    opening = execution.index('{', branch)
++    branch_end = execution.index('      if (dynamic_replan_retry_pending_)', opening)
++    # The accounting is a fake downstream boundary. The preceding ESDF and
++    # progress/stopped-guard entry is extracted verbatim from the real case.
++    replan_entry = ('''bool REMANIReplanFSM::replanEntry(){
++      {
++''' + execution[opening+1:branch_end] + '''
++        ++ordinary_budget_;++dynamic_budget_;++generation_;return true;
++      }
++    force_return:return false;
++    }
++''')
+     return (PREAMBLE + '\n'.join(function(source, item) for item in signatures)
+-            + '\n' + post_solve + CASES)
++            + '\n' + post_solve + replan_entry + CASES)
+ 
+ 
+ class FSMFeedbackPhaseTests(unittest.TestCase):

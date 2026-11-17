@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <deque>
 #include <vector>
+#include <string>
 
 #include <Eigen/Core>
 
@@ -22,6 +23,11 @@ struct DynamicDetection
   // prevents that topology change from becoming a velocity measurement.
   Eigen::Vector3d extent = Eigen::Vector3d::Zero();
   std::size_t point_count = 0;
+  // Observed world-space surface used to verify motion before a track first
+  // enters prediction. A moving centre alone is not physical motion evidence.
+  // For people these are the same stable-core points used for the anchor;
+  // published collision geometry still contains the complete cluster.
+  std::vector<Eigen::Vector3f> motion_surface;
 };
 
 // Parameters for extracting a stable motion anchor from a complete obstacle
@@ -42,7 +48,8 @@ struct StableMotionCenterParameters
 Eigen::Vector3d estimateStableMotionCenter(
     const std::vector<Eigen::Vector3f> &complete_cluster_points,
     const StableMotionCenterParameters &parameters,
-    bool *used_stable_core = nullptr);
+    bool *used_stable_core = nullptr,
+    std::vector<Eigen::Vector3f> *motion_surface = nullptr);
 
 struct TrackedDetection
 {
@@ -53,9 +60,95 @@ struct TrackedDetection
   double confidence = 0.0;
   bool confirmed = false;
   // `confirmed` only means that data association has kept this track alive.
-  // Only motion-qualified tracks may enter the predictive planning layer.
+  // Only motion-qualified tracks may first enter the predictive planning layer.
   bool motion_qualified = false;
+  // Keep current, matched observations of a previously moving object even
+  // after its motion classification clears. This does not predict missing
+  // observations or admit a never-moving background track.
+  bool ever_motion_qualified = false;
 };
+
+// Read-only evidence of predicates already evaluated by update(). Keeping it
+// separate preserves the layout of TrackedDetection and the tracker class.
+enum class MotionSurfaceResult : std::uint8_t
+{
+  NOT_EVALUATED = 0,
+  PASSED = 1,
+  REJECTED = 2
+};
+
+enum MotionRejectionReason : std::uint32_t
+{
+  MOTION_NEW_TRACK = 1u << 0,
+  MOTION_HITS = 1u << 1,
+  MOTION_STEPS = 1u << 2,
+  MOTION_POINTS = 1u << 3,
+  MOTION_HISTORY = 1u << 4,
+  MOTION_DISPLACEMENT = 1u << 5,
+  MOTION_SPEED = 1u << 6,
+  MOTION_EFFICIENCY = 1u << 7,
+  MOTION_DIRECTION = 1u << 8,
+  MOTION_STEP_SPEED = 1u << 9,
+  MOTION_BACKGROUND = 1u << 10,
+  MOTION_SURFACE = 1u << 11,
+  MOTION_EXIT_SPEED = 1u << 12,
+  MOTION_EXIT_EFFICIENCY = 1u << 13,
+  MOTION_EXIT_DIRECTION = 1u << 14
+};
+
+struct SurfaceDirectionDiagnostic
+{
+  bool evaluated = false;
+  std::size_t samples = 0;
+  double stationary_squared = -1.0;
+  double translated_squared = -1.0;
+  bool stationary_distinct = false;
+  bool translated_close = false;
+  bool translation_improves = false;
+};
+
+struct SurfaceTranslationDiagnostic
+{
+  bool evaluated = false;
+  std::size_t previous_points = 0, current_points = 0;
+  double first_stamp = 0.0, last_stamp = 0.0;
+  double translation_x = 0.0, translation_y = 0.0;
+  double tolerance = 0.0;
+  SurfaceDirectionDiagnostic forward, reverse;
+};
+
+struct MotionQualificationDiagnostic
+{
+  double stamp_seconds = 0.0;
+  std::size_t detection_index = 0;
+  std::uint32_t track_id = 0;
+  Eigen::Vector3d observed_position = Eigen::Vector3d::Zero();
+  std::size_t point_count = 0;
+  int hit_count = 0;
+  int valid_step_count = 0;
+  double observation_dt = 0.0;
+  double history_duration = 0.0;
+  double net_displacement = 0.0;
+  double robust_speed = 0.0;
+  double estimated_speed = 0.0;
+  double latest_planar_speed = 0.0;
+  double motion_efficiency = 0.0;
+  double direction_consistency = 0.0;
+  double maximum_step_speed = 0.0;
+  bool history_reset = false;
+  bool was_motion_qualified = false;
+  bool motion_qualified = false;
+  bool ever_motion_qualified = false;
+  bool motion_evaluated = false;
+  bool inside_stationary_background = false;
+  // Distance to the first matching anchor, not a nearest-anchor query.
+  double matching_background_distance = -1.0;
+  MotionSurfaceResult surface = MotionSurfaceResult::NOT_EVALUATED;
+  SurfaceTranslationDiagnostic surface_details;
+  std::uint32_t rejection_mask = 0;
+};
+
+std::string motionRejectionReasons(std::uint32_t mask);
 
 class DynamicObstacleTrackerCore
 {
@@ -80,6 +173,11 @@ public:
     double dynamic_enter_speed = 0.18;
     double dynamic_exit_speed = 0.10;
     double minimum_dynamic_displacement = 0.06;
+    // World-space nearest-surface error below this scale is consistent with
+    // scan sampling noise, not evidence that an obstacle translated.
+    double surface_motion_tolerance = 0.04;
+    // Optional evidence collection; never changes classification predicates.
+    bool collect_surface_diagnostics = false;
     double direction_consistency_cosine = 0.30;
     double minimum_motion_duration = 0.25;
     double motion_history_duration = 0.60;
@@ -116,6 +214,12 @@ public:
       const std::vector<DynamicDetection> &detections,
       double stamp_seconds);
 
+  // Same decisions, with optional bounded per-detection scalar evidence.
+  std::vector<TrackedDetection> update(
+      const std::vector<DynamicDetection> &detections,
+      double stamp_seconds,
+      std::vector<MotionQualificationDiagnostic> *diagnostics);
+
   // Static-map replacement invalidates the learned residual background.
   // Transient bad frames only need to forget track identities, so callers may
   // retain the persistent anchors by passing false.
@@ -129,6 +233,7 @@ private:
   {
     Eigen::Vector3d position = Eigen::Vector3d::Zero();
     double stamp_seconds = 0.0;
+    std::vector<Eigen::Vector3f> surface;
   };
 
   struct Track
@@ -151,6 +256,7 @@ private:
     int missed_frames = 0;
     bool has_motion_direction = false;
     bool motion_qualified = false;
+    bool ever_motion_qualified = false;
   };
 
   Parameters parameters_;

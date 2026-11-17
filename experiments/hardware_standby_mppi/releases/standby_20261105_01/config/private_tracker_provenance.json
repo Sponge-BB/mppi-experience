@@ -1,0 +1,105 @@
+{
+  "source_file_sha256": {
+    "src/mm_remani/launch/exp0_real.launch": "1940c968e22929a39f8dd12d1ce6524562c2be136072f38adcb77b181c7a25ee",
+    "src/mm_remani/src/dynamic_obstacle_tracker_node.cpp": "3bfd24ffffde23f853418fce54da2003d4c3eea9021605ba61e99d7e9a8d8b1e",
+    "src/mm_remani/src/dynamic_obstacle_tracker_core.cpp": "759d8a62a7334f5caaef99b51208afa44eb54a9042b8e3021eac0a293307debc",
+    "src/mm_remani/include/mm_remani/dynamic_obstacle_tracker_core.h": "cab2d9d5820aa21fa38192adac72876e24cea20ba7932a985bb310fb77d8baa9",
+    "devel/lib/mm_remani/dynamic_obstacle_tracker_node": "ed4dc6101dcfc49bb71f5f0b00735b5a52de29d9dd9d35a1400de4bbcda731ab",
+    "devel/lib/libdynamic_obstacle_tracker_core.so": "602dd8bfbdde7733c6c374a8aff68c2f459ebe9b5fd5441d4f68b9eadb8aec61"
+  },
+  "frozen_file_sha256": {
+    "bin/private_dynamic_obstacle_tracker_node": "ed4dc6101dcfc49bb71f5f0b00735b5a52de29d9dd9d35a1400de4bbcda731ab",
+    "lib/libdynamic_obstacle_tracker_core.so": "602dd8bfbdde7733c6c374a8aff68c2f459ebe9b5fd5441d4f68b9eadb8aec61"
+  },
+  "original_parameters": {
+    "input_topic": "/velodyne_points",
+    "static_map_topic": "/map_generator/global_cloud",
+    "output_topic": "$(arg dynamic_points_topic)",
+    "world_frame": "world",
+    "require_static_map": true,
+    "tf_timeout": 0.03,
+    "max_cloud_age": 0.3,
+    "future_stamp_tolerance": 0.05,
+    "voxel_leaf_size": 0.1,
+    "static_map_leaf_size": 0.08,
+    "static_match_radius": 0.12,
+    "minimum_range": 0.3,
+    "maximum_range": 6.0,
+    "minimum_world_z": 0.15,
+    "maximum_world_z": 1.7,
+    "cluster_tolerance": 0.32,
+    "minimum_cluster_points": 8,
+    "maximum_cluster_points": 1200,
+    "maximum_cluster_extent": 2.2,
+    "maximum_residual_points": 800,
+    "maximum_output_points": 160,
+    "motion_center_trim_fraction": 0.15,
+    "motion_center_tall_target_min_height": 0.65,
+    "motion_center_stable_core_lower_height_ratio": 0.35,
+    "motion_center_stable_core_upper_height_ratio": 0.9,
+    "motion_center_minimum_stable_core_points": 8,
+    "association_gate": 0.35,
+    "association_position_allowance": 0.12,
+    "association_shape_weight": 0.2,
+    "maximum_extent_change": 0.45,
+    "maximum_point_count_ratio": 4.0,
+    "position_alpha": 0.65,
+    "velocity_alpha": 0.3,
+    "regression_velocity_weight": 0.75,
+    "motion_direction_alpha": 0.3,
+    "velocity_deadband": 0.1,
+    "maximum_track_speed": 2.0,
+    "dynamic_enter_speed": 0.22,
+    "dynamic_exit_speed": 0.1,
+    "minimum_dynamic_displacement": 0.1,
+    "direction_consistency_cosine": 0.6,
+    "minimum_motion_duration": 0.25,
+    "motion_history_duration": 0.6,
+    "minimum_motion_efficiency": 0.7,
+    "minimum_direction_consistency_fraction": 0.75,
+    "maximum_motion_step_speed_ratio": 1.25,
+    "minimum_track_dt": 0.03,
+    "maximum_track_dt": 0.35,
+    "minimum_confirmed_hits": 4,
+    "minimum_dynamic_hits": 3,
+    "minimum_motion_cluster_points": 15,
+    "minimum_stationary_hits": 3,
+    "minimum_stationary_background_hits": 5,
+    "stationary_background_minimum_duration": 0.5,
+    "stationary_background_maximum_speed": 0.1,
+    "stationary_background_maximum_displacement": 0.06,
+    "stationary_background_merge_radius": 0.2,
+    "stationary_background_release_radius": 0.25,
+    "stationary_background_dwell_duration": 2.0,
+    "stationary_background_dwell_radius": 0.3,
+    "maximum_stationary_background_anchors": 128,
+    "maximum_missed_frames": 3,
+    "health_maximum_motion_tracks": 3,
+    "health_recovery_frames": 15,
+    "health_degradation_frames": 3
+  },
+  "parameter_differences": {
+    "output_topic": {
+      "original": "$(arg dynamic_points_topic)",
+      "shadow": "/standby_trial_20261105_01/perception/dynamic_points"
+    },
+    "velocity_deadband": {
+      "original": 0.1,
+      "shadow": 0.02
+    },
+    "dynamic_enter_speed": {
+      "original": 0.22,
+      "shadow": 0.04
+    },
+    "dynamic_exit_speed": {
+      "original": 0.1,
+      "shadow": 0.02
+    },
+    "minimum_dynamic_displacement": {
+      "original": 0.1,
+      "shadow": 0.025
+    }
+  },
+  "binary_provenance": "Frozen existing devel executable and its own core library. Source hashes are traceability only; a source-to-binary reproducible build is not claimed.",
+  "validation": "Unvalidated slow-target shadow profile; all original health settings unchanged. No execution safety claim; binary has only perception publishers."
+}

@@ -1,0 +1,29 @@
+<launch>
+  <!-- Only the original two PCL filters, a measured local background, and the
+       existing tracker. No actuator transport or control bridge is launched. -->
+  <group ns="/standby_trial_20261106_distributed_08/perception">
+    <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="log" required="true"/>
+    <node pkg="nodelet" type="nodelet" name="passthrough_z" args="load pcl/PassThrough pcl_manager" output="log">
+      <remap from="~input" to="/standby_trial_20261105_feedback_02/sensors/lidar_pcl2"/>
+      <remap from="~output" to="/standby_trial_20261106_distributed_08/perception/no_ground"/>
+      <param name="max_queue_size" value="1"/>
+      <param name="filter_field_name" value="z"/>
+      <param name="filter_limit_min" value="0.01"/>
+      <param name="filter_limit_max" value="1.55"/>
+      <param name="filter_limit_negative" value="false"/>
+    </node>
+    <node pkg="nodelet" type="nodelet" name="crop_box" args="load pcl/CropBox pcl_manager" output="log">
+      <remap from="~input" to="/standby_trial_20261106_distributed_08/perception/no_ground"/>
+      <remap from="~output" to="/standby_trial_20261106_distributed_08/perception/filtered_points"/>
+      <param name="max_queue_size" value="1"/>
+      <param name="min_x" value="-0.8"/><param name="max_x" value="0.05"/>
+      <param name="min_y" value="-0.90"/><param name="max_y" value="0.40"/>
+      <param name="min_z" value="-0.01"/><param name="max_z" value="0.7"/>
+      <param name="negative" value="true"/>
+    </node>
+    <node pkg="standby_distributed_trial" type="stationary_background" name="stationary_background" output="log" required="true"/>
+    <node pkg="standby_hardware_trial" type="private_dynamic_obstacle_tracker_node" name="dynamic_obstacle_tracker" output="log" required="true">
+      <rosparam command="load" file="$(dirname)/stationary_tracker.yaml"/>
+    </node>
+  </group>
+</launch>

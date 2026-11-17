@@ -1,0 +1,97 @@
+--- before/whole_body_mppi.py
+
++++ src/mm_remani/scripts/whole_body_mppi.py
+
+@@ -94,7 +94,7 @@
+
+     return v/scale, w/scale
+ 
+ 
+-def checked_first_step(kernel, state, control, snapshot, now):
++def checked_first_step(kernel, state, control, snapshot, now, diagnostics=None):
+     """Check the delivered action, its driver hold and braking on the new map.
+ 
+     Base receives velocity; Piper receives the first joint position target.
+@@ -132,8 +132,35 @@
+
+     # Self/ground geometry depends only on q; repeated held poses need one
+     # check. External obstacles above still use every base/time sample.
+     unique_q = np.unique(states[:, 5:11], axis=0)
+-    if (np.any(gaps < 0) or np.any(kernel.model.configuration_gaps_batch(unique_q) < 0)
++    external_rejected = bool(np.any(gaps < 0))
++    configuration_gaps = None if external_rejected else kernel.model.configuration_gaps_batch(unique_q)
++    if (external_rejected or np.any(configuration_gaps < 0)
+             or np.any(states[:, 5:11] < kernel.qmin) or np.any(states[:, 5:11] > kernel.qmax)):
++        if diagnostics is not None:
++            # Failure-only detail: do not add geometry work to accepted cycles
++            # or replace the original rejection reason/acceptance conditions.
++            if configuration_gaps is None:
++                configuration_gaps = kernel.model.configuration_gaps_batch(unique_q)
++            record = dict(check_time=float(now), min_external_gap_m=float(np.min(gaps)),
++                min_configuration_gap_m=float(np.min(configuration_gaps)),
++                external_rejected=external_rejected,
++                configuration_rejected=bool(np.any(configuration_gaps < 0)),
++                bounds_valid=bool(np.all((states[:, 5:11] >= kernel.qmin) &
++                                        (states[:, 5:11] <= kernel.qmax))),
++                checked_duration_s=float(np.max(times)-now),
++                measured_state=np.asarray(state).tolist(), selected_control=np.asarray(control).tolist(),
++                joint_target=target.tolist())
++            header = getattr(snapshot, 'header', None)
++            if isinstance(header, np.ndarray) and header.shape == (32,):
++                record['map_header'] = header.tolist()
++                record['dynamic_points_present'] = bool(getattr(snapshot, 'groups', ()))
++                if record['dynamic_points_present']:
++                    age = times-header[18]
++                    record.update(dynamic_prediction_max_age_s=float(np.max(age)),
++                        dynamic_prediction_horizon_s=float(header[16]),
++                        dynamic_prediction_in_range=bool(np.all((age >= -.05) &
++                                                               (age <= header[16]+1e-9))))
++            diagnostics['command_check'] = record
+         raise ValueError('command_hold_or_braking_rejected_by_latest_state_or_map')
+     return end
+ 
+@@ -549,8 +576,15 @@
+
+                         result = controls, kernel.lease_brake_states(state, controls, lease=.30)
+                         info.update(mode='terminal_yaw_alignment', terminal_yaw_alignment=True)
+             elapsed = time.monotonic()-began
+-            if self.simulation:
++            if self.simulation or result is None:
++                if not self.simulation:
++                    diagnostics.update(plan_time=now, measured_state=state.tolist(),
++                                       arm_reference=arm_anchor.tolist())
++                    header = getattr(snapshot, 'header', None)
++                    if isinstance(header, np.ndarray) and header.shape == (32,):
++                        diagnostics['snapshot_header'] = header.tolist()
+                 diagnostics.update({key:info[key] for key in (
++                    'feasible', 'candidates', 'structured_candidates', 'structured_first_base_commands',
+                     'structured_labels', 'structured_valid', 'structured_costs',
+                     'structured_external_gaps', 'structured_configuration_gaps',
+                     'structured_bounds_valid',
+@@ -561,12 +595,14 @@
+
+                     'mode', 'reference_source', 'native_phase', 'native_time_scale',
+                     'native_arm_reference', 'source_stamp', 'reference_hash') if key in info})
+                 diagnostics['solve_ms'] = round(elapsed*1000, 2)
++            # An obsolete solve is a local retry even when it found no candidate;
++            # it must not cancel an otherwise usable native reference.
++            if elapsed > self.deadline: raise ValueError('planning_deadline_exceeded')
+             if result is None:
+                 if startup:
+                     diagnostics.update(info)
+                 reason = 'no_feasible_candidate' if info.get('feasible') == 0 else info.get('reference_status', 'no_feasible_candidate')
+                 raise ValueError(reason)
+-            if elapsed > self.deadline: raise ValueError('planning_deadline_exceeded')
+             controls, prediction = result
+             command = np.asarray(controls[0], dtype=float).copy()
+             # Hold the reference lock through delivery: cancel/replace cannot
+@@ -601,7 +637,7 @@
+
+                 # Recheck the command that will actually be sent, including
+                 # the planner's limit; arm avoidance remains available at v=w=0.
+                 current = np.r_[self.base, self.joints]
+-                first_step = checked_first_step(kernel, current, command, self.snapshot, end)
++                first_step = checked_first_step(kernel, current, command, self.snapshot, end, diagnostics=diagnostics)
+                 target = first_step[5:11]
+                 if np.max(np.abs(target-self.joints[:6])) > .03:
+                     raise ValueError('arm_target_exceeds_current_feedback_lead')

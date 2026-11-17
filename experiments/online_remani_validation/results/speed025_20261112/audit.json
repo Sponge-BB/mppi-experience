@@ -1,0 +1,93 @@
+{
+  "baseline": "20261112-112140-before-speed025",
+  "runtime_changes": {
+    "vmax": [
+      0.2,
+      0.25
+    ],
+    "wheel_v": [
+      0.2296,
+      0.25
+    ],
+    "horizon": [
+      7,
+      5
+    ],
+    "removed_hidden_guide_cap": 0.22
+  },
+  "unchanged": {
+    "rate_hz": 10,
+    "wmax": 0.35,
+    "accel": 0.25,
+    "angular_accel": 0.8,
+    "wheel_a": 0.2975,
+    "arm_velocity": [
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "arm_acceleration": [
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35
+    ]
+  },
+  "offline_only": true,
+  "hardware_commands_sent": false,
+  "first_validation": {
+    "tests_run": 30,
+    "failures": 1,
+    "skipped": 1,
+    "failure": "test_mppi_standby fixed t=1s obstacle occurs after the new H5 moving-arm candidate has already stopped; fixture needs a fixed H7 to retain its intended temporal contrast"
+  },
+  "file_sha256": {
+    "src/mm_remani/config/mppi.yaml": "44034906e3142eb990d9270e634c2c3272879e21be3833911965763fa85cf99b",
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "0f6766c8a5d96f563b14db97cb1725aaede55df4526a1ad0b27a53dccff72125",
+    "src/mm_remani/test/test_mppi_speed_coverage.py": "9e01f3e9ba4f163bf3ca8d84ef080934fe998842b316b8a009fe72aa7f95317a",
+    "src/mm_remani/test/test_mppi_standby.py": "d7ef22d376e627d4d4c49a68560725103d3ab13a544ad6ee6333663e24f47691"
+  },
+  "fixture_only_change": "test_mppi_standby:test_hold_is_identical_alone_or_beside_a_long_braking_candidate pins H7 so its fixed 1s obstacle remains between stopping times; no production logic or other assertions changed",
+  "final_validation": {
+    "tests_run": 30,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "duration_s": 0.9345391070000915,
+    "peak_rss_MiB": 62.75,
+    "success": true,
+    "skips": [
+      {
+        "test": "test_recorded_dynamic_snapshot_all_candidates_match_singletons (test_mppi_standby.StandbyTailTests)",
+        "reason": "Set MPPI_STANDBY_RECORDED_RUN for a recorded dynamic snapshot"
+      }
+    ],
+    "modules": [
+      "test_mppi_speed_coverage",
+      "test_mppi_navigation_priority",
+      "test_mppi_collision",
+      "test_mppi_standby"
+    ],
+    "hardware_tested": false
+  },
+  "braking_coverage": {
+    "grid": [
+      17,
+      17
+    ],
+    "legal_base_states": 233,
+    "initial_arm_velocity": 0.15,
+    "max_brake_s": 1.1,
+    "rollout_s": 0.5,
+    "source_age_s": 0.35,
+    "max_total_age_s": 1.95,
+    "dynamic_forecast_s": 2.0,
+    "ROS_epoch_tested": 1794440000.0,
+    "note": "Bounded states; abnormal measured velocities may need longer braking and remain subject to rejection."
+  }
+}

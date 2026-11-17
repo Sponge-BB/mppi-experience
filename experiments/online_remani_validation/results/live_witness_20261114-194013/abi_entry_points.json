@@ -1,0 +1,38 @@
+{
+  "libplan_env.so": {
+    "old_entry_points": [
+      "GridMap::getDynamicObstacleDistance(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, double)"
+    ],
+    "new_entry_points": [
+      "GridMap::getDynamicObstacleDistance(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, double)",
+      "GridMap::getDynamicObstacleDistance(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, double, GridMap::DynamicObstacleHit*)"
+    ],
+    "old_api_retained": true
+  },
+  "libmm_config.so": {
+    "old_entry_points": [
+      "remani_planner::MMConfig::checkCarDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, bool, double&)",
+      "remani_planner::MMConfig::checkDynamicObstacleCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, int&)",
+      "remani_planner::MMConfig::checkManiDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, double&)"
+    ],
+    "new_entry_points": [
+      "remani_planner::MMConfig::checkCarDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, bool, double&)",
+      "remani_planner::MMConfig::checkCarDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, bool, double&, remani_planner::MMConfig::DynamicCollisionEvidence*)",
+      "remani_planner::MMConfig::checkDynamicObstacleCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, int&)",
+      "remani_planner::MMConfig::checkDynamicObstacleCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, int&, remani_planner::MMConfig::DynamicCollisionEvidence*)",
+      "remani_planner::MMConfig::checkManiDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, double&)",
+      "remani_planner::MMConfig::checkManiDynamicObsCollision(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, bool, double&, remani_planner::MMConfig::DynamicCollisionEvidence*)"
+    ],
+    "old_api_retained": true
+  },
+  "libtraj_opt.so": {
+    "old_entry_points": [
+      "remani_planner::PolyTrajOptimizer::checkDynamicObstacleCollision(remani_planner::SingulTrajData const&, double, int&)"
+    ],
+    "new_entry_points": [
+      "remani_planner::PolyTrajOptimizer::checkDynamicObstacleCollision(remani_planner::SingulTrajData const&, double, int&)",
+      "remani_planner::PolyTrajOptimizer::checkDynamicObstacleCollision(remani_planner::SingulTrajData const&, double, int&, remani_planner::MMConfig::DynamicCollisionEvidence*)"
+    ],
+    "old_api_retained": true
+  }
+}

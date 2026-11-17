@@ -1,0 +1,142 @@
+--- before/test_mppi_collision.py
+
++++ src/mm_remani/test/test_mppi_collision.py
+
+@@ -6,14 +6,14 @@
+
+ import time
+ from types import SimpleNamespace
+ import unittest
+-from unittest.mock import Mock
++from unittest.mock import Mock, patch
+ 
+ import numpy as np
+ 
+ PACKAGE = Path(__file__).resolve().parents[1]
+ sys.path.insert(0, str(PACKAGE/'scripts'))
+ sys.path.insert(0, str(PACKAGE/'scripts'/'mppi'))
+-from active_arm_mppi import Snapshot
++from active_arm_mppi import Snapshot, WholeBodyMPPI
+ from active_arm_model import PiperArmModel
+ from standby_whole_body_mppi import StandbyWholeBodyMPPI
+ from whole_body_mppi import checked_first_step, WholeBodyNode
+@@ -249,6 +249,118 @@
+
+             checked_first_step(self.kernel, state, np.zeros(8), clear_external_map, 100.)
+ 
+ 
++class MoveJIntentTests(unittest.TestCase):
++    """Real velocity rollout and delivery checks with one moving test sphere.
++
++    The small geometry isolates interface/time coverage, not Piper calibration.
++    """
++    class Model:
++        configuration_floor = -float('inf')
++
++        def body_spheres_batch(self, q, base):
++            spheres = np.zeros(q.shape[:-1]+(1, 4))
++            spheres[..., 0, 0] = q[..., 0]
++            spheres[..., 0, 1] = base[..., 0]
++            spheres[..., 0, 3] = .0001
++            return spheres
++
++        def configuration_gaps_batch(self, q):
++            return np.where(q[..., 0] < self.configuration_floor, -.01, 1.)
++
++    class Scene:
++        def __init__(self, obstacle=None):
++            self.obstacle = obstacle
++
++        def fresh(self, now):
++            return True
++
++        def query(self, spheres, times):
++            self.spheres, self.times = spheres.copy(), np.asarray(times).copy()
++            gap = np.ones(len(spheres))
++            if self.obstacle is not None:
++                x, crossing_time = self.obstacle
++                # An obstacle crosses the sphere's line at the selected time.
++                center = np.c_[np.full(len(times), x),
++                               np.asarray(times)-crossing_time, np.zeros(len(times))]
++                gap = np.linalg.norm(spheres[:, 0, :3]-center, axis=1)-spheres[:, 0, 3]-.0001
++            return gap, np.zeros_like(gap)
++
++    def setUp(self):
++        self.model = self.Model()
++        self.kernel = WholeBodyMPPI(self.model,
++            dict(vmax=.05, wmax=.15, accel=.1, angular_accel=.3,
++                 track=.37, wheel_v=.2296, wheel_a=.2975),
++            ([-2.]*6, [2.]*6, [.15]*6, [.35]*6), [], horizon=8)
++        self.state, self.control = np.zeros(17), np.zeros(8)
++
++    def test_measured_velocity_spike_cannot_create_an_inertial_movej_target(self):
++        self.state[11] = -.534  # Recorded finite-difference feedback peak.
++        original = self.state.copy()
++        for intent in (0., -.15, .15, -2., 2.):
++            with self.subTest(intent=intent):
++                self.control[2] = intent
++                scene = self.Scene()
++                end = checked_first_step(self.kernel, self.state, self.control, scene, 100.)
++                self.assertAlmostEqual(end[5], np.clip(intent, -.15, .15)*.1)
++                self.assertLess(scene.spheres[:, 0, 0].min(), -.03)
++                # The actual dq remains in the checked inertia/braking path.
++                np.testing.assert_array_equal(self.state, original)
++
++    def test_dynamic_target_midpoint_and_early_arrival_are_checked(self):
++        self.control[2] = .15
++        for label, position, when in (('target_hold', .015, .55),
++                                     ('midpoint', .0075, .15),
++                                     ('early_target', .015, .05)):
++            with self.subTest(case=label):
++                with self.assertRaisesRegex(ValueError, 'command_hold_or_braking'):
++                    checked_first_step(self.kernel, self.state, self.control,
++                                       self.Scene((position, 100.+when)), 100.)
++
++    def test_measured_velocity_collision_is_still_rejected(self):
++        self.state[11] = -.534
++        inertial = self.kernel.advance(self.state, self.control, .05)[5]
++        with self.assertRaisesRegex(ValueError, 'command_hold_or_braking'):
++            checked_first_step(self.kernel, self.state, self.control,
++                               self.Scene((inertial, 100.05)), 100.)
++
++    def test_measured_velocity_self_collision_and_limits_are_still_rejected(self):
++        self.state[11] = -.534
++        self.model.configuration_floor = -.02
++        with self.assertRaisesRegex(ValueError, 'command_hold_or_braking'):
++            checked_first_step(self.kernel, self.state, self.control, self.Scene(), 100.)
++        self.model.configuration_floor = -float('inf')
++        self.state[5] = -1.99
++        with self.assertRaisesRegex(ValueError, 'command_hold_or_braking'):
++            checked_first_step(self.kernel, self.state, self.control, self.Scene(), 100.)
++
++    def test_lead_cap_and_joint_clipping_are_checked_before_returning(self):
++        self.kernel.vmax[:] = 1.
++        self.control[2] = 2.
++        scene = self.Scene()
++        end = checked_first_step(self.kernel, self.state, self.control, scene, 100.)
++        self.assertAlmostEqual(end[5], .03)
++        self.assertTrue(np.any(np.isclose(scene.spheres[:, 0, 0], .03)))
++        # Clipping a target must not hide the original velocity path's violation.
++        self.kernel.qmax[0] = .006
++        with self.assertRaisesRegex(ValueError, 'command_hold_or_braking'):
++            checked_first_step(self.kernel, self.state, self.control, scene, 100.)
++        self.assertTrue(np.any(np.isclose(scene.spheres[:, 0, 0], .006)))
++
++    def test_cycle_publishes_the_same_target_that_was_collision_checked(self):
++        fixture = gates.ExecutionDeliveryTests(methodName='runTest')
++        fixture.setUp()
++        fixture.node.kernel = self.kernel
++        scene = fixture.node.snapshot = self.Scene()
++        fixture.node.joints[6] = -.534
++        fixture.feed(gates.message(100.))
++        with patch('whole_body_mppi.rospy.get_time', return_value=100.):
++            fixture.node.cycle()  # Actual checked_first_step, fake publishers only.
++        fixture.node.arm_pub.publish.assert_called_once()
++        target = fixture.node.arm_pub.publish.call_args.args[0].position
++        np.testing.assert_allclose(target, [.005, 0., 0., 0., 0., 0.])
++        self.assertTrue(np.any(np.isclose(scene.spheres[:, 0, 0], target[0])))
++
++
+ class LocalRetryReferenceTests(unittest.TestCase):
+     """Real cycle and reference adapter; isolated solver/publications only."""
+     solve = gates.ExecutionDeliveryTests.solve

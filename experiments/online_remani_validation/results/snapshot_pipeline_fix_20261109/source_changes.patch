@@ -1,0 +1,366 @@
+--- archived_1559/src/mm_remani_planner/plan_env/include/plan_env/grid_map.h
++++ current/src/mm_remani_planner/plan_env/include/plan_env/grid_map.h
+@@ -486,6 +486,11 @@
+   void publishESDF();
+   inline double getDistance(const Eigen::Vector3d& pos);
+   inline double getDistance(const Eigen::Vector3i& id);
++  // Inclusive bounds, x-major with contiguous z rows. Uses one pinned read
++  // generation; invalid bounds/storage leave output unchanged (no clamping).
++  bool copyDistanceRegion(const Eigen::Vector3i& lo,
++                          const Eigen::Vector3i& hi,
++                          std::vector<double>& output) const;
+   double getPreciseDistance(const Eigen::Vector3d& pos);
+   double getDynamicObstacleDistance(const Eigen::Vector3d& pos, double max_search_distance);
+   void getSurroundPts(const Eigen::Vector3d& pos, Eigen::Vector3d pts[2][2][2], Eigen::Vector3d& diff);
+--- archived_1559/src/mm_remani_planner/plan_env/src/grid_map.cpp
++++ current/src/mm_remani_planner/plan_env/src/grid_map.cpp
+@@ -1,6 +1,7 @@
+ #include "plan_env/grid_map.h"
+ 
+ #include <algorithm>
++#include <limits>
+ #include <map>
+ #include <sstream>
+ #include <thread>
+@@ -98,6 +99,50 @@
+   if (!isolated_mapping_ || (writer_context_ == this && !reader_on_writer_)) return {};
+   if (reader_context_ == this) return reader_snapshot_;
+   return std::atomic_load(&latest_read_snapshot_);
++}
++
++bool GridMap::copyDistanceRegion(const Eigen::Vector3i &lo,
++                                 const Eigen::Vector3i &hi,
++                                 std::vector<double> &output) const
++{
++  const Eigen::Vector3i dimensions = mp_.map_voxel_num_;
++  if (!validIndexBounds(lo, hi, dimensions)) return false;
++
++  const std::size_t nx = static_cast<std::size_t>(dimensions.x());
++  const std::size_t ny = static_cast<std::size_t>(dimensions.y());
++  const std::size_t nz = static_cast<std::size_t>(dimensions.z());
++  const std::size_t limit = std::numeric_limits<std::size_t>::max();
++  if (ny > limit / nz) return false;
++  const std::size_t plane_stride = ny * nz;
++  if (nx > limit / plane_stride) return false;
++  const std::size_t source_count = nx * plane_stride;
++
++  // Keep one shared owner for the whole copy. An enclosing Complete scope
++  // selects the same coherent field and source stamps as scalar queries.
++  const auto view = readSnapshot();
++  if (view && !view->distance) return false;
++  const auto &source = view ? *view->distance : md_.distance_buffer_all_;
++  if (source.size() < source_count) return false;
++
++  const std::size_t rows_x = static_cast<std::size_t>(hi.x() - lo.x()) + 1;
++  const std::size_t rows_y = static_cast<std::size_t>(hi.y() - lo.y()) + 1;
++  const std::size_t row_size = static_cast<std::size_t>(hi.z() - lo.z()) + 1;
++  if (rows_x > output.max_size() / rows_y) return false;
++  const std::size_t row_count = rows_x * rows_y;
++  if (row_count > output.max_size() / row_size) return false;
++
++  output.resize(row_count * row_size);
++  std::size_t destination = 0;
++  for (int x = lo.x(); x <= hi.x(); ++x)
++    for (int y = lo.y(); y <= hi.y(); ++y)
++    {
++      const std::size_t address = static_cast<std::size_t>(x) * plane_stride +
++          static_cast<std::size_t>(y) * nz + static_cast<std::size_t>(lo.z());
++      std::copy_n(source.data() + address, row_size,
++                  output.data() + destination);
++      destination += row_size;
++    }
++  return true;
+ }
+ 
+ void GridMap::refreshReadSnapshot() const
+--- archived_1559/src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp
++++ current/src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp
+@@ -2,6 +2,9 @@
+ 
+ #include <cmath>
+ #include <chrono>
++#include <cstring>
++#include <iostream>
++#include <limits>
+ #include <random>
+ #include <thread>
+ #include <vector>
+@@ -81,6 +84,49 @@
+   }
+ 
+   static void useLegacyQueue(GridMap &map) { map.isolated_mapping_ = false; }
++
++  static void configureDistanceRegion(GridMap &map,
++                                      const Eigen::Vector3i &dimensions)
++  {
++    configureImmutableReads(map);
++    map.mp_.map_voxel_num_ = dimensions;
++    map.mp_.map_size_ = dimensions.cast<double>() * map.mp_.resolution_;
++    map.mp_.map_max_boundary_ = map.mp_.map_origin_ + map.mp_.map_size_;
++    const std::size_t count = static_cast<std::size_t>(dimensions.x()) *
++        static_cast<std::size_t>(dimensions.y()) * dimensions.z();
++    map.md_.occupancy_buffer_.assign(count, -2.0);
++    map.md_.occupancy_buffer_inflate_.assign(count, 0);
++    map.md_.static_occupancy_.assign(count, 0);
++    map.md_.distance_buffer_all_.resize(count);
++    publishDistancePattern(map, 2, 0.0);
++  }
++
++  static void publishDistancePattern(GridMap &map, std::uint64_t sequence,
++                                     double offset)
++  {
++    for (std::size_t i = 0; i < map.md_.distance_buffer_all_.size(); ++i)
++      map.md_.distance_buffer_all_[i] = offset + double(i) * 0.125;
++    map.md_.dynamic_observation_seq_ = sequence;
++    map.md_.esdf_observation_seq_ = sequence;
++    map.md_.lidar_accepted_seq_ = sequence;
++    map.md_.lidar_fused_seq_ = sequence;
++    map.md_.last_occ_update_time_ = ros::Time(100 + sequence, 0);
++    ++map.read_distance_revision_;
++    map.publishReadSnapshot();
++  }
++
++  static void setDistanceDimensions(GridMap &map,
++                                     const Eigen::Vector3i &dimensions)
++  {
++    map.mp_.map_voxel_num_ = dimensions;
++  }
++
++  static void truncateDistanceStorage(GridMap &map)
++  {
++    map.md_.distance_buffer_all_.pop_back();
++    ++map.read_distance_revision_;
++    map.publishReadSnapshot();
++  }
+ 
+   static void configureDynamicPlanningOverlay(
+       GridMap &map,
+@@ -969,7 +1015,180 @@
+                 ros::init_options::NoRosout);
+ }
+ 
++std::vector<double> scalarDistanceRegion(GridMap &map,
++                                         const Eigen::Vector3i &lo,
++                                         const Eigen::Vector3i &hi)
++{
++  std::vector<double> result;
++  for (int x = lo.x(); x <= hi.x(); ++x)
++    for (int y = lo.y(); y <= hi.y(); ++y)
++      for (int z = lo.z(); z <= hi.z(); ++z)
++        result.push_back(map.getDistance(Eigen::Vector3i(x, y, z)));
++  return result;
++}
++
+ }  // namespace
++
++TEST(GridMapDistanceCopy, InclusiveBoundariesAndRandomCropsMatchScalarQueries)
++{
++  ensureRosInitialized();
++  const Eigen::Vector3i dimensions(17, 13, 9);
++  for (bool legacy : {false, true})
++  {
++    GridMap map;
++    GridMapParallelTestAccessor::configureDistanceRegion(map, dimensions);
++    if (legacy) GridMapParallelTestAccessor::useLegacyQueue(map);
++    GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
++    ASSERT_TRUE(complete.valid());
++    std::vector<double> output;
++    for (const Eigen::Vector3i &cell :
++         {Eigen::Vector3i::Zero().eval(),
++          (dimensions - Eigen::Vector3i::Ones()).eval()})
++    {
++      ASSERT_TRUE(map.copyDistanceRegion(cell, cell, output));
++      ASSERT_EQ(1U, output.size());
++      EXPECT_DOUBLE_EQ(map.getDistance(cell), output.front());
++    }
++    ASSERT_TRUE(map.copyDistanceRegion(Eigen::Vector3i::Zero(),
++        dimensions - Eigen::Vector3i::Ones(), output));
++    EXPECT_EQ(scalarDistanceRegion(map, Eigen::Vector3i::Zero(),
++        dimensions - Eigen::Vector3i::Ones()), output);
++
++    std::mt19937 random(913);
++    for (int sample = 0; sample < 100; ++sample)
++    {
++      Eigen::Vector3i lo, hi;
++      for (int axis = 0; axis < 3; ++axis)
++      {
++        std::uniform_int_distribution<int> index(0, dimensions[axis] - 1);
++        const int first = index(random), second = index(random);
++        lo[axis] = std::min(first, second);
++        hi[axis] = std::max(first, second);
++      }
++      ASSERT_TRUE(map.copyDistanceRegion(lo, hi, output));
++      const auto scalar = scalarDistanceRegion(map, lo, hi);
++      ASSERT_EQ(scalar.size(), output.size());
++      EXPECT_EQ(0, std::memcmp(scalar.data(), output.data(),
++                              scalar.size() * sizeof(double)));
++    }
++  }
++}
++
++TEST(GridMapDistanceCopy, InvalidBoundsAndStorageDoNotModifyOutput)
++{
++  ensureRosInitialized();
++  GridMap map;
++  const Eigen::Vector3i dimensions(5, 4, 3);
++  GridMapParallelTestAccessor::configureDistanceRegion(map, dimensions);
++  const std::vector<double> original{91.0, 92.0};
++  std::vector<double> output = original;
++  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i(-1, 0, 0),
++                                      Eigen::Vector3i::Zero(), output));
++  EXPECT_EQ(original, output);
++  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i::Zero(),
++                                      dimensions, output));
++  EXPECT_EQ(original, output);
++  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i(2, 0, 0),
++                                      Eigen::Vector3i(1, 0, 0), output));
++  EXPECT_EQ(original, output);
++  GridMapParallelTestAccessor::setDistanceDimensions(map,
++      Eigen::Vector3i(5, 0, 3));
++  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i::Zero(),
++                                      Eigen::Vector3i::Zero(), output));
++  EXPECT_EQ(original, output);
++  GridMapParallelTestAccessor::setDistanceDimensions(map,
++      Eigen::Vector3i::Constant(std::numeric_limits<int>::max()));
++  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i::Zero(),
++                                      Eigen::Vector3i::Zero(), output));
++  EXPECT_EQ(original, output);
++  GridMapParallelTestAccessor::setDistanceDimensions(map, dimensions);
++  GridMapParallelTestAccessor::truncateDistanceStorage(map);
++  EXPECT_FALSE(map.copyDistanceRegion(Eigen::Vector3i::Zero(),
++                                      dimensions - Eigen::Vector3i::Ones(),
++                                      output));
++  EXPECT_EQ(original, output);
++}
++
++TEST(GridMapDistanceCopy, CompleteScopeKeepsValuesVersionAndFusionStampPinned)
++{
++  ensureRosInitialized();
++  GridMap map;
++  const Eigen::Vector3i lo(1, 2, 0), hi(8, 5, 4);
++  GridMapParallelTestAccessor::configureDistanceRegion(map,
++      Eigen::Vector3i(11, 8, 6));
++  GridMapParallelTestAccessor::asMappingWriter(map, [&]() {
++    GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
++    ASSERT_TRUE(complete.valid());
++    const auto version = map.getReadESDFVersion();
++    const auto fusion_stamp = map.getReadFusionTime();
++    const auto expected = scalarDistanceRegion(map, lo, hi);
++    std::thread writer([&]() {
++      GridMapParallelTestAccessor::publishDistancePattern(map, 3, 1000000.0);
++    });
++    writer.join();
++    std::vector<double> output;
++    ASSERT_TRUE(map.copyDistanceRegion(lo, hi, output));
++    EXPECT_EQ(expected, output);
++    EXPECT_EQ(version, map.getReadESDFVersion());
++    EXPECT_EQ(fusion_stamp, map.getReadFusionTime());
++    EXPECT_EQ(2U, map.getDynamicObservationSeq());
++    {
++      GridMap::ReadScope next(map, GridMap::ReadScope::Complete);
++      ASSERT_TRUE(next.valid());
++      ASSERT_TRUE(map.copyDistanceRegion(lo, hi, output));
++      EXPECT_EQ(scalarDistanceRegion(map, lo, hi), output);
++      EXPECT_NE(expected, output);
++      EXPECT_NE(version, map.getReadESDFVersion());
++      EXPECT_EQ(ros::Time(103, 0), map.getReadFusionTime());
++    }
++    ASSERT_TRUE(map.copyDistanceRegion(lo, hi, output));
++    EXPECT_EQ(expected, output);
++    EXPECT_EQ(version, map.getReadESDFVersion());
++    EXPECT_EQ(fusion_stamp, map.getReadFusionTime());
++  });
++}
++
++TEST(GridMapDistanceCopy, ReportsScalarAndRowCopyTimesWithoutSpeedThreshold)
++{
++  ensureRosInitialized();
++  GridMap map;
++  const Eigen::Vector3i dimensions(82, 82, 60);
++  const Eigen::Vector3i lo = Eigen::Vector3i::Zero();
++  const Eigen::Vector3i hi = dimensions - Eigen::Vector3i::Ones();
++  const std::size_t count = static_cast<std::size_t>(dimensions.x()) *
++      dimensions.y() * dimensions.z();
++  GridMapParallelTestAccessor::configureDistanceRegion(map, dimensions);
++  GridMapParallelTestAccessor::asMappingWriter(map, [&]() {
++    GridMap::ReadScope complete(map, GridMap::ReadScope::Complete);
++    ASSERT_TRUE(complete.valid());
++    std::vector<double> scalar, copied;
++    scalar.reserve(count);
++    copied.reserve(count);
++    for (int round = 0; round < 3; ++round)
++    {
++      scalar.clear();
++      const auto scalar_start = std::chrono::steady_clock::now();
++      for (int x = lo.x(); x <= hi.x(); ++x)
++        for (int y = lo.y(); y <= hi.y(); ++y)
++          for (int z = lo.z(); z <= hi.z(); ++z)
++            scalar.push_back(map.getDistance(Eigen::Vector3i(x, y, z)));
++      const auto scalar_end = std::chrono::steady_clock::now();
++      const auto copy_start = std::chrono::steady_clock::now();
++      ASSERT_TRUE(map.copyDistanceRegion(lo, hi, copied));
++      const auto copy_end = std::chrono::steady_clock::now();
++      ASSERT_EQ(scalar.size(), copied.size());
++      EXPECT_EQ(0, std::memcmp(scalar.data(), copied.data(),
++                              scalar.size() * sizeof(double)));
++      const double scalar_ms = std::chrono::duration<double, std::milli>(
++          scalar_end - scalar_start).count();
++      const double copy_ms = std::chrono::duration<double, std::milli>(
++          copy_end - copy_start).count();
++      std::cout << "[distance-region benchmark] shape=82x82x60 cells="
++                << count << " round=" << round << " scalar_ms=" << scalar_ms
++                << " row_copy_ms=" << copy_ms << std::endl;
++    }
++  });
++}
+ 
+ TEST(GridMapImmutable, WriterContinuesWhileReaderPinsOneGeneration)
+ {
+--- archived_1559/src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp
++++ current/src/mm_remani_planner/plan_manage/include/plan_manage/mppi_collision_export.hpp
+@@ -166,11 +166,7 @@
+                          lo != crop_lo_ || hi != crop_hi_;
+     if (refresh) {
+       auto field = std::make_shared<std::vector<double>>();
+-      field->reserve(std::size_t(cells));
+-      for (int x = lo.x(); x <= hi.x(); ++x)
+-        for (int y = lo.y(); y <= hi.y(); ++y)
+-          for (int z = lo.z(); z <= hi.z(); ++z)
+-            field->push_back(map_->getDistance(Eigen::Vector3i(x, y, z)));
++      if (!map_->copyDistanceRegion(lo, hi, *field)) return;
+       h[17] = acquired;  // ESDF-copy acquisition time, never original sensor time.
+       next->esdf = field;
+       esdf_version_ = version; crop_lo_ = lo; crop_hi_ = hi; ++generation_;
+--- archived_1559/src/mm_remani/scripts/whole_body_mppi.py
++++ current/src/mm_remani/scripts/whole_body_mppi.py
+@@ -429,6 +429,22 @@
+                 self.fault_pub.publish(Bool(data=True))
+         record = dict(state=reason, execute=self.execute,
+             cycle_ms=round((time.monotonic()-self.cycle_began)*1000, 2))
++        if reason.startswith(('collision_snapshot', 'inputs_expired')):
++            h = getattr(getattr(self, 'snapshot', None), 'header', None)
++            if isinstance(h, np.ndarray) and h.shape == (32,):
++                now = rospy.get_time()
++                record['snapshot'] = dict(valid=bool(h[4]),
++                    map_age_ms=round((now-h[3])*1000, 2),
++                    dynamic_age_ms=round((now-h[18])*1000, 2),
++                    cached_joint_age_ms=round((now-h[24])*1000, 2),
++                    dynamic_valid=bool(h[19]), ground_valid=bool(h[22]),
++                    self_collision_valid=bool(h[23]), field_version=int(h[14]))
++        # Keep the first rejection in the node log. Otherwise a later driver
++        # stop replaces /mppi/status and hides why command delivery ceased.
++        if reason != getattr(self, '_last_rejection_reason', None):
++            rospy.logwarn('MPPI command rejected: %s (cycle=%.2f ms; snapshot=%s)',
++                          reason, record['cycle_ms'], record.get('snapshot', {}))
++            self._last_rejection_reason = reason
+         if diagnostics: record['candidate_diagnostics'] = diagnostics
+         self.info_pub.publish(String(data=json.dumps(record)))
+ 
+@@ -582,6 +598,7 @@
+                     arm.velocity = first_step[11:17].tolist()
+                     self.arm_pub.publish(arm); self.base_pub.publish(base)
+                     self.sent_command = True
++                    self._last_rejection_reason = None
+                     if not info.get('reference_wait_hold'):
+                         # A validated hold renews actuator authority, but does
+                         # not certify tracking alignment to a recovery curve.

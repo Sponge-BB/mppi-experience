@@ -1,0 +1,479 @@
+{
+  "scope": "actual stationary shadow only; no actuator nodes or commands",
+  "reason": "observation_complete",
+  "duration_s": 42.365010223000354,
+  "counts": {
+    "raw": 424,
+    "joints": 7964,
+    "odom": 389,
+    "status": 360,
+    "unhealthy": 16,
+    "filtered": 356,
+    "background": 1,
+    "healthy": 271
+  },
+  "status_counts": {
+    "waiting_real_state": 1,
+    "waiting_stationary_anchor": 5,
+    "filtered_not_received": 1,
+    "static_not_received": 71,
+    "dynamic_not_received": 14,
+    "shadow_solve_deadline_missed": 81,
+    "shadow_candidate_only_not_validated_for_execution": 163,
+    "waiting_valid_cloud_inputs": 3,
+    "shadow_inputs_stale_after_solve": 21
+  },
+  "last_status": {
+    "ros_stamp": 1793938317.701396,
+    "planning_snapshot_stamp": 1793938317.5961154,
+    "monotonic_elapsed": 36.01443836699946,
+    "mode": "shadow_only",
+    "status": "shadow_solve_deadline_missed",
+    "ready_for_actuation": false,
+    "hardware_execution_eligible": false,
+    "commands_executed": false,
+    "original_filter_shadow_only": true,
+    "collision_query_sources": [
+      "filtered_cloud",
+      "static_cloud",
+      "dynamic_cloud"
+    ],
+    "raw_cloud_role": "required_fresh_input_and_coverage_diagnostic_only",
+    "namespace": "/standby_trial_20261106_stationary_07",
+    "sources": {
+      "odom": "/standby_trial_20261105_feedback_02/sensors/odom",
+      "joints": "/standby_trial_20261105_feedback_02/sensors/joint_states",
+      "raw_cloud": "/standby_trial_20261105_feedback_02/sensors/lidar_pcl2",
+      "filtered_cloud": "/standby_trial_20261106_stationary_07/perception/filtered_points",
+      "dynamic_cloud": "/standby_trial_20261106_stationary_07/perception/dynamic_points",
+      "static_cloud": "/standby_trial_20261106_stationary_07/perception/background",
+      "perception_health": "/standby_trial_20261106_stationary_07/perception/dynamic_obstacle_tracker/perception_healthy"
+    },
+    "errors": {},
+    "input_transport_latency_s": {
+      "joints": 0.005515575408935547,
+      "odom": 0.017289400100708008,
+      "raw_cloud": 0.12449407577514648,
+      "perception_health": 3.6716461181640625e-05,
+      "filtered_cloud": 0.12145400047302246,
+      "static_cloud": 0.21489334106445312,
+      "dynamic_cloud": 0.126298189163208
+    },
+    "clouds": {
+      "raw_cloud": {
+        "stamp": 1793938317.4449325,
+        "frame": "standby_feedback_02_odom",
+        "points": 4000
+      },
+      "filtered_cloud": {
+        "stamp": 1793938317.4449325,
+        "frame": "standby_feedback_02_odom",
+        "points": 4000
+      },
+      "static_cloud": {
+        "stamp": 1793938289.244912,
+        "frame": "standby_feedback_02_odom",
+        "points": 15000
+      },
+      "dynamic_cloud": {
+        "stamp": 1793938317.4449325,
+        "frame": "standby_feedback_02_odom",
+        "points": 0
+      }
+    },
+    "near_arm_raw_diagnostic": null,
+    "cloud_callback_profiles": {
+      "raw_cloud": {
+        "callback_ros_stamp": 1793938317.5512104,
+        "source": "raw_cloud",
+        "width": 19412,
+        "height": 1,
+        "wire_bytes": 310592,
+        "decode_ms": 3.580065998903592,
+        "tf_lookup_ms": 7.210726000266732,
+        "transform_ms": 1.1411610012146411,
+        "surface_ms": 6.1315830007515615,
+        "lock_wait_ms": 0.005087998943054117,
+        "message_stamp": 1793938317.4449325,
+        "age_at_callback_entry_s": 0.1062779426574707,
+        "invalid_zero_returns_removed": 3458,
+        "accepted": true,
+        "callback_total_ms": 18.265847998918616,
+        "age_at_callback_exit_s": 0.12454080581665039
+      },
+      "filtered_cloud": {
+        "callback_ros_stamp": 1793938317.5500002,
+        "source": "filtered_cloud",
+        "width": 6044,
+        "height": 1,
+        "wire_bytes": 96704,
+        "decode_ms": 1.841538998633041,
+        "tf_lookup_ms": 10.00878000013472,
+        "transform_ms": 0.7663960004720138,
+        "surface_ms": 3.6473649997788016,
+        "lock_wait_ms": 0.00409600033890456,
+        "message_stamp": 1793938317.4449325,
+        "age_at_callback_entry_s": 0.10506772994995117,
+        "accepted": true,
+        "callback_total_ms": 16.421940999862272,
+        "age_at_callback_exit_s": 0.12148427963256836
+      },
+      "static_cloud": {
+        "callback_ros_stamp": 1793938289.445674,
+        "source": "static_cloud",
+        "width": 15000,
+        "height": 1,
+        "wire_bytes": 180000,
+        "decode_ms": 0.3252589995099697,
+        "tf_lookup_ms": 0.0,
+        "transform_ms": 0.0,
+        "surface_ms": 13.724849999562139,
+        "lock_wait_ms": 0.004608999006450176,
+        "message_stamp": 1793938289.244912,
+        "age_at_callback_entry_s": 0.20076203346252441,
+        "accepted": true,
+        "callback_total_ms": 14.174723000905942,
+        "age_at_callback_exit_s": 0.21492290496826172
+      },
+      "dynamic_cloud": {
+        "callback_ros_stamp": 1793938317.5707438,
+        "source": "dynamic_cloud",
+        "width": 0,
+        "height": 1,
+        "wire_bytes": 0,
+        "decode_ms": 0.24532099996577017,
+        "tf_lookup_ms": 0.0,
+        "transform_ms": 0.0,
+        "surface_ms": 0.03641699913714547,
+        "lock_wait_ms": 0.003647999619715847,
+        "message_stamp": 1793938317.4449325,
+        "age_at_callback_entry_s": 0.12581133842468262,
+        "accepted": true,
+        "callback_total_ms": 0.5232830008026212,
+        "age_at_callback_exit_s": 0.12632966041564941
+      }
+    },
+    "input_age_s": {
+      "raw_cloud": 0.25646352767944336,
+      "filtered_cloud": 0.25646352767944336,
+      "static_cloud": 28.456484079360962,
+      "dynamic_cloud": 0.25646352767944336
+    },
+    "odom_stamp": 1793938317.5443342,
+    "joint_stamp": 1793938317.5832937,
+    "joint_velocity_source": "bounded_named_position_difference_rad_per_s",
+    "odometry_validation": {
+      "accepted_samples": 360,
+      "requires_restart": false,
+      "fault": null,
+      "validation": "direct_pose_and_measurement_receipt_continuity"
+    },
+    "base_height_convention": "ground_z_zero_odom_z_not_added",
+    "odom_z_ignored": 0.115,
+    "state": [
+      -0.25592850468259876,
+      -0.02484655484662045,
+      0.00345464897476834,
+      0.002811190825261784,
+      0.00319856082326815,
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "anchor": [
+      -0.2558749438587829,
+      -0.0067990225988862705,
+      -0.00018846153469167384
+    ],
+    "arm_reference": [
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977
+    ],
+    "proposed_controls": null,
+    "solve_ms": 108.36169799949857,
+    "kernel_diagnostics": {
+      "mode": "standby_extension",
+      "intervention": false,
+      "nominal_external_min_gap": 0.13,
+      "structured_candidates": 15,
+      "structured_labels": [
+        [
+          "reference",
+          "hold"
+        ],
+        [
+          "reference",
+          "forward"
+        ],
+        [
+          "reference",
+          "reverse"
+        ],
+        [
+          "reference",
+          "turn_left"
+        ],
+        [
+          "reference",
+          "turn_right"
+        ],
+        [
+          "reference",
+          "curve_left"
+        ],
+        [
+          "reference",
+          "curve_right"
+        ],
+        [
+          "posture_0",
+          "hold"
+        ],
+        [
+          "posture_0",
+          "forward"
+        ],
+        [
+          "posture_0",
+          "reverse"
+        ],
+        [
+          "posture_0",
+          "turn_left"
+        ],
+        [
+          "posture_0",
+          "turn_right"
+        ],
+        [
+          "posture_0",
+          "curve_left"
+        ],
+        [
+          "posture_0",
+          "curve_right"
+        ],
+        [
+          "previous",
+          "previous"
+        ]
+      ],
+      "structured_valid": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "structured_costs": [
+        0.01055289326221754,
+        0.03354254768645453,
+        0.030259832490568326,
+        0.035002356386645735,
+        0.029805115776472456,
+        0.05058656133520961,
+        0.04625889959971555,
+        0.012254378443468498,
+        0.03524403286770548,
+        0.03196131767181928,
+        0.03670384156789669,
+        0.03150660095772341,
+        0.052288046516460567,
+        0.047960384780966495,
+        0.01059259156063639
+      ],
+      "structured_first_base_commands": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.08,
+          0.0
+        ],
+        [
+          -0.08,
+          0.0
+        ],
+        [
+          0.0,
+          0.24
+        ],
+        [
+          0.0,
+          -0.24
+        ],
+        [
+          0.06,
+          0.18
+        ],
+        [
+          0.06,
+          -0.18
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.08,
+          0.0
+        ],
+        [
+          -0.08,
+          0.0
+        ],
+        [
+          0.0,
+          0.24
+        ],
+        [
+          0.0,
+          -0.24
+        ],
+        [
+          0.06,
+          0.18
+        ],
+        [
+          0.06,
+          -0.18
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "random_samples": 4,
+      "sample_dimensions": 8,
+      "noise_sigma": [
+        0.012,
+        0.08,
+        0.035,
+        0.035,
+        0.035,
+        0.035,
+        0.035,
+        0.035
+      ],
+      "noise_rho": 0.75,
+      "lambda_temperature": 0.15,
+      "noise_rms_per_coordinate": [
+        0.01397424395439225,
+        0.13262401192822879,
+        0.055988972463335236,
+        0.04611251643510308,
+        0.044822651274332645,
+        0.05794599019449058,
+        0.04817138783317252,
+        0.038544540956650906
+      ],
+      "base_noise_rms": [
+        0.01397424395439225,
+        0.13262401192822879
+      ],
+      "random_valid": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "feasible": 15,
+      "candidates": 20,
+      "standby_anchor": [
+        -0.2558749438587829,
+        -0.0067990225988862705,
+        -0.00018846153469167384
+      ],
+      "selection": "exponential_mean",
+      "selected_family": [
+        "reference",
+        "hold"
+      ],
+      "weights": [
+        1.0
+      ],
+      "weighted_pool_costs": [
+        0.01055289326221754
+      ],
+      "weighted_mean_valid": true,
+      "cost": 0.01055289326221754,
+      "min_gap": 0.0005227712326907324,
+      "external_min_gap": 0.13,
+      "arm_motion": 0.0,
+      "selected_first_base_command": [
+        0.0,
+        0.0
+      ],
+      "selected_base_displacement_m": 0.0002583737911096337,
+      "selected_base_yaw_change_rad": 0.002001768339544796
+    },
+    "limitations": [
+      "model_geometry_not_hardware_validated",
+      "surface_cloud_not_known_free_space",
+      "original_passthrough_cropbox_not_motion_certified",
+      "cloud_downsampling_not_collision_certificate",
+      "no_actuator_publishers_or_execution_mode"
+    ]
+  },
+  "clouds": {
+    "raw": {
+      "count": 19503,
+      "stamp": 1793938319.444834,
+      "frame": "standby_feedback_02_livox_frame"
+    },
+    "filtered": {
+      "count": 5916,
+      "stamp": 1793938317.745036,
+      "frame": "standby_feedback_02_livox_frame"
+    },
+    "background": {
+      "count": 15000,
+      "stamp": 1793938289.244912,
+      "frame": "standby_feedback_02_odom"
+    }
+  },
+  "joints": {
+    "stamp": 1793938317.7833383,
+    "q": [
+      -0.23212879051524585,
+      -0.03330088212805181,
+      0.006754424205218055,
+      0.02741912254883092,
+      0.4934220328313169,
+      -0.020629791758572977
+    ]
+  },
+  "maximum_tree_rss_mib": 585.26171875,
+  "minimum_available_mib": 3272.8671875,
+  "per_process_address_space_limit_mib": 768,
+  "memory_floor_mib": 3072,
+  "can_tx_before": 0,
+  "can_tx_after": 0,
+  "actuator_publishers": [],
+  "owned_processes_remaining": [],
+  "hardware_commands_sent": false
+}

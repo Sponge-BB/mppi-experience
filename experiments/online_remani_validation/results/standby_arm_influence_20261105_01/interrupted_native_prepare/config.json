@@ -1,0 +1,206 @@
+{
+  "schema": 1,
+  "created": "2026-11-05T08:17:26.223016+00:00",
+  "group": "B_active",
+  "enabled": true,
+  "coupled": true,
+  "seed": 11,
+  "duration": 24.0,
+  "profile": false,
+  "profile_timings_are_not_benchmark": false,
+  "q_start": [
+    0.0,
+    1.9198621771937625,
+    -1.0471975511965976,
+    0.0,
+    0.5235987755982988,
+    0.0
+  ],
+  "postures": [
+    [
+      0.0,
+      2.443460952792061,
+      -1.0471975511965976,
+      0.0,
+      0.2617993877991494,
+      0.0
+    ]
+  ],
+  "goal": null,
+  "arm_limits": {
+    "lower": [
+      -2.618,
+      -0.05,
+      -2.697,
+      -1.832,
+      -1.25,
+      -3.14
+    ],
+    "upper": [
+      2.618,
+      3.14,
+      0.05,
+      1.832,
+      1.25,
+      3.14
+    ],
+    "velocity": [
+      0.45,
+      0.45,
+      0.45,
+      0.45,
+      0.45,
+      0.45
+    ],
+    "acceleration": [
+      0.9,
+      0.9,
+      0.9,
+      0.9,
+      0.9,
+      0.9
+    ]
+  },
+  "urdf_path": "/home/l/remani_ws/src/my_description/robot/mm.urdf",
+  "parameters_path": "/home/l/remani_ws/experiments/online_remani_validation/results/standby_arm_influence_20261105_01/native_piper/parameters.yaml",
+  "scene_definition": {
+    "schema": "standby_arm_scene_v1",
+    "scene": "standby_arm_moving_obstacle",
+    "name": "待机伸展机械臂与移动高位圆柱",
+    "duration_s": 24.0,
+    "time_origin": "independent experiment start",
+    "appearance_s": 2.0,
+    "arena": [
+      -1.2,
+      1.2,
+      -1.4,
+      1.4
+    ],
+    "navigation_goal": null,
+    "base_constraint": "free",
+    "q_start": [
+      0.0,
+      1.9198621771937625,
+      -1.0471975511965976,
+      0.0,
+      0.5235987755982988,
+      0.0
+    ],
+    "posture_prior": [
+      0.0,
+      2.443460952792061,
+      -1.0471975511965976,
+      0.0,
+      0.2617993877991494,
+      0.0
+    ],
+    "actors": [
+      {
+        "id": 1,
+        "x": 0.16,
+        "y": 0.65,
+        "vx": 0.0,
+        "vy": -0.08,
+        "r": 0.13,
+        "z_min": 1.05,
+        "z_max": 1.3
+      }
+    ],
+    "witness": {
+      "outbound_start_s": 4.0,
+      "transition_duration_s": 2.0,
+      "return_start_s": 16.0,
+      "role": "offline arm-only feasibility witness; never a control command"
+    },
+    "input_contract": "Only synthetic measured cloud enters the controller",
+    "comparison": [
+      "native_piper",
+      "current_unmodified",
+      "current_standby_extension"
+    ],
+    "scope": "native DH 67-sphere numerical plant; no hardware or mesh claim"
+  },
+  "horizon": 20,
+  "random_samples": 6,
+  "rate_hz": 5.0,
+  "deadline_s": 0.4,
+  "geometry": "native DH 47 fixed +20 moving spheres; URDF limits; not mesh equivalence",
+  "actuator": "atomic base and six joint velocity command; 250ms lease; common stop",
+  "predictor": "bounded lagged base and acceleration-limited joints; 50ms collision samples",
+  "slow_joint_acceleration_boundary": "explicit zero approximation; effort never used as acceleration",
+  "mode": "native_piper",
+  "label": "native_piper",
+  "scene": {
+    "schema": "standby_arm_scene_v1",
+    "scene": "standby_arm_moving_obstacle",
+    "name": "待机伸展机械臂与移动高位圆柱",
+    "duration_s": 24.0,
+    "time_origin": "independent experiment start",
+    "appearance_s": 2.0,
+    "arena": [
+      -1.2,
+      1.2,
+      -1.4,
+      1.4
+    ],
+    "navigation_goal": null,
+    "base_constraint": "free",
+    "q_start": [
+      0.0,
+      1.9198621771937625,
+      -1.0471975511965976,
+      0.0,
+      0.5235987755982988,
+      0.0
+    ],
+    "posture_prior": [
+      0.0,
+      2.443460952792061,
+      -1.0471975511965976,
+      0.0,
+      0.2617993877991494,
+      0.0
+    ],
+    "actors": [
+      {
+        "id": 1,
+        "x": 0.16,
+        "y": 0.65,
+        "vx": 0.0,
+        "vy": -0.08,
+        "r": 0.13,
+        "z_min": 1.05,
+        "z_max": 1.3
+      }
+    ],
+    "witness": {
+      "outbound_start_s": 4.0,
+      "transition_duration_s": 2.0,
+      "return_start_s": 16.0,
+      "role": "offline arm-only feasibility witness; never a control command"
+    },
+    "input_contract": "Only synthetic measured cloud enters the controller",
+    "comparison": [
+      "native_piper",
+      "current_unmodified",
+      "current_standby_extension"
+    ],
+    "scope": "native DH 67-sphere numerical plant; no hardware or mesh claim"
+  },
+  "navigation_goal": null,
+  "standby_anchor": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "warmup_s": 7.0,
+  "lidar_offset": [
+    0.28,
+    0.0,
+    0.002
+  ],
+  "physical_base_constraint": "free differential-drive dynamics, no zero override",
+  "scope": "live localhost ROS, shared free whole-body numerical plant; separate standby extension",
+  "controller_status": "unaltered existing algorithm",
+  "parameter_source": "shared exported current Piper configuration with only declared common initial-state/idle wiring overrides"
+}

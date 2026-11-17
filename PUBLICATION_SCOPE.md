@@ -1,3 +1,5 @@
+2026-11-17 增量补充：保留远端所有旧路径，当前实车源码位于src；新增实验材料只补充脚本、报告、关键CSV/JSON和图/GIF及必要小型回归输入。原始大体积bag、逐帧地图数组、重复runtime/devel/build和缓存仍留本机。当前版本和实车未验收边界见CURRENT_PROJECT.md，增量清单见UPLOAD_MANIFEST_20261117.json。旧UPLOAD_MANIFEST.json与下列说明属于上次发布快照。
+
 # 本次公开上传范围
 
 目标：`Sponge-BB/mppi-experience`，`main` 分支。

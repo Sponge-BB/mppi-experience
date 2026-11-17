@@ -1,0 +1,62 @@
+{
+  "scope": "第1目标转场，第2目标动态避障，按用户确认分开分析",
+  "onsite": {
+    "goal2_entry": "起步后进入路径",
+    "goal2_exit": "停车后已离开路径",
+    "result": "动态避障未成功，机器人直接停车"
+  },
+  "goal_1": {
+    "receive_local": "2026-11-16 09:31:08.090",
+    "planner_finish_local": "2026-11-16 09:31:38.652"
+  },
+  "goal_2": {
+    "receive_local": "2026-11-16 09:31:53.593",
+    "planner_finish": false,
+    "initial_abort_local": "09:31:55.382",
+    "initial_abort_reason": "Live LiDAR input exceeded 750ms",
+    "dynamic_abort_local": "09:32:04.010",
+    "resume_reference_local": "09:32:36.868",
+    "continuous_zero_command_s": 32.9487412,
+    "final_abort_local": "09:32:49.420",
+    "target_abandoned_source_local": "09:32:49.588"
+  },
+  "confirmed_findings": [
+    {
+      "issue": "Motion prediction interface remained empty",
+      "evidence": "All 1795 goal2 dynamic_points messages had zero points; motion_qualified_track_count always 0. Residuals 93–228, clusters 2–11 and confirmed tracks 2–10 existed; health true.",
+      "boundary": "No per-track rejection-reason telemetry. Cannot identify the exact failing motion predicate or claim no LiDAR returns."
+    },
+    {
+      "issue": "Moving repair waits until activation, then requires future activation lead",
+      "evidence": "planner_manager.cpp:551–555 sleeps until trajectory_start_time for successful have_local_traj; remani_replan_fsm.cpp:3392–3400 rejects moving repair when remaining lead <20ms. Three measured repairs ~709.8/700.9/740.9ms rejected late.",
+      "boundary": "Some measured wall time can be intentional wait, not all compute. Runtime provenance/code audit is separately saved."
+    },
+    {
+      "issue": "Slow and fast layers used different trajectory phase and feedback ages",
+      "evidence": "At dynamic stop, slow phase7.62484 equals wall-clock elapsed; controller phase6.27817, latest fast phase6.24245. Slow odom cached age818ms; fast before-delivery base82.6ms/joints18.6ms/map243.7ms fresh.",
+      "boundary": "Exact failed internal progress freshness/match condition not directly recorded. Shared synchronous callbacks and >500ms calls support callback staleness mechanism."
+    },
+    {
+      "issue": "Fast navigation stopped after native reference cancellation",
+      "evidence": "Approach interval had27 delivered nominal commands and no MPPI deadline rejection; native abort followed by ~32.95s zero commands. Final failed recovery discarded goal and entered WAIT_TARGET.",
+      "boundary": "Delivered nominal commands do not prove a successful dynamic bypass or infeasibility of all alternatives."
+    }
+  ],
+  "data_coverage": {
+    "core": "09:27:38.989–09:34:55.111",
+    "sparse_mapping_input": "09:27:49.150–09:33:34.617",
+    "geometry_stop": "128MiB configured bound; covers all three second-goal aborts",
+    "all_bags_finalized": true
+  },
+  "runtime_code_modified": false,
+  "robot_control_published_by_assistant": false,
+  "evidence_files": [
+    "analysis/goal2_timeline.json",
+    "analysis/goal2_perception.json",
+    "analysis/goal2_control.json",
+    "analysis/goal2_handoff_code_audit.json",
+    "recording_closed.json",
+    "bag_coverage.json",
+    "analysis/goal2_source_findings.json"
+  ]
+}

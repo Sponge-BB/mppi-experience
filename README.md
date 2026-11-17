@@ -1,5 +1,17 @@
 # REMANI + MPPI 实验工程
 
+## 2026-11-17 当前实车工程与新增实验
+
+本次将 l 端当前 REMANI＋MPPI 源码同步至 `src/`，补充上次发布后缺失的实验脚本、报告、关键数值数据和图/GIF；保留已有目录、文件与提交历史。
+
+- [当前版本、验证范围与未解决问题](CURRENT_PROJECT.md)
+- [本轮离线修改与回退说明](experiments/online_remani_validation/results/repair_20261117-120602/RESULTS.txt)
+- [机械臂前方长方形障碍：仿真对照播放器](experiments/online_remani_validation/results/arm_box_sim_20261114-210347/report/comparison.html)
+- [MPPI前缀保留的后续仿真对照](experiments/online_remani_validation/results/arm_box_refresh_20261115-160051/report/comparison.gif)
+- [本次增量文件与SHA256](UPLOAD_MANIFEST_20261117.json)
+
+当前版本为 `20261117-125232-planar-motion-surface`；仅离线验证通过，实车导航卡顿、连续动态跟踪和快慢层绕行效果尚未整体验收。新增材料不含原始大体积录包、逐帧地图数组与重复构建缓存，原件留在本机；远端已有历史资料没有删除。下方旧更新与结果仍保留其原始结论和限制。
+
 当前 REMANI 移动机械臂工程，以及固定机械臂、底盘 MPPI / CBF-QP 的历次算法实验归档。
 这是工作空间当前文件快照，不是原版 REMANI 仓库，也不表示所有历史版本都通过验收。
 

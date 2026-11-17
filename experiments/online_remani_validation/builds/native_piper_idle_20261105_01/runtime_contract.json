@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "scope": "Runtime wiring only; not source code modifications; runner must publish no goal.",
+  "binaries": {
+    "remani_planner_node": "/home/l/remani_ws/experiments/online_remani_validation/builds/native_piper_idle_20261105_01/build/remani_planner_node",
+    "mm_controller_node": "/home/l/remani_ws/experiments/online_remani_validation/builds/native_piper_idle_20261105_01/build/mm_controller_node"
+  },
+  "planner_remaps": {
+    "~odom_world": "/odom",
+    "~joint_state": "/mm/joint_states",
+    "~gripper_state": "/mm/mani/gripper_state",
+    "~planning/trajectory": "/planning/trajectory",
+    "~planning/start": "/planning/start",
+    "~planning/finish": "/planning/finish",
+    "~planning/data_display": "/planning/data_display",
+    "~grid_map/odom": "/odom",
+    "~grid_map/cloud": "/sim/raw_cloud",
+    "~gripper_cmd": "/mm_controller_node/gripper_cmd"
+  },
+  "controller_remaps": {
+    "~odom": "/odom",
+    "~joint_states": "/mm/joint_states",
+    "~planning/trajectory": "/planning/trajectory",
+    "~joint_cmd": "/mm_controller_node/joint_cmd"
+  },
+  "shared_required_parameters": {
+    "mm/mobile_base_dof": 2,
+    "mm/manipulator_dof": 6,
+    "fsm/target_type": 1,
+    "fsm/init_state": "[x_initial, y_initial, q1_deg,...,q6_deg]",
+    "fsm/init_gripper_close": false,
+    "fsm/capture_startup_standby": false
+  },
+  "native_parameter_sources": [
+    "source/mm_remani_planner/plan_manage/config/piper_param.yaml",
+    "source/mm_remani_planner/plan_manage/config/remani_planner_param.yaml",
+    "source/mm_remani_planner/plan_manage/config/exp0_param.yaml",
+    "source/mm_remani/launch/piper_advanced_param.xml"
+  ],
+  "sensor_contract": {
+    "joint_state": "Exactly six entries in native joint1..joint6 order; radians and rad/s. Native parser uses indices, not name lookup.",
+    "odom": "world frame pose; body frame twist; correct timestamp; configured remapping shared by both nodes.",
+    "cloud": "PointCloud2 with true cloud frame and stamp; grid_map/pose_type=2; synchronized odometry; TF world to cloud frame.",
+    "clock": "Same monotonic /clock and use_sim_time=true as comparator."
+  },
+  "car_cmd_type": "geometry_msgs/Twist",
+  "car_cmd_encoding": {
+    "linear.x": "desired x position in world",
+    "linear.y": "desired y position in world",
+    "linear.z": "desired base yaw",
+    "angular.x": "desired vx in world",
+    "angular.y": "desired vy in world",
+    "angular.z": "original baseline publishes zero; not a sampled MPC yaw-rate"
+  },
+  "car_cmd_warning": "Not a normal velocity Twist; use a tracking adaptor before the shared free differential-drive plant.",
+  "joint_cmd_type": "control_msgs/JointTrajectoryControllerState",
+  "joint_cmd_encoding": {
+    "joint_names": "not populated in this baseline; native six-joint order",
+    "desired.positions": "desired q in radians",
+    "desired.velocities": "desired dq in rad/s",
+    "desired.effort": "trajectory joint acceleration, inherited original wire encoding; not a measured acceleration sensor"
+  },
+  "idle_evidence": {
+    "planner_wait": "mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:152; without have_target remains WAIT_TARGET",
+    "planner_collision_skip": "mm_remani_planner/plan_manage/src/remani_replan_fsm.cpp:345; immediately returns for WAIT_TARGET or traj_id<=0",
+    "controller_hold": "mm_controller/src/mm_controller_fsm.cpp:269; outputs stay pose and zero joint velocity",
+    "controller_startup": "mm_controller/src/mm_controller_fsm.cpp:58; initial arm comes from configured fsm/init_state unless capture_startup_standby enabled"
+  },
+  "free_plant_requirement": "No simulator override may force base v/w or q to zero. Native held position is the controller output; each side must retain freedom to move if its actual commands change.",
+  "no_mppi_in_A": true,
+  "no_source_patches": true
+}

@@ -1,0 +1,288 @@
+{
+  "scope": "Prescribed arm-only offline feasibility witnesses, not MPPI results: no optimization, ESDF/map acceptance, 95ms deadline claim, ROS, hardware, or mesh certification.",
+  "initial_state": "Q_START and zero base/joint velocities; each run independently holds until its recorded trigger, not a replay of prior MPPI actions.",
+  "policy": "10Hz: u_arm=clip(1.8*(posture_0-q)-0.2*dq,+/-vmax); goal=kernel.position_target(measured_state,u); base target always zero, no physical base lock.",
+  "feedback": "Actual saved plant state delayed 20ms; no state relabeling, additional scheduling jitter or observation-to-action solve delay.",
+  "integration_step_s": 0.005,
+  "measurement_delay_s": 0.02,
+  "command_watchdog_s": 0.3,
+  "csv_period_s": 0.05,
+  "audit": "Unmodified StandbySimulator.audit every5ms: current67 physical spheres, arena walls, analytic finite-height cylinder, joint q/dq/ddq limits, current self/base-arm/ground model.",
+  "source_hashes": {
+    "experiments/online_remani_validation/results/standby_runtime_followup_20261106/arm_response_witness/run_witness.py": "3888c6f4b46f27f3dc02500151330504a55c1fa68c1e42c9ec954f710b67c6e8",
+    "src/mm_remani/scripts/standby_simulator.py": "3bb8399588cb3c7d76756b71b8ec9ada5f3112d755f336efe28f81d148172917",
+    "src/mm_remani/scripts/mppi/active_arm_model.py": "86751c99675de0dc9a6144c804e4203dd57cf3de06158578e510fe161ae2dd97",
+    "src/mm_remani/scripts/mppi/active_arm_mppi.py": "8ebfe625ba84813045d27fe0c2502b9da4f62551b342d5448a06af5327be18f8",
+    "src/mm_remani/config/mppi_shoulder_wrist_proxy.json": "3359bee77a77a58150da6741f0de242a2f44b22e618b0db22bbbe84266c00d68",
+    "src/my_description/robot/mm.urdf": "a60563d176db315181fd2aa11d5e61a9aa3f4722ff5d96d75bdfdf3325941069",
+    "experiments/online_remani_validation/results/standby_runtime_followup_20261106/fast_zero_s11/planner_params.yaml": "a832b54d2a431803108020a0c4e1080123a70e98252a674b581075e442cce3e6",
+    "experiments/online_remani_validation/results/standby_runtime_followup_20261106/fast_zero_s11/experiment.json": "1f8311530670b5dc570b46fc135e56181a2a2ef8cc078c90000f3d43bfd145f9",
+    "experiments/online_remani_validation/results/standby_runtime_followup_20261106/fast_zero_s11/dynamic_observations.jsonl": "4589bd452f58ab334c7af370afe869c47e8701d0af299e07cf9f03d143cb9c43",
+    "experiments/online_remani_validation/results/standby_runtime_followup_20261106/fast_zero_s11/mppi_status.jsonl": "24f002844dbab9dec8791b3990e8ade5de0fc75ba197f2659953d58ba1e9bc40"
+  },
+  "controller_profile": {
+    "rate_hz": 10.0,
+    "deadline_s": 0.095,
+    "horizon": 8,
+    "random_samples": 4,
+    "base_limits": {
+      "vmax": 0.05,
+      "wmax": 0.15,
+      "accel": 0.1,
+      "angular_accel": 0.3,
+      "track": 0.37,
+      "wheel_v": 0.2296,
+      "wheel_a": 0.2975
+    },
+    "arm_velocity": [
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15,
+      0.15
+    ],
+    "arm_acceleration": [
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35,
+      0.35
+    ],
+    "postures": [
+      [
+        0.0,
+        2.4434609528,
+        -1.0471975512,
+        0.0,
+        0.2617993878,
+        0.0
+      ]
+    ],
+    "standby": {}
+  },
+  "cases": {
+    "first_dynamic_received": {
+      "trigger": {
+        "elapsed_s": 2.365000000000009,
+        "line": 35,
+        "file": "dynamic_observations.jsonl",
+        "received_ros_time": 1005.004999999,
+        "source_ros_time": 1004.98,
+        "snapshot_header": [
+          3.0,
+          1.0,
+          93.0,
+          1004.955,
+          1.0,
+          42.0,
+          42.0,
+          50.0,
+          -1.05,
+          -1.05,
+          0.0,
+          0.05,
+          67.0,
+          38.0,
+          47.0,
+          0.35,
+          2.0,
+          1004.955,
+          1004.98,
+          1.0,
+          1.0,
+          0.03,
+          1.0,
+          1.0,
+          1004.929999999,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          47.0,
+          46.0,
+          46.0
+        ],
+        "observed_points": 38
+      },
+      "first_command_elapsed_s": 2.365,
+      "completed": true,
+      "reason": "completed",
+      "elapsed_s": 24.0,
+      "audit_samples": 4801,
+      "csv_rows": 481,
+      "min_external_gap_m": 0.05524649514652154,
+      "min_external_gap_elapsed_s": 9.200000000000001,
+      "min_configuration_gap_m": 0.00299999999999985,
+      "min_joint_position_margin_rad": 0.35,
+      "max_abs_joint_velocity_rad_s": [
+        0.0,
+        0.1337055386930145,
+        4.795248051116866e-12,
+        0.0,
+        0.13370553866169332,
+        0.0
+      ],
+      "max_abs_joint_acceleration_rad_s2": [
+        0.0,
+        0.35,
+        7.230327447871332e-11,
+        0.0,
+        0.35,
+        0.0
+      ],
+      "max_arm_change_deg": 30.00000000045359,
+      "max_base_displacement_m": 0.0,
+      "max_base_yaw_rad": 0.0,
+      "commands": 217,
+      "final_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.443460952799978,
+        -1.0471975511999891,
+        0.0,
+        0.2617993878000027,
+        0.0,
+        0.0,
+        4.437076775890067e-14,
+        -2.2204460492503093e-14,
+        0.0,
+        -5.5511042790003506e-15,
+        0.0
+      ],
+      "final_posture_error_deg": [
+        0.0,
+        -1.2722218725854068e-12,
+        6.233887175668493e-13,
+        0.0,
+        1.5584717939171232e-13,
+        0.0
+      ],
+      "first_violation": null,
+      "trajectory_csv": "first_dynamic_received.csv"
+    },
+    "first_posture_delivery": {
+      "trigger": {
+        "elapsed_s": 7.039999999999964,
+        "line": 94,
+        "file": "mppi_status.jsonl",
+        "received_ros_time": 1009.679999999,
+        "selected_family": [
+          "posture_0",
+          "hold"
+        ],
+        "selection": "exponential_mean"
+      },
+      "first_command_elapsed_s": 7.04,
+      "completed": false,
+      "reason": "collision",
+      "elapsed_s": 8.095,
+      "audit_samples": 1620,
+      "csv_rows": 163,
+      "min_external_gap_m": -4.065640332528986e-05,
+      "min_external_gap_elapsed_s": 8.095,
+      "min_configuration_gap_m": 0.002999999999999864,
+      "min_joint_position_margin_rad": 0.35,
+      "max_abs_joint_velocity_rad_s": [
+        0.0,
+        0.13370549405370322,
+        4.795248051116866e-12,
+        0.0,
+        0.13370549405370347,
+        0.0
+      ],
+      "max_abs_joint_acceleration_rad_s2": [
+        0.0,
+        0.35,
+        7.230327447871332e-11,
+        0.0,
+        0.35,
+        0.0
+      ],
+      "max_arm_change_deg": 6.457354543348838,
+      "max_base_displacement_m": 0.0,
+      "max_base_yaw_rad": 0.0,
+      "commands": 11,
+      "final_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.0325642749438146,
+        -1.0471975511993594,
+        0.0,
+        0.41089667784824796,
+        0.0,
+        0.0,
+        0.13370549405370322,
+        -1.0927370252314934e-12,
+        0.0,
+        -0.13370549405370347,
+        0.0
+      ],
+      "final_posture_error_deg": [
+        0.0,
+        -23.542645457106023,
+        3.6703601024088984e-11,
+        0.0,
+        8.542645456602498,
+        0.0
+      ],
+      "first_violation": {
+        "t": 8.095,
+        "reason": "collision",
+        "external_gap_m": -4.065640332528986e-05,
+        "geometry": {
+          "valid": true,
+          "violations": [],
+          "joint_gaps": {
+            "position": 0.35,
+            "velocity": 0.31629450594629654,
+            "acceleration": 0.8719039021723349
+          },
+          "min_self_gap": 0.002999999999999961,
+          "self_pair": [
+            10,
+            18
+          ],
+          "min_base_arm_gap": 0.15426113921172085,
+          "base_arm_pair": [
+            17,
+            43
+          ],
+          "min_ground_gap": 0.5884033308767198,
+          "scope": "native sampled spheres, disclosed pair exclusions; shoulder/wrist convex support refinement; no external obstacle check"
+        },
+        "state": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.0325642749438146,
+          -1.0471975511993594,
+          0.0,
+          0.41089667784824796,
+          0.0,
+          0.0,
+          0.13370549405370322,
+          -1.0927370252314934e-12,
+          0.0,
+          -0.13370549405370347,
+          0.0
+        ]
+      },
+      "trajectory_csv": "first_posture_delivery.csv"
+    }
+  },
+  "wall_s": 8.24691845200141,
+  "peak_rss_mib": 45.50390625
+}

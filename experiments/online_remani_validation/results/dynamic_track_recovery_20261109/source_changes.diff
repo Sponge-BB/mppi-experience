@@ -1,0 +1,758 @@
+--- before/src/mm_remani_planner/plan_env/include/plan_env/dynamic_point_buffer.h
++++ after/src/mm_remani_planner/plan_env/include/plan_env/dynamic_point_buffer.h
+@@ -6,14 +6,19 @@
+ #include <Eigen/StdVector>
+ 
+ #include <cstdint>
++#include <functional>
+ #include <memory>
+ #include <mutex>
+ #include <string>
++#include <unordered_map>
+ #include <vector>
+ 
+ #include <ros/ros.h>
+ #include <sensor_msgs/PointCloud2.h>
+ #include <tf2_ros/buffer.h>
++
++class DynamicPointBufferTestAccessor;
++class GridMapParallelTestAccessor;
+ 
+ namespace plan_env
+ {
+@@ -73,6 +78,16 @@
+ 
+   bool enabled() const { return enabled_; }
+   DynamicPointSnapshot getSnapshot(const ros::Time &now) const;
++
++  // Called by the serialized mapping writer before its real LiDAR ray
++  // evidence is discarded. Missing IDs retire only after the old observed
++  // surface and position margin have been reobserved free. Empty tracker
++  // messages, elapsed time and occupancy expiry are never clearance evidence.
++  std::size_t recoverObservedTracks(
++      const ros::Time &stamp,
++      const std::function<bool(const Eigen::Vector3d &)> &observed_free,
++      const std::function<bool(const Eigen::Vector3d &)> &observed_occupied = {},
++      double map_resolution = 0.05);
+ 
+   /**
+    * Query the minimum distance from query_position to all obstacle points
+@@ -143,7 +158,13 @@
+   double maxPredictionTime() const { return max_prediction_time_; }
+ 
+ private:
++  friend class ::DynamicPointBufferTestAccessor;
++  friend class ::GridMapParallelTestAccessor;
+   void pointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg);
++  // Caller holds mutex_. Every ID retains its own source epoch even while a
++  // different missing ID prevents publication of the newest observation.
++  void recordObservation(const DynamicPointSnapshot &candidate);
++  void refreshObservationSnapshot();
+ 
+   bool enabled_ = false;
+   std::string topic_ = "/dynamic_points";
+@@ -165,6 +186,18 @@
+ 
+   mutable std::mutex mutex_;
+   DynamicPointSnapshot latest_snapshot_;
++  DynamicPointSnapshot latest_observation_;
++  struct TrackObservation
++  {
++    DynamicPointSnapshot observation;
++    std::vector<ros::Time> free_stamps;
++  };
++  // At most 4 * max_points_ historical surface points and 1M proof samples.
++  // Capacity exhaustion keeps UNKNOWN latched instead of forgetting a track.
++  std::unordered_map<std::uint32_t, TrackObservation> track_history_;
++  bool history_overflow_ = false;
++  double recovery_resolution_ = 0.0;
++  ros::Time last_recovery_stamp_;
+   ros::Time latest_input_stamp_;
+   bool received_observation_ = false;
+ };
+--- before/src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp
++++ after/src/mm_remani_planner/plan_env/src/dynamic_point_buffer.cpp
+@@ -4,6 +4,7 @@
+ #include <cmath>
+ #include <cstring>
+ #include <limits>
++#include <unordered_map>
+ #include <unordered_set>
+ #include <utility>
+ 
+@@ -219,6 +220,183 @@
+   accepted.sequence = previous.sequence + 1;
+   accepted.invalid_reason = accepted.points.empty() ? "no_dynamic_detected" : "";
+   return accepted;
++}
++
++void DynamicPointBuffer::recordObservation(
++    const DynamicPointSnapshot &candidate)
++{
++  if (received_observation_ && candidate.stamp < latest_input_stamp_)
++    return;
++  latest_input_stamp_ = candidate.stamp;
++  latest_observation_ = candidate;
++  received_observation_ = true;
++  if (candidate.has_track_ids && !history_overflow_)
++  {
++    std::unordered_map<std::uint32_t, DynamicPointVector> observed;
++    for (const auto &point : candidate.points)
++      observed[point.track_id].push_back(point);
++    std::size_t retained_points = 0;
++    for (const auto &track : track_history_)
++      if (!observed.count(track.first))
++        retained_points += track.second.observation.points.size();
++    const std::size_t budget = 4u * static_cast<std::size_t>(std::max(1, max_points_));
++    if (retained_points + candidate.points.size() > budget)
++      history_overflow_ = true;
++    else
++      for (auto &track : observed)
++      {
++        auto &history = track_history_[track.first];
++        history.observation.stamp = candidate.stamp;
++        history.observation.receive_time = candidate.receive_time;
++        history.observation.frame_id = candidate.frame_id;
++        history.observation.has_track_ids = history.observation.valid = true;
++        history.observation.points = std::move(track.second);
++        history.free_stamps = std::vector<ros::Time>();
++      }
++  }
++  refreshObservationSnapshot();
++}
++
++void DynamicPointBuffer::refreshObservationSnapshot()
++{
++  if (history_overflow_)
++  {
++    latest_snapshot_.valid = false;
++    latest_snapshot_.invalid_reason = "lost_observation";
++    return;
++  }
++  // Preserve the original fail-closed policy for unidentified old geometry.
++  if (!latest_snapshot_.points.empty() && !latest_snapshot_.has_track_ids)
++  {
++    latest_snapshot_ = applyObservation(latest_snapshot_, latest_observation_);
++    return;
++  }
++  std::unordered_set<std::uint32_t> observed_ids;
++  if (latest_observation_.has_track_ids)
++    for (const auto &point : latest_observation_.points)
++      observed_ids.insert(point.track_id);
++  const TrackObservation *oldest_missing = nullptr;
++  std::size_t missing_points = 0;
++  for (const auto &track : track_history_)
++    if (!observed_ids.count(track.first))
++    {
++      missing_points += track.second.observation.points.size();
++      if (!oldest_missing || track.second.observation.stamp <
++                                 oldest_missing->observation.stamp)
++        oldest_missing = &track.second;
++    }
++  if (!oldest_missing)
++  {
++    DynamicPointSnapshot accepted = latest_observation_;
++    accepted.sequence = latest_snapshot_.sequence + 1;
++    accepted.invalid_reason = accepted.points.empty() ? "no_dynamic_detected" : "";
++    latest_snapshot_ = std::move(accepted);
++    return;
++  }
++
++  // The public schema has a single timestamp. Expose one real source epoch
++  // and keep it invalid whenever other missing epochs exist; private history
++  // retains all IDs, including targets first seen during an earlier loss.
++  DynamicPointSnapshot held = oldest_missing->observation;
++  held.points.clear();
++  for (const auto &track : track_history_)
++    if (!observed_ids.count(track.first) &&
++        track.second.observation.stamp == held.stamp)
++      held.points.insert(held.points.end(), track.second.observation.points.begin(),
++                         track.second.observation.points.end());
++  held.sequence = latest_snapshot_.sequence +
++      (held.stamp != latest_snapshot_.stamp ||
++       held.points.size() != latest_snapshot_.points.size() ? 1 : 0);
++  held.valid = latest_snapshot_.valid && latest_observation_.points.empty() &&
++               held.stamp == latest_snapshot_.stamp &&
++               missing_points == held.points.size();
++  held.invalid_reason = held.valid ? "coasting_observation" : "lost_observation";
++  latest_snapshot_ = std::move(held);
++}
++
++std::size_t DynamicPointBuffer::recoverObservedTracks(
++    const ros::Time &stamp,
++    const std::function<bool(const Eigen::Vector3d &)> &observed_free,
++    const std::function<bool(const Eigen::Vector3d &)> &observed_occupied,
++    double map_resolution)
++{
++  std::lock_guard<std::mutex> lock(mutex_);
++  if (!enabled_ || !received_observation_ || history_overflow_ || !observed_free ||
++      stamp.isZero() || stamp <= last_recovery_stamp_ ||
++      latest_snapshot_.points.empty() || !latest_snapshot_.has_track_ids ||
++      !latest_observation_.has_track_ids ||
++      !std::isfinite(map_resolution) || map_resolution <= 0.0 ||
++      !std::isfinite(position_uncertainty_) || position_uncertainty_ < 0.0 ||
++      !checkSnapshotAge(latest_observation_, stamp, max_age_,
++                        future_stamp_tolerance_).valid)
++    return 0;
++
++  last_recovery_stamp_ = stamp;
++  std::unordered_set<std::uint32_t> observed_ids;
++  for (const auto &point : latest_observation_.points)
++    observed_ids.insert(point.track_id);
++
++  constexpr std::size_t proof_budget = 1000000;
++  const double requested_intervals = std::ceil(2.0 * position_uncertainty_ / map_resolution);
++  if (!std::isfinite(requested_intervals) || requested_intervals > 99.0)
++    return 0;
++  const std::size_t intervals = static_cast<std::size_t>(requested_intervals);
++  const std::size_t axis_samples = intervals + 1;
++  const std::size_t samples_per_point = axis_samples * axis_samples * axis_samples;
++  std::size_t missing_points = 0;
++  for (const auto &track : track_history_)
++    if (!observed_ids.count(track.first))
++      missing_points += track.second.observation.points.size();
++  if (missing_points > proof_budget / samples_per_point)
++    return 0;
++  if (map_resolution != recovery_resolution_)
++  {
++    for (auto &track : track_history_)
++      track.second.free_stamps = std::vector<ros::Time>();
++    recovery_resolution_ = map_resolution;
++  }
++
++  std::vector<std::uint32_t> cleared;
++  for (auto &track : track_history_)
++  {
++    auto &history = track.second;
++    if (observed_ids.count(track.first) || stamp <= history.observation.stamp)
++      continue;
++    if (history.free_stamps.size() != history.observation.points.size() * samples_per_point)
++      history.free_stamps.assign(history.observation.points.size() * samples_per_point, ros::Time(0));
++    bool track_free = true;
++    for (std::size_t i = 0; i < history.observation.points.size(); ++i)
++    {
++      const auto &point = history.observation.points[i];
++      std::size_t sample = 0;
++      for (std::size_t x = 0; x < axis_samples; ++x)
++        for (std::size_t y = 0; y < axis_samples; ++y)
++          for (std::size_t z = 0; z < axis_samples; ++z, ++sample)
++        {
++          const double step = intervals > 0 ? 2.0 * position_uncertainty_ / intervals : 0.0;
++          const Eigen::Vector3d position = point.position +
++              Eigen::Vector3d(step*x-position_uncertainty_,
++                              step*y-position_uncertainty_,
++                              step*z-position_uncertainty_);
++          ros::Time &free_stamp = history.free_stamps[i * samples_per_point + sample];
++          if (observed_occupied && observed_occupied(position))
++            free_stamp = ros::Time(0);
++          else if (observed_free(position))
++            free_stamp = stamp;
++          track_free = track_free && free_stamp > history.observation.stamp &&
++                       (stamp - free_stamp).toSec() <= max_age_;
++        }
++    }
++    if (track_free)
++      cleared.push_back(track.first);
++  }
++  if (cleared.empty())
++    return 0;
++  for (const auto id : cleared)
++    track_history_.erase(id);
++  ++latest_snapshot_.sequence;
++  refreshObservationSnapshot();
++  return cleared.size();
+ }
+ 
+ bool DynamicPointBuffer::predictPosition(
+@@ -567,9 +745,11 @@
+       ROS_WARN_THROTTLE(1.0, "[DynamicPointFlow] Reject out-of-order observation.");
+       return;
+     }
+-    latest_input_stamp_ = candidate.stamp;
+-    latest_snapshot_ = applyObservation(latest_snapshot_, candidate);
+-    received_observation_ = true;
++    recordObservation(candidate);
++    if (history_overflow_)
++      ROS_ERROR_THROTTLE(2.0,
++          "[DynamicPointFlow] Missing-track history capacity exceeded; "
++          "retain lost_observation hold instead of forgetting known geometry.");
+     observation_state = checkSnapshotAge(latest_snapshot_, candidate.receive_time,
+                                          max_age_, future_stamp_tolerance_).invalid_reason;
+     held_age = (candidate.receive_time - latest_snapshot_.stamp).toSec();
+--- before/src/mm_remani_planner/plan_env/src/grid_map.cpp
++++ after/src/mm_remani_planner/plan_env/src/grid_map.cpp
+@@ -1563,7 +1563,17 @@
+               return !md_.static_occupancy_[address] &&
+                      md_.count_hit_[address] == 0 &&
+                      md_.count_hit_and_miss_[address] > 0;
+-            });
++            },
++            [this](const Eigen::Vector3d &position)
++            {
++              if (!position.allFinite() || !isInMap(position))
++                return true;
++              Eigen::Vector3i index;
++              posToIndex(position, index);
++              const int address = toAddress(index);
++              return md_.static_occupancy_[address] ||
++                     md_.count_hit_[address] > 0;
++            }, mp_.resolution_);
+     if (recovered_tracks > 0)
+       ROS_INFO_THROTTLE(
+           1.0,
+--- before/src/mm_remani_planner/plan_env/test/test_dynamic_point_buffer.cpp
++++ after/src/mm_remani_planner/plan_env/test/test_dynamic_point_buffer.cpp
+@@ -2,6 +2,31 @@
+ #include <initializer_list>
+ 
+ #include <plan_env/dynamic_point_buffer.h>
++
++class DynamicPointBufferTestAccessor
++{
++public:
++  static void feed(plan_env::DynamicPointBuffer &buffer,
++                   const plan_env::DynamicPointSnapshot &incoming)
++  {
++    buffer.enabled_ = true;
++    buffer.recordObservation(incoming);
++  }
++
++  static void setMargin(plan_env::DynamicPointBuffer &buffer, double margin)
++  { buffer.position_uncertainty_ = margin; }
++
++  static void setPointBudget(plan_env::DynamicPointBuffer &buffer, int points)
++  { buffer.max_points_ = points; }
++
++  static std::size_t retainedPoints(const plan_env::DynamicPointBuffer &buffer)
++  {
++    std::size_t count = 0;
++    for (const auto &track : buffer.track_history_)
++      count += track.second.observation.points.size();
++    return count;
++  }
++};
+ 
+ namespace
+ {
+@@ -264,6 +289,229 @@
+   EXPECT_EQ(held.stamp, previous.stamp);
+ }
+ 
++TEST(DynamicPointBuffer, FreshEmptyFramesWithoutFreeRaysNeverRetireMissingId)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  for (int i = 1; i <= 20; ++i)
++  {
++    const double stamp = 10. + i * .1;
++    DynamicPointBufferTestAccessor::feed(buffer, observation(stamp, {}));
++    EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(stamp),
++        [](const Eigen::Vector3d &) { return false; }), 0u);
++  }
++  const auto held = buffer.getSnapshot(timeFromSec(12.));
++  EXPECT_FALSE(held.valid);
++  EXPECT_EQ(held.invalid_reason, "lost_observation");
++  EXPECT_EQ(held.stamp, timeFromSec(10.));
++}
++
++TEST(DynamicPointBuffer, ActualFreeSurfaceCoverageRecoversEmptyCurrentObservation)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.5, {}));
++  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.5),
++      [](const Eigen::Vector3d &) { return true; }), 1u);
++  const auto current = buffer.getSnapshot(timeFromSec(10.5));
++  EXPECT_TRUE(current.valid);
++  EXPECT_EQ(current.invalid_reason, "no_dynamic_detected");
++  EXPECT_TRUE(current.points.empty());
++  EXPECT_EQ(current.stamp, timeFromSec(10.5));
++}
++
++TEST(DynamicPointBuffer, PartialRetirementKeepsOtherUnknownIdsThenAcceptsFreshNewId)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1, 2}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.5, {3}));
++  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.5),
++      [](const Eigen::Vector3d &p) { return p.x() < 1.5; }), 1u);
++  auto held = buffer.getSnapshot(timeFromSec(10.5));
++  EXPECT_FALSE(held.valid);
++  ASSERT_EQ(held.points.size(), 1u);
++  EXPECT_EQ(held.points[0].track_id, 2u);
++  EXPECT_EQ(held.stamp, timeFromSec(10.));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.6, {3}));
++  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.6),
++      [](const Eigen::Vector3d &p) { return p.x() > 1.5; }), 1u);
++  const auto current = buffer.getSnapshot(timeFromSec(10.6));
++  EXPECT_TRUE(current.valid);
++  ASSERT_EQ(current.points.size(), 1u);
++  EXPECT_EQ(current.points[0].track_id, 3u);
++  EXPECT_EQ(current.stamp, timeFromSec(10.6));
++}
++
++TEST(DynamicPointBuffer, PositionMarginMustAlsoBeObservedFree)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++      [](const Eigen::Vector3d &p) { return p.x() <= 1.; }), 0u);
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.2),
++      [](const Eigen::Vector3d &p) { return p.x() > 1.; }), 1u);
++  EXPECT_TRUE(buffer.getSnapshot(timeFromSec(10.2)).valid);
++}
++
++TEST(DynamicPointBuffer, OldOrRepeatedFreeEvidenceCannotCompleteClearance)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.),
++      [](const Eigen::Vector3d &) { return true; }), 0u);
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++      [](const Eigen::Vector3d &p) { return p.x() <= 1.; }), 0u);
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++      [](const Eigen::Vector3d &) { return true; }), 0u);
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.6, {}));
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.6),
++      [](const Eigen::Vector3d &p) { return p.x() > 1.; }), 0u);
++  EXPECT_FALSE(buffer.getSnapshot(timeFromSec(10.6)).valid);
++}
++
++TEST(DynamicPointBuffer, StaleTrackerInputCannotBeClearedByNewMapRays)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.6),
++      [](const Eigen::Vector3d &) { return true; }), 0u);
++  EXPECT_FALSE(buffer.getSnapshot(timeFromSec(10.6)).valid);
++}
++
++TEST(DynamicPointBuffer, RealReobservationWinsOverPriorClearanceEvidence)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++      [](const Eigen::Vector3d &p) { return p.x() <= 1.; }), 0u);
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.2, {1}));
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.3),
++      [](const Eigen::Vector3d &) { return true; }), 0u);
++  const auto current = buffer.getSnapshot(timeFromSec(10.3));
++  EXPECT_TRUE(current.valid);
++  ASSERT_EQ(current.points.size(), 1u);
++  EXPECT_EQ(current.points[0].track_id, 1u);
++  EXPECT_EQ(current.stamp, timeFromSec(10.2));
++}
++
++TEST(DynamicPointBuffer, NewHitRevokesOldFreeProofBeforeCombiningSparseScans)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++      [](const Eigen::Vector3d &p) { return p.x() <= 1.; }), 0u);
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.2, {}));
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.2),
++      [](const Eigen::Vector3d &p) { return p.x() > 1.; },
++      [](const Eigen::Vector3d &p) { return p.x() <= 1.; }), 0u);
++  EXPECT_TRUE(buffer.getSnapshot(timeFromSec(10.2)).valid);
++  EXPECT_EQ(buffer.getSnapshot(timeFromSec(10.2)).invalid_reason,
++            "coasting_observation");
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.3, {}));
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.3),
++      [](const Eigen::Vector3d &) { return true; }), 1u);
++}
++
++TEST(DynamicPointBuffer, NewTrackLostDuringEarlierLossCannotDisappearFromHistory)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {2}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.2, {}));
++  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.2),
++      [](const Eigen::Vector3d &p) { return p.x() < 1.5; }), 1u);
++  const auto remaining = buffer.getSnapshot(timeFromSec(10.2));
++  EXPECT_FALSE(remaining.valid);
++  EXPECT_EQ("lost_observation", remaining.invalid_reason);
++  ASSERT_EQ(1u, remaining.points.size());
++  EXPECT_EQ(2u, remaining.points.front().track_id);
++  EXPECT_EQ(timeFromSec(10.1), remaining.stamp);
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.3, {}));
++  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.3),
++      [](const Eigen::Vector3d &p) { return p.x() > 1.5; }), 1u);
++  const auto recovered = buffer.getSnapshot(timeFromSec(10.3));
++  EXPECT_TRUE(recovered.valid);
++  EXPECT_TRUE(recovered.points.empty());
++  EXPECT_EQ(timeFromSec(10.3), recovered.stamp);
++}
++
++TEST(DynamicPointBuffer, EachHistoricalIdRequiresEvidenceNewerThanItsOwnSource)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.2, {2}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.21, {}));
++  // The map scan is within allowed transport skew, but predates track 2.
++  // It can clear track 1 only; track 2 must keep its actual newer epoch.
++  ASSERT_EQ(buffer.recoverObservedTracks(timeFromSec(10.18),
++      [](const Eigen::Vector3d &) { return true; }), 1u);
++  auto held = buffer.getSnapshot(timeFromSec(10.22));
++  EXPECT_FALSE(held.valid);
++  ASSERT_EQ(1u, held.points.size());
++  EXPECT_EQ(2u, held.points.front().track_id);
++  EXPECT_EQ(timeFromSec(10.2), held.stamp);
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.22),
++      [](const Eigen::Vector3d &) { return false; }), 0u);
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.23, {2}));
++  held = buffer.getSnapshot(timeFromSec(10.23));
++  EXPECT_TRUE(held.valid);
++  EXPECT_EQ(timeFromSec(10.23), held.stamp);
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.24),
++      [](const Eigen::Vector3d &) { return true; }), 0u);
++}
++
++TEST(DynamicPointBuffer, RealMarginSamplesIntermediateMapCells)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::setMargin(buffer, .08);
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.1, {}));
++  bool checked_intermediate = false;
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.1),
++      [&checked_intermediate](const Eigen::Vector3d &p) {
++        const bool intermediate = std::abs(p.x() - 1.04) < .005;
++        checked_intermediate = checked_intermediate || intermediate;
++        return !intermediate;
++      }, {}, .05), 0u);
++  EXPECT_TRUE(checked_intermediate);
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.2),
++      [](const Eigen::Vector3d &) { return true; }, {}, .05), 1u);
++}
++
++TEST(DynamicPointBuffer, HistoricalPointCapacityFailsClosedWithoutDroppingIds)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::setPointBudget(buffer, 1);
++  for (std::uint32_t id = 1; id <= 5; ++id)
++    DynamicPointBufferTestAccessor::feed(buffer, observation(10. + .1*id, {id}));
++  EXPECT_EQ(4u, DynamicPointBufferTestAccessor::retainedPoints(buffer));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.6, {}));
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.6),
++      [](const Eigen::Vector3d &) { return true; }), 0u);
++  const auto held = buffer.getSnapshot(timeFromSec(10.6));
++  EXPECT_FALSE(held.valid);
++  EXPECT_EQ("lost_observation", held.invalid_reason);
++  EXPECT_EQ(4u, DynamicPointBufferTestAccessor::retainedPoints(buffer));
++}
++
++TEST(DynamicPointBuffer, ExcessiveProofDensityFailsClosedBeforeAllocation)
++{
++  plan_env::DynamicPointBuffer buffer;
++  DynamicPointBufferTestAccessor::setMargin(buffer, 1000.);
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10., {1}));
++  DynamicPointBufferTestAccessor::feed(buffer, observation(10.5, {}));
++  bool queried = false;
++  EXPECT_EQ(buffer.recoverObservedTracks(timeFromSec(10.5),
++      [&queried](const Eigen::Vector3d &) { queried = true; return true; }), 0u);
++  EXPECT_FALSE(queried);
++  EXPECT_FALSE(buffer.getSnapshot(timeFromSec(10.5)).valid);
++}
++
+ }  // namespace
+ 
+ int main(int argc, char **argv)
+--- before/src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp
++++ after/src/mm_remani_planner/plan_env/test/test_grid_map_parallel.cpp
+@@ -726,6 +726,64 @@
+     map.md_.proj_points_cnt = 1;
+     map.md_.lidar_origin_valid_ = false;
+     map.raycastProcess(true);
++  }
++
++  static void seedLostDynamicTrack(GridMap &map,
++                                   const Eigen::Vector3d &position,
++                                   const ros::Time &now)
++  {
++    auto &buffer = map.dynamic_point_buffer_;
++    buffer.enabled_ = true;
++    buffer.position_uncertainty_ = 0.03;
++    buffer.max_age_ = 0.35;
++    plan_env::DynamicPointSnapshot previous;
++    previous.stamp = now - ros::Duration(0.20);
++    previous.receive_time = previous.stamp;
++    previous.frame_id = "world";
++    previous.has_track_ids = previous.valid = true;
++    plan_env::DynamicPoint point;
++    point.track_id = 7;
++    point.position = position;
++    previous.points.push_back(point);
++    buffer.recordObservation(previous);
++    plan_env::DynamicPointSnapshot current;
++    current.stamp = now - ros::Duration(0.01);
++    current.receive_time = current.stamp;
++    current.frame_id = "world";
++    current.valid = current.has_track_ids = true;
++    buffer.recordObservation(current);
++    buffer.latest_snapshot_.valid = false;
++    buffer.latest_snapshot_.invalid_reason = "lost_observation";
++  }
++
++  static void raycastTrackRecovery(
++      GridMap &map, const std::vector<Eigen::Vector3d> &endpoints,
++      const ros::Time &stamp, bool live_lidar = true)
++  {
++    map.md_.lidar_origin_ = Eigen::Vector3d(0.25, 0.75, 0.75);
++    map.md_.lidar_origin_valid_ = true;
++    map.md_.pending_lidar_stamp_ = stamp;
++    std::copy(endpoints.begin(), endpoints.end(), map.md_.proj_points_.begin());
++    map.md_.proj_points_cnt = static_cast<int>(endpoints.size());
++    map.raycastProcess(live_lidar);
++  }
++
++  static void appendLostTrackSurface(GridMap &map,
++                                     const Eigen::Vector3d &position)
++  {
++    plan_env::DynamicPoint point;
++    point.track_id = 7;
++    point.position = position;
++    map.dynamic_point_buffer_.latest_snapshot_.points.push_back(point);
++    map.dynamic_point_buffer_.track_history_.at(7).observation.points.push_back(point);
++  }
++
++  static void markStaticRecoveryRegion(GridMap &map,
++                                        const Eigen::Vector3d &position)
++  {
++    Eigen::Vector3i index;
++    map.posToIndex(position, index);
++    map.md_.static_occupancy_[map.toAddress(index)] = 1;
+   }
+ 
+   static std::uint32_t liveFusionCycle(const GridMap &map)
+@@ -1500,6 +1558,124 @@
+   EXPECT_EQ(1U, GridMapParallelTestAccessor::liveFusionCycle(map));
+ }
+ 
++TEST(GridMapOccupancy, NewerLiveFreeRayRecoversLostDynamicTrack)
++{
++  ensureRosInitialized();
++  GridMap map;
++  GridMapParallelTestAccessor::configureOccupancyUpdate(map);
++  const ros::Time now = ros::Time::now();
++  const Eigen::Vector3d old_position(1.25, 0.75, 0.75);
++  GridMapParallelTestAccessor::seedLostDynamicTrack(map, old_position, now);
++
++  // The old surface and its uncertainty samples are inside the same voxel.
++  // A newer actual beam travels through it to a farther observed endpoint.
++  GridMapParallelTestAccessor::raycastTrackRecovery(
++      map, {Eigen::Vector3d(2.25, 0.75, 0.75)}, now);
++
++  const auto snapshot = map.getDynamicPointSnapshot(now);
++  EXPECT_TRUE(snapshot.valid);
++  EXPECT_TRUE(snapshot.points.empty());
++  EXPECT_EQ("no_dynamic_detected", snapshot.invalid_reason);
++  EXPECT_EQ(now - ros::Duration(0.01), snapshot.stamp);
++  EXPECT_GT(snapshot.sequence, 1U);
++}
++
++TEST(GridMapOccupancy, EndpointStaticOrOccludedRegionCannotRetireTrack)
++{
++  ensureRosInitialized();
++  for (int scenario = 0; scenario < 3; ++scenario)
++  {
++    SCOPED_TRACE(scenario);
++    GridMap map;
++    GridMapParallelTestAccessor::configureOccupancyUpdate(map);
++    const ros::Time now = ros::Time::now();
++    const Eigen::Vector3d old_position(1.25, 0.75, 0.75);
++    GridMapParallelTestAccessor::seedLostDynamicTrack(map, old_position, now);
++    std::vector<Eigen::Vector3d> endpoints{
++        Eigen::Vector3d(2.25, 0.75, 0.75)};
++    if (scenario == 0)
++    {
++      // A hit in the old region overrides a second ray traversing that cell.
++      endpoints.push_back(old_position);
++    }
++    else if (scenario == 1)
++      GridMapParallelTestAccessor::markStaticRecoveryRegion(map, old_position);
++    else
++      endpoints = {Eigen::Vector3d(0.75, 0.75, 0.75)};
++
++    GridMapParallelTestAccessor::raycastTrackRecovery(map, endpoints, now);
++    const auto snapshot = map.getDynamicPointSnapshot(now);
++    EXPECT_FALSE(snapshot.valid);
++    ASSERT_EQ(1U, snapshot.points.size());
++    EXPECT_TRUE(snapshot.points.front().position.isApprox(old_position));
++    EXPECT_EQ(now - ros::Duration(0.20), snapshot.stamp);
++    EXPECT_EQ("lost_observation", snapshot.invalid_reason);
++  }
++}
++
++TEST(GridMapOccupancy, DepthOrInvalidLiveTimestampCannotRetireTrack)
++{
++  ensureRosInitialized();
++  for (int scenario = 0; scenario < 4; ++scenario)
++  {
++    SCOPED_TRACE(scenario);
++    GridMap map;
++    GridMapParallelTestAccessor::configureOccupancyUpdate(map);
++    const ros::Time now = ros::Time::now();
++    GridMapParallelTestAccessor::seedLostDynamicTrack(
++        map, Eigen::Vector3d(1.25, 0.75, 0.75), now);
++    const ros::Time stamp = scenario == 1 ? ros::Time(0) :
++        scenario == 2 ? now - ros::Duration(1.0) :
++        scenario == 3 ? now + ros::Duration(1.0) : now;
++
++    GridMapParallelTestAccessor::raycastTrackRecovery(
++        map, {Eigen::Vector3d(2.25, 0.75, 0.75)}, stamp,
++        scenario != 0);
++    const auto snapshot = map.getDynamicPointSnapshot(now);
++    EXPECT_FALSE(snapshot.valid);
++    EXPECT_EQ(1U, snapshot.points.size());
++    EXPECT_EQ(now - ros::Duration(0.20), snapshot.stamp);
++  }
++}
++
++TEST(GridMapOccupancy, NewEndpointHitRevokesOlderFreeRayEvidence)
++{
++  ensureRosInitialized();
++  GridMap map;
++  GridMapParallelTestAccessor::configureOccupancyUpdate(map);
++  const ros::Time now = ros::Time::now();
++  const Eigen::Vector3d first_surface(1.25, 0.75, 0.75);
++  const Eigen::Vector3d second_surface(1.25, 1.25, 0.75);
++  GridMapParallelTestAccessor::seedLostDynamicTrack(
++      map, first_surface, now - ros::Duration(0.10));
++  GridMapParallelTestAccessor::appendLostTrackSurface(map, second_surface);
++
++  // First scan covers only surface A. The target cannot be retired while B
++  // remains unseen, but A's recent ray evidence may be retained.
++  GridMapParallelTestAccessor::raycastTrackRecovery(
++      map, {Eigen::Vector3d(2.25, 0.75, 0.75)},
++      now - ros::Duration(0.10));
++  ASSERT_EQ(2U, map.getDynamicPointSnapshot(now).points.size());
++
++  // The next scan sees B free but hits A. Its hit must revoke A's old proof,
++  // rather than combining two incompatible scans into a false clear result.
++  GridMapParallelTestAccessor::raycastTrackRecovery(
++      map, {first_surface, Eigen::Vector3d(2.25, 1.75, 0.75)},
++      now - ros::Duration(0.05));
++  const auto blocked = map.getDynamicPointSnapshot(now);
++  EXPECT_FALSE(blocked.valid);
++  EXPECT_EQ(2U, blocked.points.size());
++  EXPECT_EQ("lost_observation", blocked.invalid_reason);
++
++  // A later complete free observation can still recover normally.
++  GridMapParallelTestAccessor::raycastTrackRecovery(
++      map, {Eigen::Vector3d(2.25, 0.75, 0.75),
++            Eigen::Vector3d(2.25, 1.75, 0.75)}, now);
++  const auto recovered = map.getDynamicPointSnapshot(now);
++  EXPECT_TRUE(recovered.valid);
++  EXPECT_TRUE(recovered.points.empty());
++}
++
+ TEST(GridMapOccupancy, InFlightESDFDefersOccupancyUntilResultCommits)
+ {
+   ensureRosInitialized();

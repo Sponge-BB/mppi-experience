@@ -1,0 +1,325 @@
+--- parent/planner_manager.cpp
++++ child/planner_manager.cpp
+@@ -140,6 +140,10 @@
+           local_target_yaw,local_target_gripper,continous_failures_count,
+           simple_path_container,yaw_list_container,initMJO_container,singul_container);
+       if(prefix_used)status=KinoAstar::REACH_END;
++      else if(collab::strictPrefix()){
++        collab::note("optional_prefix_rejected",dual_probe::Fields().str("fallback","disabled_for_optional_attempt"));
++        return false;
++      }
+       else {
+         short_prefix_rejoin::Scope short_prefix_scope(headState.col(0),start_yaw,start_singul,
+           collab::refresh()&&collab::settings().prefix);
+--- parent/collab_factorial.hpp
++++ child/collab_factorial.hpp
+@@ -4,6 +4,7 @@
+ #include "dual_timescale_probe.hpp"
+ #include "failure_probe.hpp"
+ #include "active_arm_coupling.hpp"
++#include "arm_box_refresh_policy.hpp"
+ #include <std_msgs/Float64MultiArray.h>
+ #include <array>
+ #include <fstream>
+@@ -24,6 +25,54 @@
+   active_arm_coupling::Seed arm;
+ };
+ inline Seed& seed(){static Seed value;return value;}
++
++// One immutable whole-body suggestion and epoch per optional request. The
++// live subscriber store remains separate and is never overwritten by a scope.
++inline arm_box_refresh::Identity& currentSeedIdentity(){
++  static arm_box_refresh::Identity value;return value;
++}
++struct SeedContext {
++  const Seed* value=nullptr;double epoch=0.;bool strict_prefix=false;
++  arm_box_refresh::Identity identity;
++};
++inline SeedContext& seedContext(){static thread_local SeedContext value;return value;}
++inline const Seed& seedView(){return seedContext().value?*seedContext().value:seed();}
++inline double seedEpoch(){return seedContext().value?seedContext().epoch:ros::Time::now().toSec();}
++inline const arm_box_refresh::Identity& seedIdentity(){
++  return seedContext().value?seedContext().identity:currentSeedIdentity();
++}
++inline bool strictPrefix(){return seedContext().value&&seedContext().strict_prefix;}
++struct SeedScope {
++  Seed frozen;SeedContext previous;
++  SeedScope(const Seed& source,double epoch,const arm_box_refresh::Identity& identity,bool strict=true)
++      :frozen(source),previous(seedContext()){
++    seedContext().value=&frozen;seedContext().epoch=epoch;
++    seedContext().identity=identity;seedContext().strict_prefix=strict;
++  }
++  ~SeedScope(){seedContext()=previous;}
++  SeedScope(const SeedScope&)=delete;SeedScope& operator=(const SeedScope&)=delete;
++};
++inline bool seedSourcesFresh(const Seed& s,double epoch){
++  arm_box_refresh::SourceTimes stamps;
++  stamps.stamp=s.stamp;stamps.odom=s.odom;stamps.cloud=s.cloud;stamps.dynamic=s.dynamic;
++  stamps.joint=active_arm_coupling::armEnabled()?s.arm.joint_stamp:s.odom;
++  return arm_box_refresh::freshSources(stamps,epoch);
++}
++inline bool seedIdentityMatches(const Seed& s){
++  const auto& identity=seedIdentity();
++  return identity.generation>0&&identity.revision>0&&
++    s.generation==double(identity.generation)&&s.revision==double(identity.revision)&&
++    s.goal==double(identity.goal);
++}
++inline std::uint64_t seedFingerprint(const Seed& s){
++  std::uint64_t h=1469598103934665603ULL;
++  const auto add=[&](double value){const auto* p=reinterpret_cast<const unsigned char*>(&value);
++    for(std::size_t i=0;i<sizeof(value);++i){h^=p[i];h*=1099511628211ULL;}};
++  for(double v:{s.stamp,s.generation,s.revision,s.goal,s.odom,s.cloud,s.dynamic,s.arm.joint_stamp})add(v);
++  for(const auto& row:s.rows)for(double v:row)add(v);
++  for(const auto& row:s.arm.rows)for(int j=0;j<6;++j){add(row.arm.q[j]);add(row.arm.dq[j]);}
++  return h;
++}
+ struct Field {
+   double stamp=0,cloud=0,dynamic=0,gx=0,gy=0,res=0,margin=0;
+   int nx=0,ny=0;std::vector<std::array<double,3>> body;
+@@ -162,30 +211,45 @@
+ // A local prefix must have current observations, the same task, one gear and
+ // useful displacement. Reanchor ONLY its suggested geometry to measured start;
+ // no guessed future pose is installed as the slow planner's starting state.
++inline std::array<double,8> baseAt(const Seed& s,double time){
++  if(s.rows.size()<2||time<s.rows.front()[0]||time>s.rows.back()[0])
++    throw std::invalid_argument("prefix origin outside checked interval");
++  std::size_t k=1;while(k<s.rows.size()&&s.rows[k][0]<time)++k;
++  if(k==s.rows.size())k=s.rows.size()-1;
++  const auto&a=s.rows[k-1];const auto&b=s.rows[k];
++  const double fraction=(time-a[0])/(b[0]-a[0]);std::array<double,8> row;
++  for(int i=0;i<8;++i)row[i]=a[i]+fraction*(b[i]-a[i]);
++  row[0]=time;row[3]=a[3]+fraction*angle(b[3]-a[3]);return row;
++}
+ inline bool prefixRows(const Eigen::VectorXd& start,double yaw,int direction,
+                        std::vector<std::array<double,8>>& rows,std::string& reason,double* source_origin=nullptr) {
+-  const auto& s=seed();double now=ros::Time::now().toSec(),age=now-s.stamp;
++  const auto& s=seedView();const double now=seedEpoch(),age=now-s.stamp;
+   reason="stale_or_missing";
+-  if(s.rows.size()<3||age<-.05||age>.25||now-s.cloud>.35||now-s.dynamic>.35||
+-     now-s.odom>.25||s.goal!=double(goalToken()))return false;
+-  std::size_t begin=0;
+-  while(begin+1<s.rows.size()&&s.rows[begin][0]<std::max(0.,age))++begin;
+-  const auto& first=s.rows[begin];
++  if(s.rows.size()<3||!seedSourcesFresh(s,now))return false;
++  if(!seedIdentityMatches(s)){reason="reference_epoch_mismatch";return false;}
++  const double origin=std::max(s.rows.front()[0],std::max(0.,age));
++  if(origin>s.rows.back()[0]){reason="short_prefix";return false;}
++  const auto first=baseAt(s,origin);
+   if(std::hypot(first[1]-start(0),first[2]-start(1))>.08||std::abs(angle(first[3]-yaw))>.25){
+     reason="start_mismatch";return false;
+   }
+   const int sign=direction==0?(first[4]<0?-1:1):direction;
+-  rows.clear();double previous=-1;
+-  for(std::size_t i=begin;i<s.rows.size();++i){
+-    auto row=s.rows[i];row[0]-=first[0];
+-    if(row[0]>1.0+1e-6)break;
+-    if(std::abs(row[4])<.015||row[4]*sign<=0){reason="gear_or_low_speed";break;}
+-    if(row[0]-previous<.18&&i!=begin)continue;
+-    rows.push_back(row);previous=row[0];
++  rows.clear();double previous=-1.;
++  const auto append=[&](std::array<double,8> row){
++    row[0]-=origin;
++    if(std::abs(row[4])<.015||row[4]*sign<=0){reason="gear_or_low_speed";return false;}
++    if(row[0]-previous<.18&&!rows.empty())return true;
++    rows.push_back(row);previous=row[0];return true;
++  };
++  if(!append(first))return false;
++  for(const auto& row:s.rows){
++    if(row[0]<=origin+1e-10)continue;
++    if(row[0]-origin>1.0+1e-6)break;
++    if(!append(row))break;
+   }
+   if(rows.size()<3||rows.back()[0]<.4||
+      std::hypot(rows.back()[1]-start(0),rows.back()[2]-start(1))<.06){reason="short_prefix";return false;}
+-  if(source_origin)*source_origin=first[0];
++  if(source_origin)*source_origin=origin;
+   reason="eligible";return true;
+ }
+ 
+@@ -215,7 +279,7 @@
+   if(!prefixRows(head.col(0),yaw,sign,rows,reason,&arm_prefix_origin))return reject(reason);
+ 
+   if(active_arm_coupling::armEnabled()){
+-    const auto& s=seed();const double now=ros::Time::now().toSec();
++    const auto& s=seedView();const double now=seedEpoch();
+     if(head.rows()!=8||!active_arm_coupling::fresh(s.arm,now))return reject("active_arm_seed_missing_or_stale");
+     const auto origin=active_arm_coupling::interpolate(s.arm,arm_prefix_origin);
+     if((origin.q-head.col(0).tail(6)).cwiseAbs().maxCoeff()>.10 ||
+@@ -234,7 +298,7 @@
+   middle.col(1).head(2)=last[4]*h;
+   middle.col(2).head(2)=(last[4]-before[4])/(last[0]-before[0])*h+last[4]*last[5]*n;
+   if(active_arm_coupling::armEnabled()){
+-    const auto arm=active_arm_coupling::interpolate(seed().arm,arm_prefix_origin+last[0]);
++    const auto arm=active_arm_coupling::interpolate(seedView().arm,arm_prefix_origin+last[0]);
+     middle.col(0).tail(6)=arm.q;middle.col(1).tail(6)=arm.dq;
+     middle.col(2).tail(6)=arm.ddq;middle.col(3).tail(6)=arm.dddq;
+   }
+@@ -243,7 +307,7 @@
+   for(int i=0;i<np;++i){prefix_times(i)=rows[i+1][0]-rows[i][0];
+     if(i<np-1){prefix_points.col(i)=head.col(0);prefix_points(0,i)=rows[i+1][1];prefix_points(1,i)=rows[i+1][2];}}
+   if(active_arm_coupling::armEnabled())for(int i=0;i<np-1;++i)
+-    prefix_points.col(i).tail(6)=active_arm_coupling::interpolate(seed().arm,arm_prefix_origin+rows[i+1][0]).q;
++    prefix_points.col(i).tail(6)=active_arm_coupling::interpolate(seedView().arm,arm_prefix_origin+rows[i+1][0]).q;
+   poly_traj::MinSnapOpt<8> prefix;prefix.reset(head,middle,np);prefix.generate(prefix_points,prefix_times);
+   auto prefix_traj=prefix.getTraj(gear);
+   for(double t=0;t<=last[0]+1e-8;t+=.02){
+@@ -261,7 +325,7 @@
+   Eigen::MatrixXd merged_points(head.rows(),np+nt-1);Eigen::VectorXd merged_times(np+nt);
+   for(int i=0;i<np;++i){merged_points.col(i)=head.col(0);merged_points(0,i)=rows[i+1][1];merged_points(1,i)=rows[i+1][2];merged_times(i)=prefix_times(i);}
+   if(active_arm_coupling::armEnabled())for(int i=0;i<np;++i)
+-    merged_points.col(i).tail(6)=active_arm_coupling::interpolate(seed().arm,arm_prefix_origin+rows[i+1][0]).q;
++    merged_points.col(i).tail(6)=active_arm_coupling::interpolate(seedView().arm,arm_prefix_origin+rows[i+1][0]).q;
+   for(int i=1;i<nt;++i)merged_points.col(np+i-1)=native_points.col(i);
+   merged_times.tail(nt)=native_times;
+   trajectories.front().reset(head,end,np+nt);trajectories.front().generate(merged_points,merged_times);
+@@ -270,7 +334,9 @@
+   note("prefix",dual_probe::Fields().str("reason","used").add("used","true").add("prefix_s",last[0])
+     .add("prefix_points",rows.size()).add("raw_prefix_samples",raw_samples)
+     .add("merged_first_pieces",np+nt).add("native_continuation_pieces",nt)
+-    .add("seed_revision",seed().revision).add("seed_age",ros::Time::now().toSec()-seed().stamp)
++    .add("seed_epoch",seedEpoch()).str("seed_hash",std::to_string(seedFingerprint(seedView())))
++    .add("seed_origin",arm_prefix_origin).add("seed_generation",seedView().generation)
++    .add("seed_revision",seedView().revision).add("seed_age",seedEpoch()-seedView().stamp)
+     .add("anchor_x",last[1]).add("anchor_y",last[2]));
+   timer.success=true;return true;
+ }
+--- parent/remani_replan_fsm.cpp
++++ child/remani_replan_fsm.cpp
+@@ -78,20 +78,95 @@
+   const bool continue_partial=collab::settings().rolling&&partial_reference&&
+     ((partial_end.head(2)-mm_state_pos_.head(2)).norm()<.35||info.duration-current<2.0);
+   if(continue_partial)collab::note("subgoal_continuation",dual_probe::Fields().add("remaining_reference_s",info.duration-current));
+-  if((blocked||continue_partial||fast_feedback_request)&&refresh_ready){
+-    const char* source=fast_feedback_trigger?"fast_avoidance_feedback":blocked?"guide_blocked":"partial";
+-    dual_probe::emit("refresh_trigger",dual_probe::Fields().add("guide_id",info.traj_id).add("guide_time",current)
++  // A required blocked-guide repair or partial continuation keeps its native
++  // fallback. Only a pure fast-event refresh requires a usable MPPI prefix.
++  static arm_box_refresh::Pending optional_pending;
++  const arm_box_refresh::Identity identity{feedback_identity.generation,
++      feedback_identity.revision,feedback_identity.goal_token};
++  const auto packet=arm_box_refresh::packet(feedback.latest);
++  const bool required=blocked||continue_partial;
++  const auto action=arm_box_refresh::decide(optional_pending,packet,identity,now.toSec(),
++      planner_manager_->grid_map_->getDynamicObservationSeq(),
++      planner_manager_->grid_map_->getESDFObservationSeq(),required,fast_feedback_request,false);
++  if(required){
++    if(!refresh_ready)return;
++    const char* source=blocked?"guide_blocked":"partial";
++    dual_probe::emit("refresh_trigger",dual_probe::Fields().add("guide_id",info.traj_id)
+       .add("blocked",blocked?"true":"false").add("continue_partial",continue_partial?"true":"false")
+-      .add("feedback_enabled",feedback_enabled?"true":"false")
+-      .add("fast_feedback_eligible",fast_feedback_eligible?"true":"false")
+-      .add("fast_feedback_trigger",fast_feedback_trigger?"true":"false")
+-      .add("episode",feedback.latest.episode).add("nominal_gap",feedback.latest.nominal_gap)
+-      .str("source",source));
+-    if(fast_feedback_trigger)fast_refresh_feedback::consume(feedback);
++      .add("fast_feedback_trigger","false").str("source",source));
+     last_cooperative_replan_=now;flag_relan_astar_=true;
+-    ROS_INFO("[LocalExecution] Request native refresh (%s) while the validated local rollout executes.",source);
+-    changeFSMExecState(REPLAN_TRAJ,"LOCAL_EXECUTION_GUIDE_REFRESH");
+-  }
++    changeFSMExecState(REPLAN_TRAJ,"LOCAL_EXECUTION_REQUIRED_REFRESH");return;
++  }
++  if(action==arm_box_refresh::Action::CancelIdentity||action==arm_box_refresh::Action::CancelResolved){
++    dual_probe::emit("optional_refresh_cancel",dual_probe::Fields().str("reason",
++      action==arm_box_refresh::Action::CancelIdentity?"identity_changed":"avoidance_resolved"));return;
++  }
++  if(action==arm_box_refresh::Action::Idle)return;
++  if(action==arm_box_refresh::Action::WaitMap){
++    dual_probe::emit("optional_refresh_defer",dual_probe::Fields().str("reason","esdf_pending")
++      .add("required_seq",optional_pending.required_esdf)
++      .add("esdf_seq",planner_manager_->grid_map_->getESDFObservationSeq())
++      .add("episode",optional_pending.event.episode));return;
++  }
++  if(!refresh_ready||now<next_cooperative_attempt_)return;
++  // Stay in EXEC_TRAJ while inputs are missing: no zero-speed owner and no
++  // suspension of the next blocked/partial scan. This scope freezes one seed
++  // and one epoch for the preflight, initializer and objective.
++  collab::SeedScope frozen(collab::seed(),now.toSec(),identity,true);
++  const auto source_fields=[&](){
++    const auto& source=collab::seedView();const double epoch=collab::seedEpoch();
++    dual_probe::Fields fields;
++    fields.add("seed_stamp",source.stamp).add("seed_epoch",epoch)
++      .str("seed_hash",std::to_string(collab::seedFingerprint(source)))
++      .add("goal_token",source.goal).add("generation",source.generation).add("revision",source.revision)
++      .add("episode",optional_pending.event.episode).add("required_seq",optional_pending.required_esdf)
++      .add("seed_age_s",epoch-source.stamp).add("odom_age_s",epoch-source.odom)
++      .add("joint_age_s",epoch-source.arm.joint_stamp)
++      .add("cloud_age_s",epoch-source.cloud).add("dynamic_age_s",epoch-source.dynamic);
++    return fields;
++  };
++  bool valid=false;std::string reason;
++  {
++    coupling_bridge::Request request(execution_goal_key_,mm_state_pos_,mm_car_yaw_,mm_car_singul_);
++    valid=request.value.valid&&request.value.targets.has_delivery&&
++      (!active_arm_coupling::enabled()||request.value.arm_valid);
++    reason=request.value.reason;
++    std::vector<std::array<double,8>> prefix;double origin=0.;
++    if(valid)valid=collab::settings().prefix&&collab::prefixRows(mm_state_pos_,mm_car_yaw_,
++      mm_car_singul_,prefix,reason,&origin);
++    if(valid&&active_arm_coupling::armEnabled()){
++      const auto arm=active_arm_coupling::interpolate(collab::seedView().arm,origin);
++      valid=(arm.q-mm_state_pos_.tail(6)).cwiseAbs().maxCoeff()<=.10&&
++            (arm.dq-mm_state_vel_.tail(6)).cwiseAbs().maxCoeff()<=.30;
++      if(!valid)reason="active_arm_prefix_measurement_mismatch";
++    }
++  }
++  if(!valid){
++    auto fields=source_fields();fields.str("reason",reason).add("valid","false");
++    dual_probe::emit("optional_refresh_defer",fields);return;
++  }
++  auto input_fields=source_fields();input_fields.add("valid","true");
++  dual_probe::emit("arm_box_refresh_input",input_fields);
++  arm_box_refresh::Packet attempt;
++  if(!arm_box_refresh::beginAttempt(optional_pending,attempt))return;
++  feedback.consumed_generation=attempt.identity.generation;
++  feedback.consumed_episode=attempt.episode;
++  last_cooperative_replan_=now;flag_relan_astar_=true;
++  dual_probe::emit("refresh_trigger",dual_probe::Fields().add("guide_id",info.traj_id)
++    .add("blocked","false").add("continue_partial","false").add("fast_feedback_trigger","true")
++    .add("episode",attempt.episode).str("source","fast_avoidance_feedback")
++    .add("seed_stamp",collab::seedView().stamp).add("seed_epoch",collab::seedEpoch())
++    .str("seed_hash",std::to_string(collab::seedFingerprint(collab::seedView()))));
++  const bool refreshed=planFromLocalTraj(true,false,dynamic_astar_replan_wall_time_,false);
++  next_cooperative_attempt_=ros::Time::now()+ros::Duration(.75);
++  flag_relan_astar_=false;
++  if(refreshed)replan_fail_time_=0;
++  dual_probe::emit("refresh_attempt_result",dual_probe::Fields().add("success",refreshed?"true":"false")
++    .add("optional","true").add("episode",attempt.episode)
++    .add("next_attempt_sim",next_cooperative_attempt_.toSec()));
++  // Failure keeps the last published guide (restored by callReboundReplan).
++  // No automatic retry of this optional episode; required repairs stay live.
++
+ }
+ 
+   REMANIReplanFSM::~REMANIReplanFSM(){
+--- parent/coupling_bridge.hpp
++++ child/coupling_bridge.hpp
+@@ -45,13 +45,13 @@
+ struct Request {
+   Prediction value;Prediction* previous;
+   Request(const std::string& goal,const Eigen::VectorXd& start,double yaw,int direction):previous(activePrediction()){
+-    activePrediction()=&value;value.seed=collab::seed();value.request_time=ros::Time::now().toSec();
++    collab::currentSeedIdentity()={goalGeneration(),referenceRevision(),dual_probe::hash(goal)&0xffffffffULL};
++    activePrediction()=&value;value.seed=collab::seedView();value.request_time=collab::seedEpoch();
+     value.delay=setting("COUPLING_DELIVERY_DELAY",.65);const auto&s=value.seed;
+     const double age=value.request_time-s.stamp;
+     if(s.rows.size()<3){value.reason="missing_or_short";return;}
+     if(s.goal!=double(dual_probe::hash(goal)&0xffffffffULL)){value.reason="other_goal";return;}
+-    if(age<-.05||age>.25||value.request_time-s.odom>.25||value.request_time-s.cloud>.35||
+-       value.request_time-s.dynamic>.35){value.reason="stale";return;}
++    if(!collab::seedSourcesFresh(s,value.request_time)){value.reason="stale";return;}
+     if(s.revision<1||s.generation<1||s.revision!=double(referenceRevision())||
+        s.generation!=double(goalGeneration())){value.reason="reference_epoch_mismatch";return;}
+     const double begin=std::max(s.rows.front()[0],std::max(0.,age));
+@@ -116,7 +116,9 @@
+     dual_probe::emit("coupling_scope",dual_probe::Fields().add("scope_id",id).add("valid",valid?"true":"false")
+       .add("active_arm_coupling",active_arm_coupling::enabled()?"true":"false")
+       .str("reason",reason).add("exec_weight",config.execution_weight).add("hand_weight",config.delivery_weight)
+-      .add("seed_stamp",prediction.seed.stamp).add("seed_age_s",prediction.request_time-prediction.seed.stamp)
++      .add("seed_stamp",prediction.seed.stamp).add("seed_epoch",prediction.request_time)
++      .str("seed_hash",std::to_string(collab::seedFingerprint(prediction.seed)))
++      .add("seed_age_s",prediction.request_time-prediction.seed.stamp)
+       .add("delivery_delay_s",prediction.delay).add("reference_revision",prediction.seed.revision)
+       .add("reference_generation",prediction.seed.generation).add("rows",prediction.seed.rows.size())
+       .add("goal_token",prediction.seed.goal).add("segments",segments).add("pieces",pieces).add("input_hash",input));

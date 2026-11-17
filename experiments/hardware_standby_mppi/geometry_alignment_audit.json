@@ -1,0 +1,244 @@
+{
+  "scope": "offline geometry audit of real feedback/cloud snapshot; no motor commands or ROS/CAN access",
+  "source": "real_feedback_and_raw_lidar_no_simulation",
+  "q_deg": [
+    -13.299000000000001,
+    -1.9070000000000003,
+    0.388,
+    1.5690000000000002,
+    28.269000000000002,
+    -1.1790000000000003
+  ],
+  "model_verdict": {
+    "valid": false,
+    "violations": [
+      "arm_self_collision"
+    ],
+    "joint_gaps": {
+      "position": 0.016716571164468133
+    },
+    "min_self_gap": -0.030917564303494252,
+    "self_pair": [
+      4,
+      13
+    ],
+    "min_base_arm_gap": 0.020222005728957132,
+    "base_arm_pair": [
+      18,
+      45
+    ],
+    "min_ground_gap": 0.616,
+    "scope": "native sampled spheres, disclosed pair exclusions; no external obstacle check"
+  },
+  "findings": [
+    "The isolated native DH constants and 20 arm sample points reproduce current MMConfig, not an independently calibrated real-arm collision model.",
+    "Semantic shoulder/elbow/wrist points agree with installed pure SDK FK and original URDF after removing mount conventions; no large joint-angle sign/offset error is indicated.",
+    "Current MMConfig disables Piper self-collision unconditionally; therefore original-project operation does not validate the new sphere self-collision policy.",
+    "The failing sphere pair is on the folded upper-arm and forearm. Equal 34mm sphere radii overlap although the centre lines are about 37mm apart. This is evidence of approximation conservatism, not proof that real links are collision free.",
+    "Native DH frame indexing includes an elbow connector frame; native link indices 1 and 3 correspond to the two physically adjoining long links. Do not blindly translate abstract adjacency into a validated exclusion policy.",
+    "Most current arm sphere centres lie above this snapshot's observed LiDAR elevation. Lack of raw returns near the arm must not be treated as known free space."
+  ],
+  "native_and_sdk_geometry": {
+    "native_standard_DH_offsets_deg": [
+      0.0,
+      -172.22,
+      -102.78,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "sdk_modified_DH_offset_mode": 1,
+    "native_final_d_m": 0.211,
+    "sdk_final_d_m": 0.091,
+    "native_tool_extension_from_flange_m": 0.12,
+    "comparison_current_metres": {
+      "dh_vs_sdk_shoulder": 0.0,
+      "dh_vs_sdk_elbow": 1.2412670766236366e-16,
+      "dh_vs_sdk_wrist": 4.000000000116691e-06,
+      "dh_vs_sdk_flange_after_removing_120mm_tool": 4.000000000145034e-06,
+      "dh_vs_urdf_elbow": 2.115699871919828e-05,
+      "dh_vs_urdf_wrist": 2.2103210668571372e-05,
+      "dh_vs_urdf_flange_after_removing_120mm_tool": 0.0014170123819480353
+    },
+    "comparison_sample_count": 67,
+    "comparison_max_over_samples_metres": {
+      "dh_vs_sdk_shoulder": 0.0,
+      "dh_vs_sdk_elbow": 2.4591502649036963e-16,
+      "dh_vs_sdk_wrist": 4.0000000002094685e-06,
+      "dh_vs_sdk_flange_after_removing_120mm_tool": 4.000000000257299e-06,
+      "dh_vs_urdf_elbow": 2.1173262668728546e-05,
+      "dh_vs_urdf_wrist": 2.3214785093218e-05,
+      "dh_vs_urdf_flange_after_removing_120mm_tool": 0.00143647295837501
+    },
+    "sample_scope": "offline FK arithmetic only; sampled configurations are not certified collision free and were never commanded"
+  },
+  "mount_conventions": {
+    "native_ground_mount_xyz_m": [
+      0.005,
+      0.0,
+      0.68
+    ],
+    "urdf_arm_base_relative_base_link_xyz_m": [
+      0.005,
+      -1.5e-07,
+      0.5730000000000001
+    ],
+    "original_odometry_base_z_m": 0.115,
+    "urdf_ground_mount_with_original_base_z_xyz_m": [
+      0.005,
+      -1.5e-07,
+      0.6880000000000001
+    ],
+    "height_difference_m": 0.008000000000000007,
+    "interpretation": "8mm mount-height disagreement requires measurement; a common rigid mount shift cannot resolve an arm-arm self gap"
+  },
+  "failing_sphere_pair": {
+    "zero_based_indices": [
+      4,
+      13
+    ],
+    "native_link_ids_zero_based": [
+      1,
+      3
+    ],
+    "centres_ground_xyz_m": [
+      [
+        -0.20316512281611968,
+        0.04920431366979094,
+        0.8250026830008218
+      ],
+      [
+        -0.20495182225282735,
+        0.0496266385930446,
+        0.8620396427028215
+      ]
+    ],
+    "radii_m": [
+      0.034,
+      0.034
+    ],
+    "centre_distance_m": 0.037082435696505746,
+    "surface_gap_m": -0.03091756430349426,
+    "policy_change_made": false,
+    "required_resolution": "Calibrate link occupancy/adjacency against actual arm or validated collision meshes; retain current rejection until reviewed. No deleted pair, smaller radius, disabled self check or relaxed joint bound was applied."
+  },
+  "raw_cloud_visibility": {
+    "total_points": 19139,
+    "zero_points": 3538,
+    "finite_range_over_50mm_points": 15601,
+    "inferred_sensor_origin_base_ground_xyz_m": [
+      0.2800059105620608,
+      -1.2648557572041641e-05,
+      0.11699999999999164
+    ],
+    "inferred_transform_max_scatter_m": 0.00010987535085048664,
+    "observed_raw_elevation_min_max_deg": [
+      -6.111329555511475,
+      52.47484588623047
+    ],
+    "arm_centre_elevation_min_max_deg": [
+      52.19718039229004,
+      79.75019457066261
+    ],
+    "arm_spheres_nearest_valid_raw_point_distance_m": [
+      0.3196855899188158,
+      0.3118956196328355,
+      0.316009301679207,
+      0.1044515589461874,
+      0.13519417900810923,
+      0.18826790461750106,
+      0.24982422176492874,
+      0.31965718836157103,
+      0.12501658693827622,
+      0.10443680220476882,
+      0.3133194322673286,
+      0.25879284556396587,
+      0.2073123421165952,
+      0.16181185825718022,
+      0.12525384677210877,
+      0.3133194322673286,
+      0.47620182257469884,
+      0.4174146191076585,
+      0.36263170388993615,
+      0.3133194322673286
+    ],
+    "arm_spheres_with_valid_raw_return_within_100mm": 0,
+    "interpretation": "One snapshot only; these nearest points are unlabelled scene returns. No arm-surface match, free-space certificate or hardware-FOV specification is inferred. Cloud ground placement also depends on unvalidated extrinsics; FAST-LIO global drift must be fixed independently."
+  },
+  "minimal_stationary_site_checks": [
+    "Keep this captured pose stationary and compare shoulder, elbow, wrist and flange centres with the listed ground-relative coordinates; a side photo plus a ruler/known board is enough to identify gross sign or mount discrepancies.",
+    "Measure ground-to-arm-base mounting height and LiDAR origin height; resolve native .680 versus URDF+.115=.688, and confirm LiDAR .28 forward / .117 high.",
+    "Inspect and measure the physical upper-arm/forearm separation at the failing sphere region and compare with actual collision geometry; do not infer physical collision from 34mm centre-line spheres alone.",
+    "Confirm firmware version from an existing label or prior record before choosing the pre/post S-V1.6-3 joint-2/joint-3 zero convention. No firmware-query frame was sent.",
+    "Use a noncontact target in the intended arm obstacle volume while stationary and record raw returns across height and azimuth; establish observed/unknown space before any avoidance motion.",
+    "Check actual gripper, camera and fingers against the .120m tool extension; the URDF joint7 origin is .13503m from flange and is not the same tip definition."
+  ],
+  "stationary_reference_points": {
+    "shoulder": {
+      "native_ground_xyz_m": [
+        0.005,
+        0.0,
+        0.803
+      ],
+      "urdf_plus_original_base_z_0_115_xyz_m": [
+        0.005,
+        -1.5e-07,
+        0.811
+      ]
+    },
+    "elbow": {
+      "native_ground_xyz_m": [
+        -0.27093035835129325,
+        0.06522208773334191,
+        0.8321653477920486
+      ],
+      "urdf_plus_original_base_z_0_115_xyz_m": [
+        -0.27092895616675056,
+        0.06522381939005631,
+        0.8401863742477966
+      ]
+    },
+    "wrist": {
+      "native_ground_xyz_m": [
+        -0.030911524759259484,
+        0.008488462931304439,
+        0.8824755266223928
+      ],
+      "urdf_plus_original_base_z_0_115_xyz_m": [
+        -0.03090870735228224,
+        0.008488220530237761,
+        0.890497449341244
+      ]
+    },
+    "flange": {
+      "native_ground_xyz_m": [
+        0.05161318819045049,
+        -0.009805437702757571,
+        0.8487708540656236
+      ],
+      "urdf_plus_original_base_z_0_115_xyz_m": [
+        0.05193661913637497,
+        -0.008427230510951334,
+        0.8568295734458014
+      ]
+    }
+  },
+  "source_evidence": {
+    "native_dh": "src/mm_remani_planner/mm_config/src/mm_config.cpp:359",
+    "native_self_collision_bypass": "src/mm_remani_planner/mm_config/src/mm_config.cpp:1042",
+    "native_arm_samples": "src/mm_remani_planner/mm_config/src/mm_config.cpp:1421",
+    "original_urdf": "src/my_description/robot/mm.urdf",
+    "original_odometry_base_z": "src/mm_remani/scripts/fastlio_to_odom.py:23",
+    "firmware_zero_convention": "src/piper_ros/README(EN).md:25",
+    "sdk_fk": "/home/l/.local/lib/python3.8/site-packages/piper_sdk/kinematics/piper_fk.py"
+  },
+  "source_hashes": {
+    "/home/l/remani_ws/experiments/hardware_standby_mppi/actual_geometry_snapshot.npz": "46caa9c4b6f668c21fc50e30ac5b405828dede76b23230fe8714711c93db91c9",
+    "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/core/active_arm_model.py": "dd4eaca2a753da5c56a0f1615c4ed7e31693b29a7e02be8a6765fca312621bb2",
+    "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/model/parameters.yaml": "6a737b144a03aaa6ff63ba7c3a721b765a4cf70b504c49cad3d078ffbfce57b8",
+    "/home/l/remani_ws/experiments/hardware_standby_mppi/releases/standby_20261105_feedback_02/model/mm.urdf": "e190e28aa71942a95f3fb1f0ea8bc1bc6b91f141568c77f1e92e82d89fc7ded9",
+    "/home/l/.local/lib/python3.8/site-packages/piper_sdk/kinematics/piper_fk.py": "354d9b1f41271645de127c4c59ae30c86b0debddeba7a5c0ca0b1b2d44f9b93d"
+  },
+  "hardware_commands_sent_by_audit": false,
+  "source_runtime_or_collision_policy_modified": false
+}

@@ -1,0 +1,19 @@
+<launch>
+  <!-- Launch mecanum controller node -->
+  <node pkg="mm_controller" type="mecanum_controller.py" name="mecanum_controller" output="screen">
+  <param name="wheel_radius" value="0.075" />
+    <param name="wheel_base" value="0.36" />
+    <param name="wheel_track" value="0.28" />
+    <param name="odom_frame" value="odom" />
+    <param name="base_frame" value="base_link" />
+    <param name="rate" value="50" />
+    <param name="cmd_timeout" value="0.5" />
+  <!-- Joint names: match the joint names in mm.urdf (use _joint suffix) -->
+  <param name="joint_fl" value="fl_wheel_joint" />
+  <param name="joint_fr" value="fr_wheel_joint" />
+  <param name="joint_rl" value="bl_wheel_joint" />
+  <param name="joint_rr" value="br_wheel_joint" />
+  </node>
+  <!-- Permanent static transform from map to odom so RViz can use map as fixed frame -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="static_map_to_odom" output="screen" args="0 0 0 0 0 0 map odom"/>
+</launch>

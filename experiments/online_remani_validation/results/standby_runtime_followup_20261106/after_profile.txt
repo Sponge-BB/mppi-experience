@@ -1,0 +1,47 @@
+{
+  "warmup": {
+    "plan_ms": 54.23079300089739,
+    "total_ms": 57.12225699971896
+  },
+  "profiled": {
+    "plan_ms": 62.62146399967605,
+    "total_ms": 66.12024700007169
+  },
+  "before_after_max_errors": {
+    "controls": 0.0,
+    "prediction": 0.0,
+    "structured_costs": 6.938893903907228e-18,
+    "structured_external_gaps": 0.0,
+    "cost": 0.0,
+    "min_gap": 0.0,
+    "external_min_gap": 0.0
+  },
+  "same_validity_selection": true,
+  "scope": "identical recorded numerical replay; not online latency"
+}
+         14023 function calls (13960 primitive calls) in 0.066 seconds
+
+   Ordered by: cumulative time
+   List reduced from 238 to 18 due to restriction <18>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.066    0.066 <stdin>:12(once)
+        1    0.000    0.000    0.063    0.063 standby_whole_body_mppi.py:216(plan)
+        3    0.003    0.001    0.058    0.019 standby_whole_body_mppi.py:136(evaluate)
+  579/516    0.002    0.000    0.020    0.000 {built-in method numpy.core._multiarray_umath.implement_array_function}
+        4    0.009    0.002    0.019    0.005 active_arm_mppi.py:91(query)
+        3    0.000    0.000    0.014    0.005 active_arm_mppi.py:345(configuration_gap)
+        4    0.004    0.001    0.014    0.004 active_arm_model.py:377(configuration_gaps_batch)
+       94    0.003    0.000    0.013    0.000 active_arm_mppi.py:221(_advance_position)
+       62    0.000    0.000    0.010    0.000 active_arm_mppi.py:249(advance)
+        8    0.001    0.000    0.008    0.001 active_arm_model.py:354(arm_spheres)
+        4    0.000    0.000    0.008    0.002 active_arm_mppi.py:342(spheres)
+        4    0.000    0.000    0.008    0.002 active_arm_model.py:371(body_spheres_batch)
+      291    0.008    0.000    0.008    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+        4    0.000    0.000    0.008    0.002 active_arm_model.py:363(body_spheres)
+       10    0.000    0.000    0.006    0.001 <__array_function__ internals>:2(norm)
+       10    0.002    0.000    0.005    0.001 linalg.py:2325(norm)
+      193    0.001    0.000    0.005    0.000 fromnumeric.py:73(_wrapreduction)
+        4    0.000    0.000    0.004    0.001 interpolation.py:266(map_coordinates)
+
+

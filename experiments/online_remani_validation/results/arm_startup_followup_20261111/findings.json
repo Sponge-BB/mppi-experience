@@ -1,0 +1,22 @@
+{
+  "scope": "Read-only analysis of2026-11-11 09:45 startup; no code/SDK/firmware change, no CAN send, no motor enable/motion.",
+  "version": "20261110-234522-mppi-navigation-recovery",
+  "user_observation": "末端关节抖动，未展开到待机姿态",
+  "facts": [
+    "09:45:37.264 driver logged original bridge standby MOVEJ speed15 sent.",
+    "MPPI remained waiting_native_arm_startup; no standby-ready, handoff or first leased command recorded.",
+    "09:45:42.995 node shutdown triggered quickstop; no earlier feedback/command timeout or send failure logged in this run.",
+    "Current relevant source and deployed planner hashes match saved version.",
+    "Genuine original driver verified equal between src Git HEAD and archived driver_reference; standby target, speed15, angle units and5Hz bridge agree."
+  ],
+  "remaining_differences": [
+    "Selective feedback parser",
+    "5ms bounded CANsend and send result checks",
+    "Timestamp/feedback/enable gates",
+    "Separate startup topic and exclusive MPPI handoff",
+    "Command locking, execution-state publication, exit quickstop"
+  ],
+  "root_cause_status": "Not established. Fixed standby MOVEJ execution stage identified; no evidence of alternating MPPI targets or timeout-induced repeated disable in this run. Scheduling/transport or device-side execution cannot be distinguished by one-time target log.",
+  "comparison_gap": "Previous standalone driver test only enabled motors; it did not execute the same standby MOVEJ goal.",
+  "next_decisive_comparison": "Compare genuine original driver and current startup performing the same bounded standby action, recording CAN targets and actual joint feedback. Requires a separately agreed attended motion test; not executed in this turn."
+}

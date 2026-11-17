@@ -1,0 +1,19 @@
+交付：自滤专用按固定球padding支持，默认不启用11mm候选。
+
+修改源码副本：source/velodyne_transformer.py，对应src/mm_remani/scripts/velodyne_transformer.py。
+新增测试副本：tests/test_self_filter_padding.py，对应src/mm_remani/test/test_self_filter_padding.py。
+changes.patch含上述两项。未改任何运行src、devel、launch、固定球YAML或碰撞检测代码。
+
+接口：私有ROS参数~fixed_padding_overrides，格式[[index,padding_m],...]，默认[]。索引仅0..46；拒绝重复、bool/非整型/越界索引、坏行格式、非数值/非有限/低于10mm的padding。参数仅改变自滤数组，不修改PiperArmModel球半径，20个机械臂球保持10mm。包围盒和精确过滤均使用同一数组。配置错误在建立点云订阅前抛出异常。
+
+candidate_offline_only.yaml提供#14/#28=11mm显式候选，文件没有被任何launch加载；不要将其解释为实车标定值。候选配置记录球YAML的SHA256，避免把已有索引用到另一版几何。默认无参数时保留原10mm行为，已有显式参数是有意覆盖，因此部署时需确认没有遗留~fixed_padding_overrides配置。
+
+复现命令：python3 experiments/online_remani_validation/results/repair_20261117-120602/self_filter/run_tests.py
+
+验证：46项Python测试（新增9项+现有自滤/映射37项），原有TF/joint时效、默认行为、映射首端点测试包含在内。新增检查覆盖三点见证、变换后的近界外部点、固定/机械臂未选球不变、包围盒边界、非法配置、同体素合法第二端点保留并保留测点字段和source header。测试用受控外部几何点，不是实车外物语义认证。
+
+已有局部数据证据：71帧274037点，候选新增删除4点，包含3个停轨见证，其余274033点不变；当前PCD 28138点×71姿态新增删除0。原证据文件及SHA见validation_summary.json。本轮复用了已经完成的流式离线数据核验，没有再次解码全bag。
+
+限制：4个新增删除点的物理类别未独立确认，11mm仍只是离线候选。不声称零真实外物误删、真实包络确定或实车验证通过。5cm体素/碰撞阈值保持不变；同体素后续合法端点测试保证自滤后才稀疏化，没有删除前代表点就误清整格的路径。
+
+部署入口：devel/lib/mm_remani/velodyne_transformer.py目前不存在；src脚本为普通0775可执行文件，非软链。实际源脚本原始hash与候选hash见validation_summary.json。统一基线/部署/版本归档由主代理完成。

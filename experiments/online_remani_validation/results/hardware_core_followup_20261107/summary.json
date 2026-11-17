@@ -1,0 +1,118 @@
+{
+  "scope": "One serial isolated ROS run per condition; numerical plant, no hardware motion; uncertainty_scale=1; position_servo simulation only; two sensor groups follow different resulting paths.",
+  "source_state": "Main project changes; previous baseline sensor height differed so historical runs are not a strict FOV pair.",
+  "runs": [
+    {
+      "scene": "empty",
+      "sensor_model": "mid360",
+      "reason": "completed",
+      "elapsed_s": 14.0,
+      "collision_physical": false,
+      "min_external_gap_m": 0.3481664968717717,
+      "base_path_length_m": 0.4380327759959167,
+      "max_arm_change_deg": 0.33544788750415966,
+      "final_goal_position_error_m": 0.019775833651064965,
+      "run": "empty_mid360_s11",
+      "plant_epoch_ros_s": 1002.605,
+      "goal_finish_received": true,
+      "finish_plant_time_s": 10.819999998999947,
+      "finish_after_goal_s": 10.824999998999942,
+      "peak_graph_rss_mib": 413.02734375,
+      "task_status_counts": {
+        "waiting_native_reference_after_goal": 2,
+        "collision_snapshot_unavailable": 6,
+        "command_delivered": 126,
+        "reference_changed_during_plan": 1,
+        "native_reference_expired_during_plan": 1,
+        "native_reference_expired": 2,
+        "native_reference_cancelled": 2
+      },
+      "task_fault_true_messages": 8,
+      "task_fault_event_start_times_s": [
+        7.465000000000032
+      ],
+      "delivered_modes": {
+        "nominal": 94,
+        "standby_extension": 32
+      },
+      "infeasible": []
+    },
+    {
+      "scene": "navigation_arm_crossing",
+      "sensor_model": "ideal",
+      "reason": "collision",
+      "elapsed_s": 9.525000000000002,
+      "collision_physical": true,
+      "min_external_gap_m": -6.623449400582765e-05,
+      "base_path_length_m": 0.10749999869431227,
+      "max_arm_change_deg": 0.008201268271706618,
+      "final_goal_position_error_m": 0.34250000130568775,
+      "run": "moving_ideal_s11",
+      "plant_epoch_ros_s": 1002.63,
+      "goal_finish_received": false,
+      "finish_plant_time_s": null,
+      "finish_after_goal_s": null,
+      "peak_graph_rss_mib": 411.8671875,
+      "task_status_counts": {
+        "reference_changed_during_plan": 1,
+        "waiting_native_reference_after_goal": 2,
+        "collision_snapshot_unavailable": 22,
+        "command_delivered": 21,
+        "no_feasible_candidate": 2,
+        "native_reference_cancelled": 48
+      },
+      "task_fault_true_messages": 23,
+      "task_fault_event_start_times_s": [
+        2.539999998999974
+      ],
+      "delivered_modes": {
+        "nominal": 21
+      },
+      "infeasible": [
+        {
+          "t": 2.5449999989999696,
+          "min_predicted_gap_m": -0.2991272526518265
+        },
+        {
+          "t": 2.639999998999997,
+          "min_predicted_gap_m": -0.3036538915160446
+        }
+      ]
+    },
+    {
+      "scene": "navigation_arm_crossing",
+      "sensor_model": "mid360",
+      "reason": "collision",
+      "elapsed_s": 8.139999999999999,
+      "collision_physical": true,
+      "min_external_gap_m": -1.1912168091099407e-06,
+      "base_path_length_m": 0.353130369195587,
+      "max_arm_change_deg": 0.009311955779541232,
+      "final_goal_position_error_m": 0.09686963080441302,
+      "run": "moving_mid360_s11",
+      "plant_epoch_ros_s": 1002.345,
+      "goal_finish_received": false,
+      "finish_plant_time_s": null,
+      "finish_after_goal_s": null,
+      "peak_graph_rss_mib": 414.2734375,
+      "task_status_counts": {
+        "waiting_native_reference_after_goal": 2,
+        "native_reference_quiet_interval": 1,
+        "command_delivered": 73,
+        "reference_changed_during_plan": 1,
+        "native_reference_expired_during_plan": 1,
+        "native_reference_expired": 1,
+        "collision_snapshot_unavailable": 1,
+        "native_reference_cancelled": 2
+      },
+      "task_fault_true_messages": 3,
+      "task_fault_event_start_times_s": [
+        7.444999998999947
+      ],
+      "delivered_modes": {
+        "nominal": 73
+      },
+      "infeasible": []
+    }
+  ]
+}

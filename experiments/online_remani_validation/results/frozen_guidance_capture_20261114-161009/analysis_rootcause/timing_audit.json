@@ -1,0 +1,3441 @@
+{
+  "source": "/home/l/remani_ws/experiments/online_remani_validation/results/frozen_guidance_capture_20261114-161009/latency.bag",
+  "time_axis": "MPPI checked_inputs.checked_at; log header.stamp; progress/odom source stamps; cmd/finish use bag receipt",
+  "capture": {
+    "start": 1794643812.010591,
+    "end": 1794644086.3654213,
+    "duration_s": 274.35483026504517
+  },
+  "goal_stamp": 1794643929.0282092,
+  "finish_stamp": 1794643966.1027727,
+  "nav_duration_s": 37.07456350326538,
+  "events": [
+    {
+      "topic": "/planning/safety_speed_limit",
+      "bag": 1794643812.1466703,
+      "t": 1794643812.1466703,
+      "value": -1.0,
+      "rel": -116.88153886795044
+    },
+    {
+      "topic": "/move_base_simple/goal",
+      "bag": 1794643929.0358756,
+      "t": 1794643929.0282092,
+      "x": 0.5377813577651978,
+      "y": -1.3985540866851807,
+      "yaw": 1.5777634382247925,
+      "rel": 0.0
+    },
+    {
+      "topic": "/planning/trajectory",
+      "bag": 1794643929.5954008,
+      "t": 1794643929.5635579,
+      "trajectory_id": 1,
+      "action": 1,
+      "gear": 1,
+      "duration": 4.313436067817962,
+      "rel": 0.535348653793335
+    },
+    {
+      "topic": "/planning/trajectory",
+      "bag": 1794643929.63079,
+      "t": 1794643929.5635579,
+      "trajectory_id": 2,
+      "action": 1,
+      "gear": -1,
+      "duration": 9.168257029227417,
+      "rel": 0.535348653793335
+    },
+    {
+      "topic": "/planning/finish",
+      "bag": 1794643966.1027727,
+      "t": 1794643966.1027727,
+      "value": true,
+      "rel": 37.07456350326538
+    }
+  ],
+  "connections": [
+    {
+      "topic": "/odom",
+      "datatype": "nav_msgs/Odometry",
+      "callerid": "/fastlio_to_odom"
+    },
+    {
+      "topic": "/mppi/status",
+      "datatype": "std_msgs/String",
+      "callerid": "/whole_body_mppi"
+    },
+    {
+      "topic": "/planning/safety_speed_limit",
+      "datatype": "std_msgs/Float64",
+      "callerid": "/remani_planner_node"
+    },
+    {
+      "topic": "/mm_controller_node/trajectory_progress",
+      "datatype": "geometry_msgs/Vector3Stamped",
+      "callerid": "/mm_controller_node"
+    },
+    {
+      "topic": "/rosout_agg",
+      "datatype": "rosgraph_msgs/Log",
+      "callerid": "/rosout"
+    },
+    {
+      "topic": "/joint_states_single",
+      "datatype": "sensor_msgs/JointState",
+      "callerid": "/piper_ctrl_single_node"
+    },
+    {
+      "topic": "/mm/joint_states",
+      "datatype": "sensor_msgs/JointState",
+      "callerid": "/filter_joint_states"
+    },
+    {
+      "topic": "/piper_execution_state",
+      "datatype": "piper_msgs/PiperExecutionState",
+      "callerid": "/piper_ctrl_single_node"
+    },
+    {
+      "topic": "/cmd_vel",
+      "datatype": "geometry_msgs/Twist",
+      "callerid": "/whole_body_mppi"
+    },
+    {
+      "topic": "/tracking_fault",
+      "datatype": "std_msgs/Bool",
+      "callerid": "/whole_body_mppi"
+    },
+    {
+      "topic": "/move_base_simple/goal",
+      "datatype": "geometry_msgs/PoseStamped",
+      "callerid": "/rviz"
+    },
+    {
+      "topic": "/planning/trajectory",
+      "datatype": "quadrotor_msgs/PolynomialTraj",
+      "callerid": "/remani_planner_node"
+    },
+    {
+      "topic": "/planning/finish",
+      "datatype": "std_msgs/Bool",
+      "callerid": "/remani_planner_node"
+    }
+  ],
+  "status_by_period": {
+    "before_goal": {
+      "command_delivered": {
+        "n": 610,
+        "false_flags": {},
+        "map_age_ms": {
+          "n": 610,
+          "mean": 248.47036393442622,
+          "min": 132.958,
+          "median": 246.136,
+          "p95": 340.223,
+          "max": 349.832
+        },
+        "cycle_ms": {
+          "n": 610,
+          "mean": 69.12824590163935,
+          "min": 43.79,
+          "median": 66.735,
+          "p95": 92.45,
+          "max": 98.32
+        }
+      },
+      "collision_snapshot_unavailable": {
+        "n": 210,
+        "false_flags": {
+          "map_age_ok": 210,
+          "snapshot_valid": 128,
+          "dynamic_age_ok": 2,
+          "dynamic_valid": 2
+        },
+        "map_age_ms": {
+          "n": 210,
+          "mean": 398.72292857142855,
+          "min": 350.147,
+          "median": 386.703,
+          "p95": 474.476,
+          "max": 540.079
+        },
+        "cycle_ms": {
+          "n": 210,
+          "mean": 1.1713809523809524,
+          "min": 0.25,
+          "median": 0.53,
+          "p95": 4.29,
+          "max": 21.88
+        }
+      },
+      "collision_snapshot_expired_during_plan": {
+        "n": 105,
+        "false_flags": {
+          "map_age_ok": 105,
+          "snapshot_valid": 48
+        },
+        "map_age_ms": {
+          "n": 105,
+          "mean": 376.21053333333333,
+          "min": 350.26,
+          "median": 372.832,
+          "p95": 413.887,
+          "max": 429.172
+        },
+        "cycle_ms": {
+          "n": 105,
+          "mean": 67.94180952380952,
+          "min": 40.0,
+          "median": 66.45,
+          "p95": 94.31,
+          "max": 97.3
+        }
+      },
+      "planning_deadline_exceeded": {
+        "n": 135,
+        "false_flags": {},
+        "map_age_ms": {
+          "n": 135,
+          "mean": 274.2380888888889,
+          "min": 134.163,
+          "median": 283.635,
+          "p95": 341.737,
+          "max": 348.061
+        },
+        "cycle_ms": {
+          "n": 135,
+          "mean": 115.34777777777778,
+          "min": 95.49,
+          "median": 108.78,
+          "p95": 152.68,
+          "max": 218.81
+        }
+      },
+      "delivery_deadline_exceeded": {
+        "n": 63,
+        "false_flags": {},
+        "map_age_ms": {
+          "n": 63,
+          "mean": 257.30677777777777,
+          "min": 136.269,
+          "median": 266.515,
+          "p95": 336.204,
+          "max": 349.234
+        },
+        "cycle_ms": {
+          "n": 63,
+          "mean": 102.26761904761905,
+          "min": 95.63,
+          "median": 101.4,
+          "p95": 112.98,
+          "max": 116.2
+        }
+      },
+      "inputs_expired_before_delivery": {
+        "n": 43,
+        "false_flags": {
+          "map_age_ok": 40,
+          "base_fresh": 4
+        },
+        "map_age_ms": {
+          "n": 43,
+          "mean": 347.9362325581395,
+          "min": 197.879,
+          "median": 352.801,
+          "p95": 366.552,
+          "max": 367.327
+        },
+        "cycle_ms": {
+          "n": 43,
+          "mean": 84.8006976744186,
+          "min": 57.31,
+          "median": 83.37,
+          "p95": 109.29,
+          "max": 111.44
+        }
+      },
+      "reference_changed_during_plan": {
+        "n": 1,
+        "false_flags": {},
+        "map_age_ms": {
+          "n": 1,
+          "mean": 187.035,
+          "min": 187.035,
+          "median": 187.035,
+          "p95": 187.035,
+          "max": 187.035
+        },
+        "cycle_ms": {
+          "n": 1,
+          "mean": 82.35,
+          "min": 82.35,
+          "median": 82.35,
+          "p95": 82.35,
+          "max": 82.35
+        }
+      }
+    },
+    "navigation": {
+      "command_delivered": {
+        "n": 310,
+        "false_flags": {},
+        "map_age_ms": {
+          "n": 310,
+          "mean": 263.9569193548387,
+          "min": 141.797,
+          "median": 269.442,
+          "p95": 332.606,
+          "max": 349.725
+        },
+        "cycle_ms": {
+          "n": 310,
+          "mean": 41.51538709677419,
+          "min": 6.35,
+          "median": 40.05,
+          "p95": 64.43,
+          "max": 97.39
+        }
+      },
+      "state_feedback_stale": {
+        "n": 1,
+        "false_flags": {
+          "joint_fresh": 1
+        },
+        "map_age_ms": {
+          "n": 1,
+          "mean": 229.945,
+          "min": 229.945,
+          "median": 229.945,
+          "p95": 229.945,
+          "max": 229.945
+        },
+        "cycle_ms": {
+          "n": 1,
+          "mean": 17.88,
+          "min": 17.88,
+          "median": 17.88,
+          "p95": 17.88,
+          "max": 17.88
+        }
+      },
+      "collision_snapshot_expired_during_plan": {
+        "n": 34,
+        "false_flags": {
+          "map_age_ok": 34,
+          "snapshot_valid": 2
+        },
+        "map_age_ms": {
+          "n": 34,
+          "mean": 361.99997058823527,
+          "min": 350.886,
+          "median": 362.684,
+          "p95": 374.44,
+          "max": 390.472
+        },
+        "cycle_ms": {
+          "n": 34,
+          "mean": 25.026470588235295,
+          "min": 8.97,
+          "median": 23.515,
+          "p95": 44.06,
+          "max": 47.69
+        }
+      },
+      "collision_snapshot_unavailable": {
+        "n": 15,
+        "false_flags": {
+          "map_age_ok": 15,
+          "snapshot_valid": 7
+        },
+        "map_age_ms": {
+          "n": 15,
+          "mean": 385.5592666666667,
+          "min": 368.079,
+          "median": 388.059,
+          "p95": 397.222,
+          "max": 397.222
+        },
+        "cycle_ms": {
+          "n": 15,
+          "mean": 0.658,
+          "min": 0.39,
+          "median": 0.55,
+          "p95": 1.6,
+          "max": 1.6
+        }
+      },
+      "inputs_expired_before_delivery": {
+        "n": 8,
+        "false_flags": {
+          "map_age_ok": 8
+        },
+        "map_age_ms": {
+          "n": 8,
+          "mean": 356.456125,
+          "min": 352.361,
+          "median": 355.9425,
+          "p95": 360.834,
+          "max": 360.834
+        },
+        "cycle_ms": {
+          "n": 8,
+          "mean": 35.21,
+          "min": 17.63,
+          "median": 29.660000000000004,
+          "p95": 70.55,
+          "max": 70.55
+        }
+      },
+      "delivery_deadline_exceeded": {
+        "n": 2,
+        "false_flags": {},
+        "map_age_ms": {
+          "n": 2,
+          "mean": 230.042,
+          "min": 229.05,
+          "median": 230.042,
+          "p95": 231.034,
+          "max": 231.034
+        },
+        "cycle_ms": {
+          "n": 2,
+          "mean": 97.685,
+          "min": 96.42,
+          "median": 97.685,
+          "p95": 98.95,
+          "max": 98.95
+        }
+      }
+    },
+    "after_finish": {
+      "command_delivered": {
+        "n": 774,
+        "false_flags": {},
+        "map_age_ms": {
+          "n": 774,
+          "mean": 275.07933333333335,
+          "min": 154.878,
+          "median": 283.972,
+          "p95": 342.292,
+          "max": 349.683
+        },
+        "cycle_ms": {
+          "n": 774,
+          "mean": 66.66277777777778,
+          "min": 44.51,
+          "median": 64.07499999999999,
+          "p95": 92.72,
+          "max": 102.1
+        }
+      },
+      "planning_deadline_exceeded": {
+        "n": 61,
+        "false_flags": {},
+        "map_age_ms": {
+          "n": 61,
+          "mean": 265.876131147541,
+          "min": 154.342,
+          "median": 282.928,
+          "p95": 341.446,
+          "max": 346.654
+        },
+        "cycle_ms": {
+          "n": 61,
+          "mean": 108.47196721311475,
+          "min": 95.47,
+          "median": 103.91,
+          "p95": 140.13,
+          "max": 153.91
+        }
+      },
+      "collision_snapshot_expired_during_plan": {
+        "n": 100,
+        "false_flags": {
+          "map_age_ok": 100,
+          "snapshot_valid": 52
+        },
+        "map_age_ms": {
+          "n": 100,
+          "mean": 376.3648,
+          "min": 350.224,
+          "median": 376.09450000000004,
+          "p95": 403.126,
+          "max": 441.573
+        },
+        "cycle_ms": {
+          "n": 100,
+          "mean": 59.4114,
+          "min": 39.39,
+          "median": 56.730000000000004,
+          "p95": 85.14,
+          "max": 100.48
+        }
+      },
+      "collision_snapshot_unavailable": {
+        "n": 144,
+        "false_flags": {
+          "map_age_ok": 144,
+          "snapshot_valid": 71
+        },
+        "map_age_ms": {
+          "n": 144,
+          "mean": 391.9089930555556,
+          "min": 350.15,
+          "median": 383.0525,
+          "p95": 448.368,
+          "max": 596.507
+        },
+        "cycle_ms": {
+          "n": 144,
+          "mean": 0.9038194444444444,
+          "min": 0.28,
+          "median": 0.545,
+          "p95": 2.49,
+          "max": 8.07
+        }
+      },
+      "inputs_expired_before_delivery": {
+        "n": 48,
+        "false_flags": {
+          "map_age_ok": 47,
+          "base_fresh": 3
+        },
+        "map_age_ms": {
+          "n": 48,
+          "mean": 354.77177083333333,
+          "min": 246.51,
+          "median": 354.6175,
+          "p95": 370.574,
+          "max": 384.463
+        },
+        "cycle_ms": {
+          "n": 48,
+          "mean": 75.47145833333333,
+          "min": 47.86,
+          "median": 71.135,
+          "p95": 104.34,
+          "max": 110.84
+        }
+      },
+      "delivery_deadline_exceeded": {
+        "n": 74,
+        "false_flags": {},
+        "map_age_ms": {
+          "n": 74,
+          "mean": 261.75308108108106,
+          "min": 197.987,
+          "median": 243.15249999999997,
+          "p95": 339.483,
+          "max": 345.803
+        },
+        "cycle_ms": {
+          "n": 74,
+          "mean": 101.20797297297297,
+          "min": 96.28,
+          "median": 99.63,
+          "p95": 110.85,
+          "max": 116.25
+        }
+      },
+      "feedback_expired_during_plan": {
+        "n": 1,
+        "false_flags": {
+          "base_fresh": 1
+        },
+        "map_age_ms": {
+          "n": 1,
+          "mean": 210.035,
+          "min": 210.035,
+          "median": 210.035,
+          "p95": 210.035,
+          "max": 210.035
+        },
+        "cycle_ms": {
+          "n": 1,
+          "mean": 96.72,
+          "min": 96.72,
+          "median": 96.72,
+          "p95": 96.72,
+          "max": 96.72
+        }
+      },
+      "state_feedback_stale": {
+        "n": 1,
+        "false_flags": {
+          "base_fresh": 1,
+          "map_age_ok": 1,
+          "snapshot_valid": 1
+        },
+        "map_age_ms": {
+          "n": 1,
+          "mean": 450.4,
+          "min": 450.4,
+          "median": 450.4,
+          "p95": 450.4,
+          "max": 450.4
+        },
+        "cycle_ms": {
+          "n": 1,
+          "mean": 5.64,
+          "min": 5.64,
+          "median": 5.64,
+          "p95": 5.64,
+          "max": 5.64
+        }
+      }
+    }
+  },
+  "freeze_intervals": [
+    {
+      "value": "progressing",
+      "t_start": 1794643929.6032503,
+      "t_end": 1794643934.903011,
+      "samples": 531,
+      "duration_to_next_s": 5.3097474575042725,
+      "rel_start": 0.5750410556793213,
+      "rel_end": 5.874801874160767,
+      "status_counts": {
+        "state_feedback_stale": 1,
+        "collision_snapshot_expired_during_plan": 4,
+        "command_delivered": 45,
+        "collision_snapshot_unavailable": 3
+      },
+      "phase_first": 0.00048264300000000005,
+      "phase_last": 3.7461675412804385,
+      "map_age_ok_false": 7,
+      "joint_fresh_false": 1,
+      "base_fresh_false": 0
+    },
+    {
+      "value": "frozen",
+      "t_start": 1794643934.9129977,
+      "t_end": 1794643938.1829617,
+      "samples": 328,
+      "duration_to_next_s": 3.279982805252075,
+      "rel_start": 5.884788513183594,
+      "rel_end": 9.154752492904663,
+      "status_counts": {
+        "command_delivered": 25,
+        "collision_snapshot_expired_during_plan": 6,
+        "inputs_expired_before_delivery": 2
+      },
+      "phase_first": 3.7461675412804385,
+      "phase_last": 3.7461675412804385,
+      "map_age_ok_false": 8,
+      "joint_fresh_false": 0,
+      "base_fresh_false": 0
+    },
+    {
+      "value": "progressing",
+      "t_start": 1794643938.1929805,
+      "t_end": 1794643939.1929736,
+      "samples": 101,
+      "duration_to_next_s": 1.0099973678588867,
+      "rel_start": 9.164771318435669,
+      "rel_end": 10.164764404296875,
+      "status_counts": {
+        "command_delivered": 10
+      },
+      "phase_first": 3.746247843789874,
+      "phase_last": 4.06045396909252,
+      "map_age_ok_false": 0,
+      "joint_fresh_false": 0,
+      "base_fresh_false": 0
+    },
+    {
+      "value": "frozen",
+      "t_start": 1794643939.202978,
+      "t_end": 1794643940.5829716,
+      "samples": 139,
+      "duration_to_next_s": 1.3900151252746582,
+      "rel_start": 10.174768686294556,
+      "rel_end": 11.554762363433838,
+      "status_counts": {
+        "command_delivered": 13
+      },
+      "phase_first": 4.06045396909252,
+      "phase_last": 4.06045396909252,
+      "map_age_ok_false": 0,
+      "joint_fresh_false": 0,
+      "base_fresh_false": 0
+    },
+    {
+      "value": "progressing",
+      "t_start": 1794643940.592993,
+      "t_end": 1794643964.5530446,
+      "samples": 2397,
+      "duration_to_next_s": 23.969960927963257,
+      "rel_start": 11.564783811569214,
+      "rel_end": 35.52483534812927,
+      "status_counts": {
+        "command_delivered": 202,
+        "collision_snapshot_expired_during_plan": 23,
+        "collision_snapshot_unavailable": 10,
+        "inputs_expired_before_delivery": 4,
+        "delivery_deadline_exceeded": 2
+      },
+      "phase_first": 4.060534303922135,
+      "phase_last": 13.478909015036535,
+      "map_age_ok_false": 37,
+      "joint_fresh_false": 0,
+      "base_fresh_false": 0
+    },
+    {
+      "value": "frozen",
+      "t_start": 1794643964.562954,
+      "t_end": 1794643966.0929685,
+      "samples": 154,
+      "duration_to_next_s": 1.5300145149230957,
+      "rel_start": 35.53474473953247,
+      "rel_end": 37.064759254455566,
+      "status_counts": {
+        "command_delivered": 10,
+        "collision_snapshot_unavailable": 2,
+        "inputs_expired_before_delivery": 2,
+        "collision_snapshot_expired_during_plan": 1
+      },
+      "phase_first": 13.48169309704538,
+      "phase_last": 13.48169309704538,
+      "map_age_ok_false": 5,
+      "joint_fresh_false": 0,
+      "base_fresh_false": 0
+    }
+  ],
+  "log_events": [
+    {
+      "t": 1794643926.4433897,
+      "bag": 1794643926.4500039,
+      "name": "/piper_ctrl_single_node",
+      "level": 4,
+      "msg": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled.",
+      "rel": -2.5848195552825928
+    },
+    {
+      "t": 1794643926.8656607,
+      "bag": 1794643926.8734674,
+      "name": "/piper_ctrl_single_node",
+      "level": 4,
+      "msg": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled.",
+      "rel": -2.162548542022705
+    },
+    {
+      "t": 1794643927.6355605,
+      "bag": 1794643927.6391616,
+      "name": "/piper_ctrl_single_node",
+      "level": 4,
+      "msg": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled.",
+      "rel": -1.392648696899414
+    },
+    {
+      "t": 1794643927.8791635,
+      "bag": 1794643927.886868,
+      "name": "/piper_ctrl_single_node",
+      "level": 4,
+      "msg": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled.",
+      "rel": -1.149045705795288
+    },
+    {
+      "t": 1794643929.0368369,
+      "bag": 1794643929.0458374,
+      "name": "/remani_planner_node",
+      "level": 2,
+      "msg": "[FSM] Manual target keeps current arm pose. Restore stand-by after goal: false",
+      "rel": 0.008627653121948242
+    },
+    {
+      "t": 1794643929.037098,
+      "bag": 1794643929.0512981,
+      "name": "/remani_planner_node",
+      "level": 2,
+      "msg": "[FSM] Frozen planning-boundary ESDF requirement at seq=1186 in GEN_NEW_TRAJ.",
+      "rel": 0.008888721466064453
+    },
+    {
+      "t": 1794643929.0371728,
+      "bag": 1794643929.0519953,
+      "name": "/remani_planner_node",
+      "level": 2,
+      "msg": "[FSM] Wait for required ESDF in GEN_NEW_TRAJ (required_seq=1186, esdf_seq=1185, wait=0.00 s).",
+      "rel": 0.008963584899902344
+    },
+    {
+      "t": 1794643929.603621,
+      "bag": 1794643929.636409,
+      "name": "/mm_controller_node",
+      "level": 2,
+      "msg": "[MMctrl] Terminal yaw captured from trajectory: 1.578 rad.",
+      "rel": 0.5754117965698242
+    },
+    {
+      "t": 1794643929.6037204,
+      "bag": 1794643929.6381333,
+      "name": "/mm_controller_node",
+      "level": 2,
+      "msg": "[MMctrl] Reset virtual trajectory clock for update 1.",
+      "rel": 0.5755112171173096
+    },
+    {
+      "t": 1794643929.603828,
+      "bag": 1794643929.64723,
+      "name": "/mm_controller_node",
+      "level": 2,
+      "msg": "[MMctrl] Receive the trajectory. STAY --> POLY_TRAJ",
+      "rel": 0.5756187438964844
+    },
+    {
+      "t": 1794643929.849057,
+      "bag": 1794643929.8687472,
+      "name": "/piper_ctrl_single_node",
+      "level": 4,
+      "msg": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled.",
+      "rel": 0.820847749710083
+    },
+    {
+      "t": 1794643931.3630679,
+      "bag": 1794643931.369755,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.081 m yaw=0.079 rad; scale whole-body progress to 0.99.",
+      "rel": 2.3348586559295654
+    },
+    {
+      "t": 1794643932.3731434,
+      "bag": 1794643932.4055848,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.120 m yaw=0.025 rad; scale whole-body progress to 0.55.",
+      "rel": 3.3449342250823975
+    },
+    {
+      "t": 1794643933.383115,
+      "bag": 1794643933.4462311,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.127 m yaw=0.094 rad; scale whole-body progress to 0.47.",
+      "rel": 4.354905843734741
+    },
+    {
+      "t": 1794643934.3831096,
+      "bag": 1794643934.4352355,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.084 m yaw=0.461 rad; scale whole-body progress to 0.37.",
+      "rel": 5.354900360107422
+    },
+    {
+      "t": 1794643934.9131455,
+      "bag": 1794643934.9411352,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag (position 0.050 m, yaw 0.553 rad); freeze reference progress until feedback catches up.",
+      "rel": 5.884936332702637
+    },
+    {
+      "t": 1794643938.1934292,
+      "bag": 1794643938.2165382,
+      "name": "/mm_controller_node",
+      "level": 2,
+      "msg": "[MMctrl] Base tracking recovered (position 0.036 m, yaw 0.129 rad).",
+      "rel": 9.165220022201538
+    },
+    {
+      "t": 1794643938.6831775,
+      "bag": 1794643938.6862395,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.032 m yaw=0.252 rad; scale whole-body progress to 0.99.",
+      "rel": 9.65496826171875
+    },
+    {
+      "t": 1794643939.203124,
+      "bag": 1794643939.3044095,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag (position 0.025 m, yaw 0.551 rad); freeze reference progress until feedback catches up.",
+      "rel": 10.174914836883545
+    },
+    {
+      "t": 1794643940.5931299,
+      "bag": 1794643940.5982115,
+      "name": "/mm_controller_node",
+      "level": 2,
+      "msg": "[MMctrl] Base tracking recovered (position 0.026 m, yaw 0.132 rad).",
+      "rel": 11.564920663833618
+    },
+    {
+      "t": 1794643942.1630905,
+      "bag": 1794643942.271007,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.032 m yaw=0.255 rad; scale whole-body progress to 0.99.",
+      "rel": 13.134881258010864
+    },
+    {
+      "t": 1794643943.1631114,
+      "bag": 1794643943.2120645,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.041 m yaw=0.470 rad; scale whole-body progress to 0.34.",
+      "rel": 14.134902238845825
+    },
+    {
+      "t": 1794643944.1730857,
+      "bag": 1794643944.2081995,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.051 m yaw=0.456 rad; scale whole-body progress to 0.38.",
+      "rel": 15.144876480102539
+    },
+    {
+      "t": 1794643945.1732543,
+      "bag": 1794643945.1756582,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.082 m yaw=0.368 rad; scale whole-body progress to 0.65.",
+      "rel": 16.145045042037964
+    },
+    {
+      "t": 1794643946.1830826,
+      "bag": 1794643946.2020705,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.127 m yaw=0.182 rad; scale whole-body progress to 0.47.",
+      "rel": 17.154873371124268
+    },
+    {
+      "t": 1794643947.18337,
+      "bag": 1794643947.1949472,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.139 m yaw=0.086 rad; scale whole-body progress to 0.34.",
+      "rel": 18.155160903930664
+    },
+    {
+      "t": 1794643948.1832526,
+      "bag": 1794643948.2059286,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.136 m yaw=0.158 rad; scale whole-body progress to 0.37.",
+      "rel": 19.155043363571167
+    },
+    {
+      "t": 1794643949.1931837,
+      "bag": 1794643949.2001154,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.119 m yaw=0.112 rad; scale whole-body progress to 0.57.",
+      "rel": 20.164974451065063
+    },
+    {
+      "t": 1794643950.2031157,
+      "bag": 1794643950.2304165,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.148 m yaw=0.078 rad; scale whole-body progress to 0.23.",
+      "rel": 21.174906492233276
+    },
+    {
+      "t": 1794643951.2131324,
+      "bag": 1794643951.2759755,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.133 m yaw=0.060 rad; scale whole-body progress to 0.41.",
+      "rel": 22.18492317199707
+    },
+    {
+      "t": 1794643952.2231731,
+      "bag": 1794643952.2362356,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.135 m yaw=0.014 rad; scale whole-body progress to 0.38.",
+      "rel": 23.194963932037354
+    },
+    {
+      "t": 1794643953.233285,
+      "bag": 1794643953.2453587,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.134 m yaw=0.001 rad; scale whole-body progress to 0.39.",
+      "rel": 24.20507574081421
+    },
+    {
+      "t": 1794643954.2431011,
+      "bag": 1794643954.2460995,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.139 m yaw=0.016 rad; scale whole-body progress to 0.34.",
+      "rel": 25.21489191055298
+    },
+    {
+      "t": 1794643955.2531087,
+      "bag": 1794643955.2662072,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.136 m yaw=0.028 rad; scale whole-body progress to 0.37.",
+      "rel": 26.224899530410767
+    },
+    {
+      "t": 1794643956.263093,
+      "bag": 1794643956.2657773,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.146 m yaw=0.045 rad; scale whole-body progress to 0.26.",
+      "rel": 27.234883785247803
+    },
+    {
+      "t": 1794643957.2731187,
+      "bag": 1794643957.3648872,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.146 m yaw=0.048 rad; scale whole-body progress to 0.25.",
+      "rel": 28.244909524917603
+    },
+    {
+      "t": 1794643958.2832296,
+      "bag": 1794643958.287123,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.151 m yaw=0.062 rad; scale whole-body progress to 0.20.",
+      "rel": 29.25502038002014
+    },
+    {
+      "t": 1794643958.5358267,
+      "bag": 1794643958.5400488,
+      "name": "/piper_ctrl_single_node",
+      "level": 4,
+      "msg": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled.",
+      "rel": 29.507617473602295
+    },
+    {
+      "t": 1794643959.2831738,
+      "bag": 1794643959.286598,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.151 m yaw=0.068 rad; scale whole-body progress to 0.20.",
+      "rel": 30.254964590072632
+    },
+    {
+      "t": 1794643960.293123,
+      "bag": 1794643960.2974749,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.135 m yaw=0.072 rad; scale whole-body progress to 0.38.",
+      "rel": 31.26491379737854
+    },
+    {
+      "t": 1794643961.2931635,
+      "bag": 1794643961.2969084,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.132 m yaw=0.040 rad; scale whole-body progress to 0.41.",
+      "rel": 32.26495432853699
+    },
+    {
+      "t": 1794643962.2932541,
+      "bag": 1794643962.296225,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.120 m yaw=0.027 rad; scale whole-body progress to 0.55.",
+      "rel": 33.265044927597046
+    },
+    {
+      "t": 1794643963.293225,
+      "bag": 1794643963.2998986,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.117 m yaw=0.174 rad; scale whole-body progress to 0.59.",
+      "rel": 34.265015840530396
+    },
+    {
+      "t": 1794643964.3034313,
+      "bag": 1794643964.3065095,
+      "name": "/mm_controller_node",
+      "level": 4,
+      "msg": "[MMctrl] Base tracking lag position=0.078 m yaw=0.359 rad; scale whole-body progress to 0.67.",
+      "rel": 35.275222063064575
+    },
+    {
+      "t": 1794643964.5456655,
+      "bag": 1794643964.5566168,
+      "name": "/remani_planner_node",
+      "level": 2,
+      "msg": "[FSM] Final position reached; wait for bounded MPPI yaw/arm settling (yaw=0.376 rad, arm=0.004 rad, 0.0/8.0 s).",
+      "rel": 35.51745629310608
+    },
+    {
+      "t": 1794643964.56308,
+      "bag": 1794643964.5710669,
+      "name": "/mm_controller_node",
+      "level": 2,
+      "msg": "[MMctrl] Stop execute the trajectory. POLY_TRAJ --> STAY",
+      "rel": 35.534870862960815
+    },
+    {
+      "t": 1794643965.5513628,
+      "bag": 1794643965.5593896,
+      "name": "/remani_planner_node",
+      "level": 2,
+      "msg": "[FSM] Final position reached; wait for bounded MPPI yaw/arm settling (yaw=0.231 rad, arm=0.004 rad, 1.0/8.0 s).",
+      "rel": 36.52315354347229
+    },
+    {
+      "t": 1794643966.9475417,
+      "bag": 1794643966.951923,
+      "name": "/piper_ctrl_single_node",
+      "level": 4,
+      "msg": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled.",
+      "rel": 37.91933250427246
+    },
+    {
+      "t": 1794643967.8448853,
+      "bag": 1794643967.8481982,
+      "name": "/piper_ctrl_single_node",
+      "level": 4,
+      "msg": "Piper command stream expired; retaining last bounded joint target, awaiting a new source-stamped command. Motors remain enabled.",
+      "rel": 38.81667613983154
+    }
+  ],
+  "delivered_angular_sign_changes": [
+    {
+      "t": 1794643931.2894177,
+      "rel": 2.2612085342407227,
+      "prev_rel": 1.9472029209136963,
+      "w": 0.0676403529441556,
+      "v": 0.1851869091516828,
+      "phase": 1.620996922813355,
+      "scale": 1.0,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643930.9754121,
+        "sign": -1,
+        "w": -0.03791674040207571,
+        "v": 0.1551039448258375,
+        "phase": 1.3211269688941651,
+        "scale": 1.0,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643933.7422166,
+      "rel": 4.714007377624512,
+      "prev_rel": 4.4241883754730225,
+      "w": -0.06114282897909362,
+      "v": 0.07996261845621509,
+      "phase": 3.237755717693654,
+      "scale": 0.6304987048627233,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643933.4523976,
+        "sign": 1,
+        "w": 0.08292234247102037,
+        "v": 0.07993124870082592,
+        "phase": 3.0651001892339664,
+        "scale": 0.4886355404184443,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643935.8499064,
+      "rel": 6.821697235107422,
+      "prev_rel": 6.628822326660156,
+      "w": 0.35,
+      "v": 0.0,
+      "phase": 3.7461675412804385,
+      "scale": 0.0,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643935.6570315,
+        "sign": -1,
+        "w": -0.24399048089663555,
+        "v": 0.03586752223506517,
+        "phase": 3.7461675412804385,
+        "scale": 0.0,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643938.2483366,
+      "rel": 9.22012734413147,
+      "prev_rel": 9.143478631973267,
+      "w": -0.35,
+      "v": 0.03672072290856892,
+      "phase": 3.747048055394426,
+      "scale": 0.03199723520000001,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643938.1716878,
+        "sign": 1,
+        "w": 0.2976998117214863,
+        "v": 0.0,
+        "phase": 3.7461675412804385,
+        "scale": 0.0,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643939.247699,
+      "rel": 10.219489812850952,
+      "prev_rel": 10.124184846878052,
+      "w": 0.35,
+      "v": 0.0,
+      "phase": 4.06045396909252,
+      "scale": 0.0,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643939.152394,
+        "sign": -1,
+        "w": -0.35,
+        "v": 0.0247450262054611,
+        "phase": 4.046132371849113,
+        "scale": 0.2751331330026043,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643940.8523202,
+      "rel": 11.824110984802246,
+      "prev_rel": 11.748781442642212,
+      "w": -0.35,
+      "v": 0.006098781664332649,
+      "phase": 4.084489907863154,
+      "scale": 0.18396479120000003,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643940.7769907,
+        "sign": 1,
+        "w": 0.18711898341602584,
+        "v": 0.0,
+        "phase": 4.069212054580389,
+        "scale": 0.11202241280000001,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643940.9666548,
+      "rel": 11.938445568084717,
+      "prev_rel": 11.824110984802246,
+      "w": 0.0916048022229191,
+      "v": 0.0,
+      "phase": 4.108177851790782,
+      "scale": 0.2640047408,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643940.8523202,
+        "sign": -1,
+        "w": -0.35,
+        "v": 0.006098781664332649,
+        "phase": 4.084489907863154,
+        "scale": 0.18396479120000003,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643941.0450687,
+      "rel": 12.016859531402588,
+      "prev_rel": 11.938445568084717,
+      "w": -0.35,
+      "v": 0.005073764398180981,
+      "phase": 4.140240211619568,
+      "scale": 0.3519900136,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643940.9666548,
+        "sign": 1,
+        "w": 0.0916048022229191,
+        "v": 0.0,
+        "phase": 4.108177851790782,
+        "scale": 0.2640047408,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643941.446006,
+      "rel": 12.417796850204468,
+      "prev_rel": 12.337976217269897,
+      "w": 0.35,
+      "v": -0.029552415265015203,
+      "phase": 4.346710087851353,
+      "scale": 0.67203978,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643941.3661854,
+        "sign": -1,
+        "w": -0.35,
+        "v": 0.00793566391393266,
+        "phase": 4.282902187874312,
+        "scale": 0.5840035616,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643951.6522274,
+      "rel": 22.62401819229126,
+      "prev_rel": 21.6237051486969,
+      "w": -0.020603141084761134,
+      "v": -0.07999575514331413,
+      "phase": 8.909670904859343,
+      "scale": 0.23054220974309653,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643950.6519144,
+        "sign": 1,
+        "w": 0.03151325719832876,
+        "v": -0.07999006935166803,
+        "phase": 8.603627976490412,
+        "scale": 0.3515583316164629,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643951.9496653,
+      "rel": 22.92145609855652,
+      "prev_rel": 22.62401819229126,
+      "w": 0.027371725729993024,
+      "v": -0.07999250800324607,
+      "phase": 9.003067231041726,
+      "scale": 0.35770495991506107,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643951.6522274,
+        "sign": -1,
+        "w": -0.020603141084761134,
+        "v": -0.07999575514331413,
+        "phase": 8.909670904859343,
+        "scale": 0.23054220974309653,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643955.3469627,
+      "rel": 26.318753480911255,
+      "prev_rel": 25.643768310546875,
+      "w": -0.03075625568867757,
+      "v": -0.07999054071377872,
+      "phase": 10.024978515410114,
+      "scale": 0.35146449899369325,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643954.6719775,
+        "sign": 1,
+        "w": 0.021431053019599133,
+        "v": -0.0799954071436119,
+        "phase": 9.810806879618616,
+        "scale": 0.27140832893835093,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643960.5769658,
+      "rel": 31.54875659942627,
+      "prev_rel": 31.13357663154602,
+      "w": 0.03382123412642368,
+      "v": -0.07998856151381323,
+      "phase": 11.332886260985516,
+      "scale": 0.31532702855617073,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643960.1617858,
+        "sign": -1,
+        "w": -0.021607834755027255,
+        "v": -0.07999533106018729,
+        "phase": 11.189444866096,
+        "scale": 0.30920192962344345,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643961.0566235,
+      "rel": 32.028414249420166,
+      "prev_rel": 31.54875659942627,
+      "w": -0.02126812453425231,
+      "v": -0.0799954767114139,
+      "phase": 11.507002014552443,
+      "scale": 0.3946315636363517,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643960.5769658,
+        "sign": 1,
+        "w": 0.03382123412642368,
+        "v": -0.07998856151381323,
+        "phase": 11.332886260985516,
+        "scale": 0.31532702855617073,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643961.7796094,
+      "rel": 32.75140023231506,
+      "prev_rel": 32.33740568161011,
+      "w": 0.023410819333831157,
+      "v": -0.07999451939795942,
+      "phase": 11.765529920089604,
+      "scale": 0.41748492928996517,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643961.365615,
+        "sign": -1,
+        "w": -0.03938463179813301,
+        "v": -0.0799844890090381,
+        "phase": 11.608993779503606,
+        "scale": 0.3193983304122891,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643962.4586926,
+      "rel": 33.43048334121704,
+      "prev_rel": 33.2448947429657,
+      "w": -0.022910102244312114,
+      "v": -0.07999475132954535,
+      "phase": 12.088056450800062,
+      "scale": 0.5160841984739002,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643962.273104,
+        "sign": 1,
+        "w": 0.03008718232019092,
+        "v": -0.0799909477853192,
+        "phase": 11.991259162391087,
+        "scale": 0.48716957630378394,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643963.3529487,
+      "rel": 34.32473945617676,
+      "prev_rel": 33.83433175086975,
+      "w": 0.05092165202178478,
+      "v": -0.07997407125429948,
+      "phase": 12.644078673868037,
+      "scale": 0.5763376289686699,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643962.862541,
+        "sign": -1,
+        "w": -0.046411957871946186,
+        "v": -0.07997846026831776,
+        "phase": 12.322068213795468,
+        "scale": 0.6640177299353154,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643963.7620916,
+      "rel": 34.733882427215576,
+      "prev_rel": 34.526230812072754,
+      "w": -0.024156135737064766,
+      "v": -0.0799941648819985,
+      "phase": 12.886724417087635,
+      "scale": 0.6763023500668711,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643963.55444,
+        "sign": 1,
+        "w": 0.024135674509770055,
+        "v": -0.07999417476285552,
+        "phase": 12.7565909118746,
+        "scale": 0.5769821017852101,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643964.0526748,
+      "rel": 35.024465560913086,
+      "prev_rel": 34.82789444923401,
+      "w": 0.09558237835895866,
+      "v": -0.07990865747696792,
+      "phase": 13.114325054303437,
+      "scale": 0.7764462080898599,
+      "gear": null,
+      "mode": "nominal",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643963.8561037,
+        "sign": -1,
+        "w": -0.0313551323555572,
+        "v": -0.07999016875811733,
+        "phase": 12.959066874483238,
+        "scale": 0.7506727826447517,
+        "gear": null,
+        "mode": "nominal"
+      }
+    },
+    {
+      "t": 1794643964.6566496,
+      "rel": 35.628440380096436,
+      "prev_rel": 35.439027309417725,
+      "w": -0.35,
+      "v": 0.0,
+      "phase": null,
+      "scale": null,
+      "gear": null,
+      "mode": "terminal_pose_alignment",
+      "selection": null,
+      "family": null,
+      "previous": {
+        "t": 1794643964.4672365,
+        "sign": 1,
+        "w": 0.09725920441385227,
+        "v": -0.07069243682436122,
+        "phase": 13.395573399961544,
+        "scale": 0.6625199064897518,
+        "gear": null,
+        "mode": "nominal"
+      }
+    }
+  ],
+  "cmd_zero_nonzero_intervals": [
+    {
+      "value": "zero",
+      "t_start": 1794643929.1097054,
+      "t_end": 1794643929.752115,
+      "samples": 8,
+      "duration_to_next_s": 0.7492361068725586,
+      "rel_start": 0.0814962387084961,
+      "rel_end": 0.7239058017730713,
+      "near_status_counts": {
+        "command_delivered": 5,
+        "state_feedback_stale": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643929.8589416,
+      "t_end": 1794643930.6687818,
+      "samples": 9,
+      "duration_to_next_s": 0.8734848499298096,
+      "rel_start": 0.8307323455810547,
+      "rel_end": 1.6405725479125977,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 9
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643930.7324264,
+      "t_end": 1794643930.7324264,
+      "samples": 1,
+      "duration_to_next_s": 0.13404297828674316,
+      "rel_start": 1.7042171955108643,
+      "rel_end": 1.7042171955108643,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643930.8664694,
+      "t_end": 1794643930.982697,
+      "samples": 2,
+      "duration_to_next_s": 0.1845412254333496,
+      "rel_start": 1.8382601737976074,
+      "rel_end": 1.9544878005981445,
+      "near_status_counts": {
+        "command_delivered": 2
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643931.0510106,
+      "t_end": 1794643931.0510106,
+      "samples": 1,
+      "duration_to_next_s": 0.13103699684143066,
+      "rel_start": 2.022801399230957,
+      "rel_end": 2.022801399230957,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643931.1820476,
+      "t_end": 1794643931.6839232,
+      "samples": 6,
+      "duration_to_next_s": 0.5638115406036377,
+      "rel_start": 2.1538383960723877,
+      "rel_end": 2.6557140350341797,
+      "near_status_counts": {
+        "command_delivered": 6
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643931.7458591,
+      "t_end": 1794643931.7458591,
+      "samples": 1,
+      "duration_to_next_s": 0.11575770378112793,
+      "rel_start": 2.7176499366760254,
+      "rel_end": 2.7176499366760254,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643931.8616168,
+      "t_end": 1794643931.9595075,
+      "samples": 2,
+      "duration_to_next_s": 0.1630418300628662,
+      "rel_start": 2.8334076404571533,
+      "rel_end": 2.93129825592041,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 2
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643932.0246587,
+      "t_end": 1794643932.0246587,
+      "samples": 1,
+      "duration_to_next_s": 0.1366736888885498,
+      "rel_start": 2.9964494705200195,
+      "rel_end": 2.9964494705200195,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643932.1613324,
+      "t_end": 1794643932.1613324,
+      "samples": 1,
+      "duration_to_next_s": 0.06388115882873535,
+      "rel_start": 3.1331231594085693,
+      "rel_end": 3.1331231594085693,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643932.2252135,
+      "t_end": 1794643932.2252135,
+      "samples": 1,
+      "duration_to_next_s": 0.12967824935913086,
+      "rel_start": 3.1970043182373047,
+      "rel_end": 3.1970043182373047,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643932.3548918,
+      "t_end": 1794643934.7839267,
+      "samples": 25,
+      "duration_to_next_s": 2.486845016479492,
+      "rel_start": 3.3266825675964355,
+      "rel_end": 5.755717515945435,
+      "near_status_counts": {
+        "command_delivered": 25
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643934.8417368,
+      "t_end": 1794643934.8417368,
+      "samples": 1,
+      "duration_to_next_s": 0.12779712677001953,
+      "rel_start": 5.813527584075928,
+      "rel_end": 5.813527584075928,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643934.969534,
+      "t_end": 1794643934.969534,
+      "samples": 1,
+      "duration_to_next_s": 0.07600569725036621,
+      "rel_start": 5.941324710845947,
+      "rel_end": 5.941324710845947,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643935.0455396,
+      "t_end": 1794643935.0455396,
+      "samples": 1,
+      "duration_to_next_s": 0.1120142936706543,
+      "rel_start": 6.0173304080963135,
+      "rel_end": 6.0173304080963135,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643935.157554,
+      "t_end": 1794643935.157554,
+      "samples": 1,
+      "duration_to_next_s": 0.08854937553405762,
+      "rel_start": 6.129344701766968,
+      "rel_end": 6.129344701766968,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643935.2461033,
+      "t_end": 1794643935.2461033,
+      "samples": 1,
+      "duration_to_next_s": 0.1160726547241211,
+      "rel_start": 6.217894077301025,
+      "rel_end": 6.217894077301025,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643935.362176,
+      "t_end": 1794643935.6599452,
+      "samples": 4,
+      "duration_to_next_s": 0.4070456027984619,
+      "rel_start": 6.3339667320251465,
+      "rel_end": 6.6317360401153564,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 4
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643935.7692215,
+      "t_end": 1794643935.7692215,
+      "samples": 1,
+      "duration_to_next_s": 0.0872495174407959,
+      "rel_start": 6.741012334823608,
+      "rel_end": 6.741012334823608,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "inputs_expired_before_delivery": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643935.856471,
+      "t_end": 1794643935.856471,
+      "samples": 1,
+      "duration_to_next_s": 0.08821630477905273,
+      "rel_start": 6.828261852264404,
+      "rel_end": 6.828261852264404,
+      "near_status_counts": {
+        "inputs_expired_before_delivery": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643935.9446874,
+      "t_end": 1794643935.9446874,
+      "samples": 1,
+      "duration_to_next_s": 0.11789703369140625,
+      "rel_start": 6.916478157043457,
+      "rel_end": 6.916478157043457,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643936.0625844,
+      "t_end": 1794643936.0625844,
+      "samples": 1,
+      "duration_to_next_s": 0.08863449096679688,
+      "rel_start": 7.034375190734863,
+      "rel_end": 7.034375190734863,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643936.151219,
+      "t_end": 1794643936.151219,
+      "samples": 1,
+      "duration_to_next_s": 0.11811518669128418,
+      "rel_start": 7.12300968170166,
+      "rel_end": 7.12300968170166,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643936.269334,
+      "t_end": 1794643936.269334,
+      "samples": 1,
+      "duration_to_next_s": 0.07528495788574219,
+      "rel_start": 7.241124868392944,
+      "rel_end": 7.241124868392944,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643936.344619,
+      "t_end": 1794643936.344619,
+      "samples": 1,
+      "duration_to_next_s": 0.10947561264038086,
+      "rel_start": 7.3164098262786865,
+      "rel_end": 7.3164098262786865,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643936.4540946,
+      "t_end": 1794643936.7616634,
+      "samples": 4,
+      "duration_to_next_s": 0.4174385070800781,
+      "rel_start": 7.425885438919067,
+      "rel_end": 7.73345422744751,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 4
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643936.8715332,
+      "t_end": 1794643936.8715332,
+      "samples": 1,
+      "duration_to_next_s": 0.09674978256225586,
+      "rel_start": 7.8433239459991455,
+      "rel_end": 7.8433239459991455,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643936.968283,
+      "t_end": 1794643937.0626714,
+      "samples": 2,
+      "duration_to_next_s": 0.22658896446228027,
+      "rel_start": 7.940073728561401,
+      "rel_end": 8.034462213516235,
+      "near_status_counts": {
+        "command_delivered": 2
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643937.194872,
+      "t_end": 1794643937.194872,
+      "samples": 1,
+      "duration_to_next_s": 0.07031464576721191,
+      "rel_start": 8.166662693023682,
+      "rel_end": 8.166662693023682,
+      "near_status_counts": {
+        "inputs_expired_before_delivery": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643937.2651865,
+      "t_end": 1794643942.563419,
+      "samples": 54,
+      "duration_to_next_s": 5.386493921279907,
+      "rel_start": 8.236977338790894,
+      "rel_end": 13.535209894180298,
+      "near_status_counts": {
+        "inputs_expired_before_delivery": 1,
+        "command_delivered": 54
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643942.6516805,
+      "t_end": 1794643942.6516805,
+      "samples": 1,
+      "duration_to_next_s": 0.1274275779724121,
+      "rel_start": 13.6234712600708,
+      "rel_end": 13.6234712600708,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643942.779108,
+      "t_end": 1794643942.779108,
+      "samples": 1,
+      "duration_to_next_s": 0.09257864952087402,
+      "rel_start": 13.750898838043213,
+      "rel_end": 13.750898838043213,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643942.8716867,
+      "t_end": 1794643942.8716867,
+      "samples": 1,
+      "duration_to_next_s": 0.08760666847229004,
+      "rel_start": 13.843477487564087,
+      "rel_end": 13.843477487564087,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643942.9592934,
+      "t_end": 1794643942.9592934,
+      "samples": 1,
+      "duration_to_next_s": 0.09058594703674316,
+      "rel_start": 13.931084156036377,
+      "rel_end": 13.931084156036377,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643943.0498793,
+      "t_end": 1794643943.0498793,
+      "samples": 1,
+      "duration_to_next_s": 0.11553740501403809,
+      "rel_start": 14.02167010307312,
+      "rel_end": 14.02167010307312,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643943.1654167,
+      "t_end": 1794643943.1654167,
+      "samples": 1,
+      "duration_to_next_s": 0.07795071601867676,
+      "rel_start": 14.137207508087158,
+      "rel_end": 14.137207508087158,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643943.2433674,
+      "t_end": 1794643943.2433674,
+      "samples": 1,
+      "duration_to_next_s": 0.13843894004821777,
+      "rel_start": 14.215158224105835,
+      "rel_end": 14.215158224105835,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643943.3818064,
+      "t_end": 1794643943.3818064,
+      "samples": 1,
+      "duration_to_next_s": 0.06260108947753906,
+      "rel_start": 14.353597164154053,
+      "rel_end": 14.353597164154053,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643943.4444075,
+      "t_end": 1794643943.4444075,
+      "samples": 1,
+      "duration_to_next_s": 0.11210870742797852,
+      "rel_start": 14.416198253631592,
+      "rel_end": 14.416198253631592,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643943.5565162,
+      "t_end": 1794643943.5565162,
+      "samples": 1,
+      "duration_to_next_s": 0.08987665176391602,
+      "rel_start": 14.52830696105957,
+      "rel_end": 14.52830696105957,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643943.6463928,
+      "t_end": 1794643943.6463928,
+      "samples": 1,
+      "duration_to_next_s": 0.11456608772277832,
+      "rel_start": 14.618183612823486,
+      "rel_end": 14.618183612823486,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643943.760959,
+      "t_end": 1794643944.2693112,
+      "samples": 6,
+      "duration_to_next_s": 0.5632240772247314,
+      "rel_start": 14.732749700546265,
+      "rel_end": 15.24110198020935,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 6
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643944.324183,
+      "t_end": 1794643944.324183,
+      "samples": 1,
+      "duration_to_next_s": 0.13406109809875488,
+      "rel_start": 15.295973777770996,
+      "rel_end": 15.295973777770996,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643944.458244,
+      "t_end": 1794643944.458244,
+      "samples": 1,
+      "duration_to_next_s": 0.07346034049987793,
+      "rel_start": 15.430034875869751,
+      "rel_end": 15.430034875869751,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643944.5317044,
+      "t_end": 1794643944.5317044,
+      "samples": 1,
+      "duration_to_next_s": 0.13591885566711426,
+      "rel_start": 15.503495216369629,
+      "rel_end": 15.503495216369629,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643944.6676233,
+      "t_end": 1794643945.7710686,
+      "samples": 12,
+      "duration_to_next_s": 1.1831257343292236,
+      "rel_start": 15.639414072036743,
+      "rel_end": 16.742859363555908,
+      "near_status_counts": {
+        "command_delivered": 12
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643945.850749,
+      "t_end": 1794643945.850749,
+      "samples": 1,
+      "duration_to_next_s": 0.11838293075561523,
+      "rel_start": 16.822539806365967,
+      "rel_end": 16.822539806365967,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643945.969132,
+      "t_end": 1794643945.969132,
+      "samples": 1,
+      "duration_to_next_s": 0.0801844596862793,
+      "rel_start": 16.940922737121582,
+      "rel_end": 16.940922737121582,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643946.0493164,
+      "t_end": 1794643946.0493164,
+      "samples": 1,
+      "duration_to_next_s": 0.11460208892822266,
+      "rel_start": 17.02110719680786,
+      "rel_end": 17.02110719680786,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643946.1639185,
+      "t_end": 1794643946.9547338,
+      "samples": 9,
+      "duration_to_next_s": 0.890899658203125,
+      "rel_start": 17.135709285736084,
+      "rel_end": 17.92652463912964,
+      "near_status_counts": {
+        "command_delivered": 9
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643947.0548182,
+      "t_end": 1794643947.0548182,
+      "samples": 1,
+      "duration_to_next_s": 0.10541701316833496,
+      "rel_start": 18.02660894393921,
+      "rel_end": 18.02660894393921,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643947.1602352,
+      "t_end": 1794643949.062928,
+      "samples": 20,
+      "duration_to_next_s": 1.9910573959350586,
+      "rel_start": 18.132025957107544,
+      "rel_end": 20.03471875190735,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 20
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643949.1512926,
+      "t_end": 1794643949.1512926,
+      "samples": 1,
+      "duration_to_next_s": 0.11143636703491211,
+      "rel_start": 20.123083353042603,
+      "rel_end": 20.123083353042603,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643949.262729,
+      "t_end": 1794643949.262729,
+      "samples": 1,
+      "duration_to_next_s": 0.10160589218139648,
+      "rel_start": 20.234519720077515,
+      "rel_end": 20.234519720077515,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643949.3643348,
+      "t_end": 1794643949.3643348,
+      "samples": 1,
+      "duration_to_next_s": 0.09852027893066406,
+      "rel_start": 20.33612561225891,
+      "rel_end": 20.33612561225891,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643949.462855,
+      "t_end": 1794643949.462855,
+      "samples": 1,
+      "duration_to_next_s": 0.0884239673614502,
+      "rel_start": 20.434645891189575,
+      "rel_end": 20.434645891189575,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643949.551279,
+      "t_end": 1794643949.551279,
+      "samples": 1,
+      "duration_to_next_s": 0.12076210975646973,
+      "rel_start": 20.523069858551025,
+      "rel_end": 20.523069858551025,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643949.6720412,
+      "t_end": 1794643949.6720412,
+      "samples": 1,
+      "duration_to_next_s": 0.09422063827514648,
+      "rel_start": 20.643831968307495,
+      "rel_end": 20.643831968307495,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643949.7662618,
+      "t_end": 1794643949.7662618,
+      "samples": 1,
+      "duration_to_next_s": 0.1000053882598877,
+      "rel_start": 20.73805260658264,
+      "rel_end": 20.73805260658264,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "inputs_expired_before_delivery": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643949.8662672,
+      "t_end": 1794643949.8662672,
+      "samples": 1,
+      "duration_to_next_s": 0.0972435474395752,
+      "rel_start": 20.83805799484253,
+      "rel_end": 20.83805799484253,
+      "near_status_counts": {
+        "inputs_expired_before_delivery": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643949.9635108,
+      "t_end": 1794643949.9635108,
+      "samples": 1,
+      "duration_to_next_s": 0.08926177024841309,
+      "rel_start": 20.935301542282104,
+      "rel_end": 20.935301542282104,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643950.0527725,
+      "t_end": 1794643950.7640872,
+      "samples": 8,
+      "duration_to_next_s": 0.7738852500915527,
+      "rel_start": 21.024563312530518,
+      "rel_end": 21.735877990722656,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 8
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643950.8266578,
+      "t_end": 1794643950.8266578,
+      "samples": 1,
+      "duration_to_next_s": 0.12192773818969727,
+      "rel_start": 21.79844856262207,
+      "rel_end": 21.79844856262207,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643950.9485855,
+      "t_end": 1794643951.054584,
+      "samples": 2,
+      "duration_to_next_s": 0.20315194129943848,
+      "rel_start": 21.920376300811768,
+      "rel_end": 22.02637481689453,
+      "near_status_counts": {
+        "command_delivered": 2
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643951.1517375,
+      "t_end": 1794643951.1517375,
+      "samples": 1,
+      "duration_to_next_s": 0.17198848724365234,
+      "rel_start": 22.123528242111206,
+      "rel_end": 22.123528242111206,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "inputs_expired_before_delivery": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643951.323726,
+      "t_end": 1794643952.3546953,
+      "samples": 12,
+      "duration_to_next_s": 1.1265778541564941,
+      "rel_start": 22.29551672935486,
+      "rel_end": 23.326486110687256,
+      "near_status_counts": {
+        "command_delivered": 12
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643952.4503038,
+      "t_end": 1794643952.4503038,
+      "samples": 1,
+      "duration_to_next_s": 0.10608458518981934,
+      "rel_start": 23.422094583511353,
+      "rel_end": 23.422094583511353,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643952.5563884,
+      "t_end": 1794643952.5563884,
+      "samples": 1,
+      "duration_to_next_s": 0.07353734970092773,
+      "rel_start": 23.528179168701172,
+      "rel_end": 23.528179168701172,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643952.6299257,
+      "t_end": 1794643952.6299257,
+      "samples": 1,
+      "duration_to_next_s": 0.14344358444213867,
+      "rel_start": 23.6017165184021,
+      "rel_end": 23.6017165184021,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643952.7733693,
+      "t_end": 1794643953.2588632,
+      "samples": 6,
+      "duration_to_next_s": 0.5721714496612549,
+      "rel_start": 23.74516010284424,
+      "rel_end": 24.230654001235962,
+      "near_status_counts": {
+        "command_delivered": 6
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643953.3455408,
+      "t_end": 1794643953.3455408,
+      "samples": 1,
+      "duration_to_next_s": 0.12824726104736328,
+      "rel_start": 24.317331552505493,
+      "rel_end": 24.317331552505493,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643953.473788,
+      "t_end": 1794643954.1838706,
+      "samples": 8,
+      "duration_to_next_s": 0.7507336139678955,
+      "rel_start": 24.445578813552856,
+      "rel_end": 25.1556613445282,
+      "near_status_counts": {
+        "command_delivered": 8
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643954.2245216,
+      "t_end": 1794643954.2245216,
+      "samples": 1,
+      "duration_to_next_s": 0.14348959922790527,
+      "rel_start": 25.196312427520752,
+      "rel_end": 25.196312427520752,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643954.3680112,
+      "t_end": 1794643955.0585413,
+      "samples": 8,
+      "duration_to_next_s": 0.7809038162231445,
+      "rel_start": 25.339802026748657,
+      "rel_end": 26.03033208847046,
+      "near_status_counts": {
+        "command_delivered": 8
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643955.148915,
+      "t_end": 1794643955.148915,
+      "samples": 1,
+      "duration_to_next_s": 0.11303186416625977,
+      "rel_start": 26.1207058429718,
+      "rel_end": 26.1207058429718,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643955.261947,
+      "t_end": 1794643955.6594086,
+      "samples": 5,
+      "duration_to_next_s": 0.4628255367279053,
+      "rel_start": 26.23373770713806,
+      "rel_end": 26.6311993598938,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 5
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643955.7247725,
+      "t_end": 1794643955.7247725,
+      "samples": 1,
+      "duration_to_next_s": 0.13577651977539062,
+      "rel_start": 26.696563243865967,
+      "rel_end": 26.696563243865967,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643955.860549,
+      "t_end": 1794643956.0666938,
+      "samples": 3,
+      "duration_to_next_s": 0.2748534679412842,
+      "rel_start": 26.832339763641357,
+      "rel_end": 27.038484573364258,
+      "near_status_counts": {
+        "command_delivered": 3
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643956.1354024,
+      "t_end": 1794643956.1354024,
+      "samples": 1,
+      "duration_to_next_s": 0.15007877349853516,
+      "rel_start": 27.10719323158264,
+      "rel_end": 27.10719323158264,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643956.2854812,
+      "t_end": 1794643956.2854812,
+      "samples": 1,
+      "duration_to_next_s": 0.03871488571166992,
+      "rel_start": 27.257272005081177,
+      "rel_end": 27.257272005081177,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643956.324196,
+      "t_end": 1794643956.324196,
+      "samples": 1,
+      "duration_to_next_s": 0.13690423965454102,
+      "rel_start": 27.295986890792847,
+      "rel_end": 27.295986890792847,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643956.4611003,
+      "t_end": 1794643956.6709151,
+      "samples": 3,
+      "duration_to_next_s": 0.2635188102722168,
+      "rel_start": 27.432891130447388,
+      "rel_end": 27.6427059173584,
+      "near_status_counts": {
+        "command_delivered": 3
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643956.7246192,
+      "t_end": 1794643956.7246192,
+      "samples": 1,
+      "duration_to_next_s": 0.1430354118347168,
+      "rel_start": 27.696409940719604,
+      "rel_end": 27.696409940719604,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643956.8676546,
+      "t_end": 1794643957.69292,
+      "samples": 9,
+      "duration_to_next_s": 0.9008665084838867,
+      "rel_start": 27.83944535255432,
+      "rel_end": 28.664710760116577,
+      "near_status_counts": {
+        "command_delivered": 9
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643957.768521,
+      "t_end": 1794643957.768521,
+      "samples": 1,
+      "duration_to_next_s": 0.10539865493774414,
+      "rel_start": 28.740311861038208,
+      "rel_end": 28.740311861038208,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643957.8739197,
+      "t_end": 1794643957.8739197,
+      "samples": 1,
+      "duration_to_next_s": 0.07474875450134277,
+      "rel_start": 28.845710515975952,
+      "rel_end": 28.845710515975952,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643957.9486685,
+      "t_end": 1794643957.9486685,
+      "samples": 1,
+      "duration_to_next_s": 0.11993932723999023,
+      "rel_start": 28.920459270477295,
+      "rel_end": 28.920459270477295,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "inputs_expired_before_delivery": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643958.0686078,
+      "t_end": 1794643958.0686078,
+      "samples": 1,
+      "duration_to_next_s": 0.0916135311126709,
+      "rel_start": 29.040398597717285,
+      "rel_end": 29.040398597717285,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643958.1602213,
+      "t_end": 1794643958.1602213,
+      "samples": 1,
+      "duration_to_next_s": 0.10556793212890625,
+      "rel_start": 29.132012128829956,
+      "rel_end": 29.132012128829956,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "inputs_expired_before_delivery": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643958.2657893,
+      "t_end": 1794643958.2657893,
+      "samples": 1,
+      "duration_to_next_s": 0.1552422046661377,
+      "rel_start": 29.237580060958862,
+      "rel_end": 29.237580060958862,
+      "near_status_counts": {
+        "inputs_expired_before_delivery": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643958.4210315,
+      "t_end": 1794643958.4210315,
+      "samples": 1,
+      "duration_to_next_s": 0.10746955871582031,
+      "rel_start": 29.392822265625,
+      "rel_end": 29.392822265625,
+      "near_status_counts": {
+        "delivery_deadline_exceeded": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643958.528501,
+      "t_end": 1794643958.7607298,
+      "samples": 4,
+      "duration_to_next_s": 0.32363295555114746,
+      "rel_start": 29.50029182434082,
+      "rel_end": 29.732520580291748,
+      "near_status_counts": {
+        "delivery_deadline_exceeded": 1,
+        "command_delivered": 4
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643958.852134,
+      "t_end": 1794643958.852134,
+      "samples": 1,
+      "duration_to_next_s": 0.11330056190490723,
+      "rel_start": 29.823924779891968,
+      "rel_end": 29.823924779891968,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643958.9654346,
+      "t_end": 1794643958.9654346,
+      "samples": 1,
+      "duration_to_next_s": 0.0846700668334961,
+      "rel_start": 29.937225341796875,
+      "rel_end": 29.937225341796875,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643959.0501046,
+      "t_end": 1794643959.0501046,
+      "samples": 1,
+      "duration_to_next_s": 0.1288611888885498,
+      "rel_start": 30.02189540863037,
+      "rel_end": 30.02189540863037,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643959.1789658,
+      "t_end": 1794643959.1789658,
+      "samples": 1,
+      "duration_to_next_s": 0.1451570987701416,
+      "rel_start": 30.15075659751892,
+      "rel_end": 30.15075659751892,
+      "near_status_counts": {
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643959.324123,
+      "t_end": 1794643959.324123,
+      "samples": 1,
+      "duration_to_next_s": 0.05427122116088867,
+      "rel_start": 30.295913696289062,
+      "rel_end": 30.295913696289062,
+      "near_status_counts": {
+        "delivery_deadline_exceeded": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643959.3783941,
+      "t_end": 1794643960.1726773,
+      "samples": 9,
+      "duration_to_next_s": 0.8888998031616211,
+      "rel_start": 30.35018491744995,
+      "rel_end": 31.144468069076538,
+      "near_status_counts": {
+        "delivery_deadline_exceeded": 1,
+        "command_delivered": 9
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643960.267294,
+      "t_end": 1794643960.267294,
+      "samples": 1,
+      "duration_to_next_s": 0.08555269241333008,
+      "rel_start": 31.239084720611572,
+      "rel_end": 31.239084720611572,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643960.3528466,
+      "t_end": 1794643960.8747418,
+      "samples": 6,
+      "duration_to_next_s": 0.5725948810577393,
+      "rel_start": 31.324637413024902,
+      "rel_end": 31.846532583236694,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 6
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643960.9254415,
+      "t_end": 1794643960.9254415,
+      "samples": 1,
+      "duration_to_next_s": 0.13626837730407715,
+      "rel_start": 31.89723229408264,
+      "rel_end": 31.89723229408264,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643961.06171,
+      "t_end": 1794643962.8677866,
+      "samples": 19,
+      "duration_to_next_s": 1.8864808082580566,
+      "rel_start": 32.03350067138672,
+      "rel_end": 33.839577436447144,
+      "near_status_counts": {
+        "command_delivered": 19
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643962.9481907,
+      "t_end": 1794643962.9481907,
+      "samples": 1,
+      "duration_to_next_s": 0.11024260520935059,
+      "rel_start": 33.919981479644775,
+      "rel_end": 33.919981479644775,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643963.0584333,
+      "t_end": 1794643963.0584333,
+      "samples": 1,
+      "duration_to_next_s": 0.08857083320617676,
+      "rel_start": 34.030224084854126,
+      "rel_end": 34.030224084854126,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643963.1470041,
+      "t_end": 1794643963.1470041,
+      "samples": 1,
+      "duration_to_next_s": 0.10695719718933105,
+      "rel_start": 34.1187949180603,
+      "rel_end": 34.1187949180603,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643963.2539613,
+      "t_end": 1794643963.5584588,
+      "samples": 4,
+      "duration_to_next_s": 0.4020097255706787,
+      "rel_start": 34.225752115249634,
+      "rel_end": 34.53024959564209,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 4
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643963.655971,
+      "t_end": 1794643963.655971,
+      "samples": 1,
+      "duration_to_next_s": 0.11261177062988281,
+      "rel_start": 34.62776184082031,
+      "rel_end": 34.62776184082031,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643963.7685828,
+      "t_end": 1794643964.756519,
+      "samples": 11,
+      "duration_to_next_s": 1.055678367614746,
+      "rel_start": 34.740373611450195,
+      "rel_end": 35.728309869766235,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 11
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643964.8242612,
+      "t_end": 1794643964.8242612,
+      "samples": 1,
+      "duration_to_next_s": 0.1158597469329834,
+      "rel_start": 35.79605197906494,
+      "rel_end": 35.79605197906494,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643964.940121,
+      "t_end": 1794643964.940121,
+      "samples": 1,
+      "duration_to_next_s": 0.08652353286743164,
+      "rel_start": 35.911911725997925,
+      "rel_end": 35.911911725997925,
+      "near_status_counts": {
+        "collision_snapshot_unavailable": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643965.0266445,
+      "t_end": 1794643965.0266445,
+      "samples": 1,
+      "duration_to_next_s": 0.11129617691040039,
+      "rel_start": 35.998435258865356,
+      "rel_end": 35.998435258865356,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_unavailable": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643965.1379406,
+      "t_end": 1794643965.2427685,
+      "samples": 2,
+      "duration_to_next_s": 0.23935294151306152,
+      "rel_start": 36.10973143577576,
+      "rel_end": 36.21455931663513,
+      "near_status_counts": {
+        "collision_snapshot_unavailable": 1,
+        "command_delivered": 2
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643965.3772936,
+      "t_end": 1794643965.3772936,
+      "samples": 1,
+      "duration_to_next_s": 0.07117176055908203,
+      "rel_start": 36.34908437728882,
+      "rel_end": 36.34908437728882,
+      "near_status_counts": {
+        "inputs_expired_before_delivery": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643965.4484653,
+      "t_end": 1794643965.4484653,
+      "samples": 1,
+      "duration_to_next_s": 0.09441685676574707,
+      "rel_start": 36.4202561378479,
+      "rel_end": 36.4202561378479,
+      "near_status_counts": {
+        "inputs_expired_before_delivery": 1,
+        "command_delivered": 1
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643965.5428822,
+      "t_end": 1794643965.5428822,
+      "samples": 1,
+      "duration_to_next_s": 0.09562921524047852,
+      "rel_start": 36.51467299461365,
+      "rel_end": 36.51467299461365,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "inputs_expired_before_delivery": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643965.6385114,
+      "t_end": 1794643965.7350209,
+      "samples": 2,
+      "duration_to_next_s": 0.19519662857055664,
+      "rel_start": 36.610302209854126,
+      "rel_end": 36.70681166648865,
+      "near_status_counts": {
+        "inputs_expired_before_delivery": 1,
+        "command_delivered": 2
+      }
+    },
+    {
+      "value": "zero",
+      "t_start": 1794643965.833708,
+      "t_end": 1794643965.833708,
+      "samples": 1,
+      "duration_to_next_s": 0.10215401649475098,
+      "rel_start": 36.80549883842468,
+      "rel_end": 36.80549883842468,
+      "near_status_counts": {
+        "command_delivered": 1,
+        "collision_snapshot_expired_during_plan": 1
+      }
+    },
+    {
+      "value": "nonzero",
+      "t_start": 1794643965.935862,
+      "t_end": 1794643966.0777605,
+      "samples": 2,
+      "duration_to_next_s": 0.14189839363098145,
+      "rel_start": 36.907652854919434,
+      "rel_end": 37.049551248550415,
+      "near_status_counts": {
+        "collision_snapshot_expired_during_plan": 1,
+        "command_delivered": 2
+      }
+    }
+  ],
+  "map_trace_stats_during_navigation": {
+    "commit": {
+      "n": 216,
+      "queue_ms": {
+        "n": 216,
+        "mean": 0.10332407407407408,
+        "min": 0.015,
+        "median": 0.025,
+        "p95": 0.494,
+        "max": 5.937
+      },
+      "compute_ms": {
+        "n": 216,
+        "mean": 106.56804166666667,
+        "min": 50.794,
+        "median": 109.94800000000001,
+        "p95": 140.299,
+        "max": 152.52
+      },
+      "near_free_ms": {
+        "n": 216,
+        "mean": 1.8649490740740742,
+        "min": 0.722,
+        "median": 1.3185,
+        "p95": 5.351,
+        "max": 10.411
+      },
+      "ready_wait_ms": {
+        "n": 216,
+        "mean": 4.709069444444444,
+        "min": 0.069,
+        "median": 4.509,
+        "p95": 9.587,
+        "max": 10.075
+      },
+      "commit_ms": {
+        "n": 216,
+        "mean": 7.383800925925926,
+        "min": 5.312,
+        "median": 6.787,
+        "p95": 11.01,
+        "max": 17.923
+      },
+      "negative_apply_ms": {
+        "n": 216,
+        "mean": 0.7201851851851852,
+        "min": 0.0,
+        "median": 0.0,
+        "p95": 3.867,
+        "max": 9.159
+      },
+      "partition_ms": {
+        "n": 216,
+        "mean": 0.10131018518518518,
+        "min": 0.079,
+        "median": 0.09,
+        "p95": 0.14,
+        "max": 0.841
+      },
+      "prepare_ms": {
+        "n": 216,
+        "mean": 1.3954814814814815,
+        "min": 0.847,
+        "median": 1.0394999999999999,
+        "p95": 2.162,
+        "max": 20.672
+      }
+    },
+    "export_output": {
+      "n": 742,
+      "cached_odom_age_ms": {
+        "n": 742,
+        "mean": 58.483327493261456,
+        "min": 18.491,
+        "median": 72.38749999999999,
+        "p95": 122.691,
+        "max": 125.418
+      },
+      "output_ms": {
+        "n": 742,
+        "mean": 0.4275309973045822,
+        "min": 0.014,
+        "median": 0.063,
+        "p95": 1.194,
+        "max": 10.363
+      },
+      "cached_joint_age_ms": {
+        "n": 742,
+        "mean": 11.148288409703504,
+        "min": 5.983,
+        "median": 8.443999999999999,
+        "p95": 18.373,
+        "max": 71.231
+      }
+    },
+    "read": {
+      "n": 432,
+      "occ_ms": {
+        "n": 432,
+        "mean": 5.492388888888889,
+        "min": 0.001,
+        "median": 3.9829999999999997,
+        "p95": 21.513,
+        "max": 34.675
+      },
+      "dist_ms": {
+        "n": 432,
+        "mean": 2.947953703703704,
+        "min": 0.001,
+        "median": 2.1235,
+        "p95": 8.395,
+        "max": 19.048
+      },
+      "total_ms": {
+        "n": 432,
+        "mean": 8.504708333333333,
+        "min": 4.267,
+        "median": 6.483499999999999,
+        "p95": 21.713,
+        "max": 34.684
+      }
+    },
+    "fusion": {
+      "n": 216,
+      "input_age_ms": {
+        "n": 216,
+        "mean": 138.0498287037037,
+        "min": 98.148,
+        "median": 150.15,
+        "p95": 179.936,
+        "max": 270.794
+      },
+      "occupancy_ms": {
+        "n": 216,
+        "mean": 28.940314814814815,
+        "min": 18.961,
+        "median": 27.6005,
+        "p95": 42.864,
+        "max": 54.843
+      },
+      "pending_ms": {
+        "n": 216,
+        "mean": 52.44135185185185,
+        "min": 0.211,
+        "median": 53.2505,
+        "p95": 87.248,
+        "max": 156.608
+      }
+    },
+    "region": {
+      "n": 216,
+      "prepare_ms": {
+        "n": 216,
+        "mean": 2.3335648148148147,
+        "min": 1.78,
+        "median": 2.1195000000000004,
+        "p95": 3.172,
+        "max": 17.939
+      }
+    },
+    "submit": {
+      "n": 216,
+      "snapshot_ms": {
+        "n": 216,
+        "mean": 2.919199074074074,
+        "min": 2.072,
+        "median": 2.5389999999999997,
+        "p95": 4.632,
+        "max": 14.172
+      }
+    },
+    "export_sample": {
+      "n": 730,
+      "sample_ms": {
+        "n": 730,
+        "mean": 0.8185287671232877,
+        "min": 0.404,
+        "median": 0.4615,
+        "p95": 1.67,
+        "max": 6.221
+      }
+    }
+  },
+  "log_source_to_bag_delay_s": {
+    "n": 22858,
+    "mean": 0.016304762702005326,
+    "min": 0.0019712448120117188,
+    "median": 0.010074615478515625,
+    "p95": 0.04840707778930664,
+    "max": 0.3033769130706787
+  },
+  "mppi_checked_to_bag_delay_s": {
+    "n": 2740,
+    "mean": 0.01869734717111518,
+    "min": 0.0010256767272949219,
+    "median": 0.007115006446838379,
+    "p95": 0.11652970314025879,
+    "max": 0.2670714855194092
+  },
+  "piper_execution_states": {
+    "(True, False, True, True)": 10310,
+    "(True, False, True, False)": 2278
+  },
+  "tracking_fault_values": {
+    "False": 1678
+  },
+  "odom_motion": {
+    "before_goal": {
+      "n": 1171,
+      "yaw_abs_motion_deg": 71.98434667439037,
+      "yaw_net_deg": -0.08904569152802454,
+      "yaw_range_deg": 2.0823105244281543,
+      "xy_net_m": 0.0071499926969423875
+    },
+    "navigation": {
+      "n": 371,
+      "yaw_abs_motion_deg": 297.73054304788775,
+      "yaw_net_deg": 98.91270795058442,
+      "yaw_range_deg": 139.00136748556469,
+      "xy_net_m": 1.5227801243417356
+    },
+    "after_finish": {
+      "n": 1202,
+      "yaw_abs_motion_deg": 78.8815625571771,
+      "yaw_net_deg": 0.40627037017032874,
+      "yaw_range_deg": 2.4039269917238375,
+      "xy_net_m": 0.009058725190795158
+    }
+  },
+  "limits": [
+    "Only one navigation goal was recorded. Cannot assert the recording contains a separately published post-arrival turnaround goal.",
+    "No collision field payload or physical driver transfer function is in this bag.",
+    "Timing source used whenever present; bag receipt lag is not processing latency.",
+    "Twist has no header so exact cmd origin time is unavailable; status checks provide source diagnostics."
+  ],
+  "critical_window_counts": [
+    {
+      "start": 0,
+      "end": 5.88,
+      "counts": {
+        "command_delivered": 50,
+        "state_feedback_stale": 1,
+        "collision_snapshot_expired_during_plan": 4,
+        "collision_snapshot_unavailable": 3
+      },
+      "scale_min": 0.1817860806177948,
+      "scale_max": 1.0,
+      "w_positive": 6,
+      "w_negative": 9
+    },
+    {
+      "start": 5.88,
+      "end": 9.16,
+      "counts": {
+        "command_delivered": 25,
+        "collision_snapshot_expired_during_plan": 6,
+        "inputs_expired_before_delivery": 2
+      },
+      "scale_min": 0.0,
+      "scale_max": 0.0,
+      "w_positive": 19,
+      "w_negative": 6
+    },
+    {
+      "start": 9.16,
+      "end": 10.17,
+      "counts": {
+        "command_delivered": 10
+      },
+      "scale_min": 0.03199723520000001,
+      "scale_max": 0.512536871654703,
+      "w_positive": 0,
+      "w_negative": 10
+    },
+    {
+      "start": 10.17,
+      "end": 11.56,
+      "counts": {
+        "command_delivered": 13
+      },
+      "scale_min": 0.0,
+      "scale_max": 0.0,
+      "w_positive": 13,
+      "w_negative": 0
+    },
+    {
+      "start": 11.56,
+      "end": 12.45,
+      "counts": {
+        "command_delivered": 10
+      },
+      "scale_min": 0.0,
+      "scale_max": 0.67203978,
+      "w_positive": 4,
+      "w_negative": 5
+    },
+    {
+      "start": 12.45,
+      "end": 35.53,
+      "counts": {
+        "command_delivered": 192,
+        "collision_snapshot_expired_during_plan": 23,
+        "collision_snapshot_unavailable": 10,
+        "inputs_expired_before_delivery": 4,
+        "delivery_deadline_exceeded": 2
+      },
+      "scale_min": 0.12748687511239434,
+      "scale_max": 1.0,
+      "w_positive": 50,
+      "w_negative": 0
+    },
+    {
+      "start": 35.53,
+      "end": 37.075,
+      "counts": {
+        "command_delivered": 10,
+        "collision_snapshot_unavailable": 2,
+        "inputs_expired_before_delivery": 2,
+        "collision_snapshot_expired_during_plan": 1
+      },
+      "scale_min": null,
+      "scale_max": null,
+      "w_positive": 0,
+      "w_negative": 10
+    }
+  ],
+  "rootcause_timing_observations": [
+    "Only one RViz goal appears. The two trajectory messages share header stamp and represent forward then reverse blocks, not two replans.",
+    "No planning safety limit 0, refresh request, live perception timeout, or driver stop latch appears during this navigation.",
+    "At +9.165s reference recovers after yaw error falls to 0.129rad; delivered w immediately turns from +0.2977 to -0.35 at +9.220s. Reference freezes again +10.175s at yaw error0.551rad; w then returns+0.35 at+10.219s.",
+    "The entire progressing interval+9.165..10.175 and secondfreeze+10.175..11.565 contains onlycommand_delivered statuses, so the second freeze/reversal cycle is not explained by map delivery gate rejection.",
+    "When secondfreeze recovers+11.565s, normal guide flips w negative again+11.824s and two further positive/negative changes occur before reverse block entry at about+12.4s.",
+    "57/370 navigation checks fail map_age_ok. This remains an independent source of short zero command intervals, but does not explain the freeze/progress direction reversals.",
+    "After finish, recorded yaw range is only2.404deg and xy net9.1mm over120s. A separate postarrival turnaround goal was not recorded."
+  ],
+  "cmd_zero_statistics": {
+    "zero_spans": 59,
+    "zero_hold_sum_s": 7.452724933624268,
+    "method": "Sum bag-time zero command segment duration until next nonzero, includes initial plan wait; this is command time, not measured complete vehicle stop time."
+  },
+  "critical_odom_motion": [
+    {
+      "start": 6.85,
+      "end": 9.16,
+      "n": 23,
+      "yaw_net_rad": 0.5974300688265346,
+      "yaw_net_deg": 34.230221497970724,
+      "xy_net_m": 0.010182439560329703
+    },
+    {
+      "start": 9.25,
+      "end": 10.17,
+      "n": 9,
+      "yaw_net_rad": -0.29845344156975634,
+      "yaw_net_deg": -17.100122583101356,
+      "xy_net_m": 0.019991173254000384
+    },
+    {
+      "start": 10.25,
+      "end": 11.56,
+      "n": 13,
+      "yaw_net_rad": 0.4407742959725984,
+      "yaw_net_deg": 25.254506877080086,
+      "xy_net_m": 0.012293503712111001
+    },
+    {
+      "start": 11.85,
+      "end": 12.4,
+      "n": 5,
+      "yaw_net_rad": -0.11787639784243009,
+      "yaw_net_deg": -6.753820100576247,
+      "xy_net_m": 0.004775684877449966
+    }
+  ]
+}

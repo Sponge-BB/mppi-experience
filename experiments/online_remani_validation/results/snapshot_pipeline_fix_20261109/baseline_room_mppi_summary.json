@@ -1,0 +1,34 @@
+{
+  "scope": "isolated localhost master; real planner plus execute=false MPPI computation with native startup disabled; synthetic point/joint/odom publishers; no drivers, actuator publishers, or hardware",
+  "label": "baseline_room_mppi",
+  "max_child_rss_kib": 607508,
+  "phases": {
+    "steady": {
+      "packets": 140,
+      "healthy": 140,
+      "healthy_fraction": 1.0,
+      "map_age_median_ms": 68.59683990478516,
+      "map_age_p95_ms": 94.29501295089722,
+      "dynamic_invalid": 0,
+      "joint_age_p95_ms": 41.70109033584593,
+      "healthy_remaining_under_85ms": 0,
+      "mppi_states": {
+        "waiting_inputs": 70
+      }
+    },
+    "changing": {
+      "packets": 200,
+      "healthy": 163,
+      "healthy_fraction": 0.815,
+      "map_age_median_ms": 276.23891830444336,
+      "map_age_p95_ms": 375.23343563079834,
+      "dynamic_invalid": 0,
+      "joint_age_p95_ms": 83.08169841766356,
+      "healthy_remaining_under_85ms": 95,
+      "mppi_states": {
+        "waiting_inputs": 100
+      }
+    }
+  },
+  "limitation": "MPPI raw joint input missing in this preliminary harness run, so it remained waiting_inputs; use baseline_room_mppi2 for computation comparison"
+}

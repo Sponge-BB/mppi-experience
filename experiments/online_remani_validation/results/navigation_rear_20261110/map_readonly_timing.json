@@ -1,0 +1,1523 @@
+{
+  "source": "experiments/online_remani_validation/results/startup_listen_20261110_192530/events.jsonl",
+  "cutoff_received": 1794310135.905534,
+  "start_received": 1794309931.379573,
+  "duration_s": 204.526,
+  "topics": {
+    "/piper_execution_state": 3233,
+    "/rosout_agg": 599,
+    "/mppi/status": 2045,
+    "/odom": 2045,
+    "/my_car_vel": 10168,
+    "/piper_motor_enable_states": 1006,
+    "/planning/safety_speed_limit": 2,
+    "/mm_controller_node/trajectory_progress": 20423,
+    "/joint_states_single": 3785,
+    "/cmd_vel": 4288,
+    "/mppi/collision_snapshot": 4086,
+    "/tracking_fault": 474
+  },
+  "goals_recorded": [],
+  "scope": "No navigation goal was recorded in this window; statuses are predominantly cancelled-reference/invalid-map. This captures running map pipeline, not a new rear-goal navigation workload.",
+  "runtime_params": "runtime_params.json; actual base limits .12m/s,.35rad/s; map 300x200x60 at .05m, cap .60m, async 3 threads, immutable isolated export",
+  "timestamp_semantics": {
+    "h3": "occupancy fusion completion ROS time; never source cloud scan stamp",
+    "h17": "ESDF crop acquisition start; retained on unchanged field",
+    "first_newfield": "first observed h14 version and h17 >= h3",
+    "received": "recorder callback receipt, not internal MPPI receipt"
+  },
+  "all_snapshot_map_age_ms": {
+    "n": 4086,
+    "min": 118.988,
+    "p05": 161.499,
+    "p50": 227.05,
+    "p95": 361.888,
+    "p99": 2082.142,
+    "max": 4124.679
+  },
+  "first_newfield_fusion_to_sample_ms": {
+    "n": 1361,
+    "min": 107.313,
+    "p05": 133.499,
+    "p50": 166.29,
+    "p95": 263.049,
+    "p99": 305.289,
+    "max": 342.17
+  },
+  "first_newfield_sample_to_receive_ms": {
+    "n": 1361,
+    "min": 8.101,
+    "p05": 9.516,
+    "p50": 12.778,
+    "p95": 22.465,
+    "p99": 27.509,
+    "max": 44.871
+  },
+  "first_newfield_fusion_to_receive_ms": {
+    "n": 1361,
+    "min": 118.988,
+    "p05": 148.309,
+    "p50": 178.555,
+    "p95": 277.135,
+    "p99": 317.028,
+    "max": 362.293
+  },
+  "remaining_budget_at_snapshot_receive_ms": {
+    "n": 4086,
+    "min": -3774.679,
+    "p05": -11.888,
+    "p50": 122.95,
+    "p95": 188.501,
+    "p99": 211.954,
+    "max": 231.012
+  },
+  "remaining_below95_count": 1424,
+  "map_age_over350_count": 245,
+  "h4_true_but_age_over350_count": 7,
+  "mppi_states": {
+    "native_reference_cancelled": 1420,
+    "collision_snapshot_unavailable": 151,
+    "arm_stop_latched": 474
+  },
+  "pipeline_5s_windows": [
+    {
+      "occ_n": 30.0,
+      "occ_avg_ms": 16.67,
+      "occ_max_ms": 34.16,
+      "esdf_n": 30.0,
+      "worker_avg_ms": 106.01,
+      "worker_max_ms": 167.3,
+      "commit_avg_ms": 10.89,
+      "commit_max_ms": 17.27,
+      "job_snapshot_avg_ms": 2.18,
+      "job_snapshot_max_ms": 4.97,
+      "result_age_ms": 126.11,
+      "stamp": 1794309932.7878413,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=30 avg/max=16.67/34.16ms esdf=30 compute_avg/max=106.01/167.30ms main_commit_avg/max=10.89/17.27ms snapshot_avg/max=2.18/4.97ms age=126.11ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=2806/2806/0/0 clouds_coalesced=21 async(submit/commit/reject/occ_defer)=30/30/0/43 worker(run/pending/coalesced/superseded/faults)=0/1/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 26.0,
+      "occ_avg_ms": 18.1,
+      "occ_max_ms": 28.63,
+      "esdf_n": 27.0,
+      "worker_avg_ms": 124.17,
+      "worker_max_ms": 151.62,
+      "commit_avg_ms": 10.73,
+      "commit_max_ms": 21.51,
+      "job_snapshot_avg_ms": 2.47,
+      "job_snapshot_max_ms": 6.91,
+      "result_age_ms": 131.51,
+      "stamp": 1794309937.826588,
+      "message": "[GridMap][pipeline] window=5.04s mode=async occ=26 avg/max=18.10/28.63ms esdf=27 compute_avg/max=124.17/151.62ms main_commit_avg/max=10.73/21.51ms snapshot_avg/max=2.47/6.91ms age=131.51ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=2856/2854/2856/0 clouds_coalesced=23 async(submit/commit/reject/occ_defer)=26/27/0/46 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 26.0,
+      "occ_avg_ms": 17.92,
+      "occ_max_ms": 34.04,
+      "esdf_n": 26.0,
+      "worker_avg_ms": 128.24,
+      "worker_max_ms": 178.3,
+      "commit_avg_ms": 11.02,
+      "commit_max_ms": 15.82,
+      "job_snapshot_avg_ms": 2.3,
+      "job_snapshot_max_ms": 3.54,
+      "result_age_ms": 152.83,
+      "stamp": 1794309942.8328817,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=26 avg/max=17.92/34.04ms esdf=26 compute_avg/max=128.24/178.30ms main_commit_avg/max=11.02/15.82ms snapshot_avg/max=2.30/3.54ms age=152.83ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=2906/2904/2906/0 clouds_coalesced=24 async(submit/commit/reject/occ_defer)=26/26/0/48 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 27.0,
+      "occ_avg_ms": 17.98,
+      "occ_max_ms": 31.11,
+      "esdf_n": 26.0,
+      "worker_avg_ms": 122.43,
+      "worker_max_ms": 191.02,
+      "commit_avg_ms": 11.3,
+      "commit_max_ms": 18.05,
+      "job_snapshot_avg_ms": 2.27,
+      "job_snapshot_max_ms": 3.37,
+      "result_age_ms": 142.66,
+      "stamp": 1794309947.8369403,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=27 avg/max=17.98/31.11ms esdf=26 compute_avg/max=122.43/191.02ms main_commit_avg/max=11.30/18.05ms snapshot_avg/max=2.27/3.37ms age=142.66ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=2956/2956/0/0 clouds_coalesced=24 async(submit/commit/reject/occ_defer)=27/26/0/52 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 24.0,
+      "occ_avg_ms": 22.77,
+      "occ_max_ms": 47.41,
+      "esdf_n": 25.0,
+      "worker_avg_ms": 132.65,
+      "worker_max_ms": 178.86,
+      "commit_avg_ms": 10.87,
+      "commit_max_ms": 17.55,
+      "job_snapshot_avg_ms": 2.41,
+      "job_snapshot_max_ms": 4.12,
+      "result_age_ms": 129.87,
+      "stamp": 1794309952.8519216,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=24 avg/max=22.77/47.41ms esdf=25 compute_avg/max=132.65/178.86ms main_commit_avg/max=10.87/17.55ms snapshot_avg/max=2.41/4.12ms age=129.87ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=3006/3005/3006/0 clouds_coalesced=25 async(submit/commit/reject/occ_defer)=24/25/0/58 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 26.0,
+      "occ_avg_ms": 18.31,
+      "occ_max_ms": 28.24,
+      "esdf_n": 25.0,
+      "worker_avg_ms": 131.97,
+      "worker_max_ms": 175.74,
+      "commit_avg_ms": 11.87,
+      "commit_max_ms": 15.67,
+      "job_snapshot_avg_ms": 2.26,
+      "job_snapshot_max_ms": 3.02,
+      "result_age_ms": 148.1,
+      "stamp": 1794309957.8678195,
+      "message": "[GridMap][pipeline] window=5.02s mode=async occ=26 avg/max=18.31/28.24ms esdf=25 compute_avg/max=131.97/175.74ms main_commit_avg/max=11.87/15.67ms snapshot_avg/max=2.26/3.02ms age=148.10ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3056/3055/3056/0 clouds_coalesced=24 async(submit/commit/reject/occ_defer)=26/25/0/58 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 26.0,
+      "occ_avg_ms": 18.81,
+      "occ_max_ms": 33.84,
+      "esdf_n": 26.0,
+      "worker_avg_ms": 130.04,
+      "worker_max_ms": 165.32,
+      "commit_avg_ms": 11.55,
+      "commit_max_ms": 19.02,
+      "job_snapshot_avg_ms": 2.54,
+      "job_snapshot_max_ms": 8.18,
+      "result_age_ms": 131.05,
+      "stamp": 1794309962.889535,
+      "message": "[GridMap][pipeline] window=5.02s mode=async occ=26 avg/max=18.81/33.84ms esdf=26 compute_avg/max=130.04/165.32ms main_commit_avg/max=11.55/19.02ms snapshot_avg/max=2.54/8.18ms age=131.05ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3106/3106/0/0 clouds_coalesced=25 async(submit/commit/reject/occ_defer)=26/26/0/60 worker(run/pending/coalesced/superseded/faults)=0/1/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 29.0,
+      "occ_avg_ms": 17.95,
+      "occ_max_ms": 30.96,
+      "esdf_n": 30.0,
+      "worker_avg_ms": 105.97,
+      "worker_max_ms": 155.98,
+      "commit_avg_ms": 10.2,
+      "commit_max_ms": 14.65,
+      "job_snapshot_avg_ms": 2.53,
+      "job_snapshot_max_ms": 5.63,
+      "result_age_ms": 179.94,
+      "stamp": 1794309967.9282064,
+      "message": "[GridMap][pipeline] window=5.04s mode=async occ=29 avg/max=17.95/30.96ms esdf=30 compute_avg/max=105.97/155.98ms main_commit_avg/max=10.20/14.65ms snapshot_avg/max=2.53/5.63ms age=179.94ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=3157/3155/3157/0 clouds_coalesced=21 async(submit/commit/reject/occ_defer)=29/30/0/48 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 16.59,
+      "occ_max_ms": 34.42,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 100.16,
+      "worker_max_ms": 130.46,
+      "commit_avg_ms": 10.5,
+      "commit_max_ms": 17.03,
+      "job_snapshot_avg_ms": 2.19,
+      "job_snapshot_max_ms": 3.89,
+      "result_age_ms": 138.43,
+      "stamp": 1794309972.948232,
+      "message": "[GridMap][pipeline] window=5.02s mode=async occ=32 avg/max=16.59/34.42ms esdf=32 compute_avg/max=100.16/130.46ms main_commit_avg/max=10.50/17.03ms snapshot_avg/max=2.19/3.89ms age=138.43ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=3207/3206/3207/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=32/32/0/40 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 33.0,
+      "occ_avg_ms": 15.25,
+      "occ_max_ms": 23.1,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 99.92,
+      "worker_max_ms": 133.93,
+      "commit_avg_ms": 10.57,
+      "commit_max_ms": 15.54,
+      "job_snapshot_avg_ms": 2.27,
+      "job_snapshot_max_ms": 4.5,
+      "result_age_ms": 89.74,
+      "stamp": 1794309977.9542365,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=33 avg/max=15.25/23.10ms esdf=32 compute_avg/max=99.92/133.93ms main_commit_avg/max=10.57/15.54ms snapshot_avg/max=2.27/4.50ms age=89.74ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3257/3257/0/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=33/32/0/38 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 16.08,
+      "occ_max_ms": 31.97,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 99.67,
+      "worker_max_ms": 133.34,
+      "commit_avg_ms": 10.33,
+      "commit_max_ms": 14.34,
+      "job_snapshot_avg_ms": 2.32,
+      "job_snapshot_max_ms": 3.88,
+      "result_age_ms": 134.43,
+      "stamp": 1794309982.9679403,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=32 avg/max=16.08/31.97ms esdf=32 compute_avg/max=99.67/133.34ms main_commit_avg/max=10.33/14.34ms snapshot_avg/max=2.32/3.88ms age=134.43ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3308/3307/3308/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=32/32/0/40 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 14.97,
+      "occ_max_ms": 33.47,
+      "esdf_n": 33.0,
+      "worker_avg_ms": 99.6,
+      "worker_max_ms": 123.47,
+      "commit_avg_ms": 10.03,
+      "commit_max_ms": 12.73,
+      "job_snapshot_avg_ms": 2.52,
+      "job_snapshot_max_ms": 12.32,
+      "result_age_ms": 117.89,
+      "stamp": 1794309987.9767716,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=32 avg/max=14.97/33.47ms esdf=33 compute_avg/max=99.60/123.47ms main_commit_avg/max=10.03/12.73ms snapshot_avg/max=2.52/12.32ms age=117.89ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=3358/3356/3358/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=32/33/0/41 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 15.85,
+      "occ_max_ms": 32.39,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 100.6,
+      "worker_max_ms": 152.53,
+      "commit_avg_ms": 10.13,
+      "commit_max_ms": 13.95,
+      "job_snapshot_avg_ms": 2.7,
+      "job_snapshot_max_ms": 12.46,
+      "result_age_ms": 119.28,
+      "stamp": 1794309992.977077,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=32 avg/max=15.85/32.39ms esdf=32 compute_avg/max=100.60/152.53ms main_commit_avg/max=10.13/13.95ms snapshot_avg/max=2.70/12.46ms age=119.28ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=3408/3406/3408/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=32/32/0/33 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 33.0,
+      "occ_avg_ms": 14.29,
+      "occ_max_ms": 19.88,
+      "esdf_n": 33.0,
+      "worker_avg_ms": 100.51,
+      "worker_max_ms": 132.86,
+      "commit_avg_ms": 9.84,
+      "commit_max_ms": 12.87,
+      "job_snapshot_avg_ms": 2.28,
+      "job_snapshot_max_ms": 5.08,
+      "result_age_ms": 110.16,
+      "stamp": 1794309997.9783673,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=33 avg/max=14.29/19.88ms esdf=33 compute_avg/max=100.51/132.86ms main_commit_avg/max=9.84/12.87ms snapshot_avg/max=2.28/5.08ms age=110.16ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=3457/3456/3457/0 clouds_coalesced=16 async(submit/commit/reject/occ_defer)=33/33/0/32 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 31.0,
+      "occ_avg_ms": 14.9,
+      "occ_max_ms": 29.44,
+      "esdf_n": 31.0,
+      "worker_avg_ms": 103.11,
+      "worker_max_ms": 131.35,
+      "commit_avg_ms": 10.55,
+      "commit_max_ms": 19.15,
+      "job_snapshot_avg_ms": 2.62,
+      "job_snapshot_max_ms": 9.52,
+      "result_age_ms": 113.98,
+      "stamp": 1794310002.9800012,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=31 avg/max=14.90/29.44ms esdf=31 compute_avg/max=103.11/131.35ms main_commit_avg/max=10.55/19.15ms snapshot_avg/max=2.62/9.52ms age=113.98ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=3508/3506/3508/0 clouds_coalesced=20 async(submit/commit/reject/occ_defer)=31/31/0/46 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 33.0,
+      "occ_avg_ms": 16.45,
+      "occ_max_ms": 27.87,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 97.88,
+      "worker_max_ms": 120.25,
+      "commit_avg_ms": 10.37,
+      "commit_max_ms": 14.33,
+      "job_snapshot_avg_ms": 2.19,
+      "job_snapshot_max_ms": 3.61,
+      "result_age_ms": 91.29,
+      "stamp": 1794310007.9877908,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=33 avg/max=16.45/27.87ms esdf=32 compute_avg/max=97.88/120.25ms main_commit_avg/max=10.37/14.33ms snapshot_avg/max=2.19/3.61ms age=91.29ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3558/3557/3558/0 clouds_coalesced=17 async(submit/commit/reject/occ_defer)=33/32/0/37 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 33.0,
+      "occ_avg_ms": 14.44,
+      "occ_max_ms": 22.61,
+      "esdf_n": 33.0,
+      "worker_avg_ms": 96.44,
+      "worker_max_ms": 126.8,
+      "commit_avg_ms": 10.31,
+      "commit_max_ms": 16.15,
+      "job_snapshot_avg_ms": 2.38,
+      "job_snapshot_max_ms": 6.55,
+      "result_age_ms": 115.14,
+      "stamp": 1794310013.0179143,
+      "message": "[GridMap][pipeline] window=5.03s mode=async occ=33 avg/max=14.44/22.61ms esdf=33 compute_avg/max=96.44/126.80ms main_commit_avg/max=10.31/16.15ms snapshot_avg/max=2.38/6.55ms age=115.14ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3608/3606/3608/0 clouds_coalesced=17 async(submit/commit/reject/occ_defer)=33/33/0/33 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 15.46,
+      "occ_max_ms": 30.83,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 101.85,
+      "worker_max_ms": 134.28,
+      "commit_avg_ms": 10.4,
+      "commit_max_ms": 12.74,
+      "job_snapshot_avg_ms": 2.24,
+      "job_snapshot_max_ms": 3.12,
+      "result_age_ms": 119.81,
+      "stamp": 1794310018.020333,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=32 avg/max=15.46/30.83ms esdf=32 compute_avg/max=101.85/134.28ms main_commit_avg/max=10.40/12.74ms snapshot_avg/max=2.24/3.12ms age=119.81ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3658/3657/3658/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=32/32/0/39 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 15.21,
+      "occ_max_ms": 21.96,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 103.7,
+      "worker_max_ms": 125.45,
+      "commit_avg_ms": 10.54,
+      "commit_max_ms": 14.14,
+      "job_snapshot_avg_ms": 2.32,
+      "job_snapshot_max_ms": 6.11,
+      "result_age_ms": 130.65,
+      "stamp": 1794310023.0369427,
+      "message": "[GridMap][pipeline] window=5.02s mode=async occ=32 avg/max=15.21/21.96ms esdf=32 compute_avg/max=103.70/125.45ms main_commit_avg/max=10.54/14.14ms snapshot_avg/max=2.32/6.11ms age=130.65ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3708/3708/0/0 clouds_coalesced=19 async(submit/commit/reject/occ_defer)=32/32/0/39 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 33.0,
+      "occ_avg_ms": 15.89,
+      "occ_max_ms": 27.11,
+      "esdf_n": 33.0,
+      "worker_avg_ms": 99.06,
+      "worker_max_ms": 131.08,
+      "commit_avg_ms": 10.54,
+      "commit_max_ms": 17.16,
+      "job_snapshot_avg_ms": 2.23,
+      "job_snapshot_max_ms": 5.45,
+      "result_age_ms": 134.53,
+      "stamp": 1794310028.0774446,
+      "message": "[GridMap][pipeline] window=5.04s mode=async occ=33 avg/max=15.89/27.11ms esdf=33 compute_avg/max=99.06/131.08ms main_commit_avg/max=10.54/17.16ms snapshot_avg/max=2.23/5.45ms age=134.53ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3758/3758/0/0 clouds_coalesced=17 async(submit/commit/reject/occ_defer)=33/33/0/41 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 22.0,
+      "occ_avg_ms": 23.14,
+      "occ_max_ms": 44.18,
+      "esdf_n": 23.0,
+      "worker_avg_ms": 152.57,
+      "worker_max_ms": 212.27,
+      "commit_avg_ms": 15.04,
+      "commit_max_ms": 43.41,
+      "job_snapshot_avg_ms": 2.91,
+      "job_snapshot_max_ms": 7.01,
+      "result_age_ms": 117.15,
+      "stamp": 1794310033.0777485,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=22 avg/max=23.14/44.18ms esdf=23 compute_avg/max=152.57/212.27ms main_commit_avg/max=15.04/43.41ms snapshot_avg/max=2.91/7.01ms age=117.15ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=3808/3807/3808/0 clouds_coalesced=27 async(submit/commit/reject/occ_defer)=22/23/0/64 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 28.0,
+      "occ_avg_ms": 16.67,
+      "occ_max_ms": 33.0,
+      "esdf_n": 27.0,
+      "worker_avg_ms": 122.68,
+      "worker_max_ms": 158.0,
+      "commit_avg_ms": 11.92,
+      "commit_max_ms": 22.8,
+      "job_snapshot_avg_ms": 2.26,
+      "job_snapshot_max_ms": 3.76,
+      "result_age_ms": 147.29,
+      "stamp": 1794310038.0875971,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=28 avg/max=16.67/33.00ms esdf=27 compute_avg/max=122.68/158.00ms main_commit_avg/max=11.92/22.80ms snapshot_avg/max=2.26/3.76ms age=147.29ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3858/3858/0/0 clouds_coalesced=23 async(submit/commit/reject/occ_defer)=28/27/0/51 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 28.0,
+      "occ_avg_ms": 16.6,
+      "occ_max_ms": 27.34,
+      "esdf_n": 28.0,
+      "worker_avg_ms": 125.07,
+      "worker_max_ms": 180.63,
+      "commit_avg_ms": 11.03,
+      "commit_max_ms": 24.96,
+      "job_snapshot_avg_ms": 2.68,
+      "job_snapshot_max_ms": 12.48,
+      "result_age_ms": 119.13,
+      "stamp": 1794310043.1159296,
+      "message": "[GridMap][pipeline] window=5.03s mode=async occ=28 avg/max=16.60/27.34ms esdf=28 compute_avg/max=125.07/180.63ms main_commit_avg/max=11.03/24.96ms snapshot_avg/max=2.68/12.48ms age=119.13ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=3908/3908/0/0 clouds_coalesced=22 async(submit/commit/reject/occ_defer)=28/28/0/46 worker(run/pending/coalesced/superseded/faults)=0/1/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 31.0,
+      "occ_avg_ms": 17.31,
+      "occ_max_ms": 31.79,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 98.9,
+      "worker_max_ms": 145.33,
+      "commit_avg_ms": 10.68,
+      "commit_max_ms": 18.65,
+      "job_snapshot_avg_ms": 2.51,
+      "job_snapshot_max_ms": 7.88,
+      "result_age_ms": 120.32,
+      "stamp": 1794310048.128138,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=31 avg/max=17.31/31.79ms esdf=32 compute_avg/max=98.90/145.33ms main_commit_avg/max=10.68/18.65ms snapshot_avg/max=2.51/7.88ms age=120.32ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=3959/3958/3959/0 clouds_coalesced=19 async(submit/commit/reject/occ_defer)=31/32/0/38 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 15.01,
+      "occ_max_ms": 23.64,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 98.41,
+      "worker_max_ms": 118.48,
+      "commit_avg_ms": 11.13,
+      "commit_max_ms": 17.94,
+      "job_snapshot_avg_ms": 2.22,
+      "job_snapshot_max_ms": 3.79,
+      "result_age_ms": 86.97,
+      "stamp": 1794310053.1464229,
+      "message": "[GridMap][pipeline] window=5.02s mode=async occ=32 avg/max=15.01/23.64ms esdf=32 compute_avg/max=98.41/118.48ms main_commit_avg/max=11.13/17.94ms snapshot_avg/max=2.22/3.79ms age=86.97ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=4009/4008/4009/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=32/32/0/39 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 16.14,
+      "occ_max_ms": 31.26,
+      "esdf_n": 31.0,
+      "worker_avg_ms": 104.1,
+      "worker_max_ms": 190.48,
+      "commit_avg_ms": 10.69,
+      "commit_max_ms": 22.93,
+      "job_snapshot_avg_ms": 2.39,
+      "job_snapshot_max_ms": 7.2,
+      "result_age_ms": 116.14,
+      "stamp": 1794310058.1512651,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=32 avg/max=16.14/31.26ms esdf=31 compute_avg/max=104.10/190.48ms main_commit_avg/max=10.69/22.93ms snapshot_avg/max=2.39/7.20ms age=116.14ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4059/4059/0/0 clouds_coalesced=19 async(submit/commit/reject/occ_defer)=32/31/0/39 worker(run/pending/coalesced/superseded/faults)=0/1/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 31.0,
+      "occ_avg_ms": 16.58,
+      "occ_max_ms": 29.23,
+      "esdf_n": 31.0,
+      "worker_avg_ms": 101.3,
+      "worker_max_ms": 143.09,
+      "commit_avg_ms": 10.69,
+      "commit_max_ms": 15.92,
+      "job_snapshot_avg_ms": 3.12,
+      "job_snapshot_max_ms": 14.5,
+      "result_age_ms": 115.28,
+      "stamp": 1794310063.186975,
+      "message": "[GridMap][pipeline] window=5.04s mode=async occ=31 avg/max=16.58/29.23ms esdf=31 compute_avg/max=101.30/143.09ms main_commit_avg/max=10.69/15.92ms snapshot_avg/max=3.12/14.50ms age=115.28ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4110/4109/4110/0 clouds_coalesced=19 async(submit/commit/reject/occ_defer)=31/31/0/40 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 15.55,
+      "occ_max_ms": 26.85,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 97.64,
+      "worker_max_ms": 126.75,
+      "commit_avg_ms": 10.37,
+      "commit_max_ms": 14.29,
+      "job_snapshot_avg_ms": 2.4,
+      "job_snapshot_max_ms": 4.95,
+      "result_age_ms": 105.14,
+      "stamp": 1794310068.1871777,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=32 avg/max=15.55/26.85ms esdf=32 compute_avg/max=97.64/126.75ms main_commit_avg/max=10.37/14.29ms snapshot_avg/max=2.40/4.95ms age=105.14ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4160/4159/4160/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=32/32/0/34 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 16.07,
+      "occ_max_ms": 39.49,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 98.0,
+      "worker_max_ms": 124.43,
+      "commit_avg_ms": 10.45,
+      "commit_max_ms": 14.64,
+      "job_snapshot_avg_ms": 2.13,
+      "job_snapshot_max_ms": 3.87,
+      "result_age_ms": 127.27,
+      "stamp": 1794310073.2177985,
+      "message": "[GridMap][pipeline] window=5.03s mode=async occ=32 avg/max=16.07/39.49ms esdf=32 compute_avg/max=98.00/124.43ms main_commit_avg/max=10.45/14.64ms snapshot_avg/max=2.13/3.87ms age=127.27ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4210/4209/4210/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=32/32/0/38 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 33.0,
+      "occ_avg_ms": 15.53,
+      "occ_max_ms": 29.35,
+      "esdf_n": 33.0,
+      "worker_avg_ms": 97.12,
+      "worker_max_ms": 125.1,
+      "commit_avg_ms": 10.27,
+      "commit_max_ms": 15.98,
+      "job_snapshot_avg_ms": 2.42,
+      "job_snapshot_max_ms": 4.88,
+      "result_age_ms": 117.24,
+      "stamp": 1794310078.236953,
+      "message": "[GridMap][pipeline] window=5.02s mode=async occ=33 avg/max=15.53/29.35ms esdf=33 compute_avg/max=97.12/125.10ms main_commit_avg/max=10.27/15.98ms snapshot_avg/max=2.42/4.88ms age=117.24ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4260/4259/4260/0 clouds_coalesced=17 async(submit/commit/reject/occ_defer)=33/33/0/35 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 15.07,
+      "occ_max_ms": 28.41,
+      "esdf_n": 33.0,
+      "worker_avg_ms": 98.91,
+      "worker_max_ms": 124.64,
+      "commit_avg_ms": 10.24,
+      "commit_max_ms": 18.31,
+      "job_snapshot_avg_ms": 2.33,
+      "job_snapshot_max_ms": 4.12,
+      "result_age_ms": 130.68,
+      "stamp": 1794310083.279005,
+      "message": "[GridMap][pipeline] window=5.04s mode=async occ=32 avg/max=15.07/28.41ms esdf=33 compute_avg/max=98.91/124.64ms main_commit_avg/max=10.24/18.31ms snapshot_avg/max=2.33/4.12ms age=130.68ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=4311/4309/4311/0 clouds_coalesced=19 async(submit/commit/reject/occ_defer)=32/33/0/38 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 21.09,
+      "occ_max_ms": 200.6,
+      "esdf_n": 31.0,
+      "worker_avg_ms": 100.11,
+      "worker_max_ms": 141.95,
+      "commit_avg_ms": 10.08,
+      "commit_max_ms": 13.81,
+      "job_snapshot_avg_ms": 2.8,
+      "job_snapshot_max_ms": 16.3,
+      "result_age_ms": 134.72,
+      "stamp": 1794310088.4551263,
+      "message": "[GridMap][pipeline] window=5.17s mode=async occ=32 avg/max=21.09/200.60ms esdf=31 compute_avg/max=100.11/141.95ms main_commit_avg/max=10.08/13.81ms snapshot_avg/max=2.80/16.30ms age=134.72ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4359/4359/0/0 clouds_coalesced=17 async(submit/commit/reject/occ_defer)=32/31/0/35 worker(run/pending/coalesced/superseded/faults)=0/1/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 5.0,
+      "occ_avg_ms": 24.98,
+      "occ_max_ms": 37.28,
+      "esdf_n": 5.0,
+      "worker_avg_ms": 153.35,
+      "worker_max_ms": 243.8,
+      "commit_avg_ms": 12.08,
+      "commit_max_ms": 15.07,
+      "job_snapshot_avg_ms": 2.3,
+      "job_snapshot_max_ms": 2.81,
+      "result_age_ms": 124.92,
+      "stamp": 1794310093.4558074,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=5 avg/max=24.98/37.28ms esdf=5 compute_avg/max=153.35/243.80ms main_commit_avg/max=12.08/15.07ms snapshot_avg/max=2.30/2.81ms age=124.92ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4369/4368/4369/0 clouds_coalesced=4 async(submit/commit/reject/occ_defer)=5/5/0/12 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 26.0,
+      "occ_avg_ms": 19.37,
+      "occ_max_ms": 38.84,
+      "esdf_n": 27.0,
+      "worker_avg_ms": 126.38,
+      "worker_max_ms": 162.1,
+      "commit_avg_ms": 11.31,
+      "commit_max_ms": 15.57,
+      "job_snapshot_avg_ms": 2.58,
+      "job_snapshot_max_ms": 10.13,
+      "result_age_ms": 159.48,
+      "stamp": 1794310098.4676418,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=26 avg/max=19.37/38.84ms esdf=27 compute_avg/max=126.38/162.10ms main_commit_avg/max=11.31/15.57ms snapshot_avg/max=2.58/10.13ms age=159.48ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=4419/4417/4419/0 clouds_coalesced=24 async(submit/commit/reject/occ_defer)=26/27/0/59 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 31.0,
+      "occ_avg_ms": 16.23,
+      "occ_max_ms": 23.16,
+      "esdf_n": 30.0,
+      "worker_avg_ms": 107.78,
+      "worker_max_ms": 188.49,
+      "commit_avg_ms": 10.59,
+      "commit_max_ms": 14.41,
+      "job_snapshot_avg_ms": 2.39,
+      "job_snapshot_max_ms": 9.03,
+      "result_age_ms": 118.92,
+      "stamp": 1794310103.4946942,
+      "message": "[GridMap][pipeline] window=5.03s mode=async occ=31 avg/max=16.23/23.16ms esdf=30 compute_avg/max=107.78/188.49ms main_commit_avg/max=10.59/14.41ms snapshot_avg/max=2.39/9.03ms age=118.92ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4469/4469/0/0 clouds_coalesced=20 async(submit/commit/reject/occ_defer)=31/30/0/53 worker(run/pending/coalesced/superseded/faults)=0/1/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 15.32,
+      "occ_max_ms": 22.79,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 97.94,
+      "worker_max_ms": 127.62,
+      "commit_avg_ms": 9.9,
+      "commit_max_ms": 13.07,
+      "job_snapshot_avg_ms": 2.04,
+      "job_snapshot_max_ms": 3.45,
+      "result_age_ms": 110.13,
+      "stamp": 1794310108.505919,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=32 avg/max=15.32/22.79ms esdf=32 compute_avg/max=97.94/127.62ms main_commit_avg/max=9.90/13.07ms snapshot_avg/max=2.04/3.45ms age=110.13ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4520/4519/4520/0 clouds_coalesced=18 async(submit/commit/reject/occ_defer)=32/32/0/50 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 33.0,
+      "occ_avg_ms": 14.49,
+      "occ_max_ms": 20.83,
+      "esdf_n": 34.0,
+      "worker_avg_ms": 96.72,
+      "worker_max_ms": 117.21,
+      "commit_avg_ms": 10.8,
+      "commit_max_ms": 17.5,
+      "job_snapshot_avg_ms": 2.14,
+      "job_snapshot_max_ms": 3.46,
+      "result_age_ms": 117.75,
+      "stamp": 1794310113.5197883,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=33 avg/max=14.49/20.83ms esdf=34 compute_avg/max=96.72/117.21ms main_commit_avg/max=10.80/17.50ms snapshot_avg/max=2.14/3.46ms age=117.75ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=4570/4568/4570/0 clouds_coalesced=17 async(submit/commit/reject/occ_defer)=33/34/0/47 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 33.0,
+      "occ_avg_ms": 15.78,
+      "occ_max_ms": 26.53,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 96.04,
+      "worker_max_ms": 123.13,
+      "commit_avg_ms": 10.33,
+      "commit_max_ms": 14.52,
+      "job_snapshot_avg_ms": 2.13,
+      "job_snapshot_max_ms": 3.64,
+      "result_age_ms": 116.75,
+      "stamp": 1794310118.5231335,
+      "message": "[GridMap][pipeline] window=5.00s mode=async occ=33 avg/max=15.78/26.53ms esdf=32 compute_avg/max=96.04/123.13ms main_commit_avg/max=10.33/14.52ms snapshot_avg/max=2.13/3.64ms age=116.75ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4620/4619/4620/0 clouds_coalesced=17 async(submit/commit/reject/occ_defer)=33/32/0/51 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 31.0,
+      "occ_avg_ms": 15.98,
+      "occ_max_ms": 30.87,
+      "esdf_n": 31.0,
+      "worker_avg_ms": 105.91,
+      "worker_max_ms": 157.95,
+      "commit_avg_ms": 10.71,
+      "commit_max_ms": 15.25,
+      "job_snapshot_avg_ms": 2.35,
+      "job_snapshot_max_ms": 8.59,
+      "result_age_ms": 123.89,
+      "stamp": 1794310123.5639908,
+      "message": "[GridMap][pipeline] window=5.04s mode=async occ=31 avg/max=15.98/30.87ms esdf=31 compute_avg/max=105.91/157.95ms main_commit_avg/max=10.71/15.25ms snapshot_avg/max=2.35/8.59ms age=123.89ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4670/4670/0/0 clouds_coalesced=20 async(submit/commit/reject/occ_defer)=31/31/0/55 worker(run/pending/coalesced/superseded/faults)=0/1/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 16.76,
+      "occ_max_ms": 28.37,
+      "esdf_n": 32.0,
+      "worker_avg_ms": 101.1,
+      "worker_max_ms": 145.29,
+      "commit_avg_ms": 10.17,
+      "commit_max_ms": 16.04,
+      "job_snapshot_avg_ms": 2.11,
+      "job_snapshot_max_ms": 3.07,
+      "result_age_ms": 137.73,
+      "stamp": 1794310128.5763235,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=32 avg/max=16.76/28.37ms esdf=32 compute_avg/max=101.10/145.29ms main_commit_avg/max=10.17/16.04ms snapshot_avg/max=2.11/3.07ms age=137.73ms obs_lag=1 lidar(accepted/fused/pending/stale_drop)=4720/4719/4720/0 clouds_coalesced=17 async(submit/commit/reject/occ_defer)=32/32/0/46 worker(run/pending/coalesced/superseded/faults)=1/0/0/0/0 threads=3"
+    },
+    {
+      "occ_n": 32.0,
+      "occ_avg_ms": 15.24,
+      "occ_max_ms": 23.58,
+      "esdf_n": 33.0,
+      "worker_avg_ms": 98.25,
+      "worker_max_ms": 138.19,
+      "commit_avg_ms": 10.14,
+      "commit_max_ms": 15.88,
+      "job_snapshot_avg_ms": 2.09,
+      "job_snapshot_max_ms": 4.27,
+      "result_age_ms": 116.17,
+      "stamp": 1794310133.5832257,
+      "message": "[GridMap][pipeline] window=5.01s mode=async occ=32 avg/max=15.24/23.58ms esdf=33 compute_avg/max=98.25/138.19ms main_commit_avg/max=10.14/15.88ms snapshot_avg/max=2.09/4.27ms age=116.17ms obs_lag=0 lidar(accepted/fused/pending/stale_drop)=4769/4768/4769/0 clouds_coalesced=17 async(submit/commit/reject/occ_defer)=32/33/0/50 worker(run/pending/coalesced/superseded/faults)=0/0/0/0/0 threads=3"
+    }
+  ],
+  "pipeline_window_metric_distribution": {
+    "occ_avg_ms": {
+      "n": 41,
+      "min": 14.29,
+      "p05": 14.49,
+      "p50": 16.14,
+      "p95": 22.77,
+      "p99": 24.244,
+      "max": 24.98
+    },
+    "worker_avg_ms": {
+      "n": 41,
+      "min": 96.04,
+      "p05": 96.72,
+      "p50": 101.1,
+      "p95": 132.65,
+      "p99": 153.038,
+      "max": 153.35
+    },
+    "worker_max_ms": {
+      "n": 41,
+      "min": 117.21,
+      "p05": 120.25,
+      "p50": 141.95,
+      "p95": 191.02,
+      "p99": 231.188,
+      "max": 243.8
+    },
+    "commit_avg_ms": {
+      "n": 41,
+      "min": 9.84,
+      "p05": 10.03,
+      "p50": 10.55,
+      "p95": 11.92,
+      "p99": 13.856,
+      "max": 15.04
+    },
+    "job_snapshot_avg_ms": {
+      "n": 41,
+      "min": 2.04,
+      "p05": 2.11,
+      "p50": 2.32,
+      "p95": 2.8,
+      "p99": 3.036,
+      "max": 3.12
+    },
+    "result_age_ms": {
+      "n": 41,
+      "min": 86.97,
+      "p05": 91.29,
+      "p50": 120.32,
+      "p95": 152.83,
+      "p99": 171.756,
+      "max": 179.94
+    }
+  },
+  "changed_extent_samples": [
+    {
+      "changed": 763,
+      "input_bound": 2254272,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309931.4168305
+    },
+    {
+      "changed": 747,
+      "input_bound": 2242944,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309936.5762637
+    },
+    {
+      "changed": 749,
+      "input_bound": 2257920,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309941.6736288
+    },
+    {
+      "changed": 706,
+      "input_bound": 2231616,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309946.6889
+    },
+    {
+      "changed": 741,
+      "input_bound": 2269080,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309951.8596346
+    },
+    {
+      "changed": 710,
+      "input_bound": 2234700,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309956.9824204
+    },
+    {
+      "changed": 750,
+      "input_bound": 2280540,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309962.1698163
+    },
+    {
+      "changed": 696,
+      "input_bound": 2280960,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309967.200381
+    },
+    {
+      "changed": 731,
+      "input_bound": 2280960,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309972.203682
+    },
+    {
+      "changed": 689,
+      "input_bound": 2005056,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309977.3566027
+    },
+    {
+      "changed": 725,
+      "input_bound": 2246400,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309982.371423
+    },
+    {
+      "changed": 712,
+      "input_bound": 2269440,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309987.3996284
+    },
+    {
+      "changed": 728,
+      "input_bound": 2257620,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309992.43636
+    },
+    {
+      "changed": 675,
+      "input_bound": 2005500,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794309997.560596
+    },
+    {
+      "changed": 732,
+      "input_bound": 2269080,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310002.6986334
+    },
+    {
+      "changed": 684,
+      "input_bound": 2028420,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310007.7953968
+    },
+    {
+      "changed": 753,
+      "input_bound": 2246160,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310012.8994904
+    },
+    {
+      "changed": 725,
+      "input_bound": 2280960,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310017.9500418
+    },
+    {
+      "changed": 721,
+      "input_bound": 2269440,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310022.9847503
+    },
+    {
+      "changed": 713,
+      "input_bound": 2280540,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310028.0561996
+    },
+    {
+      "changed": 690,
+      "input_bound": 2269440,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310033.096601
+    },
+    {
+      "changed": 770,
+      "input_bound": 2269440,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310038.253528
+    },
+    {
+      "changed": 743,
+      "input_bound": 2292480,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310043.2625868
+    },
+    {
+      "changed": 682,
+      "input_bound": 2280960,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310048.334088
+    },
+    {
+      "changed": 744,
+      "input_bound": 2269080,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310053.334002
+    },
+    {
+      "changed": 693,
+      "input_bound": 2016960,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310058.4938903
+    },
+    {
+      "changed": 643,
+      "input_bound": 2269440,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310063.587019
+    },
+    {
+      "changed": 752,
+      "input_bound": 2257920,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310068.6337228
+    },
+    {
+      "changed": 708,
+      "input_bound": 2280960,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310073.7502158
+    },
+    {
+      "changed": 708,
+      "input_bound": 2254272,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310078.7623796
+    },
+    {
+      "changed": 696,
+      "input_bound": 2280960,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310083.8068137
+    },
+    {
+      "changed": 755,
+      "input_bound": 2280960,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310092.7263267
+    },
+    {
+      "changed": 723,
+      "input_bound": 2280960,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310097.7369902
+    },
+    {
+      "changed": 747,
+      "input_bound": 2292480,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310102.839822
+    },
+    {
+      "changed": 695,
+      "input_bound": 2231616,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310107.988768
+    },
+    {
+      "changed": 692,
+      "input_bound": 2242944,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310113.1077495
+    },
+    {
+      "changed": 744,
+      "input_bound": 2039040,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310118.185999
+    },
+    {
+      "changed": 761,
+      "input_bound": 2231616,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310123.199665
+    },
+    {
+      "changed": 799,
+      "input_bound": 2280960,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310128.3351996
+    },
+    {
+      "changed": 685,
+      "input_bound": 2265600,
+      "total": 3600000,
+      "cap": 0.6,
+      "full": "no",
+      "stamp": 1794310133.4567015
+    }
+  ],
+  "commit_extent_samples": [
+    {
+      "regions": 1,
+      "computed": 2050560,
+      "input_bound": 2050560,
+      "worker_ms": 116.58,
+      "commit_ms": 9.77,
+      "stamp": 1794309936.327557
+    },
+    {
+      "regions": 1,
+      "computed": 2292480,
+      "input_bound": 2292480,
+      "worker_ms": 120.7,
+      "commit_ms": 12.4,
+      "stamp": 1794309941.4302406
+    },
+    {
+      "regions": 1,
+      "computed": 2231616,
+      "input_bound": 2231616,
+      "worker_ms": 135.26,
+      "commit_ms": 9.41,
+      "stamp": 1794309946.47767
+    },
+    {
+      "regions": 1,
+      "computed": 2208724,
+      "input_bound": 2208724,
+      "worker_ms": 155.44,
+      "commit_ms": 8.88,
+      "stamp": 1794309951.630577
+    },
+    {
+      "regions": 1,
+      "computed": 2231616,
+      "input_bound": 2231616,
+      "worker_ms": 146.07,
+      "commit_ms": 11.95,
+      "stamp": 1794309956.7508101
+    },
+    {
+      "regions": 1,
+      "computed": 2280960,
+      "input_bound": 2280960,
+      "worker_ms": 106.03,
+      "commit_ms": 14.43,
+      "stamp": 1794309961.7513597
+    },
+    {
+      "regions": 1,
+      "computed": 2257920,
+      "input_bound": 2257920,
+      "worker_ms": 99.84,
+      "commit_ms": 11.27,
+      "stamp": 1794309966.8482316
+    },
+    {
+      "regions": 1,
+      "computed": 2257620,
+      "input_bound": 2257620,
+      "worker_ms": 100.7,
+      "commit_ms": 10.4,
+      "stamp": 1794309971.8781826
+    },
+    {
+      "regions": 1,
+      "computed": 2280960,
+      "input_bound": 2280960,
+      "worker_ms": 95.08,
+      "commit_ms": 13.47,
+      "stamp": 1794309976.8815155
+    },
+    {
+      "regions": 1,
+      "computed": 2269440,
+      "input_bound": 2269440,
+      "worker_ms": 99.95,
+      "commit_ms": 10.45,
+      "stamp": 1794309981.99734
+    },
+    {
+      "regions": 1,
+      "computed": 1971072,
+      "input_bound": 1971072,
+      "worker_ms": 94.26,
+      "commit_ms": 8.28,
+      "stamp": 1794309987.0760808
+    },
+    {
+      "regions": 1,
+      "computed": 2269440,
+      "input_bound": 2269440,
+      "worker_ms": 96.09,
+      "commit_ms": 12.4,
+      "stamp": 1794309992.2302608
+    },
+    {
+      "regions": 1,
+      "computed": 1982400,
+      "input_bound": 1982400,
+      "worker_ms": 97.25,
+      "commit_ms": 8.41,
+      "stamp": 1794309997.3762035
+    },
+    {
+      "regions": 1,
+      "computed": 2269080,
+      "input_bound": 2269080,
+      "worker_ms": 131.35,
+      "commit_ms": 9.57,
+      "stamp": 1794310002.5273302
+    },
+    {
+      "regions": 1,
+      "computed": 2292480,
+      "input_bound": 2292480,
+      "worker_ms": 97.48,
+      "commit_ms": 11.42,
+      "stamp": 1794310007.6483421
+    },
+    {
+      "regions": 1,
+      "computed": 2269080,
+      "input_bound": 2269080,
+      "worker_ms": 95.73,
+      "commit_ms": 10.28,
+      "stamp": 1794310012.7280767
+    },
+    {
+      "regions": 1,
+      "computed": 2280960,
+      "input_bound": 2280960,
+      "worker_ms": 87.95,
+      "commit_ms": 9.5,
+      "stamp": 1794310017.7772753
+    },
+    {
+      "regions": 1,
+      "computed": 2269440,
+      "input_bound": 2269440,
+      "worker_ms": 88.36,
+      "commit_ms": 13.3,
+      "stamp": 1794310022.7814643
+    },
+    {
+      "regions": 1,
+      "computed": 2231616,
+      "input_bound": 2231616,
+      "worker_ms": 120.42,
+      "commit_ms": 12.83,
+      "stamp": 1794310027.8498492
+    },
+    {
+      "regions": 1,
+      "computed": 2269440,
+      "input_bound": 2269440,
+      "worker_ms": 152.83,
+      "commit_ms": 9.69,
+      "stamp": 1794310032.9275644
+    },
+    {
+      "regions": 1,
+      "computed": 2269080,
+      "input_bound": 2269080,
+      "worker_ms": 137.17,
+      "commit_ms": 9.4,
+      "stamp": 1794310037.9966087
+    },
+    {
+      "regions": 1,
+      "computed": 2269080,
+      "input_bound": 2269080,
+      "worker_ms": 93.98,
+      "commit_ms": 11.96,
+      "stamp": 1794310043.0797617
+    },
+    {
+      "regions": 1,
+      "computed": 2292480,
+      "input_bound": 2292480,
+      "worker_ms": 113.62,
+      "commit_ms": 10.19,
+      "stamp": 1794310048.1280243
+    },
+    {
+      "regions": 1,
+      "computed": 2269440,
+      "input_bound": 2269440,
+      "worker_ms": 82.94,
+      "commit_ms": 9.32,
+      "stamp": 1794310053.1462562
+    },
+    {
+      "regions": 1,
+      "computed": 2292480,
+      "input_bound": 2292480,
+      "worker_ms": 123.62,
+      "commit_ms": 9.54,
+      "stamp": 1794310058.2964559
+    },
+    {
+      "regions": 1,
+      "computed": 2280960,
+      "input_bound": 2280960,
+      "worker_ms": 95.27,
+      "commit_ms": 9.77,
+      "stamp": 1794310063.3775163
+    },
+    {
+      "regions": 1,
+      "computed": 2280960,
+      "input_bound": 2280960,
+      "worker_ms": 107.72,
+      "commit_ms": 10.12,
+      "stamp": 1794310068.4278893
+    },
+    {
+      "regions": 1,
+      "computed": 2016384,
+      "input_bound": 2016384,
+      "worker_ms": 107.82,
+      "commit_ms": 8.38,
+      "stamp": 1794310073.5771317
+    },
+    {
+      "regions": 1,
+      "computed": 2269080,
+      "input_bound": 2269080,
+      "worker_ms": 100.09,
+      "commit_ms": 10.11,
+      "stamp": 1794310078.7279015
+    },
+    {
+      "regions": 1,
+      "computed": 2039040,
+      "input_bound": 2039040,
+      "worker_ms": 103.99,
+      "commit_ms": 11.11,
+      "stamp": 1794310083.7788925
+    },
+    {
+      "regions": 1,
+      "computed": 2280540,
+      "input_bound": 2280540,
+      "worker_ms": 138.47,
+      "commit_ms": 11.16,
+      "stamp": 1794310088.9846659
+    },
+    {
+      "regions": 1,
+      "computed": 2280960,
+      "input_bound": 2280960,
+      "worker_ms": 148.0,
+      "commit_ms": 15.36,
+      "stamp": 1794310094.1215281
+    },
+    {
+      "regions": 1,
+      "computed": 2292480,
+      "input_bound": 2292480,
+      "worker_ms": 113.58,
+      "commit_ms": 9.45,
+      "stamp": 1794310099.2652726
+    },
+    {
+      "regions": 1,
+      "computed": 2280960,
+      "input_bound": 2280960,
+      "worker_ms": 108.06,
+      "commit_ms": 10.06,
+      "stamp": 1794310104.2831385
+    },
+    {
+      "regions": 1,
+      "computed": 2016960,
+      "input_bound": 2016960,
+      "worker_ms": 77.87,
+      "commit_ms": 11.86,
+      "stamp": 1794310109.3176072
+    },
+    {
+      "regions": 1,
+      "computed": 2292480,
+      "input_bound": 2292480,
+      "worker_ms": 105.49,
+      "commit_ms": 10.11,
+      "stamp": 1794310114.4659617
+    },
+    {
+      "regions": 1,
+      "computed": 2292480,
+      "input_bound": 2292480,
+      "worker_ms": 110.61,
+      "commit_ms": 9.66,
+      "stamp": 1794310119.5654898
+    },
+    {
+      "regions": 1,
+      "computed": 2028420,
+      "input_bound": 2028420,
+      "worker_ms": 88.57,
+      "commit_ms": 8.31,
+      "stamp": 1794310124.6141052
+    },
+    {
+      "regions": 1,
+      "computed": 2016000,
+      "input_bound": 2016000,
+      "worker_ms": 102.57,
+      "commit_ms": 8.42,
+      "stamp": 1794310129.7141938
+    },
+    {
+      "regions": 1,
+      "computed": 2280540,
+      "input_bound": 2280540,
+      "worker_ms": 94.04,
+      "commit_ms": 10.96,
+      "stamp": 1794310134.7168558
+    }
+  ],
+  "changed_summary": {
+    "n": 40,
+    "min": 643.0,
+    "p05": 681.65,
+    "p50": 724.0,
+    "p95": 763.35,
+    "p99": 787.69,
+    "max": 799.0
+  },
+  "input_bound_summary": {
+    "n": 40,
+    "min": 2005056.0,
+    "p05": 2016387.0,
+    "p50": 2269080.0,
+    "p95": 2281536.0,
+    "p99": 2292480.0,
+    "max": 2292480.0
+  },
+  "computed_regions": {
+    "1": 40
+  },
+  "source_facts": [
+    {
+      "path": "src/mm_remani_planner/plan_env/src/grid_map.cpp:190",
+      "fact": "publishReadSnapshot copies the full occupancy<double> + inflated<char> + fixed<char> when observation/epoch changes; full distance<double> on distance revision/epoch changes."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_env/src/grid_map.cpp:1964",
+      "fact": "Completed snapshot is published before a next fusion when occupancy callback drains a ready async result; writer also publishes after each callback at line756."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_env/src/grid_map.cpp:2566",
+      "fact": "recordESDFTiming ends before immutable snapshot publication, so pipeline main_commit_ms and job snapshot_ms do not measure full-map snapshot copies."
+    },
+    {
+      "path": "src/mm_remani_planner/plan_env/src/esdf_worker.cpp:757",
+      "fact": "Adaptive split needs at least2 regions and 15% gain; otherwise exact dense EDT remains. regions=1/computed=input_bound in current logs proves this fallback is exercised."
+    }
+  ],
+  "logical_copy_bytes_per_changed_generation": {
+    "occupancy_snapshot": 36000000,
+    "distance_snapshot": 28800000,
+    "total_if_both_change": 64800000,
+    "caveat": "logical copied bytes, not measured elapsed time or additional resident bytes. Fixed-layer copies are redundant when static layer is unchanged, but changing sharing/layout is a separate implementation choice."
+  },
+  "findings": [
+    "Independent exporter output remains fast; if measured h17-to-receive remains low, another output timer change is not supported.",
+    "Actual worker compute averages and dense input size are measured. Single-region 2.2M+ voxel EDT despite only hundreds of changed cells dominates named map pipeline stages; this is the first evidence-backed compute target.",
+    "Full immutable publication has no dedicated timing. It can add unaccounted cost between commit and exporter acquisition, but this recording cannot prove its contribution.",
+    "No TTL relaxation or source-time renewal is justified. Keep complete-generation and live-health gates.",
+    "The overall window contains a later arm_stop_latched interval. Use before_first_arm_stop for healthy-actuator map-age distribution; the large multi-second overall max is not evidence of normal exporter latency."
+  ],
+  "minimal_next_step": {
+    "recommendation": "Before editing storage architecture, add targeted elapsed accounting for publishReadSnapshot occupancy/distance copy and completed-generation publish time, or benchmark the existing worker on a captured immutable occupancy job. Current evidence already supports dense EDT as a real cost; it does not support claiming full-copy is the dominant cause.",
+    "possible_small_equivalent_worker_improvement": "Consider fast paths for trivial all-zero/all-MAX intermediate EDT lines only after exact equivalence/benchmark; whether these occur frequently in this real scene is not recorded. Do not change distance cap, halos, tile coverage or TTL just to meet the deadline."
+  },
+  "before_first_arm_stop": {
+    "first_arm_stop_received": 1794310088.5679333,
+    "duration_s": 157.188,
+    "map_age_ms": {
+      "n": 3139,
+      "p05": 161.727,
+      "p50": 228.987,
+      "p95": 344.917,
+      "p99": 407.946,
+      "max": 567.936
+    },
+    "first_newfield_fusion_to_sample_ms": {
+      "n": 1039,
+      "p05": 140.428,
+      "p50": 166.963,
+      "p95": 261.605,
+      "p99": 305.895,
+      "max": 342.17
+    },
+    "first_newfield_sample_to_receive_ms": {
+      "n": 1039,
+      "p05": 9.52,
+      "p50": 12.951,
+      "p95": 22.995,
+      "p99": 28.136,
+      "max": 44.871
+    },
+    "map_over350_count": 143,
+    "remaining_below95_count": 1051,
+    "remaining_budget_ms": {
+      "n": 3139,
+      "p05": 5.083,
+      "p50": 121.013,
+      "p95": 188.273,
+      "p99": 200.625,
+      "max": 222.872
+    },
+    "limitation": "Reference was already cancelled; this is not active-navigation evidence. Separate from subsequent arm_stop_latched/sensor degeneration."
+  },
+  "before_first_arm_stop_producer_health_valid": {
+    "selection": "Before first arm_stop_latched AND snapshot header[4]==1. Producer mapReadyForPlanning includes real live-LiDAR health and Complete-map/state/geometry gates; this is not an independent raw LiDAR source-age measurement.",
+    "map_age_ms": {
+      "n": 3003,
+      "p05": 161.428,
+      "p50": 223.067,
+      "p95": 317.89,
+      "p99": 343.62,
+      "max": 362.293
+    },
+    "newfield_fusion_to_sample_ms": {
+      "n": 1039,
+      "p05": 140.428,
+      "p50": 166.963,
+      "p95": 261.605,
+      "p99": 305.895,
+      "max": 342.17
+    },
+    "newfield_sample_to_receive_ms": {
+      "n": 1039,
+      "p05": 9.52,
+      "p50": 12.951,
+      "p95": 22.995,
+      "p99": 28.136,
+      "max": 44.871
+    },
+    "map_over350_at_recorder_count": 7,
+    "remaining_below95_count": 915
+  }
+}
