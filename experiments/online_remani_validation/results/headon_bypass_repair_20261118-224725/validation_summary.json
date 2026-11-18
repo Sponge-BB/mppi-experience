@@ -1,0 +1,57 @@
+{
+  "state": "SIMULATION_BYPASS_SHAPE_VERIFIED_CLOSED_LOOP_FAILED",
+  "purpose": "观测点云固定结构通道生成左右真实绕行参考；保留时长不匹配引起选侧摆动的闭环失败",
+  "offline_tests_passed": 8,
+  "known_issues": [
+    "H selected against original reference, not selected bypass route; changing angular speed can invalidate held side by forecast coverage and reverse side.",
+    "Slow synchronous solve blocks cached joint/map sampling."
+  ],
+  "closed_loop": {
+    "native": {
+      "reason": "collision",
+      "elapsed": 17.666353375003382,
+      "goal_reached": false,
+      "min_external_gap_m": -0.004950717688360334,
+      "final_state": [
+        1.407117583926579,
+        0.0,
+        0.0,
+        0.08770175106168163,
+        0.0
+      ],
+      "trajectory_bundles": 1
+    },
+    "mppi": {
+      "reason": "collision",
+      "elapsed": 21.73886165899603,
+      "goal_reached": false,
+      "min_external_gap_m": -0.005989977526413073,
+      "final_state": [
+        0.7701109234581546,
+        0.09654290989159367,
+        1.6848598410046396,
+        0.006528189769688288,
+        0.06320792871722924
+      ],
+      "trajectory_bundles": 2
+    },
+    "fast_only": {
+      "reason": "collision",
+      "elapsed": 20.67901926900231,
+      "goal_reached": false,
+      "min_external_gap_m": -0.0014058115695468054,
+      "final_state": [
+        0.8782250202571406,
+        0.025616220623112168,
+        0.18116218884747814,
+        0.00013765683404120575,
+        0.006445869300757932
+      ],
+      "trajectory_bundles": 1
+    }
+  },
+  "input_hashes_verified": true,
+  "production_unchanged": true,
+  "hardware_validation": false,
+  "restore_forward_inverse_verified": true
+}

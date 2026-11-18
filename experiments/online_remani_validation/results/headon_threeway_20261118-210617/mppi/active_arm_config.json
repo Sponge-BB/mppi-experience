@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "created": "2026-11-04T16:14:23.172182+00:00",
+  "group": "mppi",
+  "enabled": true,
+  "coupled": true,
+  "seed": 11,
+  "duration": 45.0,
+  "profile": false,
+  "profile_timings_are_not_benchmark": false,
+  "q_start": [
+    0.0,
+    1.9198621771937625,
+    -1.0471975511965976,
+    0.0,
+    0.5235987755982988,
+    0.0
+  ],
+  "postures": [
+    [
+      0.0,
+      2.443460952792061,
+      -1.0471975511965976,
+      0.0,
+      0.2617993877991494,
+      0.0
+    ]
+  ],
+  "goal": [
+    3.4,
+    0.0
+  ],
+  "arm_limits": {
+    "lower": [
+      -2.618,
+      -0.05,
+      -2.697,
+      -1.832,
+      -1.25,
+      -3.14
+    ],
+    "upper": [
+      2.618,
+      3.14,
+      0.05,
+      1.832,
+      1.25,
+      3.14
+    ],
+    "velocity": [
+      0.45,
+      0.45,
+      0.45,
+      0.45,
+      0.45,
+      0.45
+    ],
+    "acceleration": [
+      0.9,
+      0.9,
+      0.9,
+      0.9,
+      0.9,
+      0.9
+    ]
+  },
+  "urdf_path": "/home/l/remani_ws/experiments/online_remani_validation/results/headon_threeway_20261118-210617/mppi/model/mm.urdf",
+  "parameters_path": "/home/l/remani_ws/experiments/online_remani_validation/results/headon_threeway_20261118-210617/mppi/parameters.yaml",
+  "scene_definition": {
+    "schema": "arm_box_scene_v1",
+    "scene": "whole_body_headon_box",
+    "name": "迎面移动长方体三组对照",
+    "time_origin": "measured motion anchor",
+    "appearance_s": 2.0,
+    "persistent": true,
+    "goal": [
+      3.4,
+      0.0
+    ],
+    "arena": [
+      -1.5,
+      4.5,
+      -2.0,
+      2.0
+    ],
+    "q_start": [
+      0.0,
+      1.9198621771937625,
+      -1.0471975511965976,
+      0.0,
+      0.5235987755982988,
+      0.0
+    ],
+    "q_retract": [
+      0.0,
+      2.443460952792061,
+      -1.0471975511965976,
+      0.0,
+      0.2617993877991494,
+      0.0
+    ],
+    "box": {
+      "id": 1,
+      "center": [
+        3.2,
+        0.0,
+        0.8
+      ],
+      "size": [
+        0.4,
+        0.4,
+        1.45
+      ]
+    },
+    "velocity": [
+      -0.18,
+      0.0,
+      0.0
+    ],
+    "front_gap_m": 1.0,
+    "front_gap_role": "legacy schema positive field only; actual gap measured at appearance",
+    "placement": "fixed world x=3.2m, y=0; same path/speed in all groups",
+    "input_contract": "Only synthetic measured clouds enter planner/controller; no actor truth commands",
+    "scope": "previous whole-body numerical ROS comparison framework; not real-vehicle control"
+  },
+  "horizon": 20,
+  "random_samples": 6,
+  "rate_hz": 10.0,
+  "deadline_s": 0.2,
+  "geometry": "native DH 47 fixed +20 moving spheres; URDF limits; not mesh equivalence",
+  "actuator": "atomic base and six joint velocity command; 250ms lease; common stop",
+  "predictor": "bounded lagged base and acceleration-limited joints; 50ms collision samples",
+  "slow_joint_acceleration_boundary": "explicit zero approximation; effort never used as acceleration",
+  "description": "REMANI + whole-body MPPI",
+  "physical_base_locked": false,
+  "comparison": "same approaching box, shared free base/arm plant; previous three-way SIL controller settings retained",
+  "slow_planner_frozen_after_initial_reference": false
+}

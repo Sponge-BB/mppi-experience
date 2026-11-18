@@ -1,0 +1,73 @@
+{
+  "state": "SIMULATION_HEADON_TWO_MPPI_GROUPS_REACHED_HARDWARE_NOT_TESTED",
+  "purpose": "按实际绕行参考计算完整运动与制动时域，消除时间误拒导致的反复换侧；两MPPI组迎面避障到达",
+  "offline_tests_passed": 9,
+  "native_control_reused_from": "/home/l/remani_ws/experiments/online_remani_validation/results/headon_window_repair_20261118-223634/native",
+  "same_scene_limits_initial_state_and_sensor": true,
+  "gif_frames_decoded": true,
+  "gif_view_inspected": true,
+  "real_last_version_files_sha_mode_links_match": 8,
+  "known_issues": [
+    "Slow synchronous solve blocks map/joint sampling; 26 snapshot-invalid cycles remain in coupled run.",
+    "Soft coupling handoff cost inactive: 1.1s handoff exceeds effective 0.6-0.7s control prefix.",
+    "One run per condition; no statistical robustness or hardware safety claim."
+  ],
+  "timing_evidence": {
+    "obstacle_appearance_s": 11.219,
+    "first_fast_bypass_s": 11.791,
+    "fast_event_trigger_s": 11.932,
+    "new_slow_reference_s": 20.828
+  },
+  "preceding_versions": [
+    "20261118-224609-headon-time-window",
+    "20261118-225711-headon-bypass-attempt"
+  ],
+  "closed_loop": {
+    "native": {
+      "reason": "collision",
+      "elapsed": 17.666353375003382,
+      "goal_reached": false,
+      "min_external_gap_m": -0.004950717688360334,
+      "final_state": [
+        1.407117583926579,
+        0.0,
+        0.0,
+        0.08770175106168163,
+        0.0
+      ],
+      "trajectory_bundles": 1
+    },
+    "mppi": {
+      "reason": "goal",
+      "elapsed": 37.85651965999568,
+      "goal_reached": true,
+      "min_external_gap_m": 0.13839426922218911,
+      "final_state": [
+        3.389846791888387,
+        0.004431852630870024,
+        -0.01602608126903604,
+        1.4437180149201718e-07,
+        0.00023832717427957226
+      ],
+      "trajectory_bundles": 2
+    },
+    "fast_only": {
+      "reason": "goal",
+      "elapsed": 34.15344862200436,
+      "goal_reached": true,
+      "min_external_gap_m": 0.11490361561855537,
+      "final_state": [
+        3.383074711305123,
+        0.000106850679739559,
+        -0.002583834405327945,
+        0.0004913956546903889,
+        0.008193358824321496
+      ],
+      "trajectory_bundles": 1
+    }
+  },
+  "input_hashes_verified": true,
+  "production_unchanged": true,
+  "hardware_validation": false,
+  "restore_forward_inverse_verified": true
+}

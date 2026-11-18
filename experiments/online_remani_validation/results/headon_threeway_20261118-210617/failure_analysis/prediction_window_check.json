@@ -1,0 +1,41 @@
+{
+  "scope": "Pure-function controlled example, not historical map replay or a runtime fix",
+  "source_sha256": "fa0bbbdbc3f0d35fabaef2624b8841705887eb45680f3a534290734a3a62e8f2",
+  "rows": [
+    {
+      "case": "no_dynamic_track",
+      "valid": true,
+      "min_gap": 0.0030000000000000027,
+      "H": 20,
+      "dt": 0.1,
+      "robot_horizon_s": 2.0,
+      "checked_end_offset_s": 2.05,
+      "dynamic_coverage_s": 2.0,
+      "all_external_obstacles_far": true
+    },
+    {
+      "case": "dynamic_track_2s",
+      "valid": false,
+      "min_gap": -1000.2183399335206,
+      "H": 20,
+      "dt": 0.1,
+      "robot_horizon_s": 2.0,
+      "checked_end_offset_s": 2.05,
+      "dynamic_coverage_s": 2.0,
+      "all_external_obstacles_far": true
+    },
+    {
+      "case": "counterexample_coverage_3s",
+      "valid": true,
+      "min_gap": 0.0030000000000000027,
+      "H": 20,
+      "dt": 0.1,
+      "robot_horizon_s": 2.0,
+      "checked_end_offset_s": 2.05,
+      "dynamic_coverage_s": 3.0,
+      "all_external_obstacles_far": true
+    }
+  ],
+  "conclusion": "A nonempty distant dynamic track invalidates a safe stationary candidate solely because 2.05s check exceeds 2.0s coverage.",
+  "limitation": "The 3s condition is only a counterexample; it is not a recommendation to extend prediction trust blindly."
+}
